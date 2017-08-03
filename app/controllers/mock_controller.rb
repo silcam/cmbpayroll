@@ -5,6 +5,10 @@ class MockController < ApplicationController
   end
 
   def employees
+
+  end
+
+  def transactions
     
   end
 

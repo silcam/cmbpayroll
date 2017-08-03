@@ -8,9 +8,13 @@ en:
   Activity_feed: Activity Feed
   More_history: More history
   Search: Search
+  Date: Date
+  View: View
+  Modify: Modify
   
   # Employees
   Employees: Employees
+  Employee: Employee
   New_employee: New Employee
   Name: Name
   Department: Department
@@ -18,4 +22,12 @@ en:
 
   # Transactions
   Transactions: Transactions
+  Transactions_for: Transactions for
   Add_transaction: Add Transaction
+  Enter_hours: Enter Hours
+  Enter_overtime: Enter Overtime
+  Enter_vacation: Enter Vacation
+  Enter_charges: Enter Charges
+  New_loan: New Loan
+  Type: Type
+  Detail: Detail

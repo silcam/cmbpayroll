@@ -8,9 +8,13 @@ fr:
   Activity_feed: Flux d'activité
   More_history: Plus
   Search: Rechercher
+  Date: Date
+  View: Voir
+  Modify: Modifier
 
   # Employees
   Employees: Employés
+  Employee: Employé
   New_employee: Nouvel employé
   Name: Nom
   Department: Département
@@ -18,4 +22,12 @@ fr:
 
   # Transactions
   Transactions: Transactions
+  Transactions_for: Transactions pour
   Add_transaction: Ajouter une transaction
+  Enter_hours: Saisir heures
+  Enter_overtime: Saisir surtravail
+  Enter_vacation: Saisir vacances
+  Enter_charges: Saisir charges
+  New_loan: Nouveau prêt
+  Type: Type
+  Detail: Détail

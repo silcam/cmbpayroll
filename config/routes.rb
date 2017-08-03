@@ -3,4 +3,5 @@ Rails.application.routes.draw do
 
   root "mock#home"
   get 'employees', to: 'mock#employees'
+  get 'transactions', to: 'mock#transactions'
 end

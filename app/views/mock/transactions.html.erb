@@ -1,8 +1,7 @@
 <% provide(:title, "Transactions") %>
 
 <ul class="list-inline">
-  <li><%= button_to t(:Enter_hours), '#', class: 'btn btn-primary' %></li>
-  <li><%= button_to t(:Enter_overtime), '#', class: 'btn btn-primary' %></li>
+  <li><%= button_to t(:Enter_hours_overtime), '#', class: 'btn btn-primary' %></li>
   <li><%= button_to t(:Enter_vacation), '#', class: 'btn btn-primary' %></li>
   <li><%= button_to t(:Enter_charges), '#', class: 'btn btn-primary' %></li>
   <li><%= button_to t(:New_loan), '#', class: 'btn btn-primary' %></li>
@@ -11,6 +10,8 @@
 <h3>
   <%= t :Transactions_for %>
   <%= select_tag 'month', options_for_select(['July', 'June', 'May', 'April']), class: 'form-control form-control-inline' %>
+  &nbsp;&nbsp;&nbsp;<%= t :Type %>
+  <%= select_tag 'type', options_for_select(['All', 'Hours', 'Vacation', 'Charges', 'Loan']), class: 'form-control form-control-inline' %>
 </h3>
 
 <table class="table" style="margin-top: 15px;">

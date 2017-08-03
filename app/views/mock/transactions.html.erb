@@ -1,7 +1,7 @@
 <% provide(:title, "Transactions") %>
 
 <ul class="list-inline">
-  <li><%= button_to t(:Enter_hours_overtime), '#', class: 'btn btn-primary' %></li>
+  <li><%= button_to t(:Enter_hours_overtime), {action: 'hours_edit'}, method: :get, class: 'btn btn-primary' %></li>
   <li><%= button_to t(:Enter_vacation), '#', class: 'btn btn-primary' %></li>
   <li><%= button_to t(:Enter_charges), '#', class: 'btn btn-primary' %></li>
   <li><%= button_to t(:New_loan), '#', class: 'btn btn-primary' %></li>

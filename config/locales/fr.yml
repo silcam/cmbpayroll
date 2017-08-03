@@ -8,9 +8,18 @@ fr:
   Activity_feed: Flux d'activité
   More_history: Plus
   Search: Rechercher
-  Date: Date
   View: Voir
   Modify: Modifier
+  No_change: Aucun changement
+  Save: Enregistrer
+  
+  #Time and Date
+  Date: Date
+  Hours_for: Heures de
+  Week_of: Semaine du
+  Hours_for_week: Heures pour la semaine
+  Regular_hours: Heures normales
+  Overtime_hours: Heures supplémentaires
 
   # Employees
   Employees: Employés

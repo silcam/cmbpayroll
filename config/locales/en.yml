@@ -8,9 +8,18 @@ en:
   Activity_feed: Activity Feed
   More_history: More history
   Search: Search
-  Date: Date
   View: View
   Modify: Modify
+  No_change: No Change
+  Save: Save
+
+  # Time and Date
+  Date: Date
+  Hours_for: Hours for
+  Week_of: Week of
+  Hours_for_week: Hours for the week
+  Regular_hours: Regular Hours
+  Overtime_hours: Overtime Hours
   
   # Employees
   Employees: Employees

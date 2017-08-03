@@ -3,16 +3,15 @@
 
 $sil-blue: rgb(0, 104, 166);
 
+// Header
+
 .nav{
   a{
     font-size: larger;
     margin-top: 15px;
   }
 }
-//div#header {
-//  position: relative;
-//}
-//
+
 img#site-logo {
   float: left;
 }
@@ -26,6 +25,8 @@ img#site-logo {
   font-size: x-large;
   margin-top: 12px;
 }
+
+// Dashboard
 
 ul#link-list {
   li {
@@ -47,6 +48,8 @@ ul.feed {
   }
 }
 
+//Forms
+
 form#search-form {
   padding-top: 20px;
   input[type=text] {
@@ -57,4 +60,22 @@ form#search-form {
 .form-control-inline {
   width: auto;
   display: inline-block;
+}
+
+form.inline-fields {
+  input {
+    display: inline-block;
+    width: auto;
+  }
+}
+
+//Tables
+
+.hours-table {
+  border: 1px solid #ddd;
+
+  th, td {
+    border-top: none !important;
+    border-left: 1px solid #ddd;
+  }
 }

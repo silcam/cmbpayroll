@@ -9,7 +9,11 @@ class MockController < ApplicationController
   end
 
   def transactions
-    
+
+  end
+
+  def hours_edit
+
   end
 
 end

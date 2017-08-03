@@ -1,0 +1,40 @@
+<h2>
+  <%= t :Hours_for %> Luke Skywalker
+  <small><%= t :Week_of %> 24 July</small>
+</h2>
+<table class="table hours-table">
+  <tr>
+    <% %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday].each do |day| %>
+      <th><%= day %></th>
+    <% end %>
+  </tr>
+  <tr>
+    <% (24..30).each do |date| %>
+      <th>July <%= date %></th>
+    <% end %>
+  </tr>
+  <tr>
+    <% (1..7).each do |dow| %>
+      <td>
+        <% h = (dow > 5)? 0 : 8 %>
+        <%= text_field_tag "hours-#{dow}", h, class: 'form-control', data: {'dow' => dow} %>
+      </td>
+    <% end %>
+  </tr>
+</table>
+
+<form class="inline-fields">
+  <label>
+    <%= t :Hours_for_week %>
+  </label>
+  <div class="form-group">
+    <%= text_field_tag 'hours_regular', 40, class: 'form-control', size: 3 %>
+    <label><%= t :Regular_hours %></label>
+  </div>
+  <div class="form-group">
+    <%= text_field_tag 'hours_overtime', 0, class: 'form-control', size: 3 %>
+    <label><%= t :Overtime_hours %></label>
+  </div>
+  <div id="translated_save" style="display: none"><%= t :Save %></div>
+  <%= submit_tag t(:No_change), class: 'btn btn-primary', id: 'hours-submit' %>
+</form>

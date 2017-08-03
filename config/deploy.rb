@@ -5,7 +5,7 @@ set :application, "cmbpayroll"
 set :repo_url, "https://github.com/silcam/cmbpayroll.git"
 set :deploy_via, :remote_cache
 
-append :link_files, "config/secrets.yml"
+append :linked_files, "config/secrets.yml"
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

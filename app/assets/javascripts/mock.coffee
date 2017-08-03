@@ -25,3 +25,8 @@ recalculate_hours = () ->
 $(document).on "turbolinks:load", ->
   $('input[data-dow]').change ->
     recalculate_hours()
+
+  $('button#display-report').click (e) ->
+    e.preventDefault()
+    $('div#report-data').html("Lot's of wonderful report data!")
+    $('button#download-report').prop('disabled', false)

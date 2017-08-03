@@ -16,4 +16,8 @@ class MockController < ApplicationController
 
   end
 
+  def reports
+
+  end
+
 end

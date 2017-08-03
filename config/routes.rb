@@ -5,4 +5,5 @@ Rails.application.routes.draw do
   get 'employees', to: 'mock#employees'
   get 'transactions', to: 'mock#transactions'
   get 'hours/edit', to: 'mock#hours_edit'
+  get 'reports', to: 'mock#reports'
 end

@@ -1,0 +1,27 @@
+<form class="form-inline">
+  <div class="form-group">
+    <label><%= t :Report %></label>
+    <%= select_tag 'report',
+                   options_for_select(['DIPES Government', 'DIPES Internal', 'Department Charges', '...']),
+                   class: 'form-control' %>
+  </div>
+  <div class="form-group">
+    <label><%= t :Period %></label>
+    <%= select_tag 'period',
+                   options_for_select(['August 2017', 'July 2017', 'June 2017', 'May 2017']),
+                   class: 'form-control' %>
+  </div>
+  <button class="btn btn-primary" id="display-report">
+    <%= t :Display %>
+  </button>
+  <button class="btn btn-primary" id="download-report" disabled>
+    <%= t :Download %>
+  </button>
+</form>
+
+<hr>
+
+<div id="report-data">
+
+</div>
+

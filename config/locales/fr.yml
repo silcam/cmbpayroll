@@ -3,7 +3,6 @@ fr:
   Payroll: Paie
   Welcome: Bienvenue
   Tasks: Tâches
-  Reports: Rapports
   Events: Événements
   Activity_feed: Flux d'activité
   More_history: Plus
@@ -12,6 +11,8 @@ fr:
   Modify: Modifier
   No_change: Aucun changement
   Save: Enregistrer
+  Display: Montrer
+  Download: Télécharger
   
   #Time and Date
   Date: Date
@@ -21,6 +22,7 @@ fr:
   Hours_for_week: Heures pour la semaine
   Regular_hours: Heures normales
   Overtime_hours: Heures supplémentaires
+  Period: Mois
 
   # Employees
   Employees: Employés
@@ -42,3 +44,7 @@ fr:
   New_loan: Nouveau prêt
   Type: Type
   Detail: Détail
+
+  # Reports
+  Reports: Rapports
+  Report: Rapport

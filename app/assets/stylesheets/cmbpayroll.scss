@@ -1,2 +1,43 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
+
+$sil-blue: rgb(0, 104, 166);
+
+.nav{
+  a{
+    font-size: larger;
+    margin-top: 15px;
+  }
+}
+//div#header {
+//  position: relative;
+//}
+//
+img#site-logo {
+  float: left;
+}
+a#title {
+  font-size: xx-large;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+ul#link-list {
+  li {
+    padding-bottom: 8px;
+    a {
+      font-size: x-large;
+    }
+    a:hover {
+      color: $sil-blue;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  }
+}
+
+ul.feed {
+  li {
+    padding-bottom: 15px;
+  }
+}

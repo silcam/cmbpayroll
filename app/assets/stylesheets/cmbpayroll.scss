@@ -16,10 +16,15 @@ $sil-blue: rgb(0, 104, 166);
 img#site-logo {
   float: left;
 }
-a#title {
+.site-title {
   font-size: xx-large;
   margin-top: 10px;
-  margin-left: 10px;
+  padding-left: 25px;
+}
+
+.site-subtitle {
+  font-size: x-large;
+  margin-top: 12px;
 }
 
 ul#link-list {
@@ -39,5 +44,12 @@ ul#link-list {
 ul.feed {
   li {
     padding-bottom: 15px;
+  }
+}
+
+form#search-form {
+  padding-top: 20px;
+  input[type=text] {
+    width: 300px;
   }
 }

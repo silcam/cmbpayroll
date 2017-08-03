@@ -1,0 +1,29 @@
+<% provide(:title, "Employees") %>
+
+<%= button_to t(:New_employee), 'employees/new', class: 'btn btn-primary' %>
+
+<table class="table" style="margin-top: 15px;">
+  <%
+    employees = [['Luke Skywalker', 'CAM', 'Full-time'],
+                 ['Anakin Skywalker', 'RFIS', 'Part-time'],
+                 ['Han Solo', 'Admin', 'Full-time'],
+                 ['Lando Calrissian', 'Computer Services', 'Temporary'],
+                 ['Obiwan Kenobi', 'Admin', 'Retired']]
+  %>
+  <tr>
+    <th><%= t :Name %></th>
+    <th><%= t :Department %></th>
+    <th><%= t :Status %></th>
+    <th></th>
+  </tr>
+  <% 15.times do %>
+    <% employees.each do |employee| %>
+      <tr>
+        <td><%= link_to employee[0], 'employees/1' %></td>
+        <td><%= employee[1] %></td>
+        <td><%= employee[2] %></td>
+        <td><%= link_to t(:Add_transaction), 'employees/1/transactions/new' %></td>
+      </tr>
+    <% end %>
+  <% end %>
+</table>

@@ -4,4 +4,8 @@ class MockController < ApplicationController
 
   end
 
+  def employees
+    
+  end
+
 end

@@ -3,9 +3,19 @@ en:
   Payroll: Payroll
   Welcome: Welcome
   Tasks: Tasks
-  Employees: Employees
-  Transactions: Transactions
   Reports: Reports
   Events: Events
   Activity_feed: Activity Feed
   More_history: More history
+  Search: Search
+  
+  # Employees
+  Employees: Employees
+  New_employee: New Employee
+  Name: Name
+  Department: Department
+  Status: Status
+
+  # Transactions
+  Transactions: Transactions
+  Add_transaction: Add Transaction

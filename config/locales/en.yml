@@ -15,6 +15,7 @@ en:
 
   # Time and Date
   Date: Date
+  Hours: Hours
   Hours_for: Hours for
   Week_of: Week of
   Hours_for_week: Hours for the week
@@ -33,6 +34,7 @@ en:
   Transactions: Transactions
   Transactions_for: Transactions for
   Add_transaction: Add Transaction
+  Enter_hours: Enter Hours
   Enter_hours_overtime: Enter Hours / Overtime
   Enter_overtime: Enter Overtime
   Enter_vacation: Enter Vacation

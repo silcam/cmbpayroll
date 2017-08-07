@@ -14,6 +14,7 @@ en:
   Display: Display
   Download: Download
   Logout: Logout
+  Not_blank: can't be blank
 
   # Time and Date
   Date: Date

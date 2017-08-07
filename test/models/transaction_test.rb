@@ -1,9 +1,12 @@
 require "test_helper"
 
-describe Transaction do
-  let(:transaction) { Transaction.new }
+class TransactionTest < ActiveSupport::TestCase
+  def setup
+    @lukes_coke = transactions :LukesCoke
+    @luke = employees :Luke
+  end
 
-  it "must be valid" do
-    value(transaction).must_be :valid?
+  test "Relations" do
+    assert_equal @luke, @lukes_coke.employee
   end
 end

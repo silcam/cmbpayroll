@@ -1,0 +1,11 @@
+<%= render 'shared/error_messages', errors: @transaction.errors %>
+
+<h2><%= @employee.full_name %></h2>
+
+<%= form_for @transaction, html: {class: 'auto-width'} do |form| %>
+  <div class='form-group'>
+    <%= form.label :amount, t(:Amount) %>
+    <%= form.text_field :amount, placeholder: 'CFA', class: 'form-control' %>
+  </div>
+  <%= form.submit t(:Save), class: 'btn btn-primary'%>
+<% end %>

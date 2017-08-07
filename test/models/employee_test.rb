@@ -10,10 +10,10 @@ class EmployeeTest < ActiveSupport::TestCase
     model_validation_hack_test Employee, params
   end
 
-  test "relations" do
-    lukes_coke = transactions :LukesCoke
-    assert_includes @luke.transactions, lukes_coke
-  end
+  # test "relations" do
+  #   lukes_coke = transactions :LukesCoke
+  #   assert_includes @luke.transactions, lukes_coke
+  # end
 
   test "Full Name" do
     assert_equal "Luke Skywalker", @luke.full_name

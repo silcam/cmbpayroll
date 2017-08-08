@@ -1,3 +1,3 @@
 class Transaction < ApplicationRecord
-  belongs_to :employee
+  include BelongsToEmployee
 end

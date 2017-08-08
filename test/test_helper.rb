@@ -2,7 +2,7 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 require 'minitest/reporters'
 require 'minitest/rails/capybara'
-require 'employee_service'
+require 'mock_employee_service'
 
 Minitest::Reporters.use!
 
@@ -11,8 +11,8 @@ class ActiveSupport::TestCase
   fixtures :all
 
   def employees(sym)
-    @employees ||= EmployeeService.new
-    @employees.employee(sym)
+    @employee_service ||= Employee.service
+    Employee.new @employee_service.employee(sym)
   end
 
   def model_validation_hack_test(model, params)

@@ -1,3 +1,5 @@
 class Transaction < ApplicationRecord
-  include BelongsToEmployee
+  extend BelongsToJSONBackedModel
+
+  belongs_to_jbm :employee
 end

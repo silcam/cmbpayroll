@@ -7,10 +7,7 @@ class MockEmployeeService
   end
 
   def fetch(id)
-    @records.each_value do |record|
-      return record.to_json if record['id']==id
-    end
-    nil
+    find(id).try(:to_json)
   end
 
   def all
@@ -20,13 +17,13 @@ class MockEmployeeService
   def insert(json)
     new_record = JSON.parse json
     new_record['id'] = assign_next_id
-    @records << new_record
-    true
+    @records[new_record['id']] = new_record
+    new_record['id']
   end
 
   def update(json)
     hash = JSON.parse json
-    record = @records.fetch hash['id']
+    record = find hash['id']
     return insert(json) if record.nil?
     record.merge! hash
   end
@@ -47,6 +44,13 @@ class MockEmployeeService
   end
 
   private
+
+  def find(id)
+    @records.each_value do |record|
+      return record if record['id']==id
+    end
+    nil
+  end
 
   def set_next_id
     @next_id = 1

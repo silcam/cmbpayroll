@@ -10,8 +10,11 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
+  def setup
+    @employee_service = Employee.mock_service
+  end
+
   def employees(sym)
-    @employee_service ||= Employee.service
     Employee.new @employee_service.employee(sym)
   end
 

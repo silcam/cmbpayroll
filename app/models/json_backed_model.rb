@@ -1,11 +1,6 @@
 class JSONBackedModel
   include ActiveModel::Model
 
-  def initialize(params = {})
-    super
-    @id ||= nil
-  end
-
   def attributes
     @@attributes.map{ |attr| [attr, self.send(attr)]}.to_h
   end
@@ -14,6 +9,19 @@ class JSONBackedModel
     hash.each do |key, value|
       send("#{key}=", value)
     end
+  end
+
+  def initialize(params = {})
+    super
+    @id ||= nil
+  end
+
+  def new_record?
+    @id.nil?
+  end
+
+  def persisted?
+    true
   end
 
   def save
@@ -29,25 +37,19 @@ class JSONBackedModel
     not @id.nil? and (@id == other.try(:id))
   end
 
-  def new_record?
-    @id.nil?
-  end
-
-  def persisted?
-    true
+  def self.all
+    service.all.map{ |json| self.from_json(json)}
   end
 
   def self.attributes
     @@attributes.clone
   end
 
-  def self.all
-    service.all.map{ |json| self.from_json(json)}
+  def self.create(params)
+    instance = self.new(params)
+    instance.save
+    instance
   end
-
-  # def self.build(params)
-  #   self.new params
-  # end
 
   def self.find(id)
     json = service.fetch id
@@ -80,15 +82,15 @@ class JSONBackedModel
     end
   end
 
+  def self.mock_service_class
+    # Override me!
+  end
+
   def self.service
     @@service ||=
         Rails.env == 'test' ?
           mock_service_class.new :
           JSONModelService.new
-  end
-
-  def self.mock_service_class
-    # Override me!
   end
 
   # Don't know why I can't use this with has_many

@@ -51,6 +51,17 @@ class JSONBackedModelTest < ActiveSupport::TestCase
     assert_includes Employee.all, @luke
   end
 
+  test "Create Han creates, saves and returns Han" do
+    han = Employee.create(first_name: 'Han', last_name: 'Solo')
+    refute han.new_record?, "Han should no longer be a new record"
+  end
+
+  test "Create Han w/o required params returns unsaved Han" do
+    han = Employee.create(first_name: 'Han') # Will not validate w/o last_name
+    assert_equal 'Han', han.first_name
+    assert han.new_record?, "Han should not be saved"
+  end
+
   test "Find Luke" do
     assert_equal @luke, Employee.find(@luke.id)
   end

@@ -56,6 +56,8 @@ class JSONBackedModel
     instance
   end
 
+  # TODO With Activerecord, find raises an exception if no record is found
+  # Might be worth doing the same thing for consistency
   def self.find(id)
     json = service.fetch id
     return nil if json.nil?

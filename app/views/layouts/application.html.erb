@@ -16,16 +16,18 @@
           <a class="navbar-brand site-title" href="/">CMB <%= t :Payroll %></a>
           <span class="navbar-brand site-subtitle"><%= yield(:title) %></span>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-              <%= link_to "#{t(:Welcome)}, Hilda", '#' %>
-            </li>
-            <li>
-              <%= link_to t(:Logout), '#' %>
-            </li>
-          </ul>
-        </div>
+        <% if logged_in? %>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <%= link_to "#{t(:Welcome)}, #{current_user.first_name}", '#' %>
+              </li>
+              <li>
+                <%= link_to t(:Logout), logout_path, method: :delete %>
+              </li>
+            </ul>
+          </div>
+        <% end %>
       </div>
     </nav>
     <div class="container">

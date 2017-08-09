@@ -50,3 +50,9 @@ fr:
   # Reports
   Reports: Rapports
   Report: Rapport
+
+  # Sessions
+  Username: Identifiant
+  Password: Mot de passe
+  Login: Connecter
+  Logout: Déconnexion

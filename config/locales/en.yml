@@ -50,3 +50,9 @@ en:
   # Reports
   Reports: Reports
   Report: Report
+
+  # Sessions
+  Username: Username
+  Password: Password
+  Login: Log in
+  Logout: Log out

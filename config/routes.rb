@@ -8,6 +8,13 @@ Rails.application.routes.draw do
   end
 
   root "mock#home"
+
+  # Session Controller
+  get 'login', to: 'sessions#new'
+  post 'login', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
+
+  # Mock Controller
   get 'mock_employees', to: 'mock#employees'
   get 'transactions', to: 'mock#transactions'
   get 'hours/edit', to: 'mock#hours_edit'

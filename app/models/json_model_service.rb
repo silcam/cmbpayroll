@@ -5,7 +5,8 @@ class JSONModelService
   end
 
   def fetch(id)
-    @employees.each{ |emp| return emp if emp[:id] == id}
+    @employees.each{ |emp| return emp.to_json if emp[:id] == id}
+    nil
   end
 
   def all

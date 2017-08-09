@@ -116,7 +116,7 @@ class JSONBackedModel
   end
 
   def self.from_json(json)
-    self.new(JSON.parse(json))
+   self.new(JSON.parse(json))
   end
 
 end

@@ -1,0 +1,31 @@
+<% provide(:title, "Create a New Employee") %>
+
+<%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary' %>
+
+<br />
+<br />
+<br />
+
+<%= form_for :employee, url: employees_path do |f|  %>
+  <p>
+    <%= f.label :first_name %>
+    <%= f.text_field :first_name %>
+  </p>
+  <p>
+    <%= f.label :last_name %>
+    <%= f.text_field :last_name %>
+  </p>
+  <p>
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.label :title %>
+    <%= f.text_field :title %>
+  </p>
+  <p>
+    <%= f.label :department %>
+    <%= f.text_field :department %>
+  </p>
+  <%= f.submit :Create %>
+<% end %>

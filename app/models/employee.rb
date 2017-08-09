@@ -1,6 +1,6 @@
 class Employee < JSONBackedModel
 
-  define_attributes [:first_name, :last_name]
+  define_attributes [:first_name, :last_name, :title, :name, :department]
 
   has_many :transactions
 
@@ -9,7 +9,7 @@ class Employee < JSONBackedModel
   def full_name
     "#{@first_name} #{@last_name}"
   end
-  
+
   def full_name_rev
     "#{@last_name}, #{@first_name}"
   end
@@ -17,4 +17,5 @@ class Employee < JSONBackedModel
   def self.mock_service_class
     MockEmployeeService
   end
+
 end

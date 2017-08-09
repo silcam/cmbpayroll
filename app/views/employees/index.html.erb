@@ -6,14 +6,14 @@
   <tr>
     <th><%= t :Name %></th>
     <th><%= t :Department %></th>
-    <th><%= t :Status %></th>
+    <th><%= t :Title %></th>
     <th></th>
   </tr>
   <% @employees.each do |employee| %>
     <tr>
-      <td><%= link_to employee.full_name_rev, employee_path(employee) %></td>
-      <td><%= 'Department Name' %></td>
-      <td><%= 'Employee Status' %></td>
+      <td><%= link_to employee.name, employee_path(employee) %></td>
+      <td><%= employee.department %></td>
+      <td><%= employee.title %></td>
       <td><%= link_to t(:Add_transaction), new_employee_transaction_path(employee) %></td>
     </tr>
   <% end %>

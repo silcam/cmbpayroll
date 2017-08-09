@@ -1,9 +1,13 @@
 require "test_helper"
 
-describe Vacation do
-  let(:vacation) { Vacation.new }
+class VacationTest < ActiveSupport::TestCase
+  def setup
+    super
+    @luke = employees :Luke
+  end
 
-  it "must be valid" do
-    value(vacation).must_be :valid?
+  test "Check presence of required attributes (which is all of them)" do
+    params = {employee: @luke, start_date: '2017-08-09', end_date: '2017-08-10'}
+    model_validation_hack_test Vacation, params
   end
 end

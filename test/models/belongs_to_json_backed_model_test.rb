@@ -15,6 +15,13 @@ class BelongsToJSONBackedModelTest < ActiveSupport::TestCase
     assert_equal @luke, @lukes_coke.employee
   end
 
+  test "Change Owner" do
+    chewie = employees :Chewie
+    assert_equal @luke, @lukes_coke.employee  # Part of the importance of this line is making sure a new set overrides the cached employee
+    @lukes_coke.employee = chewie
+    assert_equal chewie, @lukes_coke.employee
+  end
+
   test "Set Owner" do
     lukes_beer = Transaction.new(amount: 700)
     lukes_beer.employee = @luke

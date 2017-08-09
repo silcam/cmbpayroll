@@ -1,5 +1,5 @@
 class Vacation < ApplicationRecord
-  includes BelongsToJSONBackedModel
+  extend BelongsToJSONBackedModel
 
   belongs_to_jbm :employee
 
@@ -12,10 +12,12 @@ class Vacation < ApplicationRecord
   private
 
   def end_date_after_start
+    return if end_date.blank? or start_date.blank?
     errors.add(:end_date, 'after_start_date') if end_date < start_date
   end
 
   def doesnt_overlap_existing
+    return if employee.nil? or start_date.blank? or end_date.blank?
     existing = employee.vacations
     unless existing.where(start_date: (start_date .. end_date)).empty? and
         existing.where(end_date: (start_date .. end_date)).empty?

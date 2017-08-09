@@ -5,10 +5,12 @@ module BelongsToJSONBackedModel
     field = "#{symbol}_id"
 
     define_method symbol do
-      model.find(send(field))
+      instance_variable_get("@#{symbol}") ||
+      instance_variable_set("@#{symbol}", model.find(send(field)))
     end
 
     define_method :"#{symbol}=" do |owner|
+      instance_variable_set("@#{symbol}", owner)
       send(:"#{field}=", owner.id)
     end
   end

@@ -3,6 +3,8 @@ class Employee < JSONBackedModel
   define_attributes [:first_name, :last_name]
 
   has_many :transactions
+  has_many :work_hours
+  has_many :vacations
 
   validates :first_name, :last_name, presence: {message: I18n.t(:Not_blank)}
 

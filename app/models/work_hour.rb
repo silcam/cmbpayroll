@@ -1,5 +1,5 @@
 class WorkHour < ApplicationRecord
-  include BelongsToJSONBackedModel
+  extend BelongsToJSONBackedModel
 
   belongs_to_jbm :employee
 
@@ -11,7 +11,7 @@ class WorkHour < ApplicationRecord
   private
 
   def not_during_vacation
-    unless employee.vacations.
+    unless employee and employee.vacations.
         where("start_date <= :date AND end_date >= :date", {date: date}).
         empty?
       errors.add(:date, 'not_during_vacation')

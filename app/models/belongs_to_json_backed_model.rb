@@ -23,3 +23,26 @@ module BelongsToJSONBackedModel
   # end
 
 end
+
+class BelongsToJBMValidator < ActiveModel::Validator
+  def validate(record)
+    unless class_name.find record.send(field_name)
+      record.errors[field_name] << 'must_exist'
+    end
+  end
+
+  protected
+  def class_name
+    # Override!
+  end
+
+  def field_name
+    class_name.to_s.underscore + '_id'
+  end
+end
+
+class BelongsToEmployeeValidator < BelongsToJBMValidator
+  def class_name
+    Employee
+  end
+end

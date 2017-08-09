@@ -15,6 +15,7 @@ en:
   Download: Download
   Logout: Logout
   Not_blank: can't be blank
+  must_exist: must exist
 
   # Time and Date
   Date: Date
@@ -37,15 +38,24 @@ en:
   # Transactions
   Transactions: Transactions
   Transactions_for: Transactions for
+  Charges: Charges
   Add_transaction: Add Transaction
-  Enter_hours: Enter Hours
-  Enter_hours_overtime: Enter Hours / Overtime
-  Enter_overtime: Enter Overtime
-  Enter_vacation: Enter Vacation
   Enter_charges: Enter Charges
   New_loan: New Loan
   Type: Type
   Detail: Detail
+
+  # WorkHours
+  Enter_hours: Enter Hours
+  Enter_hours_overtime: Enter Hours / Overtime
+  Enter_overtime: Enter Overtime
+  after_start_date: must be after start_date
+  not_during_vacation: can't be during vacation
+
+  # Vacations
+  Enter_vacation: Enter Vacation
+  Vacation: Vacation
+  Vacation_overlaps: This vacation overlaps existing vacation
 
   # Reports
   Reports: Reports

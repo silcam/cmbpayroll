@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
   # Mock Controller
   get 'mock_employees', to: 'mock#employees'
+  get 'mock_vacation', to: 'mock#vacation'
   get 'transactions', to: 'mock#transactions'
   get 'hours/edit', to: 'mock#hours_edit'
   get 'reports', to: 'mock#reports'

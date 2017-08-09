@@ -15,6 +15,7 @@ fr:
   Download: Télécharger
   Logout: Déconnexion
   Not_blank: ne peut pas être vide
+  must_exist: doit exister
   
   #Time and Date
   Date: Date
@@ -37,15 +38,24 @@ fr:
   # Transactions
   Transactions: Transactions
   Transactions_for: Transactions pour
+  Charges: Charges
   Add_transaction: Ajouter une transaction
-  Enter_hours: Saisir heures
-  Enter_hours_overtime: Saisir heures (supplémentaires)
-  Enter_overtime: Saisir surtravail
-  Enter_vacation: Saisir vacances
   Enter_charges: Saisir charges
   New_loan: Nouveau prêt
   Type: Type
   Detail: Détail
+
+  # WorkHours
+  Enter_hours: Saisir heures
+  Enter_hours_overtime: Saisir heures (supplémentaires)
+  Enter_overtime: Saisir surtravail
+  after_start_date: doit être après le date de commencement
+  not_during_vacation: ne peut pas coïncider avec des vacances
+
+  # Vacations
+  Vacation: Vacances
+  Enter_vacation: Saisir vacances
+  Vacation_overlaps: Ces vacances coïncident avec des vacances existants déjà 
 
   # Reports
   Reports: Rapports

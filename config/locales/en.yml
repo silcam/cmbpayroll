@@ -56,3 +56,4 @@ en:
   Password: Password
   Login: Log in
   Logout: Log out
+  Failed_login: Sorry, the username or password is incorrect.

@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
   def create
     # Find user based on login params
     user = Employee.find(1)
-    if true # TODO Check password
+    if user # TODO Check password
       log_in user
       send_to_correct_page
     else

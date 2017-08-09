@@ -1,9 +1,11 @@
-<% if errors.any? %>
-  <div id="error-explanation">
+<div id="error-explanation">
+  <% if defined? message %>
+    <p><%= message %></p>
+  <% elsif defined? errors and errors.any? %>
     <ul class="list-unstyled">
       <% errors.full_messages.each do |msg| %>
         <li><%= msg %></li>
       <% end %>
     </ul>
-  </div>
-<% end %>
+  <% end %>
+</div>

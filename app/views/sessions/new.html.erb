@@ -1,3 +1,4 @@
+<%= render 'shared/error_messages', message: t(:Failed_login) if @failed_login %>
 <%= form_tag login_path, class: 'auto-width' do  %>
   <div class="form-group">
     <%= label_tag :username, t(:Username) %>

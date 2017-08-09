@@ -56,3 +56,4 @@ fr:
   Password: Mot de passe
   Login: Connecter
   Logout: Déconnexion
+  Failed_login: Désolé, mais les parametres donnés ne sont pas corrects.

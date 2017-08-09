@@ -42,8 +42,8 @@ class JSONBackedModel
     not @id.nil? and (@id == other.try(:id))
   end
 
-  def self.all
-    service.all.map{ |json| self.from_json(json)}
+  def self.all(options = {})
+    service.all(options).map{ |json| self.from_json(json)}
   end
 
   def self.attributes

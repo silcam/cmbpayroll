@@ -10,8 +10,11 @@ class MockEmployeeService
     find(id).try(:to_json)
   end
 
-  def all
-    @records.values.map{ |record| record.to_json}
+  def all(options = {})
+    records = options[:order].nil? ?
+                  @records.values :
+                  ordered_records(@records.values,options[:order])
+    records.map{ |record| record.to_json}
   end
 
   def insert(json)
@@ -58,6 +61,20 @@ class MockEmployeeService
 
   def find(id)
     @records[find_key(id)]
+  end
+
+  def ordered_records(records, order)
+    records.sort do |a, b|
+      comparison = 0
+      order.each do |rule|
+        field = rule.is_a?(Array) ? rule[0] : rule
+        asc   = rule.is_a?(Array) ? (rule[1] == :asc) : true
+        comparison = a[field.to_s] <=> b[field.to_s]
+        comparison = comparison * -1 unless asc
+        break unless comparison == 0
+      end
+      comparison
+    end
   end
 
   def set_next_id

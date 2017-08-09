@@ -2,3 +2,13 @@ Luke:
   id: 1
   first_name: Luke
   last_name: Skywalker
+
+Anakin:
+  id: 2
+  first_name: Anakin
+  last_name: Skywalker
+
+Chewie:
+  id: 3
+  first_name: Chewbacca
+  last_name: Wookie

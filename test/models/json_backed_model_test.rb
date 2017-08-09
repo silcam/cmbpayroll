@@ -10,7 +10,7 @@ class JSONBackedModelTest < ActiveSupport::TestCase
   end
 
   test "Luke's attributes" do
-    expected = {id: 1, first_name: 'Luke', last_name: 'Skywalker'}
+    expected = {id: 1, first_name: 'Luke', last_name: 'Skywalker', title: nil, department:nil, name: nil}
     assert_equal expected, @luke.attributes
   end
 
@@ -26,7 +26,7 @@ class JSONBackedModelTest < ActiveSupport::TestCase
   end
 
   test "Destroying nonexistant employee returns nil" do
-    refute_nil@luke.destroy
+    refute_nil @luke.destroy
     assert_nil @luke.destroy
   end
 
@@ -38,14 +38,17 @@ class JSONBackedModelTest < ActiveSupport::TestCase
   end
 
   test "Save a new employee" do
-    han = Employee.new(first_name: 'Han', last_name: 'Solo')
+    han = Employee.new(first_name: 'Han', last_name: 'Solo', title: nil, department: nil, name: nil)
     han.save
     refute_nil han.id
+
+    assert Employee.service.is_a? MockEmployeeService
+
     assert_includes Employee.all, han
   end
 
   test "New Record" do
-    han = Employee.new(first_name: 'Han', last_name: 'Solo')
+    han = Employee.new(first_name: 'Han', last_name: 'Solo', title: nil, department: nil, name: nil)
     assert han.new_record?, "Han should be a new record"
     refute @luke.new_record?, "Luke should not be a new record"
     han.save
@@ -53,7 +56,7 @@ class JSONBackedModelTest < ActiveSupport::TestCase
   end
 
   test "Employee Attributes" do
-    expected = [:id, :first_name, :last_name]
+    expected = [:id, :first_name, :last_name, :title, :name, :department]
     assert_equal expected, Employee.attributes
   end
 

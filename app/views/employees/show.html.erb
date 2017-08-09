@@ -1,0 +1,9 @@
+<% provide(:title, "Employees") %>
+
+<%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary' %>
+
+<br />
+<br />
+
+This is for a specific employee:<br />
+<%= debug @employee %>

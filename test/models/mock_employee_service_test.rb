@@ -19,7 +19,9 @@ class MockEmployeeServiceTest < ActiveSupport::TestCase
   end
 
   def order_test(order, expected)
+
     result = Employee.all(order: order)
+
     expected.each_index do |i|
       next if i == 0
       assert result.index(expected[i]) > result.index(expected[i-1]),

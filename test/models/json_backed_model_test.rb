@@ -20,6 +20,16 @@ class JSONBackedModelTest < ActiveSupport::TestCase
     assert_equal 'Ruth', @luke.last_name
   end
 
+  test "Destroy Luke removes him from db" do
+    @luke.destroy
+    refute_includes Employee.all, @luke
+  end
+
+  test "Destroying nonexistant employee returns nil" do
+    refute_nil@luke.destroy
+    assert_nil @luke.destroy
+  end
+
   test "Save Luke" do
     @luke.first_name = 'Gary'
     @luke.save

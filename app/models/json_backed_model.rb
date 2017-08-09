@@ -11,6 +11,11 @@ class JSONBackedModel
     end
   end
 
+  def destroy
+    return if new_record?
+    service.destroy(@id)
+  end
+
   def initialize(params = {})
     super
     @id ||= nil
@@ -27,9 +32,9 @@ class JSONBackedModel
   def save
     return false unless valid?
     if new_record?
-      @id = Employee.service.insert(to_json)
+      @id = service.insert(to_json)
     else
-      Employee.service.update(to_json)
+      service.update(to_json)
     end
   end
 
@@ -64,6 +69,10 @@ class JSONBackedModel
   end
 
   protected # ====================================
+
+  def service
+    self.class.service
+  end
 
   def self.define_attributes(attributes)
     @@attributes ||= [:id]

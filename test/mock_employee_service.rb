@@ -28,6 +28,10 @@ class MockEmployeeService
     record.merge! hash
   end
 
+  def destroy(id)
+    @records.delete(find_key(id))
+  end
+
   # def find_all(params)
   #   found = @records.select do |key, record|
   #     match = true
@@ -45,11 +49,15 @@ class MockEmployeeService
 
   private
 
-  def find(id)
-    @records.each_value do |record|
-      return record if record['id']==id
+  def find_key(id)
+    @records.each do |key, record|
+      return key if record['id']==id
     end
     nil
+  end
+
+  def find(id)
+    @records[find_key(id)]
   end
 
   def set_next_id

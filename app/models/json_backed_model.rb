@@ -55,10 +55,9 @@ class JSONBackedModel
     self.from_json json
   end
 
-  # TODO more abstraction needed here?
   def self.mock_service
     if Rails.env == 'test'
-      @@service = MockEmployeeService.new
+      @@service = mock_service_class.new
     end
   end
 
@@ -82,11 +81,14 @@ class JSONBackedModel
   end
 
   def self.service
-    return @@service if defined? @@service
     @@service ||=
         Rails.env == 'test' ?
-          MockEmployeeService.new :
+          mock_service_class.new :
           JSONModelService.new
+  end
+
+  def self.mock_service_class
+    # Override me!
   end
 
   # Don't know why I can't use this with has_many

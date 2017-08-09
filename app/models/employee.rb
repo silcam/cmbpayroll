@@ -13,4 +13,8 @@ class Employee < JSONBackedModel
   def full_name_rev
     "#{@last_name}, #{@first_name}"
   end
+
+  def self.mock_service_class
+    MockEmployeeService
+  end
 end

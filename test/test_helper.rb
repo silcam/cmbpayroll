@@ -15,6 +15,7 @@ class ActiveSupport::TestCase
   end
 
   def employees(sym)
+    raise "You forgot to call super in setup()" if @employee_service.nil?
     Employee.new @employee_service.employee(sym)
   end
 

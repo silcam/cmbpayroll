@@ -9,8 +9,8 @@ class JSONModelService
     nil
   end
 
-  def all
-    @employees
+  def all(options={})
+    @employees.map{ |emp| emp.to_json}
   end
 
 end

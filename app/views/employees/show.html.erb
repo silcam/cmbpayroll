@@ -5,5 +5,32 @@
 <br />
 <br />
 
-This is for a specific employee:<br />
+<%= link_to '<< Return to Index', controller: 'employees', action: 'index' %>
+
+<h2>Employee Information for <%= @employee.name %></h2>
+
+
+<table class="table table-striped">
+  <thead class="thead-default">
+    <th>Key</th>
+    <th>Value</th>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">Name:</th>
+      <td><%= @employee.name %></td>
+    </tr>
+    <tr>
+      <th scope="row">Title:</th>
+      <td><%= @employee.title %></td>
+    </tr>
+    <tr>
+      <th scope="row">Department:</th>
+      <td><%= @employee.department %></td>
+    </tr>
+  </tbody>
+</table>
+
+<br />
+Full object information:<br />
 <%= debug @employee %>

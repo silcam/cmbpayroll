@@ -16,6 +16,7 @@ module Cmbpayroll
     # -- all .rb files in that directory are automatically loaded.
 
     config.logger = ActiveSupport::Logger.new(STDOUT)
+    config.log_level = :debug
   end
 end
 

@@ -48,6 +48,7 @@ group :development, :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'minitest-rails-capybara'
   gem 'selenium-webdriver'
+  gem 'minitest-reporters'
   # Checks for security holes in the code
   gem 'brakeman', require: false
 end

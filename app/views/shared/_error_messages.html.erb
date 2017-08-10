@@ -1,0 +1,9 @@
+<% if errors.any? %>
+  <div id="error-explanation">
+    <ul class="list-unstyled">
+      <% errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

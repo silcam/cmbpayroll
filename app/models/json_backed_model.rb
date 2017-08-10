@@ -60,7 +60,7 @@ class JSONBackedModel
   # Might be worth doing the same thing for consistency
   def self.find(id)
     Rails.logger.debug "Model: attempt to find #{id}"
-    json = service.fetch id
+    json = service.fetch id.to_i
 
     # TODO, FIXME
     if (json.nil? and id == 1)

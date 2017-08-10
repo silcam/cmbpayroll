@@ -18,7 +18,7 @@ class EmployeesController < ApplicationController
   end
 
   def show
-    @employee = Employee.new
+    @employee = Employee.find(params[:id])
   end
 
   private

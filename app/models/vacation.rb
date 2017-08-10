@@ -19,8 +19,8 @@ class Vacation < ApplicationRecord
   def doesnt_overlap_existing
     return if employee.nil? or start_date.blank? or end_date.blank?
     existing = employee.vacations
-    unless existing.where(start_date: (start_date .. end_date)).empty? and
-        existing.where(end_date: (start_date .. end_date)).empty?
+    unless existing.where("start_date <= :date AND end_date >= :date", {date: start_date}).empty? and
+        existing.where("start_date <= :date AND end_date >= :date", {date: end_date}).empty?
       errors.add(:base, 'Vacation_overlaps')
     end
   end

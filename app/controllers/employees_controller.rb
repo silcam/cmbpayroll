@@ -5,15 +5,15 @@ class EmployeesController < ApplicationController
   end
 
   def new
+    @employee = Employee.new
   end
 
   def create
     @employee = Employee.new(employee_params)
-    result = @employee.save
-    if (result)
-       # success
+    if @employee.save
+      redirect_to employees_path
     else
-       # failure
+      render :new
     end
   end
 

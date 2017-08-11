@@ -3,7 +3,6 @@ require "test_helper"
 class EmployeeTest < ActiveSupport::TestCase
 
   def setup
-    super
     @luke = employees :Luke
   end
 

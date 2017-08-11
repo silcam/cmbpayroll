@@ -11,9 +11,9 @@
   </tr>
   <% @employees.each do |employee| %>
     <tr>
-      <td><%= link_to employee.name, employee_path(employee) %></td>
-      <td><%= employee.department %></td>
-      <td><%= employee.title %></td>
+      <td><%= link_to employee.full_name, employee_path(employee) %></td>
+      <td>Department</td>
+      <td>Title</td>
       <td><%= link_to t(:Add_transaction), new_employee_transaction_path(employee) %></td>
     </tr>
   <% end %>

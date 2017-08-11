@@ -2,7 +2,6 @@ require "test_helper"
 
 class TransactionTest < ActiveSupport::TestCase
   def setup
-    super
     @lukes_coke = transactions :LukesCoke
     @luke = employees :Luke
   end

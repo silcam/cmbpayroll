@@ -30,6 +30,15 @@ class Vacation < ApplicationRecord
     employee.work_hours.where('hours > 0 AND date BETWEEN ? AND ?', start_date, end_date)
   end
 
+  def destroy
+    super if destroyable?
+  end
+
+  def destroyable?
+    # TODO Revisit this rule
+    end_date > current_period_start
+  end
+
   def self.period_vacations
     Vacation.where(overlap_clause(current_period_start, current_period_end))
   end
@@ -46,14 +55,15 @@ class Vacation < ApplicationRecord
 
   def end_date_after_start
     return if end_date.blank? or start_date.blank?
-    errors.add(:end_date, 'after_start_date') if end_date < start_date
+    errors.add(:end_date, I18n.t(:after_start_date)) if end_date < start_date
   end
 
   def doesnt_overlap_existing
     return if employee.nil? or start_date.blank? or end_date.blank?
     existing = employee.vacations
+    existing = existing.where('id != ?', id) if id
     unless existing.where(overlap_clause).empty?
-      errors.add(:base, 'Vacation_overlaps')
+      errors.add(:base, I18n.t(:Vacation_overlaps))
     end
   end
 

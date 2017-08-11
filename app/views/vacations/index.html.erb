@@ -1,6 +1,6 @@
 <%= link_to t(:Enter_vacation), new_vacation_path, class: 'btn btn-primary' %>
 
-<% unless false #@period_vacations.empty? %>
+<% unless @period_vacations.empty? %>
   <h3><%= t(:Vacation_for) %> <%= current_period_name %></h3>
   <%= render 'vacation_table', vacations: @period_vacations %>
 <% end %>

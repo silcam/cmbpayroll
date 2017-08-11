@@ -12,4 +12,8 @@ module ApplicationHelper
   def current_period_end
     current_period_start.next_month - 1
   end
+
+  def assemble_date(hash, prefix)
+    [1, 2, 3].map{ |n| hash["#{prefix}(#{n}i)"]}.join '-'
+  end
 end

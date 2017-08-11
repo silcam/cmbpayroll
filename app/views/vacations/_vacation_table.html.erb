@@ -3,14 +3,15 @@
     <th><%= t :Employee %></th>
     <th><%= t :Start_date %></th>
     <th><%= t :End_date %></th>
-    <th></th>
+    <th colspan="2"></th>
   </tr>
   <% vacations.each do |vacation| %>
       <tr>
         <td><%= vacation.employee.full_name %></td>
         <td><%= vacation.start_date_str %></td>
         <td><%= vacation.end_date_str %></td>
-        <td><%= link_to t(:Edit), edit_vacation_path(vacation) %></td>
+        <td><%= link_to t(:Edit), edit_vacation_path(vacation, referred_by: request.path) %></td>
+        <td><%= link_to t(:Delete),  vacation_path(vacation, referred_by: request.path), method: :delete %></td>
       </tr>
   <% end %>
 </table>

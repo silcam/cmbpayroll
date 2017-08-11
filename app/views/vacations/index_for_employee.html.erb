@@ -1,0 +1,7 @@
+<%= link_to "<<#{@employee.full_name}", employee_path(@employee) %>
+
+<h2><%= t :Vacation_for %> <%= @employee.full_name %></h2>
+
+<%= link_to t(:Enter_vacation), new_employee_vacation_path(@employee, referred_by: request.path), class: 'btn btn-primary', style: 'margin-bottom: 10px;' %>
+
+<%= render 'vacation_table', vacations: @employee.vacations.reverse_order %>

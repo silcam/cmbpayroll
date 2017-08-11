@@ -3,12 +3,12 @@ Rails.application.routes.draw do
 
   root "home#home"
 
-  resources :vacations
+  resources :vacations, except: :show
   shallow do
     resources :employees do
       resources :transactions
       resources :work_hours
-      resources :vacations
+      resources :vacations, except: :show
     end
   end
 

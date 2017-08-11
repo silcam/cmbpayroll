@@ -12,7 +12,7 @@ class WorkHour < ApplicationRecord
     unless employee and employee.vacations.
         where("start_date <= :date AND end_date >= :date", {date: date}).
         empty?
-      errors.add(:date, 'not_during_vacation')
+      errors.add(:date, I18n.t(:not_during_vacation))
     end
   end
 end

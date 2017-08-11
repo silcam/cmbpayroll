@@ -17,6 +17,11 @@ class VacationTest < ActiveSupport::TestCase
     refute Vacation.new(params).valid?
   end
 
+  test "Start date not valid" do
+    params = some_valid_params start_date: '2017-02-31'
+    refute Vacation.new(params).valid?
+  end
+
   test "End date not a date" do
     params = some_valid_params end_date: 'abc'
     refute Vacation.new(params).valid?
@@ -42,6 +47,10 @@ class VacationTest < ActiveSupport::TestCase
     invalids.each do |params|
       refute Vacation.new(params).valid?, "Vacation from #{params[:start_date]} to #{params[:end_date]} overlaps"
     end
+  end
+
+  test "Vacation can obviously overlap itself" do
+    assert @lukes_vacation.update end_date: '2017-07-30'
   end
 
   test "Formatted date strings" do

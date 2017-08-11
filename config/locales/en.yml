@@ -12,6 +12,7 @@ en:
   No_change: No Change
   Edit: Edit
   Save: Save
+  Delete: Delete
   Display: Display
   Download: Download
   Logout: Logout
@@ -53,7 +54,7 @@ en:
   Enter_hours: Enter Hours
   Enter_hours_overtime: Enter Hours / Overtime
   Enter_overtime: Enter Overtime
-  after_start_date: must be after start_date
+  after_start_date: must be after start date
   not_during_vacation: can't be during vacation
 
   # Vacations

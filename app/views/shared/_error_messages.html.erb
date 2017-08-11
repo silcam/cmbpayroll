@@ -4,7 +4,7 @@
   <% elsif defined? errors and errors.any? %>
     <ul class="list-unstyled">
       <% errors.full_messages.each do |msg| %>
-        <li><%= t(msg) %></li>
+        <li><%= msg %></li>
       <% end %>
     </ul>
   <% end %>

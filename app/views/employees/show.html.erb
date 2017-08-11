@@ -8,6 +8,24 @@
 
 <%= link_to '<< Return to Index', controller: 'employees', action: 'index' %>
 
+<ul class="list-inline" style="margin-top: 15px;">
+  <li>
+    <label><%= :Vacation %>:</label>
+    <%= link_to t(:View), employee_vacations_path(@employee) %> |
+    <%= link_to t(:Add), new_employee_vacation_path(@employee, referred_by: employee_vacations_path(@employee)) %>
+  </li>
+  <li>
+    <label><%= :Charges %>:</label>
+    <%= link_to t(:View), 'employee_charges_path(@employee)' %> |
+    <%= link_to t(:Add), 'new_employee_charge_path(@employee, referred_by: request.path)' %>
+  </li>
+  <li>
+    <label><%= :Hours %>:</label>
+    <%= link_to t(:View), employee_work_hours_path(@employee) %> |
+    <%= link_to t(:Add), new_employee_work_hour_path(@employee, referred_by: request.path) %>
+  </li>
+</ul>
+
 <h2>Employee Information for <%= @employee.full_name %></h2>
 
 

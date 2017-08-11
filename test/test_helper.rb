@@ -2,22 +2,12 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 require 'minitest/reporters'
 require 'minitest/rails/capybara'
-require 'mock_employee_service'
 
 Minitest::Reporters.use!
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
-
-  def setup
-    @employee_service = Employee.mock_service
-  end
-
-  def employees(sym)
-    raise "You forgot to call super in setup()" if @employee_service.nil?
-    Employee.new @employee_service.employee(sym)
-  end
 
   def model_validation_hack_test(model, params)
     params.each_key do |param|

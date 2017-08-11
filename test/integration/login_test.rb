@@ -2,7 +2,6 @@ require 'test_helper'
 
 class LoginTest < Capybara::Rails::TestCase
   def setup
-    super
     @luke = employees :Luke
   end
 

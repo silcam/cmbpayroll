@@ -4,4 +4,8 @@ class EmployeesController < ApplicationController
     @employees = Employee.all
   end
 
+  def show
+    
+  end
+
 end

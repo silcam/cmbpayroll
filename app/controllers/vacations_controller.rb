@@ -19,9 +19,7 @@ class VacationsController < ApplicationController
     if !params[:confirm_delete_work_hours] and @vacation.overlaps_work_hours?
       render 'overlap_alert'
     elsif @vacation.save
-      redirect_to params[:employee_id] ?
-                      employee_vacations_path(@vacation.employee) :
-                      vacations_path
+      follow_redirect vacations_path
     else
       render :new
     end

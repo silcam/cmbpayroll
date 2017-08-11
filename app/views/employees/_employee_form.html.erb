@@ -10,4 +10,7 @@
       <%= f.text_field :last_name, class: 'form-control' %>
     </div>
     <%= f.submit t(:Save), class: 'btn btn-primary' %>
+    <% if params[:action] == "edit" %>
+    <%= link_to 'Cancel edit', @employee, :class => 'btn btn-link' %> 
+    <% end %>
 <% end %>

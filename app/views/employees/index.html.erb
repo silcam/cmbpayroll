@@ -5,15 +5,11 @@
 <table class="table" style="margin-top: 15px;">
   <tr>
     <th><%= t :Name %></th>
-    <th><%= t :Department %></th>
-    <th><%= t :Title %></th>
-    <th></th>
+    <th>Actions</th>
   </tr>
   <% @employees.each do |employee| %>
     <tr>
       <td><%= link_to employee.full_name, employee_path(employee) %></td>
-      <td>Department</td>
-      <td>Title</td>
       <td><%= link_to t(:Add_transaction), new_employee_transaction_path(employee) %></td>
     </tr>
   <% end %>

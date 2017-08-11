@@ -7,7 +7,7 @@
 
 <%= link_to '<< Return to Index', controller: 'employees', action: 'index' %>
 
-<h2>Employee Information for <%= @employee.name %></h2>
+<h2>Employee Information for <%= @employee.full_name %></h2>
 
 
 <table class="table table-striped">
@@ -17,20 +17,22 @@
   </thead>
   <tbody>
     <tr>
-      <th scope="row">Name:</th>
-      <td><%= @employee.name %></td>
+      <th scope="row">First Name:</th>
+      <td><%= @employee.first_name %></td>
     </tr>
     <tr>
-      <th scope="row">Title:</th>
-      <td><%= @employee.title %></td>
-    </tr>
-    <tr>
-      <th scope="row">Department:</th>
-      <td><%= @employee.department %></td>
+      <th scope="row">Last Name:</th>
+      <td><%= @employee.last_name %></td>
     </tr>
   </tbody>
 </table>
 
+
+<%= link_to "Edit", {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary' %> &nbsp;
+<%= link_to "Delete", employee_path(@employee), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+
+<br />
+<br />
 <br />
 Full object information:<br />
 <%= debug @employee %>

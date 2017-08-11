@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170811130428) do
+ActiveRecord::Schema.define(version: 20170811150407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,20 @@ ActiveRecord::Schema.define(version: 20170811130428) do
     t.string "last_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "title"
+    t.string "department"
+    t.datetime "birth_date"
+    t.string "cnps"
+    t.string "dipe"
+    t.datetime "contract_start"
+    t.datetime "contract_end"
+    t.string "category"
+    t.string "echelon"
+    t.string "wage_scale"
+    t.string "wage_period"
+    t.datetime "last_raise_date"
+    t.float "taxable_percentage"
+    t.integer "transportation"
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -28,24 +42,6 @@ ActiveRecord::Schema.define(version: 20170811130428) do
     t.datetime "updated_at", null: false
     t.bigint "employee_id"
     t.index ["employee_id"], name: "index_transactions_on_employee_id"
-  end
-
-  create_table "vacations", force: :cascade do |t|
-    t.bigint "employee_id"
-    t.date "start_date"
-    t.date "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["employee_id"], name: "index_vacations_on_employee_id"
-  end
-
-  create_table "work_hours", force: :cascade do |t|
-    t.bigint "employee_id"
-    t.date "date"
-    t.float "hours"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["employee_id"], name: "index_work_hours_on_employee_id"
   end
 
 end

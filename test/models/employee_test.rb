@@ -12,7 +12,13 @@ class EmployeeTest < ActiveSupport::TestCase
   end
 
   test "validations" do
-    params = {first_name: 'Joe', last_name: 'Shmoe'}
+    params = {
+        first_name: 'Joe',
+        last_name: 'Shmoe',
+        title: 'Director',
+        department: 'Computer Services',
+    }
+
     model_validation_hack_test Employee, params
   end
 

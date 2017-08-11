@@ -9,6 +9,62 @@
       <%= f.label :last_name %>
       <%= f.text_field :last_name, class: 'form-control' %>
     </div>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :department %>
+      <%= f.text_field :department, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :cnps %>
+      <%= f.text_field :cnps, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :dipe %>
+      <%= f.text_field :dipe, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :birth_date %>
+      <%= date_select :employee, :birth_date %>
+    </div>
+    <div class="form-group">
+      <%= f.label :contract_start %>
+      <%= date_select :employee, :contract_start %>
+    </div>
+    <div class="form-group">
+      <%= f.label :contract_end %>
+      <%= date_select :employee, :contract_end %>
+    </div>
+    <div class="form-group">
+      <%= f.label :category %>
+      <%= f.text_field :category, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :echelon %>
+      <%= f.text_field :echelon, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :wage_scale %>
+      <%= f.text_field :wage_scale, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :wage_period %>
+      <%= f.text_field :wage_period, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :last_raise_date %>
+      <%= date_select :employee, :last_raise_date %>
+    </div>
+    <div class="form-group">
+      <%= f.label :taxable_percentage %>
+      <%= f.text_field :taxable_percentage, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :transportation %>
+      <%= f.text_field :transportation, class: 'form-control' %>
+    </div>
     <%= f.submit t(:Save), class: 'btn btn-primary' %>
     <% if params[:action] == "edit" %>
     <%= link_to 'Cancel edit', @employee, :class => 'btn btn-link' %> 

@@ -1,10 +1,10 @@
-<div id="error-explanation">
+<div class="error-explanation">
   <% if defined? message %>
     <p><%= message %></p>
   <% elsif defined? errors and errors.any? %>
     <ul class="list-unstyled">
       <% errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
+        <li><%= t(msg) %></li>
       <% end %>
     </ul>
   <% end %>

@@ -1,13 +1,18 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+  root "home#home"
+
+  resources :vacations
   shallow do
     resources :employees do
       resources :transactions
+      resources :work_hours
+      resources :vacations
     end
   end
 
-  root "mock#home"
+
 
   # Session Controller
   get 'login', to: 'sessions#new'
@@ -15,6 +20,7 @@ Rails.application.routes.draw do
   delete 'logout', to: 'sessions#destroy'
 
   # Mock Controller
+  get 'mock', to: "mock#home"
   get 'mock_employees', to: 'mock#employees'
   get 'mock_vacation', to: 'mock#vacation'
   get 'transactions', to: 'mock#transactions'

@@ -16,6 +16,7 @@ fr:
   Logout: Déconnexion
   Not_blank: ne peut pas être vide
   must_exist: doit exister
+  No_go_back: Non, retourner
   
   #Time and Date
   Date: Date
@@ -26,6 +27,8 @@ fr:
   Regular_hours: Heures normales
   Overtime_hours: Heures supplémentaires
   Period: Mois
+  Start_date: Date de commencement
+  End_date: Date de fin
 
   # Employees
   Employees: Employés
@@ -55,7 +58,10 @@ fr:
   # Vacations
   Vacation: Vacances
   Enter_vacation: Saisir vacances
+  Vacation_for: Vacances pour
   Vacation_overlaps: Ces vacances coïncident avec des vacances existants déjà 
+  Overlap_message: Ces vacances coïncident avec des heures de travail déjà saisies. Clicker 'Enregister' supprimera ces heures.
+  Save_vacation_and_delete_work_hours: Enregister vacances et supprimer ces heures
 
   # Reports
   Reports: Rapports

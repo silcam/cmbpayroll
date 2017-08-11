@@ -14,6 +14,8 @@ class WorkHourTest < ActiveSupport::TestCase
     params = some_valid_params
     params[:date] = 'abc'
     refute WorkHour.new(params).save, "Should not save with invalid date"
+    params[:date] = '2017-02-31'
+    refute WorkHour.new(params).save, "Should not save with invalid date"
     params[:date] = ''
     refute WorkHour.new(params).save, "Should not save with blank date"
   end

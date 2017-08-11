@@ -16,6 +16,7 @@ en:
   Logout: Logout
   Not_blank: can't be blank
   must_exist: must exist
+  No_go_back: No, go back
 
   # Time and Date
   Date: Date
@@ -26,6 +27,8 @@ en:
   Regular_hours: Regular Hours
   Overtime_hours: Overtime Hours
   Period: Period
+  Start_date: Start Date
+  End_date: End Date
   
   # Employees
   Employees: Employees
@@ -55,7 +58,10 @@ en:
   # Vacations
   Enter_vacation: Enter Vacation
   Vacation: Vacation
+  Vacation_for: Vacation for
   Vacation_overlaps: This vacation overlaps existing vacation
+  Overlap_message: This vacation overlaps previously entered work hours. Clicking Save will delete these work hours.
+  Save_vacation_and_delete_work_hours: Save Vacation and Delete Hours
 
   # Reports
   Reports: Reports

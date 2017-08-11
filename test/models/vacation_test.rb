@@ -4,6 +4,7 @@ class VacationTest < ActiveSupport::TestCase
   def setup
     super
     @luke = employees :Luke
+    @lukes_vacation = vacations :LukeInKribi
     @lukes_overtime = work_hours :LukesOvertime
   end
 
@@ -37,10 +38,16 @@ class VacationTest < ActiveSupport::TestCase
     invalids = [{employee: @luke, start_date: '2017-06-15', end_date: '2017-07-01'},
                 {employee: @luke, start_date: '2017-07-31', end_date: '2017-07-31'},
                 {employee: @luke, start_date: '2017-07-15', end_date: '2017-07-17'},
-                {employee: @luke, start_date: '2017-07-15', end_date: '2017-08-01'}]
+                {employee: @luke, start_date: '2017-07-15', end_date: '2017-08-01'},
+                {employee: @luke, start_date: '2017-06-30', end_date: '2017-08-01'}]
     invalids.each do |params|
       refute Vacation.new(params).valid?, "Vacation from #{params[:start_date]} to #{params[:end_date]} overlaps"
     end
+  end
+
+  test "Formatted date strings" do
+    assert_equal "1 Jul 2017", @lukes_vacation.start_date_str
+    assert_equal "31 Jul 2017", @lukes_vacation.end_date_str
   end
 
   test "No Overlapped Work Hours" do

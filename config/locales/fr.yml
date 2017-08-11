@@ -10,6 +10,7 @@ fr:
   View: Voir
   Modify: Modifier
   No_change: Aucun changement
+  Edit: Éditer
   Save: Enregistrer
   Display: Montrer
   Download: Télécharger
@@ -62,6 +63,7 @@ fr:
   Vacation_overlaps: Ces vacances coïncident avec des vacances existants déjà 
   Overlap_message: Ces vacances coïncident avec des heures de travail déjà saisies. Clicker 'Enregister' supprimera ces heures.
   Save_vacation_and_delete_work_hours: Enregister vacances et supprimer ces heures
+  Other_upcoming_vacation: Autres vacances futures
 
   # Reports
   Reports: Rapports

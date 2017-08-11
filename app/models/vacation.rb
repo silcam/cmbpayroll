@@ -1,11 +1,9 @@
 include ApplicationHelper
 
 class Vacation < ApplicationRecord
-  extend BelongsToJSONBackedModel
 
-  belongs_to_jbm :employee
+  belongs_to :employee
 
-  validates_with BelongsToEmployeeValidator
   validates :start_date, presence: true
   validates :end_date, presence: true
   validate :end_date_after_start

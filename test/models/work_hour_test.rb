@@ -2,7 +2,6 @@ require "test_helper"
 
 class WorkHourTest < ActiveSupport::TestCase
   def setup
-    super
     @luke = employees :Luke
   end
 

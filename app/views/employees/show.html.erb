@@ -1,4 +1,4 @@
-<%= link_to t(:Enter_vacation), new_vacation_path(referred_by: request.path), class: 'btn btn-primary' %>
+<%= link_to t(:Enter_vacation), new_employee_vacation_path(@employee, referred_by: request.path), class: 'btn btn-primary' %>
 <% provide(:title, "Employees") %>
 
 <%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary' %>
@@ -8,7 +8,7 @@
 
 <%= link_to '<< Return to Index', controller: 'employees', action: 'index' %>
 
-<h2>Employee Information for <%= @employee.name %></h2>
+<h2>Employee Information for <%= @employee.full_name %></h2>
 
 
 <table class="table table-striped">
@@ -19,19 +19,16 @@
   <tbody>
     <tr>
       <th scope="row">Name:</th>
-      <td><%= @employee.name %></td>
+      <td><%= @employee.full_name %></td>
     </tr>
     <tr>
       <th scope="row">Title:</th>
-      <td><%= @employee.title %></td>
+      <td>Title</td>
     </tr>
     <tr>
       <th scope="row">Department:</th>
-      <td><%= @employee.department %></td>
+      <td>Department</td>
     </tr>
   </tbody>
 </table>
 
-<br />
-Full object information:<br />
-<%= debug @employee %>

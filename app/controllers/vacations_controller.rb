@@ -34,7 +34,7 @@ class VacationsController < ApplicationController
   end
 
   def set_employee
-    @employee = params[:employee_id] if params[:employee_id]
+    @employee = Employee.find(params[:employee_id]) if params[:employee_id]
   end
 
 end

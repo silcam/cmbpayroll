@@ -1,9 +1,7 @@
 class WorkHour < ApplicationRecord
-  extend BelongsToJSONBackedModel
 
-  belongs_to_jbm :employee
+  belongs_to :employee
 
-  validates_with BelongsToEmployeeValidator
   validates :date, presence: true
   validates :hours, numericality: true
   validate :not_during_vacation

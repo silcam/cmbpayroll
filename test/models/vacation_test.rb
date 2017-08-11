@@ -2,7 +2,6 @@ require "test_helper"
 
 class VacationTest < ActiveSupport::TestCase
   def setup
-    super
     @luke = employees :Luke
     @lukes_vacation = vacations :LukeInKribi
     @lukes_overtime = work_hours :LukesOvertime

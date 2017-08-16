@@ -12,16 +12,5 @@ class AddMoreToEmployeeTable < ActiveRecord::Migration[5.1]
     add_column :employees, :last_raise_date, :datetime
     add_column :employees, :taxable_percentage, :float
     add_column :employees, :transportation, :integer
-
-    # TODO:
-    # supervisor (another employee?)
-    # children (one to many)
-    # primes/bonuses (??)
-
-    # employement status :enum
-    # gender :enum
-    # marital_status :enum
-    # hours_day :enum
-    # days_week :enum
   end
 end

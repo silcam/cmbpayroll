@@ -57,6 +57,11 @@ class EmployeesController < ApplicationController
             :last_raise_date,
             :taxable_percentage,
             :transportation,
+            :hours_day,
+            :days_week,
+            :employment_status,
+            :gender,
+            :marital_status
         )
     end
 

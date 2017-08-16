@@ -65,6 +65,28 @@
       <%= f.label :transportation %>
       <%= f.text_field :transportation, class: 'form-control' %>
     </div>
+    <div class="form-group">
+      <%= f.label :hours_day %>
+      <%= f.text_field :hours_day, class: 'form-control' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :employment_status %>
+      <%= f.select :employment_status, Employee.employment_statuses.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :gender %>
+      <%= f.select :gender, Employee.genders.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :marital_status %>
+      <%= f.select :marital_status, Employee.marital_statuses.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :days_week %>
+      <%= f.select :days_week, Employee.days_weeks.keys %>
+
+    <br />
     <%= f.submit t(:Save), class: 'btn btn-primary' %>
     <% if params[:action] == "edit" %>
     <%= link_to 'Cancel edit', @employee, :class => 'btn btn-link' %> 

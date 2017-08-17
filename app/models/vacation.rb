@@ -47,6 +47,8 @@ class Vacation < ApplicationRecord
     Vacation.all.where("start_date > ?", current_period_end)
   end
 
+  def self.missed_days(period=current_period)
+
   private
 
   def datestr(date)

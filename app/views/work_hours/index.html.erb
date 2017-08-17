@@ -1,0 +1,9 @@
+<h2><%= t :Hours_for %> <%= @employee.full_name %></h2>
+<h3>
+  <% hours_worked = WorkHour.total_hours(@employee) %>
+  <%= current_period_name %> :
+  <%= hours_worked[:normal] %>
+  <small><%= t :Regular_hours %></small>
+  <%= hours_worked[:overtime] %>
+  <small><%= t :Overtime_hours %></small>
+</h3>

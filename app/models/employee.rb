@@ -1,3 +1,5 @@
+include ApplicationHelper
+
 class Employee < ApplicationRecord
 
   has_many :transactions
@@ -14,6 +16,11 @@ class Employee < ApplicationRecord
 
   def full_name_rev
     "#{last_name}, #{first_name}"
+  end
+
+  def total_hours
+    hours = WorkHour.total_hours(self)
+
   end
 
 end

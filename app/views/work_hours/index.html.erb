@@ -7,3 +7,13 @@
   <%= hours_worked[:overtime] %>
   <small><%= t :Overtime_hours %></small>
 </h3>
+
+<table class="table">
+  <% @work_hours.reverse_each do |work_hour| %>
+    <tr>
+      <td><%= work_hour.date.strftime "%A" %></td>
+      <td><%= std_datestring work_hour.date %></td>
+      <td><%= work_hour.hours %> <%= t :Hours %></td>
+    </tr>
+  <% end %>
+</table>

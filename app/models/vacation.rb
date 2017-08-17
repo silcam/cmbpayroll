@@ -13,14 +13,6 @@ class Vacation < ApplicationRecord
 
   after_save :remove_overlapped_work_hours
 
-  def start_date_str
-    datestr start_date
-  end
-
-  def end_date_str
-    datestr end_date
-  end
-
   def overlaps_work_hours?
     not overlapped_work_hours.empty?
   end
@@ -65,10 +57,6 @@ class Vacation < ApplicationRecord
   end
 
   private
-
-  def datestr(date)
-    date.strftime("%-d %b %Y")
-  end
 
   def end_date_after_start
     return if end_date.blank? or start_date.blank?

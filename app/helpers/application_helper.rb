@@ -20,6 +20,10 @@ module ApplicationHelper
   def yesterday
     Date.today - 1
   end
+
+  def std_datestring(date)
+    date.strftime("%-d %b %Y")
+  end
   #
   #
   #

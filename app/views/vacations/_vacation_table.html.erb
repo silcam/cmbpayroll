@@ -8,8 +8,8 @@
   <% vacations.each do |vacation| %>
       <tr>
         <td><%= vacation.employee.full_name %></td>
-        <td><%= vacation.start_date_str %></td>
-        <td><%= vacation.end_date_str %></td>
+        <td><%= std_datestring vacation.start_date %></td>
+        <td><%= std_datestring vacation.end_date %></td>
         <td><%= link_to t(:Edit), edit_vacation_path(vacation, referred_by: request.path) %></td>
         <td><%= link_to t(:Delete),  vacation_path(vacation, referred_by: request.path), method: :delete %></td>
       </tr>

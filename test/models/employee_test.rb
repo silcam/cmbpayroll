@@ -6,6 +6,11 @@ class EmployeeTest < ActiveSupport::TestCase
     @luke = employees :Luke
   end
 
+  test "Employee has association" do
+    t = Employee.reflect_on_association(:children).macro == :has_many
+    t = Employee.reflect_on_association(:transactions).macro == :has_many
+  end
+
   test "Associations" do
     lukes_coke = transactions :LukesCoke
     assert_includes @luke.transactions, lukes_coke

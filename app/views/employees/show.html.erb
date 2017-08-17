@@ -1,11 +1,10 @@
 <% provide(:title, "Employees") %>
 
-<%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary' %>
+<p><%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary' %></p>
 
-<br />
-<br />
+<p><%= link_to '<< Return to Index', controller: 'employees', action: 'index' %></p>
 
-<%= link_to '<< Return to Index', controller: 'employees', action: 'index' %>
+<p><%= link_to 'Add Child', new_child_path, class: 'btn btn-primary' %></p>
 
 <h2>Employee Information for <%= @employee.full_name %></h2>
 
@@ -86,23 +85,48 @@
     </tr>
     <tr>
       <th scope="row">Days per Week:</th>
-      <td><%= @employee.days_week.humanize %></td>
+      <td><%= @employee.days_week %></td>
     </tr>
     <tr>
       <th scope="row">Employment Status:</th>
-      <td><%= @employee.employment_status.humanize %></td>
+      <td><%= @employee.employment_status %></td>
     </tr>
     <tr>
       <th scope="row">Gender:</th>
-      <td><%= @employee.gender.humanize %></td>
+      <td><%= @employee.gender %></td>
     </tr>
     <tr>
       <th scope="row">Marital Status:</th>
-      <td><%= @employee.marital_status.humanize %></td>
+      <td><%= @employee.marital_status %></td>
     </tr>
     <tr>
   </tbody>
 </table>
+
+
+<% if (@employee.children.blank?) %>
+<p>
+ <%= t(:no_children) %>
+</p>
+<% else %>
+<table class="table">
+<tr>
+  <th>Child Name</th>
+  <th>Child Birth Date</th>
+  <th>Is Child a Student?</th>
+</tr>
+<% end %>
+<% @employee.children.each do |c| %>
+<tr>
+  <td><%= c.first_name %> <%= c.last_name %></td>
+  <td><%= c.birth_date %></td>
+  <td><%= c.is_student %></td>
+</tr>
+<% end %>
+<% unless (@employee.children.blank?) %>
+</table>
+<% end %>
+
 
 
 <%= link_to "Edit", {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary' %> &nbsp;
@@ -111,5 +135,3 @@
 <br />
 <br />
 <br />
-Full object information:<br />
-<%= debug @employee %>

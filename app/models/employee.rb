@@ -1,6 +1,7 @@
 class Employee < ApplicationRecord
 
   has_many :transactions
+  has_many :children
 
   validates :first_name, :last_name, :title, :department, presence: {message: I18n.t(:Not_blank)}
   validates :hours_day, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }

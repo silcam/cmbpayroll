@@ -18,9 +18,10 @@ class Employee < ApplicationRecord
     "#{last_name}, #{first_name}"
   end
 
-  def total_hours
-    hours = WorkHour.total_hours(self)
-
+  def total_hours_so_far
+    hours = WorkHour.total_hours_so_far(self)
+    hours[:normal] = hours[:normal] - Vacation.missed_hours_so_far(self)
+    hours
   end
 
 end

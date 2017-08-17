@@ -36,18 +36,33 @@ class Vacation < ApplicationRecord
 
   def destroyable?
     # TODO Revisit this rule
-    end_date > current_period_start
+    end_date > Period.current.start
   end
 
   def self.period_vacations
-    Vacation.where(overlap_clause(current_period_start, current_period_end))
+    current = Period.current
+    Vacation.where(overlap_clause(current.start, current.finish))
   end
 
   def self.upcoming_vacations
-    Vacation.all.where("start_date > ?", current_period_end)
+    Vacation.all.where("start_date > ?", Period.current.finish)
   end
 
-  def self.missed_days(period=current_period)
+  def self.missed_days(employee, period=Period.current)
+    missed_days_for employee, period.start, period.finish
+  end
+
+  def self.missed_hours(employee, period=Period.current)
+    missed_days(employee, period) * WorkHour.workday
+  end
+
+  def self.missed_days_so_far(employee)
+    missed_days_for employee, Period.current.start, yesterday
+  end
+
+  def self.missed_hours_so_far(employee)
+    Vacation.missed_days_so_far(employee) * WorkHour.workday
+  end
 
   private
 
@@ -75,6 +90,22 @@ class Vacation < ApplicationRecord
 
   def overlap_clause
     Vacation.overlap_clause(start_date, end_date)
+  end
+
+  def self.missed_days_for(employee, start_date, end_date)
+    vacations = employee
+                    .vacations
+                    .where(overlap_clause(start_date, end_date))
+    missed = 0
+    vacations.each do |vacation|
+      (vacation.start_date .. vacation.end_date).each do |day|
+        if( is_weekday?(day) and
+            (start_date .. end_date) === day )
+          missed += 1
+        end
+      end
+    end
+    missed
   end
 
   def self.overlap_clause(start_date, end_date)

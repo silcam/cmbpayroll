@@ -13,9 +13,13 @@ module ApplicationHelper
   #   current_period_start.next_month - 1
   # end
   #
-  # def is_weekday?(date)
-  #   (1 .. 5) === date.wday
-  # end
+  def is_weekday?(date)
+    (1 .. 5) === date.wday
+  end
+
+  def yesterday
+    Date.today - 1
+  end
   #
   #
   #

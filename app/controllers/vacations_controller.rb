@@ -55,9 +55,9 @@ class VacationsController < ApplicationController
   private
 
   def vacation_params
-    params[:vacation][:start_date] = assemble_date(params[:vacation], 'start_date')
-    params[:vacation][:end_date] = assemble_date(params[:vacation], 'end_date')
-    params.require(:vacation).permit(:employee_id, :start_date, :end_date)
+    params.require(:vacation).permit(:employee_id, 'start_date(1i)', 'start_date(2i)',
+                                     'start_date(3i)', 'end_date(1i)', 'end_date(2i)',
+                                     'end_date(3i)', :start_date, :end_date)
   end
 
   def set_employee

@@ -33,8 +33,10 @@
 <%= form_for @vacation do |form| %>
   <%= hidden_field_tag :confirm_delete_work_hours, true %>
   <%= form.hidden_field :employee_id %>
-  <%= form.hidden_field :start_date %>
-  <%= form.hidden_field :end_date %>
+  <div style="display: none;">
+    <%= form.date_select :start_date %>
+    <%= form.date_select :end_date %>
+  </div>
 
   <%= form.submit t(:Save_vacation_and_delete_work_hours), class: 'btn btn-danger' %>
 <% end %>

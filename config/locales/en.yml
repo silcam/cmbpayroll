@@ -56,6 +56,7 @@ en:
   Enter_overtime: Enter Overtime
   after_start_date: must be after start date
   not_during_vacation: can't be during vacation
+  OT_and_partial: Overtime and Partial Days
 
   # Vacations
   Enter_vacation: Enter Vacation

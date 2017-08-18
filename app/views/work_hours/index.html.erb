@@ -8,7 +8,8 @@
   <small><%= t :Overtime_hours %></small>
 </h3>
 
-<table class="table">
+<label style="margin-top: 20px;"><%= t :OT_and_partial %></label>
+<table class="table" style="width: auto;">
   <% @work_hours.reverse_each do |work_hour| %>
     <tr>
       <td><%= work_hour.date.strftime "%A" %></td>

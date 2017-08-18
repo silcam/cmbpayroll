@@ -14,6 +14,30 @@ class Period
     Date.new(@year, @month + 1, 1) - 1
   end
 
+  def to_range
+    (start .. finish)
+  end
+
+  def next
+    year = @year
+    month = @month + 1
+    if month > 12
+      month = 1
+      year = @year + 1
+    end
+    Period.new(year, month)
+  end
+
+  def previous
+    year = @year
+    month = @month - 1
+    if month < 1
+      month = 12
+      year = @year - 1
+    end
+    Period.new(year, month)
+  end
+
   def weekdays
     Period.count_weekdays(start, finish)
   end
@@ -31,13 +55,15 @@ class Period
   end
 
   def self.current
-    today = Date.today
-    Period.new(today.year, today.month)
+    Period.from_date Date.today
+  end
+
+  def self.from_date(date)
+    Period.new(date.year, date.month)
   end
 
   def self.current_as_range
-    c = Period.current
-    (c.start .. c.finish)
+    Period.current.to_range
   end
 
   def self.weekdays_so_far

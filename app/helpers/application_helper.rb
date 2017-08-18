@@ -24,6 +24,25 @@ module ApplicationHelper
   def std_datestring(date)
     date.strftime("%-d %b %Y")
   end
+
+  def last_monday
+    today = Date.today
+    diff = today.wday - 1 # 1 == Monday
+    diff += 7 if diff < 0
+    today - diff
+  end
+
+  def mondays_for_select
+    monday = last_monday
+    mondays = []
+    current = Period.current
+    last_two_periods = (current.previous.start .. current.finish)
+    while(last_two_periods === monday)
+      mondays << [monday.strftime("%d %b") , monday]
+      monday += -7
+    end
+    options_for_select(mondays, mondays[1])
+  end
   #
   #
   #

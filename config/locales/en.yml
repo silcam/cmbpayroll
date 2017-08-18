@@ -19,6 +19,7 @@ en:
   Not_blank: can't be blank
   must_exist: must exist
   No_go_back: No, go back
+  Go: Go
 
   # Time and Date
   Date: Date

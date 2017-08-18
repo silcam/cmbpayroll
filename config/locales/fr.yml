@@ -19,6 +19,7 @@ fr:
   Not_blank: ne peut pas être vide
   must_exist: doit exister
   No_go_back: Non, retourner
+  Go: Aller
   
   #Time and Date
   Date: Date

@@ -1,9 +1,19 @@
 class WorkHoursController < ApplicationController
 
-  before_action :get_employee, only: [:index]
+  before_action :get_employee, only: [:index, :new]
 
   def index
     @work_hours = @employee.work_hours.current_period
+  end
+
+  def new
+    # @monday = last_monday Date.strptime(params[:week])
+    date = Date.strptime params[:week]
+    @work_hours = WorkHour.week_for(@employee, date)
+  end
+
+  def create
+
   end
 
   private

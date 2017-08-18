@@ -19,6 +19,27 @@ class WorkHour < ApplicationRecord
     total_hours_for employee, Period.current.start, yesterday
   end
 
+  def self.week_for(employee, date)
+    monday = last_monday date
+    sunday = monday + 6
+    existing = employee.work_hours.where(date: (monday .. sunday))
+    week = []
+    (monday .. sunday).each do |d|
+      existing_i = existing.index{ |wh| wh.date == d }
+      workhour = existing_i.nil? ?
+                     WorkHour.new(employee: employee,
+                                  date: d,
+                                  hours: WorkHour.default_hours(d))
+                     : existing[existing_i]
+      week << workhour
+    end
+    week
+  end
+
+  def self.default_hours(date)
+    is_weekday?(date) ? WorkHour.workday : 0  #TODO hardcoded 0 hrs for weekend
+  end
+
   def self.workday
     8 #TODO hardcoded constant 1 wkday = 8 hrs
   end

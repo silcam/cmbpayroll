@@ -14,7 +14,7 @@ module ApplicationHelper
   # end
   #
   def is_weekday?(date)
-    (1 .. 5) === date.wday
+    (1 .. 5) === date.wday  # TODO Hardcoded workweek as from Mon to Fri
   end
 
   def yesterday
@@ -25,11 +25,10 @@ module ApplicationHelper
     date.strftime("%-d %b %Y")
   end
 
-  def last_monday
-    today = Date.today
-    diff = today.wday - 1 # 1 == Monday
+  def last_monday(date=Date.today)
+    diff = date.wday - 1 # 1 == Monday
     diff += 7 if diff < 0
-    today - diff
+    date - diff
   end
 
   def mondays_for_select

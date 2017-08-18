@@ -60,6 +60,10 @@
       <td><%= @employee.echelon %></td>
     </tr>
     <tr>
+      <th scope="row">Wage:</th>
+      <td><%= @employee.wage %></td>
+    </tr>
+    <tr>
       <th scope="row">Wage Scale:</th>
       <td><%= @employee.wage_scale %></td>
     </tr>
@@ -126,8 +130,6 @@
 <% unless (@employee.children.blank?) %>
 </table>
 <% end %>
-
-
 
 <%= link_to "Edit", {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary' %> &nbsp;
 <%= link_to "Delete", employee_path(@employee), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>

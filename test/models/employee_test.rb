@@ -28,6 +28,27 @@ class EmployeeTest < ActiveSupport::TestCase
     model_validation_hack_test Employee, params
   end
 
+  test "conditional_wage_validation" do
+    employee = Employee.new
+
+    employee.first_name = "Joe"
+    employee.last_name = "Smith"
+    employee.title = "Director of Himself"
+    employee.department = "Computer Services"
+    employee.hours_day = 12
+    employee.echelon = "a"
+
+    assert(employee.valid?, "initial valid state")
+
+    # needs to be set if the echelon is 'g'
+    employee.echelon = "g"
+    refute(employee.valid?, "should not be valid if echelon g without wage")
+
+    employee.wage = "123456"
+    assert(employee.valid?, "echelon g and wage is AOK")
+  end
+
+
   test "enum_validations" do
     employee = Employee.new
 
@@ -45,6 +66,7 @@ class EmployeeTest < ActiveSupport::TestCase
 
     assert employee.valid?
 
+    ## EMPLOYMENT STATUS
     assert_raise(ArgumentError) do
       employee.employment_status = "none"
     end
@@ -55,6 +77,7 @@ class EmployeeTest < ActiveSupport::TestCase
     Rails.logger.error(employee.errors.messages)
     assert employee.valid?
 
+    ## GENDER
     assert_raise(ArgumentError) do
       employee.gender = "none"
     end
@@ -64,6 +87,7 @@ class EmployeeTest < ActiveSupport::TestCase
     assert employee.valid?
     assert employee.errors.empty?
 
+    ## MARITAL STATUS
     assert_raise(ArgumentError) do
       employee.marital_status = "divorced"
     end
@@ -73,17 +97,40 @@ class EmployeeTest < ActiveSupport::TestCase
     assert employee.valid?
     assert employee.errors.empty?
 
+    ## DAYS PER WEEK
     assert_raise(ArgumentError, "not a beatle") do
       employee.days_week = "eight"
     end
 
     employee.days_week = "five"
 
+    refute employee.six_day?
+    assert employee.five_day?
     assert employee.valid?
     assert employee.errors.empty?
 
-  end
+    ## CATEGORY
+    assert_raise(ArgumentError) do
+      employee.category = "twenty"
+    end
 
+    employee.category = "two"
+
+    assert employee.category_two?
+    assert employee.valid?
+    assert employee.errors.empty?
+
+    ## ECHELON
+    assert_raise(ArgumentError) do
+      employee.echelon = "x"
+    end
+
+    employee.echelon = "a"
+
+    assert employee.echelon_a?
+    assert employee.valid?
+    assert employee.errors.empty?
+  end
 
   test "numeric_validations" do
     employee = Employee.new

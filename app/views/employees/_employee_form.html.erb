@@ -39,19 +39,23 @@
     </div>
     <div class="form-group">
       <%= f.label :category %>
-      <%= f.text_field :category, class: 'form-control' %>
+      <%= f.select :category, Employee.categories.keys %>
     </div>
     <div class="form-group">
       <%= f.label :echelon %>
-      <%= f.text_field :echelon, class: 'form-control' %>
+      <%= f.select :echelon, Employee.echelons.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :wage %>
+      <%= f.text_field :wage, class: 'form-control' %>
     </div>
     <div class="form-group">
       <%= f.label :wage_scale %>
-      <%= f.text_field :wage_scale, class: 'form-control' %>
+      <%= f.select :wage_scale, Employee.wage_scales.keys %>
     </div>
     <div class="form-group">
       <%= f.label :wage_period %>
-      <%= f.text_field :wage_period, class: 'form-control' %>
+      <%= f.select :wage_period, Employee.wage_periods.keys %>
     </div>
     <div class="form-group">
       <%= f.label :last_raise_date %>

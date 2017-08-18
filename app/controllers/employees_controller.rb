@@ -61,7 +61,8 @@ class EmployeesController < ApplicationController
             :days_week,
             :employment_status,
             :gender,
-            :marital_status
+            :marital_status,
+            :wage
         )
     end
 

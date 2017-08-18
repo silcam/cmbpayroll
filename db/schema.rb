@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170817130334) do
+ActiveRecord::Schema.define(version: 20170818152548) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,10 +37,10 @@ ActiveRecord::Schema.define(version: 20170817130334) do
     t.string "dipe"
     t.datetime "contract_start"
     t.datetime "contract_end"
-    t.string "category"
-    t.string "echelon"
-    t.string "wage_scale"
-    t.string "wage_period"
+    t.integer "category"
+    t.integer "echelon"
+    t.integer "wage_scale"
+    t.integer "wage_period"
     t.datetime "last_raise_date"
     t.float "taxable_percentage"
     t.integer "transportation"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 20170817130334) do
     t.integer "hours_day"
     t.integer "days_week"
     t.bigint "child_id"
+    t.integer "wage"
     t.index ["child_id"], name: "index_employees_on_child_id"
   end
 

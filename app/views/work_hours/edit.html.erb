@@ -21,12 +21,17 @@
       <% end %>
     </tr>
     <tr>
-      <% (@work_hours).each do |workhour| %>
+      <% (@work_hours).each_index do |i| %>
           <td>
-            <%= text_field_tag "hours[#{workhour.date}]",
+            <% if @vacation_days[i] %>
+              <label><%= t :Vacation %></label>
+            <% else %>
+              <% workhour = @work_hours[i] %>
+              <%= text_field_tag "hours[#{workhour.date}]",
                                number_to_human(workhour.hours),
                                class: 'form-control',
                                data: {'dow' => workhour.date.wday} %>
+            <% end %>
           </td>
       <% end %>
     </tr>

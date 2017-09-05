@@ -61,6 +61,14 @@ class Vacation < ApplicationRecord
     Vacation.missed_days_so_far(employee) * WorkHour.workday
   end
 
+  def self.vacation_days(work_hours)
+    employee = work_hours.first.employee
+    vacations = employee.vacations.where(overlap_clause(work_hours.first.date, work_hours.last.date))
+    vdays = work_hours.collect do |work_hour|
+      vacations.any?{ |vacay| (vacay.start_date .. vacay.end_date) === work_hour.date }
+    end
+  end
+
   private
 
   def end_date_after_start

@@ -118,6 +118,11 @@ class VacationTest < ActiveSupport::TestCase
     end
   end
 
+  test "Vacation Days" do
+    vdays = Vacation.vacation_days(WorkHour.week_for(@luke, Date.new(2017, 6, 28)))
+    assert_equal [false, false, false, false, false, true, true], vdays
+  end
+
   def some_valid_params(mods={})
     {employee: @luke, start_date: '2017-08-09', end_date: '2017-08-10'}.merge(mods)
   end

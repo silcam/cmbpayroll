@@ -3,6 +3,7 @@ require "test_helper"
 class VacationTest < ActiveSupport::TestCase
   def setup
     @luke = employees :Luke
+    @anakin = employees :Anakin
     @lukes_vacation = vacations :LukeInKribi
     @lukes_overtime = work_hours :LukesOvertime
   end
@@ -115,6 +116,16 @@ class VacationTest < ActiveSupport::TestCase
     end
     Date.stub :today, Date.new(2017,7,1) do
       refute_includes Vacation.upcoming_vacations, @lukes_vacation
+    end
+  end
+
+  test "Missed Days and Hours" do
+    june = Period.new(2017, 6)
+    assert_equal 5, Vacation.missed_days(@anakin, june)
+    assert_equal 40, Vacation.missed_hours(@anakin, june)
+    Date.stub :today, Date.new(2017, 6, 7) do
+      assert_equal 2, Vacation.missed_days_so_far(@anakin)
+      assert_equal 16, Vacation.missed_hours_so_far(@anakin)
     end
   end
 

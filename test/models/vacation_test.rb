@@ -53,11 +53,6 @@ class VacationTest < ActiveSupport::TestCase
     assert @lukes_vacation.update end_date: '2017-07-30'
   end
 
-  test "Formatted date strings" do
-    assert_equal "1 Jul 2017", @lukes_vacation.start_date_str
-    assert_equal "31 Jul 2017", @lukes_vacation.end_date_str
-  end
-
   test "No Overlapped Work Hours" do
     v = Vacation.new(some_valid_params)
     assert_empty v.overlapped_work_hours

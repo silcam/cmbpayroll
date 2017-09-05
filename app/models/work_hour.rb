@@ -88,7 +88,7 @@ class WorkHour < ApplicationRecord
   end
 
   def self.total_hours_for(employee, start_date, end_date)
-    normal = Period.weekdays_so_far * WorkHour.workday
+    normal = Period.count_weekdays(start_date, end_date) * WorkHour.workday
     overtime = 0
     work_hours = WorkHour.where(employee: employee,
                                 date: (start_date .. end_date))

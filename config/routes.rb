@@ -7,10 +7,14 @@ Rails.application.routes.draw do
   shallow do
     resources :employees do
       resources :transactions
-      resources :work_hours
       resources :vacations, except: :show
     end
   end
+
+  # Work Hours
+  get 'employees/:employee_id/work_hours',      to: 'work_hours#index', as: :employee_work_hours
+  get 'employees/:employee_id/work_hours/edit', to: 'work_hours#edit',  as: :edit_employee_work_hours
+  post 'employees/:employee_id/work_hours',    to: 'work_hours#update', as: :update_employee_work_hours
 
 
 

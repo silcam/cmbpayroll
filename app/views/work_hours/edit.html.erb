@@ -6,7 +6,9 @@
   <small><%= t :Week_of %> <%= monday.strftime("%-d %B") %></small>
 </h2>
 
-<form>
+<%= render 'shared/error_messages', messages: @errors %>
+
+<%= form_tag update_employee_work_hours_path(@employee) do %>
   <table class="table hours-table">
     <tr>
       <% %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday].each do |day| %>
@@ -21,7 +23,7 @@
     <tr>
       <% (@work_hours).each do |workhour| %>
           <td>
-            <%= text_field_tag "hours-#{workhour.date}",
+            <%= text_field_tag "hours[#{workhour.date}]",
                                number_to_human(workhour.hours),
                                class: 'form-control',
                                data: {'dow' => workhour.date.wday} %>
@@ -43,4 +45,4 @@
   </div>
   <div id="translated_save" style="display: none"><%= t :Save %></div>
   <%= submit_tag t(:Save), class: 'btn btn-primary', id: 'hours-submit' %>
-</form>
+<% end %>

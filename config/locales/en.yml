@@ -58,6 +58,7 @@ en:
   after_start_date: must be after start date
   not_during_vacation: can't be during vacation
   OT_and_partial: Overtime and Partial Days
+  invalid_hours: is not a valid number of hours.
 
   # Vacations
   Enter_vacation: Enter Vacation

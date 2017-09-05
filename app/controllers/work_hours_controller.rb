@@ -1,19 +1,27 @@
 class WorkHoursController < ApplicationController
 
-  before_action :get_employee, only: [:index, :new]
+  before_action :get_employee
 
   def index
     @work_hours = @employee.work_hours.current_period
   end
 
-  def new
+  def edit
     # @monday = last_monday Date.strptime(params[:week])
     date = Date.strptime params[:week]
     @work_hours = WorkHour.week_for(@employee, date)
   end
 
-  def create
-
+  def update
+    begin
+      WorkHour.update(@employee,params['hours'])
+      redirect_to employee_work_hours_path(@employee)
+    rescue InvalidHoursException => e
+      @errors = e.errors
+      @work_hours = []
+      params['hours'].each{ |d, h| @work_hours << WorkHour.new(date: d, hours: h)}
+      render 'edit'
+    end
   end
 
   private

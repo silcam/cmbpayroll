@@ -58,6 +58,7 @@ fr:
   after_start_date: doit être après le date de commencement
   not_during_vacation: ne peut pas coïncider avec des vacances
   OT_and_partial: Surtravail et jours partiels
+  invalid_hours: n'est pas un nombre valide d'heures.
 
   # Vacations
   Vacation: Vacances

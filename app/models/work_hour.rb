@@ -36,8 +36,41 @@ class WorkHour < ApplicationRecord
     week
   end
 
+  def self.update(employee, days_hours)
+    validate_hours!(days_hours)
+    days_hours.each do |day, hours|
+      day = Date.strptime day
+      work_hour = employee.work_hours.find_by(date: day)
+      if work_hour.nil?
+        employee.work_hours.create(date: day, hours: hours) unless default_hours?(day, hours)
+      else
+        if default_hours?(day, hours)
+          work_hour.destroy
+        else
+          work_hour.update(hours: hours)
+        end
+      end
+    end
+  end
+
+  def self.validate_hours!(days_hours)
+    errors = []
+    days_hours.each do |day, hours|
+      begin
+        raise "Out of Range" unless (0..24) === hours.to_d
+      rescue
+        errors << "#{hours} #{I18n.t(:invalid_hours)}"
+      end
+    end
+    raise InvalidHoursException.new(errors) unless errors.empty?
+  end
+
   def self.default_hours(date)
     is_weekday?(date) ? WorkHour.workday : 0  #TODO hardcoded 0 hrs for weekend
+  end
+
+  def self.default_hours?(date, hours)
+    hours.to_d == default_hours(date)
   end
 
   def self.workday
@@ -71,5 +104,15 @@ class WorkHour < ApplicationRecord
       end
     end
     {normal: normal, overtime: overtime}
+  end
+end
+
+class InvalidHoursException < Exception
+  def initialize(errors)
+    @errors = errors
+  end
+
+  def errors
+    @errors
   end
 end

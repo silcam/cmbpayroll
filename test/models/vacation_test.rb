@@ -53,6 +53,12 @@ class VacationTest < ActiveSupport::TestCase
     assert @lukes_vacation.update end_date: '2017-07-30'
   end
 
+  test "Overlapped work hours get clobbered" do
+    lukes_day_off = @luke.work_hours.find_by(date: '2017-08-08')
+    @luke.vacations << Vacation.new(start_date: '2017-08-08', end_date: '2017-08-08')
+    assert_nil WorkHour.find_by id: lukes_day_off.id
+  end
+
   test "No Overlapped Work Hours" do
     v = Vacation.new(some_valid_params)
     assert_empty v.overlapped_work_hours
@@ -75,12 +81,42 @@ class VacationTest < ActiveSupport::TestCase
     assert_includes v.overlapped_work_hours, @lukes_overtime
   end
 
-  test "Overlapped WorkHours don't include entries with 0 hrs" do
-    day_off = WorkHour.create!(employee: @luke, date: '2017-08-09', hours: 0)
+  test "overlaps_work_hours? ignores 0hr days" do
+    WorkHour.create!(employee: @luke, date: '2017-08-09', hours: 0)
     v = Vacation.new some_valid_params
-    refute_includes v.overlapped_work_hours, day_off
+    refute v.overlaps_work_hours?, "Should ignore overlap with the day off"
   end
 
+  test "Can't delete old vacations" do
+    refute @lukes_vacation.destroy
+    assert_raises(Exception){ @lukes_vacation.destroy! }
+  end
+
+  test "Can delete future vacations just fine" do
+    future_vacay = Vacation.create(employee: @luke, start_date: '2027-09-05', end_date: '2027-09-05')
+    future_vacay.destroy
+    assert_nil Vacation.find_by(id: future_vacay.id), "The failure of this test is a friendly reminder that the codebase is now over 10 years old :)"
+  end
+
+  test "Period Vacations" do
+    chewie = employees :Chewie
+    chewie1 = Vacation.create(employee: chewie, start_date: '2017-06-15', end_date: '2017-07-01')
+    chewie2 = Vacation.create(employee: chewie, start_date: '2017-07-30', end_date: '2017-08-15')
+    july_vacays = Vacation.period_vacations(Period.new(2017, 7))
+    assert_includes july_vacays, @lukes_vacation
+    assert_includes july_vacays, chewie1
+    assert_includes july_vacays, chewie2
+    refute_includes Vacation.period_vacations, @lukes_vacation
+  end
+
+  test "Upcoming Vacations" do
+    Date.stub :today, Date.new(2017, 6, 30) do
+      assert_includes Vacation.upcoming_vacations, @lukes_vacation
+    end
+    Date.stub :today, Date.new(2017,7,1) do
+      refute_includes Vacation.upcoming_vacations, @lukes_vacation
+    end
+  end
 
   def some_valid_params(mods={})
     {employee: @luke, start_date: '2017-08-09', end_date: '2017-08-10'}.merge(mods)

@@ -14,16 +14,22 @@ class Vacation < ApplicationRecord
   after_save :remove_overlapped_work_hours
 
   def overlaps_work_hours?
-    not overlapped_work_hours.empty?
+    not overlapped_work_hours(false).empty?
   end
 
-  def overlapped_work_hours
+  def overlapped_work_hours(include_zeros=true)
     return [] unless valid?
-    employee.work_hours.where('hours > 0 AND date BETWEEN ? AND ?', start_date, end_date)
+    where = 'date BETWEEN ? AND ?'
+    where += ' AND hours > 0' unless include_zeros
+    employee.work_hours.where(where, start_date, end_date)
   end
 
   def destroy
-    super if destroyable?
+    if destroyable?
+      super
+    else
+      false
+    end
   end
 
   def destroyable?
@@ -31,9 +37,8 @@ class Vacation < ApplicationRecord
     end_date > Period.current.start
   end
 
-  def self.period_vacations
-    current = Period.current
-    Vacation.where(overlap_clause(current.start, current.finish))
+  def self.period_vacations(period = Period.current)
+    Vacation.where(overlap_clause(period.start, period.finish))
   end
 
   def self.upcoming_vacations

@@ -6,7 +6,7 @@
   <small><%= t :Week_of %> <%= monday.strftime("%-d %B") %></small>
 </h2>
 
-<%= render 'shared/error_messages', messages: @errors %>
+<%= render 'shared/error_messages', messages: @errors if @errors %>
 
 <%= form_tag update_employee_work_hours_path(@employee) do %>
   <table class="table hours-table">

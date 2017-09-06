@@ -1,0 +1,9 @@
+LukesOvertime:
+  date: 2017-08-07
+  hours: 10
+  employee: Luke
+
+LukesDayOff:
+  date: 2017-08-08
+  hours: 0
+  employee: Luke

@@ -50,7 +50,7 @@ ul.feed {
 
 //Forms
 
-#error-explanation {
+div.error-explanation {
   color: red;
   ul {
     color: red;
@@ -79,8 +79,12 @@ form.form-inline {
   display: inline-block;
 }
 
-form.inline-fields {
+.inline-fields {
   input {
+    display: inline-block;
+    width: auto;
+  }
+  select {
     display: inline-block;
     width: auto;
   }

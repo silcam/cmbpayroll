@@ -11,9 +11,10 @@ update_elements = (regular, overtime) ->
 recalculate_hours = () ->
   regular = 0
   overtime = 0
-  for dow in [1..7]
-    hours = parseFloat($("#hours-#{dow}").val())
-    if dow > 5
+  $('input[data-dow]').each ->
+    hours = parseFloat($(this).val())
+    wday = $(this).data('dow')
+    if wday < 1 or wday > 5  # 0 == Sunday, 6 == Saturday
       overtime += hours
     else if hours > 8
       regular += 8
@@ -23,6 +24,9 @@ recalculate_hours = () ->
   update_elements(regular, overtime)
 
 $(document).on "turbolinks:load", ->
+  if $('input[data-dow]').length > 0
+    recalculate_hours()
+
   $('input[data-dow]').change ->
     recalculate_hours()
 

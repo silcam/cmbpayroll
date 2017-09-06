@@ -1,11 +1,13 @@
-<%= render 'search_form' %>
+<%= render 'searches/search_form' %>
 <div class="row">
   <div class="col-md-6">
     <h2><%= t :Tasks %></h2>
     <hr>
     <ul class="list-unstyled" id="link-list">
       <li><%= link_to t(:Employees), 'mock_employees' %></li>
-      <li><%= link_to t(:Transactions), 'transactions' %></li>
+      <li><%= link_to t(:Hours), 'hours' %></li>
+      <li><%= link_to t(:Vacation), 'vacation' %></li>
+      <li><%= link_to t(:Charges), 'charges' %></li>
       <li><%= link_to t(:Reports), 'reports' %></li>
       <li><%= link_to t(:Events), 'events' %></li>
     </ul>

@@ -1,0 +1,98 @@
+<%= render 'shared/error_messages', errors: @employee.errors %>
+
+<%= form_for @employee, html: {class: 'auto-width'} do |f|  %>
+    <div class="form-group">
+      <%= f.label :first_name %>
+      <%= f.text_field :first_name, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :last_name %>
+      <%= f.text_field :last_name, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :department %>
+      <%= f.text_field :department, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :cnps %>
+      <%= f.text_field :cnps, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :dipe %>
+      <%= f.text_field :dipe, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :birth_date %>
+      <%= date_select :employee, :birth_date %>
+    </div>
+    <div class="form-group">
+      <%= f.label :contract_start %>
+      <%= date_select :employee, :contract_start %>
+    </div>
+    <div class="form-group">
+      <%= f.label :contract_end %>
+      <%= date_select :employee, :contract_end %>
+    </div>
+    <div class="form-group">
+      <%= f.label :category %>
+      <%= f.select :category, Employee.categories.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :echelon %>
+      <%= f.select :echelon, Employee.echelons.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :wage %>
+      <%= f.text_field :wage, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :wage_scale %>
+      <%= f.select :wage_scale, Employee.wage_scales.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :wage_period %>
+      <%= f.select :wage_period, Employee.wage_periods.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :last_raise_date %>
+      <%= date_select :employee, :last_raise_date %>
+    </div>
+    <div class="form-group">
+      <%= f.label :taxable_percentage %>
+      <%= f.text_field :taxable_percentage, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :transportation %>
+      <%= f.text_field :transportation, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :hours_day %>
+      <%= f.text_field :hours_day, class: 'form-control' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :employment_status %>
+      <%= f.select :employment_status, Employee.employment_statuses.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :gender %>
+      <%= f.select :gender, Employee.genders.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :marital_status %>
+      <%= f.select :marital_status, Employee.marital_statuses.keys %>
+    </div>
+    <div class="form-group">
+      <%= f.label :days_week %>
+      <%= f.select :days_week, Employee.days_weeks.keys %>
+
+    <br />
+    <%= f.submit t(:Save), class: 'btn btn-primary' %>
+    <% if params[:action] == "edit" %>
+    <%= link_to 'Cancel edit', @employee, :class => 'btn btn-link' %> 
+    <% end %>
+<% end %>

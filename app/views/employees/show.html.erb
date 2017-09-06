@@ -1,0 +1,157 @@
+<%= link_to t(:Enter_vacation), new_employee_vacation_path(@employee, referred_by: request.path), class: 'btn btn-primary' %>
+<% provide(:title, "Employees") %>
+
+<p><%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary' %></p>
+
+<p><%= link_to '<< Return to Index', controller: 'employees', action: 'index' %></p>
+
+<p><%= link_to 'Add Child', new_child_path, class: 'btn btn-primary' %></p>
+
+<ul class="list-inline" style="margin-top: 15px;">
+  <li>
+    <label><%= :Vacation %>:</label>
+    <%= link_to t(:View), employee_vacations_path(@employee) %> |
+    <%= link_to t(:Add), new_employee_vacation_path(@employee, referred_by: employee_vacations_path(@employee)) %>
+  </li>
+  <li>
+    <label><%= :Charges %>:</label>
+    <%= link_to t(:View), 'employee_charges_path(@employee)' %> |
+    <%= link_to t(:Add), 'new_employee_charge_path(@employee, referred_by: request.path)' %>
+  </li>
+  <li>
+    <label><%= :Hours %>:</label>
+    <%= link_to t(:View), employee_work_hours_path(@employee) %> |
+    <%= link_to t(:Add), edit_employee_work_hours_path(@employee, referred_by: request.path) %>
+  </li>
+</ul>
+
+<h2>Employee Information for <%= @employee.full_name %></h2>
+
+
+<table class="table table-striped">
+  <thead class="thead-default">
+    <th>Key</th>
+    <th>Value</th>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">First Name:</th>
+      <td><%= @employee.first_name %></td>
+    </tr>
+    <tr>
+      <th scope="row">Last Name:</th>
+      <td><%= @employee.last_name %></td>
+    </tr>
+    <tr>
+      <th scope="row">Title:</th>
+      <td>Title</td>
+    </tr>
+    <tr>
+      <th scope="row">Department:</th>
+      <td>Department</td>
+    </tr>
+    <tr>
+      <th scope="row">CNPS:</th>
+      <td><%= @employee.cnps %></td>
+    </tr>
+    <tr>
+      <th scope="row">DIPE:</th>
+      <td><%= @employee.dipe %></td>
+    </tr>
+    <tr>
+      <th scope="row">Birth Date:</th>
+      <td><%= @employee.birth_date %></td>
+    </tr>
+    <tr>
+      <th scope="row">Contract Start:</th>
+      <td><%= @employee.contract_start %></td>
+    </tr>
+    <tr>
+      <th scope="row">Contract End:</th>
+      <td><%= @employee.contract_end %></td>
+    </tr>
+    <tr>
+      <th scope="row">Category:</th>
+      <td><%= @employee.category %></td>
+    </tr>
+    <tr>
+      <th scope="row">Echelon:</th>
+      <td><%= @employee.echelon %></td>
+    </tr>
+    <tr>
+      <th scope="row">Wage:</th>
+      <td><%= @employee.wage %></td>
+    </tr>
+    <tr>
+      <th scope="row">Wage Scale:</th>
+      <td><%= @employee.wage_scale %></td>
+    </tr>
+    <tr>
+      <th scope="row">Wage Period:</th>
+      <td><%= @employee.wage_period %></td>
+    </tr>
+    <tr>
+      <th scope="row">Last Raise Date:</th>
+      <td><%= @employee.last_raise_date %></td>
+    </tr>
+    <tr>
+      <th scope="row">Taxable Percentage:</th>
+      <td><%= @employee.taxable_percentage %></td>
+    </tr>
+    <tr>
+      <th scope="row">Transportation:</th>
+      <td><%= @employee.transportation %></td>
+    </tr>
+    <tr>
+      <th scope="row">Hours per Day:</th>
+      <td><%= @employee.hours_day %></td>
+    </tr>
+    <tr>
+      <th scope="row">Days per Week:</th>
+      <td><%= @employee.days_week %></td>
+    </tr>
+    <tr>
+      <th scope="row">Employment Status:</th>
+      <td><%= @employee.employment_status %></td>
+    </tr>
+    <tr>
+      <th scope="row">Gender:</th>
+      <td><%= @employee.gender %></td>
+    </tr>
+    <tr>
+      <th scope="row">Marital Status:</th>
+      <td><%= @employee.marital_status %></td>
+    </tr>
+    <tr>
+  </tbody>
+</table>
+
+<% if (@employee.children.blank?) %>
+<p>
+ <%= t(:no_children) %>
+</p>
+<% else %>
+<table class="table">
+<tr>
+  <th>Child Name</th>
+  <th>Child Birth Date</th>
+  <th>Is Child a Student?</th>
+</tr>
+<% end %>
+<% @employee.children.each do |c| %>
+<tr>
+  <td><%= c.first_name %> <%= c.last_name %></td>
+  <td><%= c.birth_date %></td>
+  <td><%= c.is_student %></td>
+</tr>
+<% end %>
+<% unless (@employee.children.blank?) %>
+</table>
+<% end %>
+
+<%= link_to "Edit", {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary' %> &nbsp;
+<%= link_to "Delete", employee_path(@employee), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+
+<br />
+<br />
+<br />

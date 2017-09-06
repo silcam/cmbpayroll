@@ -1,0 +1,36 @@
+<h2><%= t :Hours_for %> <%= @employee.full_name %></h2>
+<h3 style="margin-bottom: 40px;">
+  <% hours_worked = @employee.total_hours_so_far %>
+  <%= Period.current.month_name %> :
+  <%= hours_worked[:normal] %>
+  <small><%= t :Regular_hours %></small>
+  <%= hours_worked[:overtime] %>
+  <small><%= t :Overtime_hours %></small>
+</h3>
+
+<div class="row">
+  <div class="col-md-6">
+    <h4><%= t :Enter_hours %></h4>
+    <%= form_tag edit_employee_work_hours_path, method: :get, class: 'inline-fields' do %>
+        <label><%= t :Week_of %></label>
+        <%= select_tag :week, mondays_for_select, class: 'form-control' %>
+        <%= submit_tag t(:Go), class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+  <div class="col-md-6">
+    <% unless @work_hours.empty? %>
+        <h4><%= t :OT_and_partial %></h4>
+        <table class="table" style="width: auto;">
+          <% @work_hours.reverse_each do |work_hour| %>
+              <tr>
+                <td><%= work_hour.date.strftime "%A" %></td>
+                <td><%= std_datestring work_hour.date %></td>
+                <td><%= work_hour.hours %> <%= t :Hours %></td>
+              </tr>
+          <% end %>
+        </table>
+    <% end %>
+
+  </div>
+</div>
+

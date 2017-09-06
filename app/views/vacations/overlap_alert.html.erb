@@ -1,0 +1,42 @@
+<div>
+  <h2><%= t :Vacation_for %> <%= @vacation.employee.full_name %></h2>
+  <div>
+    <label><%= t :Start_date %></label>
+    <%= @vacation.start_date %>
+  </div>
+  <div>
+    <label><%= t :End_date %></label>
+    <%= @vacation.end_date %>
+  </div>
+</div>
+
+<div class="error-explanation">
+  <div>
+    <%= t(:Overlap_message) %>
+  </div>
+  <a href="javascript:history.back()" class="btn btn-primary"><%= t :No_go_back %></a>
+</div>
+
+<table class="table" style="width: auto;">
+  <% @vacation.overlapped_work_hours.each do |workhour| %>
+    <tr>
+      <td>
+        <%= workhour.date %>
+      </td>
+      <td>
+        <%= workhour.hours %>
+        <%= t(:Hours) %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+<%= form_for @vacation do |form| %>
+  <%= hidden_field_tag :confirm_delete_work_hours, true %>
+  <%= form.hidden_field :employee_id %>
+  <div style="display: none;">
+    <%= form.date_select :start_date %>
+    <%= form.date_select :end_date %>
+  </div>
+
+  <%= form.submit t(:Save_vacation_and_delete_work_hours), class: 'btn btn-danger' %>
+<% end %>

@@ -10,11 +10,16 @@ en:
   View: View
   Modify: Modify
   No_change: No Change
+  Edit: Edit
   Save: Save
+  Delete: Delete
   Display: Display
   Download: Download
   Logout: Logout
   Not_blank: can't be blank
+  must_exist: must exist
+  No_go_back: No, go back
+  Go: Go
 
   # Time and Date
   Date: Date
@@ -25,6 +30,8 @@ en:
   Regular_hours: Regular Hours
   Overtime_hours: Overtime Hours
   Period: Period
+  Start_date: Start Date
+  End_date: End Date
   
   # Employees
   Employees: Employees
@@ -37,16 +44,38 @@ en:
   # Transactions
   Transactions: Transactions
   Transactions_for: Transactions for
+  Charges: Charges
   Add_transaction: Add Transaction
-  Enter_hours: Enter Hours
-  Enter_hours_overtime: Enter Hours / Overtime
-  Enter_overtime: Enter Overtime
-  Enter_vacation: Enter Vacation
   Enter_charges: Enter Charges
   New_loan: New Loan
   Type: Type
   Detail: Detail
 
+  # WorkHours
+  Enter_hours: Enter Hours
+  Enter_hours_overtime: Enter Hours / Overtime
+  Enter_overtime: Enter Overtime
+  after_start_date: must be after start date
+  not_during_vacation: can't be during vacation
+  OT_and_partial: Overtime and Partial Days
+  invalid_hours: is not a valid number of hours.
+
+  # Vacations
+  Enter_vacation: Enter Vacation
+  Vacation: Vacation
+  Vacation_for: Vacation for
+  Vacation_overlaps: This vacation overlaps existing vacation
+  Overlap_message: This vacation overlaps previously entered work hours. Clicking Save will delete these work hours.
+  Save_vacation_and_delete_work_hours: Save Vacation and Delete Hours
+  Other_upcoming_vacation: Other Upcoming Vacation
+
   # Reports
   Reports: Reports
   Report: Report
+
+  # Sessions
+  Username: Username
+  Password: Password
+  Login: Log in
+  Logout: Log out
+  Failed_login: Sorry, the username or password is incorrect.

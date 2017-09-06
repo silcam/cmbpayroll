@@ -1,11 +1,9 @@
-<%= form_with(model: child, local: true) do |form| %>
-  <%= form.hidden_field(:employee_id, :value => params[:employee_id]) %>
-  <% if child.errors.any? %>
+  <% if @child.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(child.errors.count, "error") %> prohibited this child from being saved:</h2>
+      <h2><%= pluralize(@child.errors.count, "error") %> prohibited this child from being saved:</h2>
 
       <ul>
-      <% child.errors.full_messages.each do |message| %>
+      <% @child.errors.full_messages.each do |message| %>
         <li><%= message %></li>
       <% end %>
       </ul>
@@ -35,4 +33,4 @@
   <div class="actions">
     <%= form.submit %>
   </div>
-<% end %>
+

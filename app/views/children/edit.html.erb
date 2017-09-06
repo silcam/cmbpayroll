@@ -1,6 +1,8 @@
 <h1>Editing Child</h1>
 
-<%= render 'form', child: @child %>
+<%= form_for @child do |form| %>
+    <%= render 'form', form: form %>
+<% end %>
 
 <%= link_to 'Show', @child %> |
-<%= link_to 'Back', children_path %>
+<%= link_to 'Back', employee_children_path(@employee) %>

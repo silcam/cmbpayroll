@@ -1,11 +1,8 @@
-<%= link_to t(:Enter_vacation), new_employee_vacation_path(@employee, referred_by: request.path), class: 'btn btn-primary' %>
 <% provide(:title, "Employees") %>
-
-<p><%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary' %></p>
 
 <p><%= link_to '<< Return to Index', controller: 'employees', action: 'index' %></p>
 
-<p><%= link_to 'Add Child', new_child_path, class: 'btn btn-primary' %></p>
+<p><%= link_to 'Add Child', new_employee_child_path(@employee), class: 'btn btn-primary' %></p>
 
 <ul class="list-inline" style="margin-top: 15px;">
   <li>

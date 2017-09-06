@@ -1,4 +1,5 @@
 class Period
+  include Comparable
   attr_reader :year, :month
 
   def initialize(year, month)
@@ -11,7 +12,7 @@ class Period
   end
 
   def finish
-    Date.new(@year, @month + 1, 1) - 1
+    (start >> 1) - 1
   end
 
   def to_range
@@ -52,6 +53,14 @@ class Period
 
   def name
     start.strftime("%B %Y")
+  end
+
+  def <=>(other)
+    if @year == other.year
+      return @month <=> other.month
+    else
+      return @year <=> other.year
+    end
   end
 
   def self.current

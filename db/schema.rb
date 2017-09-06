@@ -62,4 +62,22 @@ ActiveRecord::Schema.define(version: 20170818152548) do
     t.index ["employee_id"], name: "index_transactions_on_employee_id"
   end
 
+  create_table "vacations", force: :cascade do |t|
+    t.bigint "employee_id"
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_vacations_on_employee_id"
+  end
+
+  create_table "work_hours", force: :cascade do |t|
+    t.bigint "employee_id"
+    t.date "date"
+    t.float "hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_work_hours_on_employee_id"
+  end
+
 end

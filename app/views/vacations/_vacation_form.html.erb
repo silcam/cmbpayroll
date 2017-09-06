@@ -1,0 +1,23 @@
+<%= form_for @vacation, html: {class: 'auto-width'} do |form| %>
+  <h2><%= t(:Enter_vacation) %></h2>
+
+  <%= render 'shared/error_messages', errors: @vacation.errors %>
+
+  <div class="form-group">
+    <%= form.label :employee, t(:Employee) %>
+    <%= form.collection_select :employee_id, Employee.all, :id, :full_name_rev,
+                               {}, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :start_date, t(:Start_date), style: 'display: block;' %>
+    <%= form.date_select :start_date, {}, class: 'form-control form-control-inline' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :end_date, t(:End_date), style: 'display: block;' %>
+    <%= form.date_select :end_date, {}, class: 'form-control form-control-inline' %>
+  </div>
+
+  <%= form.submit t(:Save), class: 'btn btn-primary' %>
+<% end %>

@@ -31,6 +31,11 @@
       </div>
     </nav>
     <div class="container">
+      <% flash.each do |key, msg| %>
+        <div class="bs-callout bs-callout-<%= msg[:type] %>">
+          <%= msg[:content] %>
+        </div>
+      <% end %>
       <%= yield %>
     </div>
   </body>

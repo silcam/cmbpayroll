@@ -4,10 +4,10 @@
     <h2><%= t :Tasks %></h2>
     <hr>
     <ul class="list-unstyled" id="link-list">
-      <li><%= link_to t(:Employees), 'mock_employees' %></li>
-      <li><%= link_to t(:Hours), 'hours' %></li>
-      <li><%= link_to t(:Vacation), 'vacation' %></li>
-      <li><%= link_to t(:Charges), 'charges' %></li>
+      <li><%= link_to t(:Employees), 'employees' %></li>
+      <li><%= link_to t(:Hours), 'work_hours' %></li>
+      <li><%= link_to t(:Vacation), vacations_path %></li>
+      <li><%= link_to t(:Charges), transactions_path %></li>
       <li><%= link_to t(:Reports), 'reports' %></li>
       <li><%= link_to t(:Events), 'events' %></li>
     </ul>

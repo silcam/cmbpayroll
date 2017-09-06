@@ -1,0 +1,53 @@
+<%= provide :title, t(:Hours) %>
+<% monday = @work_hours.first.date %>
+<h2>
+  <%= t :Hours_for %>
+  <%= @employee.full_name %>
+  <small><%= t :Week_of %> <%= monday.strftime("%-d %B") %></small>
+</h2>
+
+<%= render 'shared/error_messages', messages: @errors if @errors %>
+
+<%= form_tag update_employee_work_hours_path(@employee) do %>
+  <table class="table hours-table">
+    <tr>
+      <% %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday].each do |day| %>
+          <th><%= day %></th>
+      <% end %>
+    </tr>
+    <tr>
+      <% (@work_hours).each do |workhour| %>
+          <th><%= workhour.date.strftime("%-d %B") %></th>
+      <% end %>
+    </tr>
+    <tr>
+      <% (@work_hours).each_index do |i| %>
+          <td>
+            <% if @vacation_days[i] %>
+              <label><%= t :Vacation %></label>
+            <% else %>
+              <% workhour = @work_hours[i] %>
+              <%= text_field_tag "hours[#{workhour.date}]",
+                               number_to_human(workhour.hours),
+                               class: 'form-control',
+                               data: {'dow' => workhour.date.wday} %>
+            <% end %>
+          </td>
+      <% end %>
+    </tr>
+  </table>
+
+  <label>
+    <%= t :Hours_for_week %>
+  </label>
+  <div class="form-group inline-fields">
+    <%= text_field_tag 'hours_regular', 40, class: 'form-control', size: 3 %>
+    <label><%= t :Regular_hours %></label>
+  </div>
+  <div class="form-group inline-fields">
+    <%= text_field_tag 'hours_overtime', 0, class: 'form-control', size: 3 %>
+    <label><%= t :Overtime_hours %></label>
+  </div>
+  <div id="translated_save" style="display: none"><%= t :Save %></div>
+  <%= submit_tag t(:Save), class: 'btn btn-primary', id: 'hours-submit' %>
+<% end %>

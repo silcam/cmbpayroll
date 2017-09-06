@@ -37,8 +37,8 @@ gem 'rails-i18n', '~> 5.0.4'
 # User Roles
 gem 'access-granted', '~>1.2.0'
 
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
+# Date Validation
+# gem 'validates_timeliness', '~>4.0'
 
 group :development, :test do
   # Use Puma as the app server in development

@@ -20,6 +20,7 @@ en:
   must_exist: must exist
   No_go_back: No, go back
   Go: Go
+  Add: Add
 
   # Time and Date
   Date: Date
@@ -40,6 +41,11 @@ en:
   Name: Name
   Department: Department
   Status: Status
+
+  # Children
+  Children: Children
+  Children_of: Children of
+  New_child: New Child
 
   # Transactions
   Transactions: Transactions

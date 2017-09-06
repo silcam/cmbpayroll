@@ -1,10 +1,13 @@
 <% provide(:title, "Employees") %>
 
-<p><%= link_to '<< Return to Index', controller: 'employees', action: 'index' %></p>
-
-<p><%= link_to 'Add Child', new_employee_child_path(@employee), class: 'btn btn-primary' %></p>
+<p><%= link_to "<< #{t(:Employees)}", controller: 'employees', action: 'index' %></p>
 
 <ul class="list-inline" style="margin-top: 15px;">
+  <li>
+    <label><%= :Children %>:</label>
+    <%= link_to t(:View), employee_children_path(@employee) %> |
+    <%= link_to t(:Add), new_employee_child_path(@employee) %>
+  </li>
   <li>
     <label><%= :Vacation %>:</label>
     <%= link_to t(:View), employee_vacations_path(@employee) %> |
@@ -17,8 +20,7 @@
   </li>
   <li>
     <label><%= :Hours %>:</label>
-    <%= link_to t(:View), employee_work_hours_path(@employee) %> |
-    <%= link_to t(:Add), edit_employee_work_hours_path(@employee, referred_by: request.path) %>
+    <%= link_to t(:View), employee_work_hours_path(@employee) %>
   </li>
 </ul>
 

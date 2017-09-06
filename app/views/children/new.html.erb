@@ -1,7 +1,11 @@
-<h1>New Child</h1>
+<%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
+
+<h2>
+  <%= t :Children_of %> <%= @employee.full_name %>
+  <small><%= t :New_child %></small>
+</h2>
 
 <%= form_for [@employee, @child] do |form| %>
   <%= render 'form', form: form %>
 <% end %>
 
-<%= link_to 'Back', employee_children_path(@employee) %>

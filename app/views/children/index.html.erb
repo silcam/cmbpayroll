@@ -1,6 +1,6 @@
-<p id="notice"><%= notice %></p>
+<%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
 
-<h1>Children</h1>
+<h2><%= t :Children_of %> <%= @employee.full_name %></h2>
 
 <table>
   <thead>

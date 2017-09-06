@@ -20,6 +20,7 @@ fr:
   must_exist: doit exister
   No_go_back: Non, retourner
   Go: Aller
+  Add: Ajouter
   
   #Time and Date
   Date: Date
@@ -40,6 +41,11 @@ fr:
   Name: Nom
   Department: Département
   Status: Statut
+
+  # Children
+  Children: Enfants
+  Children_of: Enfants de  # TODO - This isn't perfect if the next word starts with a vowel.
+  New_child: Nouvel enfant
 
   # Transactions
   Transactions: Transactions

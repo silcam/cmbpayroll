@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170818152548) do
+ActiveRecord::Schema.define(version: 20170905143012) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,7 +22,21 @@ ActiveRecord::Schema.define(version: 20170818152548) do
     t.boolean "is_student"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "employee_id"
+    t.bigint "employee_id"
+    t.index ["employee_id"], name: "index_children_on_employee_id"
+  end
+
+  create_table "earnings", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "payslip_id"
+    t.decimal "hours"
+    t.decimal "rate"
+    t.decimal "amount"
+    t.decimal "percentage"
+    t.boolean "overtime"
+    t.index ["payslip_id"], name: "index_earnings_on_payslip_id"
   end
 
   create_table "employees", force: :cascade do |t|
@@ -54,6 +68,19 @@ ActiveRecord::Schema.define(version: 20170818152548) do
     t.index ["child_id"], name: "index_employees_on_child_id"
   end
 
+  create_table "payslips", force: :cascade do |t|
+    t.datetime "payslip_date"
+    t.datetime "last_processed"
+    t.datetime "period_start"
+    t.datetime "period_end"
+    t.decimal "gross_pay"
+    t.decimal "net_pay"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "employee_id"
+    t.index ["employee_id"], name: "index_payslips_on_employee_id"
+  end
+
   create_table "transactions", force: :cascade do |t|
     t.integer "amount"
     t.datetime "created_at", null: false
@@ -62,4 +89,25 @@ ActiveRecord::Schema.define(version: 20170818152548) do
     t.index ["employee_id"], name: "index_transactions_on_employee_id"
   end
 
+  create_table "vacations", force: :cascade do |t|
+    t.bigint "employee_id"
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_vacations_on_employee_id"
+  end
+
+  create_table "work_hours", force: :cascade do |t|
+    t.bigint "employee_id"
+    t.date "date"
+    t.float "hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_work_hours_on_employee_id"
+  end
+
+  add_foreign_key "children", "employees"
+  add_foreign_key "earnings", "payslips"
+  add_foreign_key "payslips", "employees"
 end

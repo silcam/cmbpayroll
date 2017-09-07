@@ -10,15 +10,20 @@ Rails.application.routes.draw do
       resources :children
       resources :transactions
       resources :vacations, except: :show
+      resources :payslips, only: [ :index, :show ]
     end
   end
+
+  resources 'payslips', only: [ :index, :show ]
+
+  # Payslips (temp routes)
+  post 'payslips/process', to: 'payslips#process_employee'
+  post 'payslips/process_complete', to: 'payslips#process_employee_complete'
 
   # Work Hours
   get 'employees/:employee_id/work_hours',      to: 'work_hours#index', as: :employee_work_hours
   get 'employees/:employee_id/work_hours/edit', to: 'work_hours#edit',  as: :edit_employee_work_hours
   post 'employees/:employee_id/work_hours',    to: 'work_hours#update', as: :update_employee_work_hours
-
-
 
   # Session Controller
   get 'login', to: 'sessions#new'

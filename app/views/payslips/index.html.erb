@@ -1,0 +1,15 @@
+<% provide(:title, "Payslips") %>
+
+<h2><%= t :Payslip_management %></h2>
+
+<h4 style="color:red">For testing purposes at this point...</h4>
+
+
+<%= form_tag("/payslips/process", method: "post") do %>
+
+<p>
+Process a payslip for: <%= collection_select(:employee, :id, @employees, :id, :full_name, {:prompt => "Select an employee..."}) %>
+</p>
+
+<%= submit_tag("Submit") %>
+<% end %>

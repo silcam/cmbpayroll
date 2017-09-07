@@ -6,6 +6,7 @@ class Employee < ApplicationRecord
   has_many :children
   has_many :work_hours
   has_many :vacations
+  has_many :payslips
 
   validates :first_name, :last_name, :title, :department, presence: {message: I18n.t(:Not_blank)}
   validates :hours_day, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }

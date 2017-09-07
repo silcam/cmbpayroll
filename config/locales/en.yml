@@ -33,7 +33,7 @@ en:
   Period: Period
   Start_date: Start Date
   End_date: End Date
-  
+
   # Employees
   Employees: Employees
   Employee: Employee
@@ -56,6 +56,12 @@ en:
   New_loan: New Loan
   Type: Type
   Detail: Detail
+
+  # Payslips
+  Payslips: Payslips
+  Payslip_management: Payslip Management
+  For_the_month: for the month
+  Process: Process
 
   # WorkHours
   Enter_hours: Enter Hours

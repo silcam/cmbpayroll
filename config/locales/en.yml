@@ -85,3 +85,5 @@ en:
   Login: Log in
   Logout: Log out
   Failed_login: Sorry, the username or password is incorrect.
+  New_user_account: New User Account
+  Confirm_password: Confirm Password

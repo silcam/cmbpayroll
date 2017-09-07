@@ -3,5 +3,7 @@ class User < ApplicationRecord
 
   belongs_to :person
 
-  validates :username, :password, presence: {message: I18n.t(:Not_blank)}
+  has_secure_password
+
+  validates :username, presence: {message: I18n.t(:Not_blank)}
 end

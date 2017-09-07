@@ -20,4 +20,11 @@ class Person < ApplicationRecord
   def full_name_rev
     "#{last_name}, #{first_name}"
   end
+
+  def self.non_users
+    Person.left_outer_joins(:user)
+        .left_outer_joins(:child)
+        .where('users.id IS NULL')
+        .where('children.id IS NULL')
+  end
 end

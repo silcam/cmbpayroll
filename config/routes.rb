@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   get 'employees/:employee_id/work_hours/edit', to: 'work_hours#edit',  as: :edit_employee_work_hours
   post 'employees/:employee_id/work_hours',    to: 'work_hours#update', as: :update_employee_work_hours
 
-
+  resources :users
 
   # Session Controller
   get 'login', to: 'sessions#new'

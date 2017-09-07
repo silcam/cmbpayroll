@@ -125,27 +125,25 @@
   </tbody>
 </table>
 
-<% if (@employee.children.blank?) %>
-<p>
- <%= t(:no_children) %>
-</p>
+<% if (@employee.children.empty?) %>
+  <p>
+   <%= t(:no_children) %>
+  </p>
 <% else %>
-<table class="table">
-<tr>
-  <th>Child Name</th>
-  <th>Child Birth Date</th>
-  <th>Is Child a Student?</th>
-</tr>
-<% end %>
-<% @employee.children.each do |c| %>
-<tr>
-  <td><%= c.first_name %> <%= c.last_name %></td>
-  <td><%= c.birth_date %></td>
-  <td><%= c.is_student %></td>
-</tr>
-<% end %>
-<% unless (@employee.children.blank?) %>
-</table>
+  <table class="table">
+    <tr>
+      <th>Child Name</th>
+      <th>Child Birth Date</th>
+      <th>Is Child a Student?</th>
+    </tr>
+    <% @employee.children.each do |c| %>
+      <tr>
+        <td><%= c.first_name %> <%= c.last_name %></td>
+        <td><%= c.birth_date %></td>
+        <td><%= c.is_student %></td>
+      </tr>
+    <% end %>
+  </table>
 <% end %>
 
 <%= link_to "Edit", {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary' %> &nbsp;

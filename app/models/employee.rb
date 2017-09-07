@@ -5,7 +5,7 @@ class Employee < ApplicationRecord
 
   belongs_to :person
   has_many :transactions
-  has_many :children, through: :person
+  has_many :children, {through: :person, source: :children}
   has_many :work_hours
   has_many :vacations
 

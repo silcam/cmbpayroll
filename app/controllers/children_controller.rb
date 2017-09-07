@@ -15,7 +15,7 @@ class ChildrenController < ApplicationController
 
   # GET /children/new
   def new
-    @child = @employee.children.new
+    @child = Child.new_with_person(parent: @employee.person)
   end
 
   # GET /children/1/edit
@@ -25,7 +25,7 @@ class ChildrenController < ApplicationController
   # POST /children
   # POST /children.json
   def create
-    @child = @employee.children.new(child_params)
+    @child = Child.new_with_person({parent: @employee.person}.merge(child_params))
 
     respond_to do |format|
       if @child.save
@@ -66,7 +66,7 @@ class ChildrenController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_child
     @child = Child.find(params[:id])
-    @employee = @child.employee
+    @employee = @child.parent.employee
   end
 
   def set_employee

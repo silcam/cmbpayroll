@@ -5,7 +5,7 @@ class Person < ApplicationRecord
   has_one :child
   has_one :user
 
-  has_many :children, inverse_of: :parent
+  has_many :children, foreign_key: :parent_id
 
   validates :first_name, :last_name, presence: {message: I18n.t(:Not_blank)}
 

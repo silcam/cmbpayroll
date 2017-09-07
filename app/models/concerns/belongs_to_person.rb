@@ -24,6 +24,13 @@ module BelongsToPerson
     end
   end
 
+  module ClassMethods
+    def new_with_person(params={})
+      newguy = self.new(person: Person.new)
+      newguy.assign_attributes(params)
+      newguy
+    end
+  end
 
 
 

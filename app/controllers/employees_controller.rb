@@ -5,11 +5,11 @@ class EmployeesController < ApplicationController
   end
 
   def new
-    @employee = Employee.new
+    @employee = Employee.new_with_person
   end
 
   def create
-    @employee = Employee.new(employee_params)
+    @employee = Employee.new_with_person(employee_params)
     if @employee.save
       redirect_to employees_path
     else

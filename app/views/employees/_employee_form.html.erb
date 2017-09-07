@@ -80,7 +80,7 @@
     </div>
     <div class="form-group">
       <%= f.label :gender %>
-      <%= f.select :gender, Employee.genders.keys %>
+      <%= f.select :gender, Person.genders.keys %>
     </div>
     <div class="form-group">
       <%= f.label :marital_status %>
@@ -89,7 +89,7 @@
     <div class="form-group">
       <%= f.label :days_week %>
       <%= f.select :days_week, Employee.days_weeks.keys %>
-
+    </div>
     <br />
     <%= f.submit t(:Save), class: 'btn btn-primary' %>
     <% if params[:action] == "edit" %>

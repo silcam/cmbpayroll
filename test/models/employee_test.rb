@@ -18,8 +18,7 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "validations" do
     params = {
-        first_name: 'Joe',
-        last_name: 'Shmoe',
+        person: Person.new(first_name: 'Joe', last_name: 'Shmoe'),
         title: 'Director',
         department: 'Computer Services',
         hours_day: 12
@@ -29,7 +28,7 @@ class EmployeeTest < ActiveSupport::TestCase
   end
 
   test "conditional_wage_validation" do
-    employee = Employee.new
+    employee = Employee.new(person: Person.new)
 
     employee.first_name = "Joe"
     employee.last_name = "Smith"
@@ -50,7 +49,7 @@ class EmployeeTest < ActiveSupport::TestCase
 
 
   test "enum_validations" do
-    employee = Employee.new
+    employee = Employee.new(person: Person.new)
 
     employee.first_name = "Joe"
     employee.last_name = "Smith"
@@ -133,7 +132,7 @@ class EmployeeTest < ActiveSupport::TestCase
   end
 
   test "numeric_validations" do
-    employee = Employee.new
+    employee = Employee.new(person: Person.new)
 
     employee.first_name = "Joe"
     employee.last_name = "Smith"

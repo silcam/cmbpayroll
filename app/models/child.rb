@@ -1,6 +1,8 @@
 class Child < ApplicationRecord
+  include BelongsToPerson
 
-  belongs_to :employee
+  belongs_to :person
+  belongs_to :parent, class_name: 'Person'
 
-  validates :first_name, :last_name, :birth_date, presence: {message: I18n.t(:Not_blank)}
+
 end

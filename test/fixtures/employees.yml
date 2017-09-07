@@ -1,11 +1,8 @@
 Luke:
-  first_name: Luke
-  last_name: Skywalker
+  person: Luke
 
 Anakin:
-  first_name: Anakin
-  last_name: Skywalker
+  person: Anakin
 
 Chewie:
-  first_name: Chewbacca
-  last_name: Wookie
+  person: Chewie

@@ -1,32 +1,23 @@
 include ApplicationHelper
 
 class Employee < ApplicationRecord
+  include BelongsToPerson
 
+  belongs_to :person
   has_many :transactions
-  has_many :children
+  has_many :children, through: :person
   has_many :work_hours
   has_many :vacations
 
-  validates :first_name, :last_name, :title, :department, presence: {message: I18n.t(:Not_blank)}
+  validates :title, :department, presence: {message: I18n.t(:Not_blank)}
   validates :hours_day, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }
   validates :wage, presence: true, if: :echelon_requires_wage?
-
-  default_scope { order(:last_name, :first_name)}
-
-  def full_name
-    "#{first_name} #{last_name}"
-  end
-
-  def full_name_rev
-    "#{last_name}, #{first_name}"
-  end
 
   def echelon_requires_wage?
     echelon == "g"
   end
 
   enum employment_status: [ :full_time, :part_time ]
-  enum gender: [ :male, :female ]
   enum marital_status: [ :single, :married ]
   enum days_week: [ :one, :two, :three, :four, :five, :six, :seven ], _suffix: :day
 
@@ -39,6 +30,7 @@ class Employee < ApplicationRecord
   enum wage_period: [ :hourly, :monthly ]
 
   def total_hours_so_far
+    #TODO is this logic redundant with something somewhere else?
     hours = WorkHour.total_hours_so_far(self)
     hours[:normal] = hours[:normal] - Vacation.missed_hours_so_far(self)
     hours

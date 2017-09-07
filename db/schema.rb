@@ -10,29 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170818152548) do
+ActiveRecord::Schema.define(version: 20170907083203) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "children", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
-    t.date "birth_date"
     t.boolean "is_student"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "employee_id"
+    t.bigint "person_id"
+    t.bigint "parent_id"
+    t.index ["parent_id"], name: "index_children_on_parent_id"
+    t.index ["person_id"], name: "index_children_on_person_id"
   end
 
   create_table "employees", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "title"
     t.string "department"
-    t.datetime "birth_date"
     t.string "cnps"
     t.string "dipe"
     t.datetime "contract_start"
@@ -45,13 +42,21 @@ ActiveRecord::Schema.define(version: 20170818152548) do
     t.float "taxable_percentage"
     t.integer "transportation"
     t.integer "employment_status"
-    t.integer "gender"
     t.integer "marital_status"
     t.integer "hours_day"
     t.integer "days_week"
-    t.bigint "child_id"
     t.integer "wage"
-    t.index ["child_id"], name: "index_employees_on_child_id"
+    t.bigint "person_id"
+    t.index ["person_id"], name: "index_employees_on_person_id"
+  end
+
+  create_table "people", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.integer "gender"
+    t.date "birth_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "transactions", force: :cascade do |t|
@@ -60,6 +65,33 @@ ActiveRecord::Schema.define(version: 20170818152548) do
     t.datetime "updated_at", null: false
     t.bigint "employee_id"
     t.index ["employee_id"], name: "index_transactions_on_employee_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "username"
+    t.string "password"
+    t.bigint "person_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_id"], name: "index_users_on_person_id"
+  end
+
+  create_table "vacations", force: :cascade do |t|
+    t.bigint "employee_id"
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_vacations_on_employee_id"
+  end
+
+  create_table "work_hours", force: :cascade do |t|
+    t.bigint "employee_id"
+    t.date "date"
+    t.float "hours"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_work_hours_on_employee_id"
   end
 
 end

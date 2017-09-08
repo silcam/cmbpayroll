@@ -6,9 +6,8 @@ class SessionsController < ApplicationController
   end
 
   def create
-    # Find user based on login params
-    user = User.find_by "people.first_name='Luke'"
-    if user # TODO Check password
+    user = User.find_by(username: params['username']).try(:authenticate, params['password'])
+    if user
       log_in user
       send_to_correct_page
     else

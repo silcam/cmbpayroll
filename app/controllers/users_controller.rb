@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  # TODO !!!!!!! Remove this once we have users created everywhere
+  skip_before_action :require_login, only: [:new, :create]
 
   before_action :set_user, only: [:edit, :update, :show, :destroy]
 

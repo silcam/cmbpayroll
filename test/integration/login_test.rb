@@ -29,6 +29,13 @@ class LoginTest < Capybara::Rails::TestCase
     assert_current_path employees_path
   end
 
+  test "This test is to remind us to stop bypassing
+              the login form for user creation once we have
+              users in all environments" do
+    visit new_user_path
+    assert_current_path login_path
+  end
+
   def login_form(username, password)
     fill_in 'Username', with: username
     fill_in 'Password', with: password

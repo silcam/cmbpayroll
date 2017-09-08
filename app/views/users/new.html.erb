@@ -6,34 +6,40 @@
 
     <div class="radio">
       <label>
-        <%= radio_button_tag :new_person, false %>
-        <%= t :Use_exising_person %>
+        <%= radio_button_tag :new_person, false, true, data: {'new-person' => false} %>
+        <b><%= t :Use_existing_person %></b>
       </label>
     </div>
 
-    <div class="form-group">
-      <%= form.collection_select :person_id, Person.non_users, :id, :full_name_rev %>
+    <div class="form-group tabbed">
+      <%= form.collection_select :person_id, Person.non_users,
+                                 :id, :full_name_rev, {},
+                                 class: 'form-control existing-person-control' %>
     </div>
 
     <div class="radio">
       <label>
-        <%= radio_button_tag :new_person, true %>
-        <%= t :Create_new_person %>
+        <%= radio_button_tag :new_person, true, false, data: {'new-person' => true} %>
+        <b><%= t :Create_new_person %></b>
       </label>
     </div>
 
-    <div class="form-group">
+    <div class="form-group tabbed">
       <label>
         <%= t :First_name %>
       </label>
-      <%= form.text_field :first_name, class: 'form-control' %>
+      <%= form.text_field :first_name,
+                          class: 'form-control new-person-control',
+                          disabled: true %>
     </div>
 
-    <div class="form-group">
+    <div class="form-group tabbed">
       <label>
         <%= t :Last_name %>
       </label>
-      <%= form.text_field :last_name, class: 'form-control' %>
+      <%= form.text_field :last_name,
+                          class: 'form-control new-person-control',
+                          disabled: true %>
     </div>
 
     <div class="form-group">

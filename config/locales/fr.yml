@@ -34,6 +34,12 @@ fr:
   Start_date: Date de commencement
   End_date: Date de fin
 
+  # People
+  First_name: Prénom
+  Last_name: Nom
+  Create_new_person: Créer une nouvelle personne
+  Use_existing_person: Utiliser une personne déjà faite
+
   # Employees
   Employees: Employés
   Employee: Employé
@@ -85,3 +91,5 @@ fr:
   Login: Connecter
   Logout: Déconnexion
   Failed_login: Désolé, mais les parametres donnés ne sont pas corrects.
+  New_user_account: Nouveau compte utilisateur
+  Confirm_passwoerd: Confirmer mot de passe

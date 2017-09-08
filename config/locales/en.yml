@@ -33,6 +33,12 @@ en:
   Period: Period
   Start_date: Start Date
   End_date: End Date
+
+  # People
+  First_name: First Name
+  Last_name: Last Name
+  Create_new_person: Create New Person
+  Use_existing_person: Use Existing Person
   
   # Employees
   Employees: Employees

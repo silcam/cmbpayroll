@@ -1,2 +1,4 @@
 Luke:
   person: Luke
+  username: luke
+  password_digest: <%= BCrypt::Password.create('luke', cost: 5) %>

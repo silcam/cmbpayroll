@@ -19,4 +19,11 @@ class ActiveSupport::TestCase
     should_save = model.new(params)
     assert should_save.save, "Should save #{model} with valid params"
   end
+
+  def log_in_luke
+    visit login_path
+    fill_in 'Username', with: 'luke'
+    fill_in 'Password', with: 'luke'
+    click_button 'Log in'
+  end
 end

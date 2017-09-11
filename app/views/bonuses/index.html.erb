@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Bonuses</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Quantity</th>
+      <th>Type</th>
+      <th>Comment</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @bonuses.each do |bonus| %>
+      <tr>
+        <td><%= bonus.name %></td>
+        <td><%= bonus.quantity %></td>
+        <td><%= bonus.bonus_type %></td>
+        <td><%= bonus.comment %></td>
+        <td><%= link_to 'Show', bonus %></td>
+        <td><%= link_to 'Edit', edit_bonus_path(bonus) %></td>
+        <td><%= link_to 'Destroy', bonus, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Bonus', new_bonus_path %>

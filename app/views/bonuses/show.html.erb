@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @bonus.name %>
+</p>
+
+<p>
+  <strong>Quantity:</strong>
+  <%= @bonus.quantity %>
+</p>
+
+<p>
+  <strong>Type:</strong>
+  <%= @bonus.bonus_type %>
+</p>
+
+<p>
+  <strong>Comment:</strong>
+  <%= @bonus.comment %>
+</p>
+
+<%= link_to 'Edit', edit_bonus_path(@bonus) %> |
+<%= link_to 'Back', bonuses_path %>

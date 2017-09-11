@@ -75,6 +75,10 @@ fr:
   Save_vacation_and_delete_work_hours: Enregister vacances et supprimer ces heures
   Other_upcoming_vacation: Autres vacances futures
 
+  # Bonuses
+  Bonuses: Primes
+  Bonus: Prime
+
   # Reports
   Reports: Rapports
   Report: Rapport

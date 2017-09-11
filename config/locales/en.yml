@@ -21,6 +21,7 @@ en:
   No_go_back: No, go back
   Go: Go
   Add: Add
+  Other: Other
 
   # Time and Date
   Date: Date
@@ -54,15 +55,17 @@ en:
   Children_of: Children of
   New_child: New Child
 
-  # Transactions
-  Transactions: Transactions
-  Transactions_for: Transactions for
+  # Charges
   Charges: Charges
-  Add_transaction: Add Transaction
+  Charges_for: Charges for
+  Charges: Charges
+  Add_charge: Add Charge
   Enter_charges: Enter Charges
   New_loan: New Loan
   Type: Type
   Detail: Detail
+  Must_be_whole_number: must be a whole number.
+  Amount: Amount
 
   # WorkHours
   Enter_hours: Enter Hours

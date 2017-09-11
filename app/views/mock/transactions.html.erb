@@ -1,4 +1,4 @@
-<% provide(:title, "Transactions") %>
+<% provide(:title, "Charges") %>
 
 <ul class="list-inline">
   <li><%= button_to t(:Enter_hours_overtime), {action: 'hours_edit'}, method: :get, class: 'btn btn-primary' %></li>
@@ -8,7 +8,7 @@
 </ul>
 
 <h3>
-  <%= t :Transactions_for %>
+  <%= t :Charges_for %>
   <%= select_tag 'month', options_for_select(['July', 'June', 'May', 'April']), class: 'form-control form-control-inline' %>
   &nbsp;&nbsp;&nbsp;<%= t :Type %>
   <%= select_tag 'type', options_for_select(['All', 'Hours', 'Vacation', 'Charges', 'Loan']), class: 'form-control form-control-inline' %>
@@ -16,7 +16,7 @@
 
 <table class="table" style="margin-top: 15px;">
   <%
-    transactions = [['Vacation', '31 July 2017', 'Luke Skywalker', 'Aug 3 - Aug 14'],
+    charges = [['Vacation', '31 July 2017', 'Luke Skywalker', 'Aug 3 - Aug 14'],
                  ['Overtime', '29 July 2017', 'Han Solo', '3 hrs on 15 July'],
                  ['Copy Charges', '28 July 2017', '15 Employees', 'Total: CFA 4500'],
                  ['Hours Entered', '28 July 2017', '33 Employees', 'Hours for July']]
@@ -28,14 +28,14 @@
     <th><%= t :Detail %></th>
     <th colspan="2"></th>
   </tr>
-    <% transactions.each do |transaction| %>
+    <% charges.each do |charge| %>
       <tr>
-        <td><%= transaction[0] %></td>
-        <td><%= transaction[1] %></td>
-        <td><%= transaction[2] %></td>
-        <td><%= transaction[3] %></td>
-        <td><%= link_to t(:View), 'transactions/1' %></td>
-        <td><%= link_to t(:Modify), 'transactions/1' %></td>
+        <td><%= charge[0] %></td>
+        <td><%= charge[1] %></td>
+        <td><%= charge[2] %></td>
+        <td><%= charge[3] %></td>
+        <td><%= link_to t(:View), 'charges/1' %></td>
+        <td><%= link_to t(:Modify), 'charges/1' %></td>
       </tr>
     <% end %>
 </table>

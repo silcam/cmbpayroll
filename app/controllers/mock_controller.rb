@@ -8,7 +8,7 @@ class MockController < ApplicationController
 
   end
 
-  def transactions
+  def charges
 
   end
 

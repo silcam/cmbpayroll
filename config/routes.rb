@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   shallow do
     resources :employees do
       resources :children
-      resources :transactions
+      resources :charges, except: [:edit, :update, :show]
       resources :vacations, except: :show
     end
   end
@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   get 'mock', to: "mock#home"
   get 'mock_employees', to: 'mock#employees'
   get 'mock_vacation', to: 'mock#vacation'
-  get 'transactions', to: 'mock#transactions'
+  get 'charges', to: 'mock#charges'
   get 'hours/edit', to: 'mock#hours_edit'
   get 'reports', to: 'mock#reports'
 end

@@ -1,0 +1,25 @@
+<%= render 'shared/error_messages', errors: @charge.errors %>
+
+<h2><%= @employee.full_name %></h2>
+
+<%= form_for @charge, html: {class: 'auto-width'} do |form| %>
+  <div class='form-group'>
+    <%= form.label :amount, t(:Amount) %>
+    <%= form.text_field :amount, placeholder: 'CFA', class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :date, t(:Date), style: 'display: block;' %>
+    <%= form.date_select :date, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :note, t(:Note), style: 'display: block;' %>
+    <%= select_tag 'standard_charge_note_id',
+                   options_for_select(StandardChargeNote.all.collect{ |chg| [chg.note, chg.id] } + [t(:Other)]),
+                   class: 'form-control', style: 'display: inline-block;' %>
+    <%= form.text_field :note, class: 'form-control', style: 'display: inline-block;' %>
+  </div>
+
+  <%= form.submit t(:Save), class: 'btn btn-primary'%>
+<% end %>

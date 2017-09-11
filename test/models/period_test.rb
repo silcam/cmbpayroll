@@ -51,6 +51,10 @@ class PeriodTest < ActiveSupport::TestCase
     assert_equal "July 2017", @july.name
   end
 
+  test "To String" do
+    assert_equal '2017-07', @july.to_s
+  end
+
   test "Current" do
     Date.stub :today, Date.new(2017, 7, 15) do
       assert_equal @july, Period.current
@@ -75,5 +79,11 @@ class PeriodTest < ActiveSupport::TestCase
 
   test "Count Weekdays" do
     assert_equal 6, Period.count_weekdays(Date.new(2017, 9, 1), Date.new(2017, 9, 9))
+  end
+
+  test "Period from string" do
+    assert_equal Period.new(2017, 7), Period.fr_str('2017-07')
+
+    assert_raises (ArgumentError){ Period.fr_str('17-07') }
   end
 end

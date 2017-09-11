@@ -1,0 +1,2 @@
+class StandardChargeNote < ApplicationRecord
+end

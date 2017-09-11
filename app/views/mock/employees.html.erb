@@ -1,8 +1,8 @@
 <% provide(:title, "Employees") %>
 
-<%= button_to t(:New_employee), 'employees/new', class: 'btn btn-primary' %>
+<%= button_to t(:New_employee), 'employees/new', class: 'btn btn-primary btn-w-marge' %>
 
-<table class="table" style="margin-top: 15px;">
+<table class="table">
   <%
     employees = [['Luke Skywalker', 'CAM', 'Full-time'],
                  ['Anakin Skywalker', 'RFIS', 'Part-time'],
@@ -22,7 +22,7 @@
         <td><%= link_to employee[0], 'employees/1' %></td>
         <td><%= employee[1] %></td>
         <td><%= employee[2] %></td>
-        <td><%= link_to t(:Add_transaction), 'employees/1/transactions/new' %></td>
+        <td><%= link_to t(:Add_charge), 'employees/1/charges/new' %></td>
       </tr>
     <% end %>
   <% end %>

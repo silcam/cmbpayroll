@@ -55,6 +55,10 @@ class Period
     start.strftime("%B %Y")
   end
 
+  def to_s
+    start.strftime("%Y-%m")
+  end
+
   def <=>(other)
     if @year == other.year
       return @month <=> other.month
@@ -87,4 +91,7 @@ class Period
     weekdays
   end
 
+  def self.fr_str(s)
+    Period.new(Integer(s[0..3]), Integer(s[5..6]))
+  end
 end

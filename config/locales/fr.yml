@@ -21,6 +21,7 @@ fr:
   No_go_back: Non, retourner
   Go: Aller
   Add: Ajouter
+  Other: Autre
   
   #Time and Date
   Date: Date
@@ -54,15 +55,17 @@ fr:
   Children_of: Enfants de  # TODO - This isn't perfect if the next word starts with a vowel.
   New_child: Nouvel enfant
 
-  # Transactions
-  Transactions: Transactions
-  Transactions_for: Transactions pour
+  # Charges
   Charges: Charges
-  Add_transaction: Ajouter une transaction
+  Charges_for: Charges pour
+  Charges: Charges
+  Add_charge: Ajouter une charge
   Enter_charges: Saisir charges
   New_loan: Nouveau prêt
   Type: Type
   Detail: Détail
+  Must_be_whole_number: doit être un nombre entier.
+  Amount: Montant
 
   # WorkHours
   Enter_hours: Saisir heures

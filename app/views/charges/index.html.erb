@@ -1,0 +1,22 @@
+<h2>
+  <%= t :Charges_for %> <%= @employee.full_name %>
+  <small>
+    <%= @period.name %>
+  </small>
+</h2>
+
+<%= link_to t(:Add_charge), new_employee_charge_path, class: 'btn btn-primary btn-w-marge' %>
+
+<table class="table">
+  <tr>
+    <th><%= t :Date %></th>
+    <th><%= t :Amount %></th>
+  </tr>
+  <% @charges.each do |charge| %>
+    <tr>
+      <td><%= charge.date %></td>
+      <td>FCFA <%= charge.amount %></td>
+    </tr>
+  <% end %>
+</table>
+

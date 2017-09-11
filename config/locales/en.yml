@@ -100,3 +100,6 @@ en:
   New_user: New User
   Change_password: Change Password
   Delete_account: Delete Account
+  Confirm_delete_account: Are you sure you want to delete the account for %{name}?
+  Change_preferred_language: Change Preferred Language
+  Change_language: Change Language

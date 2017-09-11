@@ -23,9 +23,8 @@ class ApplicationController < ActionController::Base
     redirect_to login_path
   end
 
-  #TODO User Language
   def set_locale
-    I18n.locale = current_user.try(:ui_language) || I18n.default_locale
+    I18n.locale = current_user.try(:language) || I18n.default_locale
   end
 
   def store_redirect

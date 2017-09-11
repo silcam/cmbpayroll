@@ -95,8 +95,11 @@ fr:
   New_user_account: Nouveau compte utilisateur
   Confirm_passwoerd: Confirmer mot de passe
   Users: Utilisateurs
-  User: User
+  User: Utilisateur
   Role: Rôle
   New_user: Nouvel utilisateur
   Change_password: Changer mot de passe
   Delete_account: Supprimer compte
+  Confirm_delete_account: Confirmez la supprimation du compte pour %{name}.
+  Change_preferred_language: Changer la langue préférée
+  Change_language: Changer la langue

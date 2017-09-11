@@ -20,9 +20,27 @@
 <hr>
 
 <%= form_for @user, html: {class: 'auto-width'} do |form| %>
-  <!-- Change user language -->
+  <h4><%= t :Change_preferred_language %></h4>
+  <div class="radio">
+    <label>
+      <%= form.radio_button :language, :en %>
+      English
+    </label>
+  </div>
+  <div class="radio">
+    <label>
+      <%= form.radio_button :language, :fr %>
+      Français
+    </label>
+  </div>
+  <%= form.submit t(:Change_language), class: 'btn btn-primary' %>
 <% end %>
 
 <hr>
 
-<%= button_to t(:Delete_account), user_path(@user), method: :delete, class: 'btn btn-danger' %>
+<%= button_to t(:Delete_account),
+              user_path(@user),
+              method: :delete,
+              class: 'btn btn-danger',
+              data: {confirm: t(:Confirm_delete_account,
+                                name: @user.full_name)} %>

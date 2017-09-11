@@ -26,8 +26,12 @@ module BelongsToPerson
 
   module ClassMethods
     def new_with_person(params={})
-      newguy = self.new(person: Person.new)
-      newguy.assign_attributes(params)
+      self.new params
+    end
+
+    def new(params={})
+      newguy = super(person: Person.new)
+      newguy.assign_attributes params
       newguy
     end
   end

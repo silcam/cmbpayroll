@@ -5,17 +5,20 @@ class ChildTest < ActiveSupport::TestCase
 
   def setup
     @luke = people :Luke
+    @lukejr = people :LukeJr
   end
 
 
   test "child is has association" do
     t = Child.reflect_on_association(:parent).macro == :belongs_to
+
+    assert_equal @lukejr, @lukejr.child.person
+    assert_equal @luke, @lukejr.child.parent
   end
 
   test "child is valid" do
     params = {
-        person: Person.new(birth_date: '2008-01-01',
-                           first_name: 'Billy',
+        person: Person.new(first_name: 'Billy',
                            last_name: 'Bob'),
         parent: @luke
     }

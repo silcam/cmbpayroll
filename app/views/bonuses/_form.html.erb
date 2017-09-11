@@ -1,7 +1,7 @@
 <%= form_with(model: bonus, local: true) do |form| %>
   <% if bonus.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(bonus.errors.count, "error") %> prohibited this bonus from being saved:</h2>
+      <h2><%= pluralize(bonus.errors.count, t(:error)) %> prohibited this bonus from being saved:</h2>
 
       <ul>
       <% bonus.errors.full_messages.each do |message| %>
@@ -12,22 +12,22 @@
   <% end %>
 
   <div class="field">
-    <%= form.label :name %>
+    <%= form.label t(:Name) %>
     <%= form.text_field :name, id: :bonus_name %>
   </div>
 
   <div class="field">
-    <%= form.label :quantity %>
+    <%= form.label t(:Quantity) %>
     <%= form.text_field :quantity, id: :bonus_quantity %>
   </div>
 
   <div class="field">
-    <%= form.label :bonus_type %>
+    <%= form.label t(:Type) %>
     <%= form.select :bonus_type, Bonus.bonus_types.keys, id: :bonus_bonus_type, prompt: true  %>
   </div>
 
   <div class="field">
-    <%= form.label :comment %>
+    <%= form.label t(:Comment) %>
     <%= form.text_field :comment, id: :bonus_comment %>
   </div>
 

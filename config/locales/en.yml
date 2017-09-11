@@ -1,4 +1,14 @@
 en:
+  activerecord:
+    models:
+      bonus: Prime
+    attributes:
+      bonus:
+        name: Name
+        quantity: Quantity
+        bonus_type: Type
+        comment: Comment
+
   # General
   Payroll: Payroll
   Welcome: Welcome
@@ -21,6 +31,11 @@ en:
   No_go_back: No, go back
   Go: Go
   Add: Add
+  Show: Montrer
+  Back: Retourner
+  Destroy: Destroy
+  Are_you_sure: Are you sure?
+  error: error
 
   # Time and Date
   Date: Date
@@ -33,7 +48,7 @@ en:
   Period: Period
   Start_date: Start Date
   End_date: End Date
-  
+
   # Employees
   Employees: Employees
   Employee: Employee
@@ -78,6 +93,11 @@ en:
   # Bonuses
   Bonuses: Bonuses
   Bonus: Bonus
+  New_bonus: New Bonus
+  Editing_bonus: Editing Bonus
+  Quantity: Quantity
+  Type: Type
+  Comment: Comment
 
   # Reports
   Reports: Reports

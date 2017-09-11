@@ -9,3 +9,7 @@ Anakin:
 Chewie:
   first_name: Chewbacca
   last_name: Wookie
+
+LukeJr:
+  first_name: Luke Jr.
+  last_name: Skywalker

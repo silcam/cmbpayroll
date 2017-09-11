@@ -20,7 +20,7 @@
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
               <li>
-                <%= link_to "#{t(:Welcome)}, #{current_user.first_name}", '#' %>
+                <%= link_to "#{t(:Welcome)}, #{current_user.first_name}", edit_user_path(current_user, referred_by: request.path) %>
               </li>
               <li>
                 <%= link_to t(:Logout), logout_path, method: :delete %>

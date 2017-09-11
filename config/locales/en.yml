@@ -47,6 +47,7 @@ en:
   Name: Name
   Department: Department
   Status: Status
+  Title: Title
 
   # Children
   Children: Children
@@ -85,7 +86,7 @@ en:
   Reports: Reports
   Report: Report
 
-  # Sessions
+  # Sessions & Users
   Username: Username
   Password: Password
   Login: Log in
@@ -93,3 +94,9 @@ en:
   Failed_login: Sorry, the username or password is incorrect.
   New_user_account: New User Account
   Confirm_password: Confirm Password
+  Users: Users
+  User: User
+  Role: Role
+  New_user: New User
+  Change_password: Change Password
+  Delete_account: Delete Account

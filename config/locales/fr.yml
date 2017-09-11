@@ -47,6 +47,7 @@ fr:
   Name: Nom
   Department: Département
   Status: Statut
+  Title: Titre
 
   # Children
   Children: Enfants
@@ -85,7 +86,7 @@ fr:
   Reports: Rapports
   Report: Rapport
 
-  # Sessions
+  # Sessions & Users
   Username: Identifiant
   Password: Mot de passe
   Login: Connecter
@@ -93,3 +94,9 @@ fr:
   Failed_login: Désolé, mais les parametres donnés ne sont pas corrects.
   New_user_account: Nouveau compte utilisateur
   Confirm_passwoerd: Confirmer mot de passe
+  Users: Utilisateurs
+  User: User
+  Role: Rôle
+  New_user: Nouvel utilisateur
+  Change_password: Changer mot de passe
+  Delete_account: Supprimer compte

@@ -1,0 +1,12 @@
+<ul class="list-inline">
+  <li>
+    <%= link_to "< #{period.previous.name}",
+                "#{path}?period=#{period.previous}" %>
+  </li>
+  <% if period != Period.current or (defined? future and future) %>
+      <li>
+        <%= link_to "#{period.next.name} >",
+                    "#{path}?period=#{period.next}" %>
+      </li>
+  <% end %>
+</ul>

@@ -2,7 +2,7 @@
 
 <h2><%= @employee.full_name %></h2>
 
-<%= form_for @charge, html: {class: 'auto-width'} do |form| %>
+<%= form_for @charge, url: employee_charges_path(@employee), html: {class: 'auto-width'} do |form| %>
   <div class='form-group'>
     <%= form.label :amount, t(:Amount) %>
     <%= form.text_field :amount, placeholder: 'CFA', class: 'form-control' %>
@@ -17,8 +17,8 @@
     <%= form.label :note, t(:Note), style: 'display: block;' %>
     <%= select_tag 'standard_charge_note_id',
                    options_for_select(StandardChargeNote.all.collect{ |chg| [chg.note, chg.id] } + [t(:Other)]),
-                   class: 'form-control', style: 'display: inline-block;' %>
-    <%= form.text_field :note, class: 'form-control', style: 'display: inline-block;' %>
+                   class: 'form-control form-control-inline' %>
+    <%= form.text_field :note, class: 'form-control form-control-inline', style: 'display: none;' %>
   </div>
 
   <%= form.submit t(:Save), class: 'btn btn-primary'%>

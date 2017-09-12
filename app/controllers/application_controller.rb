@@ -35,4 +35,8 @@ class ApplicationController < ActionController::Base
   rescue_from "AccessGranted::AccessDenied" do |exception|
     redirect_to not_allowed_path
   end
+
+  def get_params_period
+    params[:period] ? Period.fr_str(params[:period]) : Period.current
+  end
 end

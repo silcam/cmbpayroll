@@ -11,6 +11,14 @@ class PeriodTest < ActiveSupport::TestCase
     assert_equal 9, p.month
   end
 
+  test "Invalid Period" do
+    assert_raises (InvalidPeriod) { Period.new(0, 1) }
+    assert_raises (InvalidPeriod) { Period.new(10000, 1) }
+    assert_raises (InvalidPeriod) { Period.new(2017, 0) }
+    assert_raises (InvalidPeriod) { Period.new(2017, 13) }
+    assert_raises (InvalidPeriod) { Period.new('2017', 1) }
+  end
+
   test "Start" do
     assert_equal Date.new(2017, 7, 1), @july.start
   end
@@ -84,6 +92,6 @@ class PeriodTest < ActiveSupport::TestCase
   test "Period from string" do
     assert_equal Period.new(2017, 7), Period.fr_str('2017-07')
 
-    assert_raises (ArgumentError){ Period.fr_str('17-07') }
+    assert_raises (InvalidPeriod){ Period.fr_str('17-07') }
   end
 end

@@ -1,3 +1,5 @@
 <% provide :title, t(:Charges) %>
 
+<%= link_to "<< #{@employee.full_name} #{t :Charges}", employee_charges_path(@employee) %>
+
 <%= render 'charges_form' %>

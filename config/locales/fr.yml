@@ -66,6 +66,7 @@ fr:
   Detail: Détail
   Must_be_whole_number: doit être un nombre entier.
   Amount: Montant
+  Note: Note
 
   # WorkHours
   Enter_hours: Saisir heures

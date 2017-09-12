@@ -2,7 +2,7 @@ class ChargesController < ApplicationController
   before_action :set_employee, only: [:index, :new, :create]
 
   def index
-    @period = params[:period] ? Period.fr_str(params[:period]) : Period.current
+    @period = get_params_period
     @charges = @employee.charges.for_period @period
   end
 
@@ -11,7 +11,7 @@ class ChargesController < ApplicationController
   end
 
   def create
-    @charge = Charge.new(charge_params)
+    @charge = @employee.charges.new(charge_params)
     if @charge.save
       redirect_to employee_charges_path @employee
     else
@@ -29,7 +29,7 @@ class ChargesController < ApplicationController
 
   def charge_params
     set_note
-    params.require(:charge).permit(:amount, :note)
+    params.require(:charge).permit(:amount, :note, :date)
   end
 
   def set_note

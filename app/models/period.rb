@@ -3,8 +3,15 @@ class Period
   attr_reader :year, :month
 
   def initialize(year, month)
+    validate(year, month)
     @year = year
     @month = month
+  end
+
+  def validate(year, month)
+    unless (1..9999) === year and (1..12) === month
+      raise InvalidPeriod
+    end
   end
 
   def start
@@ -92,6 +99,10 @@ class Period
   end
 
   def self.fr_str(s)
-    Period.new(Integer(s[0..3]), Integer(s[5..6]))
+    Period.new(s[0..3].to_i, s[5..6].to_i)
   end
+end
+
+class InvalidPeriod < Exception
+
 end

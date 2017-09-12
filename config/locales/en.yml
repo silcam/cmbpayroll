@@ -66,6 +66,7 @@ en:
   Detail: Detail
   Must_be_whole_number: must be a whole number.
   Amount: Amount
+  Note: Note
 
   # WorkHours
   Enter_hours: Enter Hours

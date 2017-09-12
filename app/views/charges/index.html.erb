@@ -1,3 +1,5 @@
+<%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
+
 <h2>
   <%= t :Charges_for %> <%= @employee.full_name %>
   <small>
@@ -7,15 +9,21 @@
 
 <%= link_to t(:Add_charge), new_employee_charge_path, class: 'btn btn-primary btn-w-marge' %>
 
+<%= render 'shared/period_nav',
+           period: @period,
+           path: employee_charges_path(@employee) %>
+
 <table class="table">
   <tr>
     <th><%= t :Date %></th>
     <th><%= t :Amount %></th>
+    <th><%= t :Note %></th>
   </tr>
   <% @charges.each do |charge| %>
     <tr>
-      <td><%= charge.date %></td>
+      <td><%= std_datestring charge.date %></td>
       <td>FCFA <%= charge.amount %></td>
+      <td><%= charge.note %></td>
     </tr>
   <% end %>
 </table>

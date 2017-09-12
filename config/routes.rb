@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :bonuses
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
 
@@ -10,8 +11,15 @@ Rails.application.routes.draw do
       resources :children
       resources :transactions
       resources :vacations, except: :show
+      resources :payslips, only: [ :index, :show ]
     end
   end
+
+  resources 'payslips', only: [ :index, :show ]
+
+  # Payslips (temp routes)
+  post 'payslips/process', to: 'payslips#process_employee'
+  post 'payslips/process_complete', to: 'payslips#process_employee_complete'
 
   # Work Hours
   get 'employees/:employee_id/work_hours',      to: 'work_hours#index', as: :employee_work_hours

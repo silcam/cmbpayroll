@@ -15,6 +15,15 @@ ActiveRecord::Schema.define(version: 20170911130644) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "bonuses", force: :cascade do |t|
+    t.string "name"
+    t.decimal "quantity"
+    t.integer "bonus_type"
+    t.string "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "children", force: :cascade do |t|
     t.boolean "is_student"
     t.datetime "created_at", null: false
@@ -23,6 +32,19 @@ ActiveRecord::Schema.define(version: 20170911130644) do
     t.bigint "parent_id"
     t.index ["parent_id"], name: "index_children_on_parent_id"
     t.index ["person_id"], name: "index_children_on_person_id"
+  end
+
+  create_table "earnings", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "payslip_id"
+    t.decimal "hours"
+    t.decimal "rate"
+    t.decimal "amount"
+    t.decimal "percentage"
+    t.boolean "overtime"
+    t.index ["payslip_id"], name: "index_earnings_on_payslip_id"
   end
 
   create_table "employees", force: :cascade do |t|
@@ -48,6 +70,19 @@ ActiveRecord::Schema.define(version: 20170911130644) do
     t.integer "wage"
     t.bigint "person_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
+  end
+
+  create_table "payslips", force: :cascade do |t|
+    t.datetime "payslip_date"
+    t.datetime "last_processed"
+    t.datetime "period_start"
+    t.datetime "period_end"
+    t.decimal "gross_pay"
+    t.decimal "net_pay"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "employee_id"
+    t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 
   create_table "people", force: :cascade do |t|
@@ -95,4 +130,6 @@ ActiveRecord::Schema.define(version: 20170911130644) do
     t.index ["employee_id"], name: "index_work_hours_on_employee_id"
   end
 
+  add_foreign_key "earnings", "payslips"
+  add_foreign_key "payslips", "employees"
 end

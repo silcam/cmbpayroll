@@ -1,4 +1,14 @@
 en:
+  activerecord:
+    models:
+      bonus: Prime
+    attributes:
+      bonus:
+        name: Name
+        quantity: Quantity
+        bonus_type: Type
+        comment: Comment
+
   # General
   Payroll: Payroll
   Welcome: Welcome
@@ -21,6 +31,11 @@ en:
   No_go_back: No, go back
   Go: Go
   Add: Add
+  Show: Montrer
+  Back: Retourner
+  Destroy: Destroy
+  Are_you_sure: Are you sure?
+  error: error
 
   # Time and Date
   Date: Date
@@ -39,7 +54,7 @@ en:
   Last_name: Last Name
   Create_new_person: Create New Person
   Use_existing_person: Use Existing Person
-  
+
   # Employees
   Employees: Employees
   Employee: Employee
@@ -64,6 +79,12 @@ en:
   Type: Type
   Detail: Detail
 
+  # Payslips
+  Payslips: Payslips
+  Payslip_management: Payslip Management
+  For_the_month: for the month
+  Process: Process
+
   # WorkHours
   Enter_hours: Enter Hours
   Enter_hours_overtime: Enter Hours / Overtime
@@ -81,6 +102,15 @@ en:
   Overlap_message: This vacation overlaps previously entered work hours. Clicking Save will delete these work hours.
   Save_vacation_and_delete_work_hours: Save Vacation and Delete Hours
   Other_upcoming_vacation: Other Upcoming Vacation
+
+  # Bonuses
+  Bonuses: Bonuses
+  Bonus: Bonus
+  New_bonus: New Bonus
+  Editing_bonus: Editing Bonus
+  Quantity: Quantity
+  Type: Type
+  Comment: Comment
 
   # Reports
   Reports: Reports

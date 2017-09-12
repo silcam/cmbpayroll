@@ -1,0 +1,27 @@
+<% employee = Employee.find(@payslip.employee.id) %>
+
+<h2>Payslip #<%= @payslip.id %></h2>
+
+<h4 style="color:red">For testing purposes at this point...</h4>
+
+<br /><br />
+
+<h4>Employee Name: <%= @payslip.employee.full_name %></h4>
+
+<p>
+Pay Date: <%= @payslip.payslip_date %>
+</p>
+
+<h4>Earnings:</h4>
+
+<ul>
+<% @payslip.earnings.all.each do |record| %>
+  <li><%= record.hours %> hours @ <%= record.rate %> CFA (Overtime? <%= record.overtime? %>)<br /></li>
+<% end %>
+</ul>
+
+<h4>Deductions:</h4>
+
+<h4>Payments:</h4>
+
+</p>

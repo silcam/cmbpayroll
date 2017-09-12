@@ -26,4 +26,27 @@ class ActiveSupport::TestCase
     fill_in 'Password', with: 'luke'
     click_button 'Log in'
   end
+
+  def return_valid_employee
+    employee = Employee.new
+    employee.first_name = "Playslip"
+    employee.last_name = "Recipient"
+    employee.title = "Title"
+    employee.department = "Department"
+    employee.hours_day = 23
+    employee.save
+
+    return employee
+  end
+
+  def create_earnings(payslip)
+    earnings = Earning.new
+
+    # default data for a valid object
+    earnings.hours = 1
+    earnings.rate = 1
+
+    payslip.earnings << earnings
+  end
+
 end

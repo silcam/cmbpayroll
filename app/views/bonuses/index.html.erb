@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1><%= t(:Bonuses) %></h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th><%= t(:Name) %></th>
+      <th><%= t(:Quantity) %></th>
+      <th><%= t(:Type) %></th>
+      <th><%= t(:Comment) %></th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @bonuses.each do |bonus| %>
+      <tr>
+        <td><%= bonus.name %></td>
+        <td><%= bonus.quantity %></td>
+        <td><%= bonus.bonus_type %></td>
+        <td><%= bonus.comment %></td>
+        <td><%= link_to t(:Show), bonus %></td>
+        <td><%= link_to t(:Edit), edit_bonus_path(bonus) %></td>
+        <td><%= link_to t(:Destroy), bonus, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to t(:New_bonus), new_bonus_path %>

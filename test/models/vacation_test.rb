@@ -103,11 +103,11 @@ class VacationTest < ActiveSupport::TestCase
     chewie = employees :Chewie
     chewie1 = Vacation.create(employee: chewie, start_date: '2017-06-15', end_date: '2017-07-01')
     chewie2 = Vacation.create(employee: chewie, start_date: '2017-07-30', end_date: '2017-08-15')
-    july_vacays = Vacation.period_vacations(Period.new(2017, 7))
+    july_vacays = Vacation.for_period(Period.new(2017, 7))
     assert_includes july_vacays, @lukes_vacation
     assert_includes july_vacays, chewie1
     assert_includes july_vacays, chewie2
-    refute_includes Vacation.period_vacations, @lukes_vacation
+    refute_includes Vacation.for_period, @lukes_vacation
   end
 
   test "Upcoming Vacations" do

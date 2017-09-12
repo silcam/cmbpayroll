@@ -1,9 +1,9 @@
 require "test_helper"
 
-describe StandardChargeNote do
-  let(:standard_charge_note) { StandardChargeNote.new }
+class StandardChargeNoteTest < ActiveSupport::TestCase
 
-  it "must be valid" do
-    value(standard_charge_note).must_be :valid?
+  test "Valid" do
+    assert_raises (ActiveRecord::RecordInvalid){ StandardChargeNote.create!(note: '') }
+    assert StandardChargeNote.create!(note: 'Gorilla')
   end
 end

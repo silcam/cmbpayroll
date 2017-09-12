@@ -37,6 +37,9 @@ fr:
   Are_you_sure: Vous êtes sûr?
   error: faute
 
+  Other: Autre
+  New: Nouveau
+  
   #Time and Date
   Date: Date
   Hours: Heures
@@ -69,15 +72,19 @@ fr:
   Children_of: Enfants de  # TODO - This isn't perfect if the next word starts with a vowel.
   New_child: Nouvel enfant
 
-  # Transactions
-  Transactions: Transactions
-  Transactions_for: Transactions pour
+  # Charges
   Charges: Charges
-  Add_transaction: Ajouter une transaction
+  Charges_for: Charges pour
+  Charges: Charges
+  Add_charge: Ajouter une charge
   Enter_charges: Saisir charges
   New_loan: Nouveau prêt
   Type: Type
   Detail: Détail
+  Must_be_whole_number: doit être un nombre entier.
+  Amount: Montant
+  Note: Note
+  Standard_charge_notes: Notes standards pour charges
 
   # Payslips
   Payslips: Bulletins de paie

@@ -1,0 +1,2 @@
+module StandardChargeNotesHelper
+end

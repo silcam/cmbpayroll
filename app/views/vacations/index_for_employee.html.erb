@@ -4,4 +4,4 @@
 
 <%= link_to t(:Enter_vacation), new_employee_vacation_path(@employee, referred_by: request.path), class: 'btn btn-primary', style: 'margin-bottom: 10px;' %>
 
-<%= render 'vacation_table', vacations: @employee.vacations.reverse_order %>
+<%= render 'vacation_table', vacations: @vacations.reverse_order %>

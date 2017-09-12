@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170911130644) do
+ActiveRecord::Schema.define(version: 20170911145945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,16 @@ ActiveRecord::Schema.define(version: 20170911130644) do
     t.string "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "charges", force: :cascade do |t|
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "employee_id"
+    t.string "note"
+    t.date "date"
+    t.index ["employee_id"], name: "index_charges_on_employee_id"
   end
 
   create_table "children", force: :cascade do |t|
@@ -94,12 +104,10 @@ ActiveRecord::Schema.define(version: 20170911130644) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "transactions", force: :cascade do |t|
-    t.integer "amount"
+  create_table "standard_charge_notes", force: :cascade do |t|
+    t.string "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "employee_id"
-    t.index ["employee_id"], name: "index_transactions_on_employee_id"
   end
 
   create_table "users", force: :cascade do |t|

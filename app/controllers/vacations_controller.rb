@@ -7,16 +7,23 @@ class VacationsController < ApplicationController
 
   def index
     if @employee
+      @vacations = @employee.vacations
       render 'index_for_employee'
     else
-      @period_vacations = Vacation.period_vacations
+      @period = get_params_period
+      @period_vacations = Vacation.for_period(@period)
       @upcoming_vacations = Vacation.upcoming_vacations
     end
   end
 
   def new
     @vacation = Vacation.new
-    @vacation.employee = @employee if @employee
+    if @employee
+      @vacation.employee = @employee
+      render 'new_for_employee'
+    else
+      render 'new'
+    end
   end
 
   def create

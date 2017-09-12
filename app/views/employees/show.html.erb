@@ -1,6 +1,6 @@
 <% provide(:title, "Employees") %>
 
-<p><%= link_to "<< #{t(:Employees)}", controller: 'employees', action: 'index' %></p>
+<%= link_to "<< #{t(:Employees)}", controller: 'employees', action: 'index' %>
 
 <ul class="list-inline" style="margin-top: 15px;">
   <li>
@@ -15,8 +15,8 @@
   </li>
   <li>
     <label><%= :Charges %>:</label>
-    <%= link_to t(:View), 'employee_charges_path(@employee)' %> |
-    <%= link_to t(:Add), 'new_employee_charge_path(@employee, referred_by: request.path)' %>
+    <%= link_to t(:View), employee_charges_path(@employee) %> |
+    <%= link_to t(:Add), new_employee_charge_path(@employee, referred_by: request.path) %>
   </li>
   <li>
     <label><%= :Hours %>:</label>

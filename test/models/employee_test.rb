@@ -8,12 +8,12 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "Employee has association" do
     t = Employee.reflect_on_association(:children).macro == :has_many
-    t = Employee.reflect_on_association(:transactions).macro == :has_many
+    t = Employee.reflect_on_association(:charges).macro == :has_many
   end
 
   test "Associations" do
-    lukes_coke = transactions :LukesCoke
-    assert_includes @luke.transactions, lukes_coke
+    lukes_coke = charges :LukesCoke
+    assert_includes @luke.charges, lukes_coke
   end
 
   test "validations" do

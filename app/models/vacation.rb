@@ -37,7 +37,7 @@ class Vacation < ApplicationRecord
     end_date > Period.current.start
   end
 
-  def self.period_vacations(period = Period.current)
+  def self.for_period(period = Period.current)
     Vacation.where(overlap_clause(period.start, period.finish))
   end
 

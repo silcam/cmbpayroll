@@ -1,0 +1,11 @@
+<%= link_to("<< #{t(:Return_to)} #{@employee.full_name}", employee_url(@employee)) %><br />
+
+<h1><%= t('Select_bonuses_to_be_assigned') %> <%= @employee.full_name %></h1>
+
+<%= form_for @employee, url: { action: "assign" } do |f| %>
+
+<%= render "index" %>
+
+<%= f.submit t(:Assign_to_employee) %>
+
+<% end %>

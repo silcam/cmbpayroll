@@ -1,0 +1,5 @@
+<h1><%= t(:New_bonus) %> for <%= @employee.full_name %></h1>
+
+<%= render 'form', bonus: @bonus %>
+
+<%= link_to t(:Back), bonuses_path %>

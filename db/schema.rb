@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170911145945) do
+ActiveRecord::Schema.define(version: 20170912095549) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,14 @@ ActiveRecord::Schema.define(version: 20170911145945) do
     t.string "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "bonuses_employees", id: false, force: :cascade do |t|
+    t.bigint "employee_id"
+    t.bigint "bonus_id"
+    t.index ["bonus_id"], name: "index_bonuses_employees_on_bonus_id"
+    t.index ["employee_id", "bonus_id"], name: "index_bonuses_employees_on_employee_id_and_bonus_id", unique: true
+    t.index ["employee_id"], name: "index_bonuses_employees_on_employee_id"
   end
 
   create_table "charges", force: :cascade do |t|

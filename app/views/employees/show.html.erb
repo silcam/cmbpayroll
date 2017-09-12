@@ -22,47 +22,39 @@
     <label><%= :Hours %>:</label>
     <%= link_to t(:View), employee_work_hours_path(@employee) %>
   </li>
+  <li>
+    <label><%= :Bonuses %>:</label>
+    <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee) %>
+  </li>
 </ul>
 
 <h2>Employee Information for <%= @employee.full_name %></h2>
 
 
 <table class="table table-striped">
-  <thead class="thead-default">
-    <th>Key</th>
-    <th>Value</th>
-  </thead>
   <tbody>
     <tr>
-      <th scope="row">First Name:</th>
+      <th scope="row"><%= t(:First_name) %>:</th>
       <td><%= @employee.first_name %></td>
-    </tr>
-    <tr>
-      <th scope="row">Last Name:</th>
+      <th scope="row"><%= t(:Last_name) %>:</th>
       <td><%= @employee.last_name %></td>
     </tr>
     <tr>
-      <th scope="row">Title:</th>
+      <th scope="row"><%= t(:Title) %>:</th>
       <td>Title</td>
-    </tr>
-    <tr>
-      <th scope="row">Department:</th>
+      <th scope="row"><%= t(:Department) %>:</th>
       <td>Department</td>
     </tr>
     <tr>
-      <th scope="row">Contract Start:</th>
+      <th scope="row"><%= t(:Contract_start) %>:</th>
       <td><%= @employee.contract_start %></td>
-    </tr>
-    <tr>
-      <th scope="row">Contract End:</th>
+      <th scope="row"><%= t(:Contract_end) %>:</th>
       <td><%= @employee.contract_end %></td>
     </tr>
     <tr>
-      <th scope="row">Gender:</th>
+      <th scope="row"><%= t(:Gender) %>:</th>
       <td><%= @employee.gender %></td>
-    </tr>
-    <tr>
-      <th scope="row">Marital Status:</th>
+      <th scope="row"><%= t(:Marital_status) %>:</th>
       <td><%= @employee.marital_status %></td>
     </tr>
   </tbody>
@@ -75,7 +67,7 @@
       <td><%= @employee.cnps %></td>
       <th scope="row">DIPE:</th>
       <td><%= @employee.dipe %></td>
-      <th scope="row">Birth Date:</th>
+      <th scope="row"><%= t(:Birth_date) %></th>
       <td><%= @employee.birth_date %></td>
       <th scope="row">Category:</th>
       <td><%= @employee.category %></td>
@@ -83,7 +75,7 @@
     <tr>
       <th scope="row">Echelon:</th>
       <td><%= @employee.echelon %></td>
-      <th scope="row">Wage:</th>
+      <th scope="row"><%= t(:Wage) %></th>
       <td><%= @employee.wage %></td>
       <th scope="row">Wage Scale:</th>
       <td><%= @employee.wage_scale %></td>
@@ -97,11 +89,11 @@
       <td><%= @employee.taxable_percentage %></td>
       <th scope="row">Transportation:</th>
       <td><%= @employee.transportation %></td>
-      <th scope="row">Hours per Day:</th>
+      <th scope="row"><%= t(:Hours_per_day) %></th>
       <td><%= @employee.hours_day %></td>
     </tr>
     <tr>
-      <th scope="row">Days per Week:</th>
+      <th scope="row"><%= t(:Days_per_week) %></th>
       <td><%= @employee.days_week %></td>
       <th scope="row">Employment Status:</th>
       <td><%= @employee.employment_status %></td>
@@ -117,9 +109,9 @@
 <% else %>
   <table class="table">
     <tr>
-      <th>Child Name</th>
-      <th>Child Birth Date</th>
-      <th>Is Child a Student?</th>
+      <th><%= t(:Child_first_name) %></th>
+      <th><%= t(:Child_birth_date) %></th>
+      <th><%= t(:Child_student) %></th>
     </tr>
     <% @employee.children.each do |c| %>
       <tr>
@@ -131,8 +123,32 @@
   </table>
 <% end %>
 
-<%= link_to "Edit", {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary' %> &nbsp;
-<%= link_to "Delete", employee_path(@employee), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
+<% if (@employee.bonuses.empty?) %>
+  <p>
+   <%= t(:No_bonuses) %>
+  </p>
+<% else %>
+  <table class="table">
+    <tr>
+      <th><%= t(:Bonus) %></th>
+      <th><%= t(:Unassign) %>?</th>
+    </tr>
+    <% @employee.bonuses.each do |b| %>
+      <tr>
+        <td><%= b.name %> (<%= b.quantity %> <%= b.bonus_type %>)</td>
+        <td>
+<%= form_for b, :url => unassign_employee_bonuses_url(@employee) do |f| %>
+  <%= f.hidden_field(:b, :value => b.id) %>
+  <%= f.submit(t(:Unassign_bonus), class: 'btn btn-warning') %>
+<% end %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<%= link_to t(:Edit), {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary' %> &nbsp;
+<%= link_to t(:Delete), employee_path(@employee), method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'btn btn-danger' %>
 
 <br />
 <br />

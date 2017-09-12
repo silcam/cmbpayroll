@@ -34,13 +34,16 @@ fr:
   Show: Montrer
   Back: Retourner
   Destroy: Supprimer
+  Assign: Attribuer
   Are_you_sure: Vous êtes sûr?
   error: faute
   Birth_date: Jour de naissance
+  Return_to: Retourner à
+  Gender: Sexe
 
   Other: Autre
   New: Nouveau
-  
+
   #Time and Date
   Date: Date
   Hours: Heures
@@ -52,6 +55,8 @@ fr:
   Period: Mois
   Start_date: Date de commencement
   End_date: Date de fin
+  Hours_per_day: Heures par jour
+  Days_per_week: Jours par semaine
 
   # People
   First_name: Prénom
@@ -67,12 +72,17 @@ fr:
   Department: Département
   Status: Statut
   Title: Titre
+  Marital_status: Etat civil
+  Wage: Salaire
 
   # Children
   Children: Enfants
   Children_of: Enfants de  # TODO - This isn't perfect if the next word starts with a vowel.
   New_child: Nouvel enfant
   Is_student: Etudiant?
+  Child_first_name: Prénom de l'enfant
+  Child_birth_date: Jour de naissance de l'enfant
+  Child_student: Etudiant?
 
   # Charges
   Charges: Charges
@@ -107,7 +117,7 @@ fr:
   Vacation: Vacances
   Enter_vacation: Saisir vacances
   Vacation_for: Vacances pour
-  Vacation_overlaps: Ces vacances coïncident avec des vacances existants déjà 
+  Vacation_overlaps: Ces vacances coïncident avec des vacances existants déjà
   Overlap_message: Ces vacances coïncident avec des heures de travail déjà saisies. Clicker 'Enregister' supprimera ces heures.
   Save_vacation_and_delete_work_hours: Enregister vacances et supprimer ces heures
   Other_upcoming_vacation: Autres vacances futures
@@ -120,6 +130,10 @@ fr:
   Quantity: Somme
   Type: Type
   Comment: Remarque
+  Select_bonuses_to_be_assigned: Choissisez les primes pour attribuer à
+  Assign_to_employee: Attribuer à Employé
+  Unassign: Ôter
+  Unassign_bonus: Ôtez cette prime
 
   # Reports
   Reports: Rapports

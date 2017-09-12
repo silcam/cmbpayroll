@@ -1,10 +1,14 @@
 class BonusesController < ApplicationController
   before_action :set_bonus, only: [:show, :edit, :update, :destroy]
+  before_action :set_employee, only: [:index, :new, :assign, :unassign]
 
   # GET /bonuses
   # GET /bonuses.json
   def index
     @bonuses = Bonus.all
+    if (@employee)
+      render 'list_possible'
+    end
   end
 
   # GET /bonuses/1
@@ -12,9 +16,29 @@ class BonusesController < ApplicationController
   def show
   end
 
+  def assign
+    bonuses_to_assign_hash = params[:bonus]
+    Bonus.assign_to_employee(@employee, bonuses_to_assign_hash)
+
+    redirect_to employee_url(@employee)
+  end
+
+  def unassign
+    bonus = Bonus.find(params[:bonus][:b])
+    @employee.bonuses.delete(bonus)
+
+    redirect_to employee_url(@employee)
+  end
+
   # GET /bonuses/new
   def new
     @bonus = Bonus.new
+    if (@employee)
+      @bonus.employees << @employee
+      render 'new_for_employee'
+    else
+      render 'new'
+    end
   end
 
   # GET /bonuses/1/edit
@@ -65,6 +89,10 @@ class BonusesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_bonus
       @bonus = Bonus.find(params[:id])
+    end
+
+    def set_employee
+      @employee = Employee.find(params[:employee_id]) if params[:employee_id]
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

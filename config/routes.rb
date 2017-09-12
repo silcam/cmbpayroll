@@ -1,15 +1,21 @@
 Rails.application.routes.draw do
-  resources :bonuses
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-
 
   root "home#home"
 
   resources :vacations, except: :show
+  resources :bonuses
   resources :standard_charge_notes, only: [:index, :create, :destroy]
   shallow do
     resources :employees do
       resources :children
+      resources :bonuses, only: [ :index ] do
+        collection do
+          get 'list_possible', to: 'bonuses#index'
+          patch 'unassign'
+          patch 'assign'
+        end
+      end
       resources :charges, except: [:edit, :update, :show]
       resources :vacations, except: :show
       resources :payslips, only: [ :index, :show ]

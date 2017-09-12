@@ -34,11 +34,14 @@ en:
   Show: Show
   Back: Back
   Destroy: Destroy
+  Assign: Assign
   Are_you_sure: Are you sure?
   error: error
   Other: Other
   New: New
   Birth_date: Birth Date
+  Return_to: Retourner to
+  Gender: Gender
 
   # Time and Date
   Date: Date
@@ -51,6 +54,8 @@ en:
   Period: Period
   Start_date: Start Date
   End_date: End Date
+  Hours_per_day: Hours per day
+  Days_per_week: Days per week
 
   # People
   First_name: First Name
@@ -66,12 +71,17 @@ en:
   Department: Department
   Status: Status
   Title: Title
+  Marital_status: Marital Status
+  Wage: Wage
 
   # Children
   Children: Children
   Children_of: Children of
   New_child: New Child
   Is_student: Student?
+  Child_first_name: Child's First Name
+  Child_birth_date: Child's Birth Date
+  Child_student: Student?
 
   # Charges
   Charges: Charges
@@ -119,6 +129,10 @@ en:
   Quantity: Quantity
   Type: Type
   Comment: Comment
+  Select_bonuses_to_be_assigned: Select bonuses to be assigned to
+  Assign_to_employee: Assign to Employee
+  Unassign: Unassign
+  Unassign_bonus: Unassign Bonus
 
   # Reports
   Reports: Reports

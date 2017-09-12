@@ -22,6 +22,7 @@ fr:
   Go: Aller
   Add: Ajouter
   Other: Autre
+  New: Nouveau
   
   #Time and Date
   Date: Date
@@ -67,6 +68,7 @@ fr:
   Must_be_whole_number: doit être un nombre entier.
   Amount: Montant
   Note: Note
+  Standard_charge_notes: Notes standards pour charges
 
   # WorkHours
   Enter_hours: Saisir heures

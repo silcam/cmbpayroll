@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root "home#home"
 
   resources :vacations, except: :show
+  resources :standard_charge_notes, only: [:index, :create, :destroy]
   shallow do
     resources :employees do
       resources :children

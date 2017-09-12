@@ -1,0 +1,20 @@
+<h2><%= t :Standard_charge_notes %></h2>
+
+<table class="table">
+  <% @standard_charge_notes.each do |note| %>
+    <tr>
+      <td>
+        <%= note.note %>
+      </td>
+      <td>
+        <%= link_to t(:Delete), note, method: :delete %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<%= form_for :standard_charge_note, html: {class: 'auto-width'} do |form| %>
+  <%= form.label :note, t(:New) %>
+  <%= form.text_field :note, class: 'form-control form-control-inline' %>
+  <%= form.submit t(:Add), class: 'btn btn-primary' %>
+<% end %>

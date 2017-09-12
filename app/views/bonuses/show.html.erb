@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= t(:Name) %>:</strong>
+  <%= @bonus.name %>
+</p>
+
+<p>
+  <strong><%= t(:Quantity) %>:</strong>
+  <%= @bonus.quantity %>
+</p>
+
+<p>
+  <strong><%= t(:Type) %>:</strong>
+  <%= @bonus.bonus_type %>
+</p>
+
+<p>
+  <strong><%= t(:Comment) %>:</strong>
+  <%= @bonus.comment %>
+</p>
+
+<%= link_to t(:Edit), edit_bonus_path(@bonus) %> |
+<%= link_to t(:Back), bonuses_path %>

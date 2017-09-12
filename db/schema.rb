@@ -15,6 +15,15 @@ ActiveRecord::Schema.define(version: 20170911130644) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "bonuses", force: :cascade do |t|
+    t.string "name"
+    t.decimal "quantity"
+    t.integer "bonus_type"
+    t.string "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "children", force: :cascade do |t|
     t.boolean "is_student"
     t.datetime "created_at", null: false

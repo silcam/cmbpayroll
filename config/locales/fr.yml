@@ -1,4 +1,14 @@
 fr:
+  activerecord:
+    models:
+      bonus: Prime
+    attributes:
+      bonus:
+        name: Nom
+        quantity: Somme
+        bonus_type: Type
+        comment: Remarque
+
   # General
   Payroll: Paie
   Welcome: Bienvenue
@@ -21,6 +31,11 @@ fr:
   No_go_back: Non, retourner
   Go: Aller
   Add: Ajouter
+  Show: Montrer
+  Back: Retourner
+  Destroy: Supprimer
+  Are_you_sure: Vous êtes sûr?
+  error: faute
 
   #Time and Date
   Date: Date
@@ -87,6 +102,15 @@ fr:
   Overlap_message: Ces vacances coïncident avec des heures de travail déjà saisies. Clicker 'Enregister' supprimera ces heures.
   Save_vacation_and_delete_work_hours: Enregister vacances et supprimer ces heures
   Other_upcoming_vacation: Autres vacances futures
+
+  # Bonuses
+  Bonuses: Primes
+  Bonus: Prime
+  New_bonus: Nouvelle Prime
+  Editing_bonus: Modifier les primes
+  Quantity: Somme
+  Type: Type
+  Comment: Remarque
 
   # Reports
   Reports: Rapports

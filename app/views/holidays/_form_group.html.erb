@@ -1,0 +1,9 @@
+<% if in_table %>
+  <td>
+    <%= yield %>
+  </td>
+<% else %>
+  <div class="form-group-inline">
+    <%= yield %>
+  </div>
+<% end %>

@@ -25,28 +25,42 @@
   <% end %>
 <% else %>
   <% date_format = '%A %B %e' %>
-  <table class="table">
-    <tr>
-      <th><%= t :Holiday %></th>
-      <th><%= t :Date %></th>
-      <th><%= t :Observed %></th>
-      <th><%= t :Bridge %></th>
-      <th colspan="2"></th>
-    </tr>
-    <% @holidays.each do |holiday| %>
+  <%= form_for @holiday, html: {class: 'auto-width'} do |form| %>
+    <table class="table">
       <tr>
-        <td><%= holiday.name %></td>
-        <td><%= holiday.date.strftime(date_format) %></td>
-        <td><%= holiday.observed.try(:strftime, date_format) %></td>
-        <td><%= holiday.bridge.try(:strftime, date_format) %></td>
-        <td><%= link_to t(:Edit), edit_holiday_path(holiday) %></td>
-        <td><%= link_to t(:Delete), holiday, method: :delete %></td>
+        <th><%= t :Holiday %></th>
+        <th><%= t :Date %></th>
+        <th><%= t :Observed %></th>
+        <th><%= t :Bridge %></th>
+        <th colspan="2"></th>
       </tr>
-    <% end %>
-  </table>
+      <% @holidays.each do |holiday| %>
+        <% if @holiday == holiday %>
+          <tr>
+            <%= render 'form', form: form, cancel: true %>
+          </tr>
+        <% else %>
+          <tr>
+            <td><%= holiday.name %></td>
+            <td><%= holiday.date.strftime(date_format) %></td>
+            <td><%= holiday.observed.try(:strftime, date_format) %></td>
+            <td><%= holiday.bridge.try(:strftime, date_format) %></td>
+            <td><%= link_to t(:Edit), edit_holiday_path(holiday) %></td>
+            <td><%= link_to t(:Delete), holiday, method: :delete %></td>
+          </tr>
+        <% end %>
+      <% end %>
+    </table>
 
-  <% new_holiday = @holiday.new_record? ? @holiday : Holiday.new %>
-  <% new_holiday.date = Date.new(@year, 1, 1) if new_holiday.date.nil? %>
-  <h4><%= t :New_holiday %></h4>
-  <%= render 'form', holiday: new_holiday %>
+    <% if @holiday.new_record? %>
+      <hr>
+      <% @holiday.date = Date.new(@year, 1, 1) if @holiday.date.nil? %>
+      <h4><%= t :New_holiday %></h4>
+      <table class="table no-border">
+        <tr>
+          <%= render 'form', form: form %>
+        </tr>
+      </table>
+    <% end %>
+  <% end %>
 <% end %>

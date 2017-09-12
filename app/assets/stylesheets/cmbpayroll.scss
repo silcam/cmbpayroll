@@ -122,3 +122,9 @@ form.auto-width {
     border-left: 1px solid #ddd;
   }
 }
+
+table.no-border{
+  td {
+    border-top: none !important;
+  }
+}

@@ -29,7 +29,7 @@ class HolidaysController < ApplicationController
 
   def update
     @holiday = Holiday.find params[:id]
-    if @holiday.save
+    if @holiday.update holiday_params
       redirect_to holidays_path(year: @holiday.date.year)
     else
       prepare_index

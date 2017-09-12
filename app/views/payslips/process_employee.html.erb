@@ -1,0 +1,28 @@
+<% employee = Employee.find(params[:employee][:id]) %>
+
+<h2>Processing Payslip for <%= employee.full_name %></h2>
+
+<h4 style="color:red">For testing purposes at this point...</h4>
+
+
+<h4><%= t :Hours_for %> <%= Period.current.short_name %></h4>
+
+<p>
+<% hours = WorkHour.total_hours(employee, Period.current) %>
+<%= t :Regular_hours %> <%= t :For_the_month %>: <%= hours[:normal] %><br />
+<%= t :Overtime_hours %> <%= t :For_the_month %>: <%= hours[:overtime] %><br />
+</p>
+
+
+Complete payslip processing?<br />
+
+<%= form_tag("/payslips/process_complete", method: "post") do %>
+
+<%= hidden_field(:employee, :id, :value => employee.id) %>
+<% period = Period.current %>
+<%= hidden_field(:period, :year, :value => period.year) %>
+<%= hidden_field(:period, :month, :value => period.month) %>
+
+<%= submit_tag(t(:Process)) %>
+
+<% end %>

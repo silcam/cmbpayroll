@@ -39,7 +39,7 @@ en:
   Last_name: Last Name
   Create_new_person: Create New Person
   Use_existing_person: Use Existing Person
-  
+
   # Employees
   Employees: Employees
   Employee: Employee
@@ -63,6 +63,12 @@ en:
   New_loan: New Loan
   Type: Type
   Detail: Detail
+
+  # Payslips
+  Payslips: Payslips
+  Payslip_management: Payslip Management
+  For_the_month: for the month
+  Process: Process
 
   # WorkHours
   Enter_hours: Enter Hours

@@ -11,22 +11,22 @@
   <% end %>
 
   <div class="field">
-    <%= form.label :first_name %>
+    <%= form.label t(:First_name) %>
     <%= form.text_field :first_name, id: :child_first_name %>
   </div>
 
   <div class="field">
-    <%= form.label :last_name %>
+    <%= form.label t(:Last_name) %>
     <%= form.text_field :last_name, id: :child_last_name %>
   </div>
 
   <div class="field">
-    <%= form.label :birth_date %>
+    <%= form.label t(:Birth_date) %>
     <%= form.date_select :birth_date, id: :child_birth_date %>
   </div>
 
   <div class="field">
-    <%= form.label :is_student %>
+    <%= form.label t(:Is_student) %>
     <%= form.check_box :is_student, id: :child_is_student %>
   </div>
 

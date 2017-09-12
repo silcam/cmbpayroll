@@ -38,6 +38,7 @@ en:
   error: error
   Other: Other
   New: New
+  Birth_date: Birth Date
 
   # Time and Date
   Date: Date
@@ -70,6 +71,7 @@ en:
   Children: Children
   Children_of: Children of
   New_child: New Child
+  Is_student: Student?
 
   # Charges
   Charges: Charges

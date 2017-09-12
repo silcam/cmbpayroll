@@ -36,6 +36,7 @@ fr:
   Destroy: Supprimer
   Are_you_sure: Vous êtes sûr?
   error: faute
+  Birth_date: Jour de naissance
 
   Other: Autre
   New: Nouveau
@@ -71,6 +72,7 @@ fr:
   Children: Enfants
   Children_of: Enfants de  # TODO - This isn't perfect if the next word starts with a vowel.
   New_child: Nouvel enfant
+  Is_student: Etudiant?
 
   # Charges
   Charges: Charges

@@ -1,24 +1,24 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <strong>First name:</strong>
+  <strong><%= t(:First_name) %></strong>
   <%= @child.first_name %>
 </p>
 
 <p>
-  <strong>Last name:</strong>
+  <strong><%= t(:Last_name) %></strong>
   <%= @child.last_name %>
 </p>
 
 <p>
-  <strong>Birth date:</strong>
+  <strong><%= t(:Birth_date) %></strong>
   <%= @child.birth_date %>
 </p>
 
 <p>
-  <strong>Is student:</strong>
+  <strong><%= t(:Is_student) %></strong>
   <%= @child.is_student %>
 </p>
 
-<%= link_to 'Edit', edit_child_path(@child) %> |
-<%= link_to 'Back', employee_children_path(@employee) %>
+<%= link_to t(:Edit), edit_child_path(@child) %> |
+<%= link_to t(:Back), employee_children_path(@employee) %>

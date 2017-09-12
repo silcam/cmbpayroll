@@ -2,13 +2,13 @@
 
 <h2><%= t :Children_of %> <%= @employee.full_name %></h2>
 
-<table>
+<table class="table">
   <thead>
     <tr>
-      <th>First name</th>
-      <th>Last name</th>
-      <th>Birth date</th>
-      <th>Is student</th>
+      <th><%= t(:First_name) %></th>
+      <th><%= t(:Last_name) %></th>
+      <th><%= t(:Birth_date) %></th>
+      <th><%= t(:Is_student) %></th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -20,9 +20,9 @@
         <td><%= child.last_name %></td>
         <td><%= child.birth_date %></td>
         <td><%= child.is_student %></td>
-        <td><%= link_to 'Show', child %></td>
-        <td><%= link_to 'Edit', edit_child_path(child) %></td>
-        <td><%= link_to 'Destroy', child, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to t(:Show), child %></td>
+        <td><%= link_to t(:Edit), edit_child_path(child) %></td>
+        <td><%= link_to t(:Destroy), child, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
       </tr>
     <% end %>
   </tbody>
@@ -30,4 +30,4 @@
 
 <br>
 
-<%= link_to 'New Child', new_employee_child_path(@employee) %>
+<%= link_to t(:New_child), new_employee_child_path(@employee) %>

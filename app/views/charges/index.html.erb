@@ -18,12 +18,14 @@
     <th><%= t :Date %></th>
     <th><%= t :Amount %></th>
     <th><%= t :Note %></th>
+    <th></th>
   </tr>
   <% @charges.each do |charge| %>
     <tr>
       <td><%= std_datestring charge.date %></td>
       <td>FCFA <%= charge.amount %></td>
       <td><%= charge.note %></td>
+      <td><%= link_to t(:Delete), charge, method: :delete %></td>
     </tr>
   <% end %>
 </table>

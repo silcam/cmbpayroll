@@ -1,0 +1,52 @@
+<h2>
+  <%= t :Holidays %>
+  <small>
+    <%= @year %>
+  </small>
+</h2>
+
+<ul class="list-inline">
+  <li>
+    <% year = @year - 1 %>
+    <%= link_to "< #{year}", holidays_path(year: year) %>
+  </li>
+  <li>
+    <% year = @year + 1 %>
+    <%= link_to "#{year} >", holidays_path(year: year) %>
+  </li>
+</ul>
+
+<% if @holidays.empty? %>
+  <h4><%= t :No_holidays %></h4>
+  <% unless Holiday.for_year(@year-1).empty? %>
+    <%= button_to t(:Copy_holidays_from, year: (@year-1)),
+                  generate_holidays_path(@year),
+                  class: 'btn btn-primary' %>
+  <% end %>
+<% else %>
+  <% date_format = '%A %B %e' %>
+  <table class="table">
+    <tr>
+      <th><%= t :Holiday %></th>
+      <th><%= t :Date %></th>
+      <th><%= t :Observed %></th>
+      <th><%= t :Bridge %></th>
+      <th colspan="2"></th>
+    </tr>
+    <% @holidays.each do |holiday| %>
+      <tr>
+        <td><%= holiday.name %></td>
+        <td><%= holiday.date.strftime(date_format) %></td>
+        <td><%= holiday.observed.try(:strftime, date_format) %></td>
+        <td><%= holiday.bridge.try(:strftime, date_format) %></td>
+        <td><%= link_to t(:Edit), edit_holiday_path(holiday) %></td>
+        <td><%= link_to t(:Delete), holiday, method: :delete %></td>
+      </tr>
+    <% end %>
+  </table>
+
+  <% new_holiday = @holiday.new_record? ? @holiday : Holiday.new %>
+  <% new_holiday.date = Date.new(@year, 1, 1) if new_holiday.date.nil? %>
+  <h4><%= t :New_holiday %></h4>
+  <%= render 'form', holiday: new_holiday %>
+<% end %>

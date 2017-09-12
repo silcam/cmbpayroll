@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   root "home#home"
 
   resources :vacations, except: :show
+  resources :holidays, except: [:show, :new] do
+    collection do
+      post 'generate/:year', to: 'holidays#generate', as: :generate
+    end
+  end
   resources :standard_charge_notes, only: [:index, :create, :destroy]
   shallow do
     resources :employees do

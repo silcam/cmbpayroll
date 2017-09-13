@@ -41,26 +41,17 @@ class Payslip < ApplicationRecord
   def self.process(employee, period)
     # Do all the stuff that is needed to process a payslip for this user
     # TODO: more validation
+    # TODO: Are there rules that the period must be
+    #         the current period? (or the previous period)?
 
-    hours = WorkHour.total_hours(employee, period)
     payslip = Payslip.new
 
     payslip.period_start = period.start
     payslip.period_end = period.finish
     payslip.payslip_date = Date.today
 
-    hours.each do |key, value|
-      earning = Earning.new
-      earning.rate = employee.wage
-      earning.hours = value
-
-      if (key == :overtime)
-        earning.overtime = true
-      end
-
-      earning.save
-      payslip.earnings << earning
-    end
+    self.process_hours(payslip, employee, period)
+    self.process_bonuses(payslip, employee)
 
     payslip.save
     employee.save
@@ -80,6 +71,42 @@ class Payslip < ApplicationRecord
     # do other things, but that's all for now.
     if (self.last_processed.nil?)
         self.last_processed = DateTime.now
+    end
+  end
+
+  private
+
+  def self.process_hours(payslip, employee, period)
+    hours = WorkHour.total_hours(employee, period)
+
+    hours.each do |key, value|
+      earning = Earning.new
+      earning.rate = employee.wage
+      earning.hours = value
+
+      if (key == :overtime)
+        earning.overtime = true
+      end
+
+      earning.save
+      payslip.earnings << earning
+    end
+  end
+
+  def self.process_bonuses(payslip, employee)
+
+    employee.bonuses.each do |emp_bonus|
+
+      earning = Earning.new
+      earning.description = emp_bonus.name
+      if (emp_bonus.bonus_type == "percentage")
+        earning.percentage = emp_bonus.quantity
+      else
+        earning.amount = emp_bonus.quantity
+      end
+
+      earning.save
+      payslip.earnings << earning
     end
   end
 

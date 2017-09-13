@@ -16,12 +16,20 @@ Pay Date: <%= @payslip.payslip_date %>
 
 <ul>
 <% @payslip.earnings.all.each do |record| %>
-  <li><%= record.hours %> hours @ <%= record.rate %> CFA (Overtime? <%= record.overtime? %>)<br /></li>
+  <li>
+    <% if (!record.percentage.nil?) %>
+      <%= record.percentage %>% of <%= @payslip.employee.wage %> FCFA<br />
+    <% elsif (!record.amount.nil?) %>
+      <%= record.amount %> FCFA<br />
+    <% else %>
+      <%= record.hours %> hours @ <%= record.rate %> CFA (Overtime? <%= record.overtime? %>)<br />
+    <% end %>
+  </li>
 <% end %>
 </ul>
 
-<h4>Deductions:</h4>
+<h4>Charges:</h4>
 
-<h4>Payments:</h4>
+<h4>Totals:</h4>
 
 </p>

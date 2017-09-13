@@ -1,5 +1,10 @@
 <%= render 'shared/error_messages', errors: @employee.errors %>
 
+<% @employee.errors.each do |err| %>
+ <% # TODO: this could be better %>
+ <%= err.inspect %>
+<% end %>
+
 <%= form_for @employee, html: {class: 'auto-width'} do |f|  %>
     <div class="form-group">
       <%= f.label :first_name %>

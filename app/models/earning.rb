@@ -1,7 +1,7 @@
 class Earning < ApplicationRecord
   belongs_to :payslip
 
-  validate :either_amount_or_rate
+  validate :has_amount_percentage_or_rate
 
   # :description
   # :rate
@@ -21,17 +21,24 @@ class Earning < ApplicationRecord
     end
   end
 
-  def either_amount_or_rate
-    if (!has_valid_amount() && !has_valid_hourly_rate())
-      errors.add(:amount, "must have fixed amount or an hourly rate with hours")
-      errors.add(:rate, "must have fixed amount or an hourly rate with hours")
+  def has_amount_percentage_or_rate
+    unless (has_valid_amount() || has_valid_hourly_rate() || has_valid_percentage())
+      errors.add(:percentage, "must have percentage, amount or an hourly rate with hours")
     end
   end
 
   private
 
   def has_valid_amount
-    unless (amount.nil? || amount < 0)
+    unless (amount.nil? || amount <= 0)
+      return true
+    else
+      return false
+    end
+  end
+
+  def has_valid_percentage
+    unless (percentage.nil? || percentage <= 0)
       return true
     else
       return false

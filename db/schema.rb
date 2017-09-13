@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170913094806) do
+ActiveRecord::Schema.define(version: 20170913141945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,7 +43,7 @@ ActiveRecord::Schema.define(version: 20170913094806) do
   end
 
   create_table "children", force: :cascade do |t|
-    t.boolean "is_student"
+    t.boolean "is_student", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "person_id"
@@ -61,7 +61,7 @@ ActiveRecord::Schema.define(version: 20170913094806) do
     t.decimal "rate"
     t.decimal "amount"
     t.decimal "percentage"
-    t.boolean "overtime"
+    t.boolean "overtime", default: false, null: false
     t.index ["payslip_id"], name: "index_earnings_on_payslip_id"
   end
 

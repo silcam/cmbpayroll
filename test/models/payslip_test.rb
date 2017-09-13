@@ -209,4 +209,86 @@ class PayslipTest < ActiveSupport::TestCase
     end
   end
 
+  test "bonuses become become earnings" do
+    employee = return_valid_employee()
+    employee.wage = 100
+    assert employee.valid?
+
+
+    # create bonuses
+
+    bonus = Bonus.new
+    bonus.name = "First Bonus"
+    bonus.quantity = 12.0
+    bonus.bonus_type = "percentage"
+    assert bonus.valid?
+    bonus.save
+
+    bonus2 = Bonus.new
+    bonus2.name = "Second Bonus"
+    bonus2.quantity = 3000
+    bonus2.bonus_type = "fixed"
+    assert bonus2.valid?
+    bonus2.save
+
+    # assign to employee
+    employee.bonuses << bonus
+    employee.bonuses << bonus2
+
+
+    # give work hours
+    hours = {'2017-08-01' => 8,
+             '2017-08-02' => 6,
+             '2017-08-03' => 3.5,
+             '2017-08-04' => 2,
+             '2017-08-05' => 1,
+             '2017-08-06' => 1.2,
+             '2017-08-12' => 3.2}
+
+    WorkHour.update employee, hours
+
+    ### verify hours
+    exp = {:normal => 171.5, :overtime => 5.4}
+    assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # should be (4):
+    # overtime hours record
+    # regular hours record
+    # first bonus
+    # second bonus
+    assert_equal(4, payslip.earnings.size, "must have 4 entries after processing")
+
+    count = 0
+
+    payslip.earnings.each do |record|
+
+        puts record.inspect
+        # verify hours in earning records
+        if (record.overtime == true && record.hours = 5.4)
+            assert_equal(5.4, record.hours)
+            count+=1
+        end
+
+        if (record.overtime == false && record.hours == 171.5)
+            assert_equal(171.5, record.hours)
+            count+=1
+        end
+
+        if (record.overtime == false && record.amount == 3000)
+            assert_equal(3000.0, record.amount)
+            count+=1
+        end
+
+        if (record.overtime == false && record.percentage == 12.0)
+            assert_equal(12.0, record.percentage)
+            count+=1
+        end
+    end
+
+    assert_equal(4, count, "found all the items")
+
+  end
+
 end

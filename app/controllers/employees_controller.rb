@@ -27,7 +27,12 @@ class EmployeesController < ApplicationController
 
   def update
     @employee = Employee.update(params[:id], employee_params)
-    redirect_to employees_path
+
+    if (@employee.valid?)
+      redirect_to employees_path
+    else
+      render :edit
+    end
   end
 
   def destroy

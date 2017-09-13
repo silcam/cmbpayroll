@@ -23,21 +23,35 @@ class WorkHour < ApplicationRecord
     total_hours_for employee, Period.current.start, yesterday
   end
 
-  def self.week_for(employee, date)
+  def self.days_hash_for_week(employee, date)
     monday = last_monday date
-    sunday = monday + 6
-    existing = employee.work_hours.where(date: (monday .. sunday))
-    week = []
-    (monday .. sunday).each do |d|
-      existing_i = existing.index{ |wh| wh.date == d }
-      workhour = existing_i.nil? ?
-                     WorkHour.new(employee: employee,
-                                  date: d,
-                                  hours: WorkHour.default_hours(d))
-                     : existing[existing_i]
-      week << workhour
+    complete_days_hash employee, monday, (monday + 6)
+  end
+
+  def self.days_hash(employee, start, finish)
+    work_hours = WorkHour.for(employee, start, finish)
+    days = {}
+    work_hours.each do |work_hour|
+      days[work_hour.date] = {hours: work_hour.hours}
     end
-    week
+    days
+  end
+
+  def self.complete_days_hash(employee, start, finish)
+    days = RecursiveHashMerger.merge days_hash(employee, start, finish),
+                                Holiday.days_hash(start, finish),
+                                Vacation.days_hash(employee, start, finish)
+    (start .. finish).each do |day|
+      days[day] = {} unless days.has_key? day
+      unless days[day].has_key? :hours
+        if days[day].has_key?(:holiday) or not is_weekday?(day)
+          days[day][:hours] = 0
+        else
+          days[day][:hours] = workday
+        end
+      end
+    end
+    days
   end
 
   def self.update(employee, days_hours)
@@ -91,26 +105,16 @@ class WorkHour < ApplicationRecord
     end
   end
 
-  def self.total_hours_for(employee, start_date, end_date)
+  def self.total_hours_for(employee, start, finish)
     normal = 0
     overtime = 0
-    work_hours = WorkHour.for(employee, start_date, end_date)
-    vacations = Vacation.vacation_days(employee, start_date, end_date)
-    holidays = Holiday.hash_for(start_date, end_date)
-
-    (start_date .. end_date).each do |date|
-      next if vacations.include? date
-      i = work_hours.index{ |wh| wh.date == date }
-      work_hour = i.nil? ? nil : work_hours[i]
-      if holidays[date] or not is_weekday?(date)
-        overtime += work_hour.hours unless work_hour.nil?
+    days = complete_days_hash(employee, start, finish)
+    days.each do |date, day|
+      if day.has_key? :holiday or not is_weekday?(date)
+        overtime += day[:hours]
       else
-        if work_hour.nil?
-          normal += workday
-        else
-          normal += [workday, work_hour.hours].min
-          overtime += [0, work_hour.hours - workday].max
-        end
+        normal += [workday, day[:hours]].min
+        overtime += (day[:hours] - workday) if day[:hours] > workday
       end
     end
     {normal: normal, overtime: overtime}

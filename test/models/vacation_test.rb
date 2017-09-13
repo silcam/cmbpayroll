@@ -129,9 +129,10 @@ class VacationTest < ActiveSupport::TestCase
     end
   end
 
-  test "Vacation Days" do
-    vdays = Vacation.vacation_days(WorkHour.week_for(@luke, Date.new(2017, 6, 28)))
-    assert_equal [false, false, false, false, false, true, true], vdays
+  test "Days Hash" do
+    days = Vacation.days_hash(@luke, Date.new(2017, 7, 30), Date.new(2017, 8, 2))
+    assert_equal 2, days.length
+    assert days[Date.new(2017, 7, 31)][:vacation]
   end
 
   def some_valid_params(mods={})

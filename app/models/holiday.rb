@@ -9,23 +9,23 @@ class Holiday < ApplicationRecord
     Holiday.for(Date.new(year, 1, 1), Date.new(year, 12, 31))
   end
 
-  #Doesn't check bridge and observed fields
+  # Doesn't check bridge and observed fields
   def self.for(start, finish)
     where(date: (start .. finish))
   end
 
-  def self.hash_for(start, finish)
+  def self.days_hash(start, finish)
     holidays = Holiday.where("date BETWEEN :start AND :finish OR
                               observed BETWEEN :start AND :finish OR
                               bridge BETWEEN :start AND :finish",
                              {start: start, finish: finish})
-    hash = {}
+    days = {}
     holidays.each do |holiday|
-      hash[holiday.date] = holiday.name if (start .. finish) === holiday.date
-      hash[holiday.observed] = "#{holiday.name} #{I18n.t(:Observed)}" if (start .. finish) === holiday.observed
-      hash[holiday.bridge] = "#{holiday.name} #{I18n.t(:Bridge)}" if (start .. finish) === holiday.bridge
+      days[holiday.date] = {holiday: holiday.name} if (start .. finish) === holiday.date
+      days[holiday.observed] = {holiday: "#{holiday.name} #{I18n.t(:Observed)}"} if (start .. finish) === holiday.observed
+      days[holiday.bridge] = {holiday: "#{holiday.name} #{I18n.t(:Bridge)}"} if (start .. finish) === holiday.bridge
     end
-    hash
+    days
   end
 
   def self.generate(year)

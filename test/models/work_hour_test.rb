@@ -61,12 +61,12 @@ class WorkHourTest < ActiveSupport::TestCase
   end
 
   test "Lukes Week of Aug 7, 2017" do
-    week = WorkHour.week_for @luke, Date.new(2017, 8, 8)
-    assert_equal @lukes_overtime, week.first
-    assert_equal Date.new(2017, 8, 13), week.last.date
-    assert week[2].new_record?
-    assert_equal 8, week[2].hours
-    assert_equal 0, week.last.hours
+    week = WorkHour.days_hash_for_week @luke, Date.new(2017, 8, 8)
+    assert_equal 7, week.length
+    assert_equal (Date.new(2017, 8, 7)..Date.new(2017, 8, 13)).to_a, week.keys
+    assert_equal 10, week[Date.new(2017, 8, 7)][:hours]
+    assert_equal 8, week[Date.new(2017, 8, 9)][:hours]
+    assert_equal 0, week[Date.new(2017, 8, 13)][:hours]
   end
 
   test "Update" do

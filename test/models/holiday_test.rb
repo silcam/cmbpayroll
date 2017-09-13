@@ -20,6 +20,12 @@ class HolidayTest < ActiveSupport::TestCase
     refute_includes Holiday.for('2017-05-01', '2017-05-19'), @may20
   end
 
+  test "Days Hash" do
+    days = Holiday.days_hash(Date.new(2017, 12, 24), Date.new(2017, 12, 25))
+    assert_equal 1, days.length
+    assert_equal 'Christmas', days[Date.new(2017, 12, 25)][:holiday]
+  end
+
   test "Generate" do
     Holiday.generate(2018)
     assert Holiday.find_by date: '2018-05-20'

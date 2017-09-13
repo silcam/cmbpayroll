@@ -1,9 +1,9 @@
 <%= provide :title, t(:Hours) %>
-<% monday = @work_hours.first.date %>
+<% dates = @week.keys.sort %>
 <h2>
   <%= t :Hours_for %>
   <%= @employee.full_name %>
-  <small><%= t :Week_of %> <%= monday.strftime("%-d %B") %></small>
+  <small><%= t :Week_of %> <%= dates.first.strftime("%-d %B") %></small>
 </h2>
 
 <%= render 'shared/error_messages', messages: @errors if @errors %>
@@ -16,33 +16,31 @@
       <% end %>
     </tr>
     <tr>
-      <% (@work_hours).each do |workhour| %>
-          <th><%= workhour.date.strftime("%-d %b") %></th>
+      <% dates.each do |date| %>
+          <th><%= date.strftime("%-d %b") %></th>
       <% end %>
     </tr>
-    <% unless @holidays.empty? %>
-      <tr>
-        <% @work_hours.each do |workhour| %>
-          <td>
-            <% if @holidays[workhour.date] %>
-              <label style="color: Red;">
-                <%= @holidays[workhour.date] %>
-              </label>
-            <% end %>
-          </td>
-        <% end %>
-      </tr>
-    <% end %>
     <tr>
-      <% (@work_hours).each do |workhour| %>
+      <% dates.each do |date| %>
+        <td>
+          <% if @week[date].has_key?(:holiday) %>
+            <label style="color: Red;">
+              <%= @week[date][:holiday] %>
+            </label>
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
+    <tr>
+      <% dates.each do |date| %>
           <td>
-            <% if @vacation_days.include?(workhour.date) %>
+            <% if @week[date][:vacation] %>
               <label><%= t :Vacation %></label>
             <% else %>
-              <%= text_field_tag "hours[#{workhour.date}]",
-                               number_to_human(workhour.hours),
+              <%= text_field_tag "hours[#{date}]",
+                               number_to_human(@week[date][:hours]),
                                class: 'form-control',
-                               data: {'dow' => workhour.date.wday} %>
+                               data: {'dow' => date.wday} %>
             <% end %>
           </td>
       <% end %>

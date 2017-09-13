@@ -61,11 +61,11 @@ class Vacation < ApplicationRecord
     Vacation.missed_days_so_far(employee) * WorkHour.workday
   end
 
-  def self.vacation_days(employee, start, finish)
+  def self.days_hash(employee, start, finish)
     vacations = employee.vacations.where(overlap_clause(start, finish))
-    vdays = []
+    vdays = {}
     (start .. finish).each do |date|
-      vdays << date if vacations.any?{ |vacay| (vacay.start_date .. vacay.end_date) === date }
+      vdays[date] = {vacation: true} if vacations.any?{ |vacay| (vacay.start_date .. vacay.end_date) === date }
     end
     vdays
   end

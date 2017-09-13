@@ -7,6 +7,15 @@ class Bonus < ApplicationRecord
 
   enum bonus_type: [ :percentage, :fixed ]
 
+  def display_quantity
+    adj_quantity = trim(round(quantity))
+    if (bonus_type == "percentage")
+       return "#{adj_quantity}%"
+    else
+       return "#{adj_quantity} FCFA"
+    end
+  end
+
   #
   # Should receive a hash of the form
   #     { "1111" => 0, "222" => 1 }
@@ -29,6 +38,17 @@ class Bonus < ApplicationRecord
         # ignore
       end
     end
+  end
+
+  private
+
+  def round num
+    num.round(2)
+  end
+
+  def trim num
+    i, f = num.to_i, num.to_f
+    i == f ? i : f
   end
 
 end

@@ -47,4 +47,30 @@ class BonusTest < ActiveSupport::TestCase
     }
   end
 
+  def test_display_quantity_for_humans
+
+    bonus.name = "Test Bonus"
+    bonus.quantity = "34.0"
+    bonus.bonus_type = "percentage"
+    assert bonus.valid?
+
+    assert_equal("34%", bonus.display_quantity)
+
+    bonus.quantity = "5236"
+    bonus.bonus_type = "fixed"
+
+    assert_equal("5236 FCFA", bonus.display_quantity)
+
+    bonus.quantity = "34.66666666666666666"
+    bonus.bonus_type = "percentage"
+
+    assert_equal("34.67%", bonus.display_quantity)
+
+    bonus.quantity = "5236.25"
+    bonus.bonus_type = "fixed"
+
+    assert_equal("5236.25 FCFA", bonus.display_quantity)
+
+  end
+
 end

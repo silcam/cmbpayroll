@@ -135,7 +135,7 @@
     </tr>
     <% @employee.bonuses.each do |b| %>
       <tr>
-        <td><%= b.name %> (<%= b.quantity %> <%= b.bonus_type %>)</td>
+        <td><%= b.name %> (<%= b.display_quantity %>)</td>
         <td>
 <%= form_for b, :url => unassign_employee_bonuses_url(@employee) do |f| %>
   <%= f.hidden_field(:b, :value => b.id) %>

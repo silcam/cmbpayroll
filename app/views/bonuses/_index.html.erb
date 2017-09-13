@@ -6,7 +6,6 @@
       <% if @employee %><th></th><% end %>
       <th><%= t(:Name) %></th>
       <th><%= t(:Quantity) %></th>
-      <th><%= t(:Type) %></th>
       <th><%= t(:Comment) %></th>
       <th colspan="3"></th>
     </tr>
@@ -17,8 +16,7 @@
       <tr>
         <% if @employee %><td><%= check_box(:bonus, bonus.id) %></td><% end %>
         <td><%= bonus.name %></td>
-        <td><%= bonus.quantity %></td>
-        <td><%= bonus.bonus_type %></td>
+        <td><%= bonus.display_quantity %></td>
         <td><%= bonus.comment %></td>
         <% unless @employee %>
         <td><%= link_to t(:Show), bonus %></td>

@@ -16,14 +16,14 @@ class HolidaysController < ApplicationController
   end
 
   def generate
-    @year = params[:year]
+    @year = params[:year].to_i
     Holiday.generate @year
-    redirect_to holidays_path
+    redirect_to holidays_path(year: @year)
   end
 
   def edit
-    prepare_index
     @holiday = Holiday.find params[:id]
+    prepare_index @holiday.date.year
     render :index
   end
 
@@ -32,7 +32,7 @@ class HolidaysController < ApplicationController
     if @holiday.update holiday_params
       redirect_to holidays_path(year: @holiday.date.year)
     else
-      prepare_index
+      prepare_index @holiday.date.year
       render :index
     end
   end
@@ -44,8 +44,12 @@ class HolidaysController < ApplicationController
   end
 
   private
-  def prepare_index
-    @year = params[:year] ? params[:year].to_i : Date.today.year
+  def prepare_index(year = nil)
+    if year
+      @year = year
+    else
+      @year = params[:year] ? params[:year].to_i : Date.today.year
+    end
     @holidays = Holiday.for_year @year
   end
 

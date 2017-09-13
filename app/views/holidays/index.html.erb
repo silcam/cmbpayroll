@@ -5,6 +5,8 @@
   </small>
 </h2>
 
+<%= render 'shared/error_messages', errors: @holiday.errors %>
+
 <ul class="list-inline">
   <li>
     <% year = @year - 1 %>

@@ -51,6 +51,15 @@ class WorkHourTest < ActiveSupport::TestCase
     end
   end
 
+  test "Total Hours with holiday" do
+    exp = {normal: (20 * 8), overtime: 0}
+    assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 12))
+
+    WorkHour.create(employee: @luke, date: '2017-12-25', hours: 2)
+    exp[:overtime] = 2
+    assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 12))
+  end
+
   test "Lukes Week of Aug 7, 2017" do
     week = WorkHour.week_for @luke, Date.new(2017, 8, 8)
     assert_equal @lukes_overtime, week.first

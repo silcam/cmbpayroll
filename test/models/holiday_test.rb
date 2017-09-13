@@ -15,6 +15,11 @@ class HolidayTest < ActiveSupport::TestCase
     refute_includes Holiday.for_year(2016), @may20
   end
 
+  test "For" do
+    assert_includes Holiday.for('2017-05-01', '2017-05-20'), @may20
+    refute_includes Holiday.for('2017-05-01', '2017-05-19'), @may20
+  end
+
   test "Generate" do
     Holiday.generate(2018)
     assert Holiday.find_by date: '2018-05-20'

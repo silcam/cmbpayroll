@@ -11,6 +11,10 @@ class WorkHour < ApplicationRecord
   default_scope { order(:date) }
   scope :current_period, -> { where(date: Period.current_as_range)}
 
+  def self.for(employee, start, finish)
+    where(employee: employee, date: (start .. finish))
+  end
+
   def self.total_hours(employee, period=Period.current)
     total_hours_for employee, period.start, period.finish
   end
@@ -88,19 +92,25 @@ class WorkHour < ApplicationRecord
   end
 
   def self.total_hours_for(employee, start_date, end_date)
-    normal = Period.count_weekdays(start_date, end_date) * WorkHour.workday
+    normal = 0
     overtime = 0
-    work_hours = WorkHour.where(employee: employee,
-                                date: (start_date .. end_date))
-    work_hours.each do |work_hour|
-      if is_weekday? work_hour.date
-        if work_hour.hours < 8
-          normal += (work_hour.hours - 8)
-        else
-          overtime += (work_hour.hours - 8)
-        end
+    work_hours = WorkHour.for(employee, start_date, end_date)
+    vacations = Vacation.vacation_days(employee, start_date, end_date)
+    holidays = Holiday.hash_for(start_date, end_date)
+
+    (start_date .. end_date).each do |date|
+      next if vacations.include? date
+      i = work_hours.index{ |wh| wh.date == date }
+      work_hour = i.nil? ? nil : work_hours[i]
+      if holidays[date] or not is_weekday?(date)
+        overtime += work_hour.hours unless work_hour.nil?
       else
-        overtime += work_hour.hours
+        if work_hour.nil?
+          normal += workday
+        else
+          normal += [workday, work_hour.hours].min
+          overtime += [0, work_hour.hours - workday].max
+        end
       end
     end
     {normal: normal, overtime: overtime}

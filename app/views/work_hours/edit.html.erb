@@ -17,16 +17,28 @@
     </tr>
     <tr>
       <% (@work_hours).each do |workhour| %>
-          <th><%= workhour.date.strftime("%-d %B") %></th>
+          <th><%= workhour.date.strftime("%-d %b") %></th>
       <% end %>
     </tr>
-    <tr>
-      <% (@work_hours).each_index do |i| %>
+    <% unless @holidays.empty? %>
+      <tr>
+        <% @work_hours.each do |workhour| %>
           <td>
-            <% if @vacation_days[i] %>
+            <% if @holidays[workhour.date] %>
+              <label style="color: Red;">
+                <%= @holidays[workhour.date] %>
+              </label>
+            <% end %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+    <tr>
+      <% (@work_hours).each do |workhour| %>
+          <td>
+            <% if @vacation_days.include?(workhour.date) %>
               <label><%= t :Vacation %></label>
             <% else %>
-              <% workhour = @work_hours[i] %>
               <%= text_field_tag "hours[#{workhour.date}]",
                                number_to_human(workhour.hours),
                                class: 'form-control',

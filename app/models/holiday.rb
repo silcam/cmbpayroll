@@ -13,6 +13,7 @@ class Holiday < ApplicationRecord
     Holiday.for_year(year - 1).each do |holiday|
       new_date = holiday.date.next_year
       observed = new_date.sunday? ? new_date + 1 : nil
+      observed = nil if holiday.name == 'Easter'
       Holiday.create(name: holiday.name, date: new_date, observed: observed)
     end
   end

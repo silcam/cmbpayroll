@@ -1,20 +1,11 @@
 module ApplicationHelper
 
-  # def current_period_name
-  #   Date.today.strftime("%B")
-  # end
-  #
-  # def current_period_start
-  #   today = Date.today
-  #   Date.new(today.year, today.month, 1)
-  # end
-  #
-  # def current_period_end
-  #   current_period_start.next_month - 1
-  # end
-  #
   def is_weekday?(date)
     (1 .. 5) === date.wday  # TODO Hardcoded workweek as from Mon to Fri
+  end
+
+  def is_off_day?(date, holiday)
+    (not holiday.nil?) or (not is_weekday?(date))
   end
 
   def yesterday

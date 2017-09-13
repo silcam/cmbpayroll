@@ -37,9 +37,11 @@
             <% if @week[date][:vacation] %>
               <label><%= t :Vacation %></label>
             <% else %>
+              <% css_class = 'form-control' %>
+              <% css_class += ' off-day-field' if is_off_day?(date, @week[date][:holiday]) %>
               <%= text_field_tag "hours[#{date}]",
                                number_to_human(@week[date][:hours]),
-                               class: 'form-control',
+                               class: css_class,
                                data: {'dow' => date.wday} %>
             <% end %>
           </td>

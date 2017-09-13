@@ -44,7 +44,7 @@ class WorkHour < ApplicationRecord
     (start .. finish).each do |day|
       days[day] = {} unless days.has_key? day
       unless days[day].has_key? :hours
-        if days[day].has_key?(:holiday) or not is_weekday?(day)
+        if is_off_day? day, days[day][:holiday]
           days[day][:hours] = 0
         else
           days[day][:hours] = workday
@@ -110,7 +110,7 @@ class WorkHour < ApplicationRecord
     overtime = 0
     days = complete_days_hash(employee, start, finish)
     days.each do |date, day|
-      if day.has_key? :holiday or not is_weekday?(date)
+      if is_off_day? date, day[:holiday]
         overtime += day[:hours]
       else
         normal += [workday, day[:hours]].min

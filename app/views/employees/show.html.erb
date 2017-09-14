@@ -26,6 +26,10 @@
     <label><%= :Bonuses %>:</label>
     <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee) %>
   </li>
+  <li>
+    <label><%= :Payslips %>:</label>
+    <%= link_to t(:View), employee_payslips_path(@employee) %>
+  </li>
 </ul>
 
 <h2>Employee Information for <%= @employee.full_name %></h2>

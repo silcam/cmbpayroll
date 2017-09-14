@@ -1,7 +1,16 @@
 class PayslipsController < ApplicationController
 
+  before_action :set_employee, only: [ :index ]
+
   def index
-    @employees = Employee.all
+
+    if (@employee)
+      # show history for single employee
+      render "employee_history"
+    else
+      # show other stuff
+      @employees = Employee.all
+    end
   end
 
   def show
@@ -25,6 +34,10 @@ class PayslipsController < ApplicationController
 
     redirect_to payslip_url(@payslip)
 
+  end
+
+  def set_employee
+    @employee = Employee.find(params[:employee_id]) if params[:employee_id]
   end
 
 end

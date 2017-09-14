@@ -1,0 +1,17 @@
+<% provide(:title, "Payslips") %>
+
+  <div class="col-md-6" style="border:1px dotted gray; padding:20px">
+
+    <h2>View Payroll History for <%= @employee.full_name %></h2>
+
+    <table class="table">
+    <% @employee.payslips.each do |slip| %>
+      <tr>
+        <td><%= slip.period_start.to_formatted_s(:short) %></td>
+        <td><%= link_to("Payslip #{slip.id}", payslip_path(slip)) %></td>
+      </tr>
+    <% end %>
+    </table>
+
+  </div>
+

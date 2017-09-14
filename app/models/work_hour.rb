@@ -11,6 +11,10 @@ class WorkHour < ApplicationRecord
   default_scope { order(:date) }
   scope :current_period, -> { where(date: Period.current_as_range)}
 
+  def self.for(employee, start, finish)
+    where(employee: employee, date: (start .. finish))
+  end
+
   def self.total_hours(employee, period=Period.current)
     total_hours_for employee, period.start, period.finish
   end
@@ -19,21 +23,35 @@ class WorkHour < ApplicationRecord
     total_hours_for employee, Period.current.start, yesterday
   end
 
-  def self.week_for(employee, date)
+  def self.days_hash_for_week(employee, date)
     monday = last_monday date
-    sunday = monday + 6
-    existing = employee.work_hours.where(date: (monday .. sunday))
-    week = []
-    (monday .. sunday).each do |d|
-      existing_i = existing.index{ |wh| wh.date == d }
-      workhour = existing_i.nil? ?
-                     WorkHour.new(employee: employee,
-                                  date: d,
-                                  hours: WorkHour.default_hours(d))
-                     : existing[existing_i]
-      week << workhour
+    complete_days_hash employee, monday, (monday + 6)
+  end
+
+  def self.days_hash(employee, start, finish)
+    work_hours = WorkHour.for(employee, start, finish)
+    days = {}
+    work_hours.each do |work_hour|
+      days[work_hour.date] = {hours: work_hour.hours}
     end
-    week
+    days
+  end
+
+  def self.complete_days_hash(employee, start, finish)
+    days = RecursiveHashMerger.merge days_hash(employee, start, finish),
+                                Holiday.days_hash(start, finish),
+                                Vacation.days_hash(employee, start, finish)
+    (start .. finish).each do |day|
+      days[day] = {} unless days.has_key? day
+      unless days[day].has_key? :hours
+        if is_off_day? day, days[day][:holiday]
+          days[day][:hours] = 0
+        else
+          days[day][:hours] = workday
+        end
+      end
+    end
+    days
   end
 
   def self.update(employee, days_hours)
@@ -87,20 +105,16 @@ class WorkHour < ApplicationRecord
     end
   end
 
-  def self.total_hours_for(employee, start_date, end_date)
-    normal = Period.count_weekdays(start_date, end_date) * WorkHour.workday
+  def self.total_hours_for(employee, start, finish)
+    normal = 0
     overtime = 0
-    work_hours = WorkHour.where(employee: employee,
-                                date: (start_date .. end_date))
-    work_hours.each do |work_hour|
-      if is_weekday? work_hour.date
-        if work_hour.hours < 8
-          normal += (work_hour.hours - 8)
-        else
-          overtime += (work_hour.hours - 8)
-        end
+    days = complete_days_hash(employee, start, finish)
+    days.each do |date, day|
+      if is_off_day? date, day[:holiday]
+        overtime += day[:hours]
       else
-        overtime += work_hour.hours
+        normal += [workday, day[:hours]].min
+        overtime += (day[:hours] - workday) if day[:hours] > workday
       end
     end
     {normal: normal, overtime: overtime}

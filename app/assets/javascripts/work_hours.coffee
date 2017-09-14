@@ -9,8 +9,7 @@ recalculate_hours = () ->
   overtime = 0
   $('input[data-dow]').each ->
     hours = parseFloat($(this).val())
-    wday = $(this).data('dow')
-    if wday < 1 or wday > 5  # 0 == Sunday, 6 == Saturday
+    if $(this).hasClass('off-day-field')
       overtime += hours
     else if hours > 8
       regular += 8

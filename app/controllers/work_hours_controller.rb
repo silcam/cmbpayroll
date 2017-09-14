@@ -7,10 +7,8 @@ class WorkHoursController < ApplicationController
   end
 
   def edit
-    # @monday = last_monday Date.strptime(params[:week])
     date = Date.strptime params[:week]
-    @work_hours = WorkHour.week_for(@employee, date)
-    @vacation_days = Vacation.vacation_days @work_hours
+    @week = WorkHour.days_hash_for_week(@employee, date)
   end
 
   def update
@@ -19,11 +17,10 @@ class WorkHoursController < ApplicationController
       redirect_to employee_work_hours_path(@employee)
     rescue InvalidHoursException => e
       @errors = e.errors
-      @work_hours = WorkHour.week_for(@employee, Date.strptime(params['hours'].keys.first))
-      @work_hours.each do |wh|
-        wh.hours = params['hours'][wh.date.to_s] if params['hours'].has_key?(wh.date.to_s)
+      @week = WorkHour.days_hash_for_week(@employee, Date.strptime(params['hours'].keys.first))
+      @week.each do |date, day|
+        day[:hours] = params['hours'][date.to_s] if params['hours'].has_key?(date.to_s)
       end
-      @vacation_days = Vacation.vacation_days @work_hours
       render 'edit'
     end
   end

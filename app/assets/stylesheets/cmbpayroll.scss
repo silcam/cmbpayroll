@@ -78,6 +78,11 @@ form.form-inline {
   }
 }
 
+div.form-group-inline {
+  display: inline-block;
+  margin-right: 20px;
+}
+
 .form-control-inline {
   width: auto;
   display: inline-block;
@@ -115,5 +120,11 @@ form.auto-width {
   th, td {
     border-top: none !important;
     border-left: 1px solid #ddd;
+  }
+}
+
+table.no-border{
+  td {
+    border-top: none !important;
   }
 }

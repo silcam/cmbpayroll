@@ -1,0 +1,35 @@
+  <% no_labels = defined? cancel and cancel %>
+
+    <td class="form-group-inline">
+      <%= form.label :name, t(:Name) unless no_labels%>
+      <%= form.text_field :name, class: 'form-control' %>
+    </td>
+    <td class="form-group-inline">
+      <%= form.label :date, t(:Date), style: 'display: block;' unless no_labels%>
+      <%= form.date_select :date, {discard_year: true}, class: 'form-control form-control-inline' %>
+    </td>
+
+    <td class="form-group-inline">
+      <%= form.label :observed, t(:Observed), style: 'display: block;' unless no_labels%>
+      <%= form.date_select :observed,
+                           {discard_year: true, include_blank: true, start_year: @year},
+                           class: 'form-control form-control-inline' %>
+    </td>
+
+    <td class="form-group-inline">
+      <%= form.label :bridge, t(:Bridge), style: 'display: block;' unless no_labels%>
+      <%= form.date_select :bridge, {discard_year: true, include_blank: true}, class: 'form-control form-control-inline' %>
+    </td>
+
+    <td>
+      <% unless no_labels %>
+        <label style="display: block;">&nbsp;</label>
+      <% end %>
+      <%= form.submit t(:Save), class: 'btn btn-primary' %>
+    </td>
+
+    <% if defined? cancel and cancel %>
+      <td>
+        <%= link_to t(:Cancel), holidays_path(year: @year), class: 'btn btn-danger' %>
+      </td>
+    <% end %>

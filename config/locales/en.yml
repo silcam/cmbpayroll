@@ -42,6 +42,7 @@ en:
   Birth_date: Birth Date
   Return_to: Retourner to
   Gender: Gender
+  Cancel: Cancel
 
   # Time and Date
   Date: Date
@@ -155,3 +156,12 @@ en:
   Confirm_delete_account: Are you sure you want to delete the account for %{name}?
   Change_preferred_language: Change Preferred Language
   Change_language: Change Language
+
+  # Holidays
+  Holidays: Holidays
+  Holiday: Holiday
+  No_holidays: No Holidays
+  Copy_holidays_from: Copy Holidays from %{year}
+  Observed: Observed
+  Bridge: Bridge
+  New_holiday: New Holiday

@@ -1,9 +1,9 @@
 <%= provide :title, t(:Hours) %>
-<% monday = @work_hours.first.date %>
+<% dates = @week.keys.sort %>
 <h2>
   <%= t :Hours_for %>
   <%= @employee.full_name %>
-  <small><%= t :Week_of %> <%= monday.strftime("%-d %B") %></small>
+  <small><%= t :Week_of %> <%= dates.first.strftime("%-d %B") %></small>
 </h2>
 
 <%= render 'shared/error_messages', messages: @errors if @errors %>
@@ -16,21 +16,33 @@
       <% end %>
     </tr>
     <tr>
-      <% (@work_hours).each do |workhour| %>
-          <th><%= workhour.date.strftime("%-d %B") %></th>
+      <% dates.each do |date| %>
+          <th><%= date.strftime("%-d %b") %></th>
       <% end %>
     </tr>
     <tr>
-      <% (@work_hours).each_index do |i| %>
+      <% dates.each do |date| %>
+        <td>
+          <% if @week[date].has_key?(:holiday) %>
+            <label style="color: Red;">
+              <%= @week[date][:holiday] %>
+            </label>
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
+    <tr>
+      <% dates.each do |date| %>
           <td>
-            <% if @vacation_days[i] %>
+            <% if @week[date][:vacation] %>
               <label><%= t :Vacation %></label>
             <% else %>
-              <% workhour = @work_hours[i] %>
-              <%= text_field_tag "hours[#{workhour.date}]",
-                               number_to_human(workhour.hours),
-                               class: 'form-control',
-                               data: {'dow' => workhour.date.wday} %>
+              <% css_class = 'form-control' %>
+              <% css_class += ' off-day-field' if is_off_day?(date, @week[date][:holiday]) %>
+              <%= text_field_tag "hours[#{date}]",
+                               number_to_human(@week[date][:hours]),
+                               class: css_class,
+                               data: {'dow' => date.wday} %>
             <% end %>
           </td>
       <% end %>

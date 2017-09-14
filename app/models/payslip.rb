@@ -8,11 +8,10 @@ class Payslip < ApplicationRecord
   belongs_to :employee
 
   validate :has_earnings?
-  validates :period_start,
-            :period_end,
+  validates :period_year,
+            :period_month,
             :payslip_date,
                presence: {message: I18n.t(:Not_blank)}
-
 
   def has_earnings?
     # query these items to see if there are any.
@@ -44,14 +43,26 @@ class Payslip < ApplicationRecord
     # TODO: Are there rules that the period must be
     #         the current period? (or the previous period)?
 
-    payslip = Payslip.new
+    payslip = Payslip.find_by(
+                  period_year: period.year,
+                  period_month: period.month)
 
-    payslip.period_start = period.start
-    payslip.period_end = period.finish
-    payslip.payslip_date = Date.today
+    if (payslip.nil?)
+      payslip = Payslip.new
+
+      payslip.period_year = period.year
+      payslip.period_month = period.month
+
+      payslip.payslip_date = Date.today
+    end
+
+    # TODO: do this?
+    payslip.earnings.delete_all
 
     self.process_hours(payslip, employee, period)
     self.process_bonuses(payslip, employee)
+
+    payslip.last_processed = DateTime.now
 
     payslip.save
     employee.save

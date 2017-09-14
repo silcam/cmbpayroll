@@ -14,8 +14,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip = Payslip.new({
         payslip_date: "2017-07-31",
-        period_start: "2017-08-01",
-        period_end: "2017-08-31"
+        period_year: Period.current.year,
+        period_month: Period.current.month
     })
     refute_nil(payslip)
 
@@ -34,8 +34,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip = Payslip.new
     payslip.payslip_date = "2017-07-31"
-    payslip.period_start = "2017-08-01"
-    payslip.period_end = "2017-08-31"
+    payslip.period_year = Period.current.year
+    payslip.period_month = Period.current.month
 
     create_earnings(payslip)
 
@@ -51,8 +51,8 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = employee.payslips.create()
 
     #payslip.payslip_date = "2017-07-31"
-    payslip.period_start = "2017-08-01"
-    payslip.period_end = "2017-08-31"
+    payslip.period_year = Period.current.year
+    payslip.period_month = Period.current.month
 
     create_earnings(payslip)
 
@@ -67,13 +67,13 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = employee.payslips.create()
 
     payslip.payslip_date = "2017-07-31"
-    #payslip.period_start = "2017-08-01"
-    payslip.period_end = "2017-08-31"
+    #payslip.period_year = Period.current.year
+    payslip.period_month = Period.current.month
 
     create_earnings(payslip)
 
     refute(payslip.valid?)
-    payslip.period_start = "2017-08-01"
+    payslip.period_year = Period.current.year
     assert(payslip.valid?)
   end
 
@@ -82,13 +82,13 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip = employee.payslips.create()
     payslip.payslip_date = "2017-07-31"
-    payslip.period_start = "2017-08-01"
-    #payslip.period_end = "2017-08-31"
+    payslip.period_year = Period.current.year
+    #payslip.period_month = Period.current.month
 
     create_earnings(payslip)
 
     refute(payslip.valid?)
-    payslip.period_end = "2017-08-31"
+    payslip.period_month = Period.current.month
     assert(payslip.valid?)
   end
 
@@ -97,8 +97,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip = employee.payslips.create()
     payslip.payslip_date = "2017-07-31"
-    payslip.period_start = "2017-08-01"
-    payslip.period_end = "2017-08-31"
+    payslip.period_year = Period.current.year
+    payslip.period_month = Period.current.month
 
     payslip.process()
 
@@ -118,8 +118,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip = employee.payslips.create()
     payslip.payslip_date = "2017-07-31"
-    payslip.period_start = "2017-08-01"
-    payslip.period_end = "2017-08-31"
+    payslip.period_year = Period.current.year
+    payslip.period_month = Period.current.month
 
     create_earnings(payslip)
 
@@ -133,8 +133,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip = employee.payslips.create()
     payslip.payslip_date = "2017-07-31"
-    payslip.period_start = "2017-08-01"
-    payslip.period_end = "2017-08-31"
+    payslip.period_year = Period.current.year
+    payslip.period_month = Period.current.month
 
     payslip.process()
 
@@ -154,8 +154,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip = employee.payslips.create()
     payslip.payslip_date = "2017-07-31"
-    payslip.period_start = "2017-08-01"
-    payslip.period_end = "2017-08-31"
+    payslip.period_year = Period.current.year
+    payslip.period_month = Period.current.month
 
     earning_base = Earning.new
 
@@ -288,6 +288,51 @@ class PayslipTest < ActiveSupport::TestCase
     end
 
     assert_equal(4, count, "found all the items")
+
+  end
+
+  def test_payslip_with_period_information
+    payslip = Payslip.new
+    payslip.period_year = Period.current.year
+    payslip.period_month = Period.current.month
+
+    refute_nil(payslip.period_year, "year has been set by period")
+    refute_nil(payslip.period_month, "month has been set by period")
+
+    assert_equal(Date.today.year, payslip.period_year, "year is correct")
+    assert_equal(Date.today.month, payslip.period_month, "month is correct")
+  end
+
+  def test_cannot_make_two_payslips_same_period
+    employee = return_valid_employee()
+
+    payslip = Payslip.new({
+        payslip_date: "2017-07-31",
+        period_year: Period.current.year,
+        period_month: Period.current.month
+    })
+    refute_nil(payslip)
+
+    employee.payslips << payslip
+    create_earnings(payslip)
+
+    assert(payslip.valid?)
+    payslip.save
+
+    assert(payslip.persisted?)
+    refute_nil(payslip.id)
+
+    # Attempt to reprocess payslip
+    processed_payslip = Payslip.process(employee, Period.current)
+    assert(processed_payslip)
+    assert(processed_payslip.valid?, "reprocessed payslip should be valid")
+
+    # verify it is the same payslip (earnings would have changed)
+    assert_equal(payslip.id, processed_payslip.id, "ids have not changed")
+    assert_equal(payslip.payslip_date, processed_payslip.payslip_date,
+                  "pay date has not changed")
+    refute_equal(payslip.last_processed, processed_payslip.last_processed,
+                  "last Processed has changed")
 
   end
 

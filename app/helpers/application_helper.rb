@@ -33,12 +33,12 @@ module ApplicationHelper
     end
     options_for_select(mondays, mondays[1])
   end
-  #
-  #
-  #
-  # def current_period_weekdays_so_far
-  #   count_weekdays current_period_start, (Date.today - 1)
-  # end
+
+  def options_for_select_plus(collection, value, display, extras)
+    array = collection.collect{ |member| [member.send(display), member.send(value)]}
+    array += extras
+    options_for_select(array)
+  end
 
   # def assemble_date(hash, prefix)
   #   [1, 2, 3].map{ |n| hash["#{prefix}(#{n}i)"]}.join '-'

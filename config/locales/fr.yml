@@ -78,6 +78,7 @@ fr:
   # Supervisors
   Supervisors: Superviseurs
   Supervisor: Superviseur
+  New_supervisor: Nouveau superviseur
   Add_new_supervisor: Ajouter un superviseur
 
   # Children

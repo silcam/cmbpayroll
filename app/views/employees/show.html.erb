@@ -41,9 +41,15 @@
     </tr>
     <tr>
       <th scope="row"><%= t(:Title) %>:</th>
-      <td>Title</td>
+      <td><%= @employee.title %></td>
       <th scope="row"><%= t(:Department) %>:</th>
-      <td>Department</td>
+      <td><%= @employee.department %></td>
+    </tr>
+    <tr>
+      <th scope="row"><%= t(:Supervisor) %>:</th>
+      <td><%= @employee.supervisor.try(:full_name) %></td>
+      <th scope="row"></th>
+      <td></td>
     </tr>
     <tr>
       <th scope="row"><%= t(:Contract_start) %>:</th>

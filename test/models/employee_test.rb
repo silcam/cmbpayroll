@@ -4,6 +4,7 @@ class EmployeeTest < ActiveSupport::TestCase
 
   def setup
     @luke = employees :Luke
+    @yoda = supervisors :Yoda
   end
 
   test "Employee has association" do
@@ -13,34 +14,23 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "Associations" do
     lukes_coke = charges :LukesCoke
+    luke_jr = children :LukeJr
     assert_includes @luke.charges, lukes_coke
+    assert_equal @yoda, @luke.supervisor
+    assert_includes @luke.children, luke_jr
   end
 
   test "validations" do
-    params = {
-        person: Person.new(first_name: 'Joe', last_name: 'Shmoe'),
-        title: 'Director',
-        department: 'Computer Services',
-        hours_day: 12
-    }
-
-    model_validation_hack_test Employee, params
+    model_validation_hack_test Employee, some_valid_params
   end
 
   test "conditional_wage_validation" do
-    employee = Employee.new(person: Person.new)
-
-    employee.first_name = "Joe"
-    employee.last_name = "Smith"
-    employee.title = "Director of Himself"
-    employee.department = "Computer Services"
-    employee.hours_day = 12
-    employee.echelon = "a"
+    employee = Employee.new(some_valid_params(echelon: :a))
 
     assert(employee.valid?, "initial valid state")
 
     # needs to be set if the echelon is 'g'
-    employee.echelon = "g"
+    employee.echelon = :g
     refute(employee.valid?, "should not be valid if echelon g without wage")
 
     employee.wage = "123456"
@@ -49,19 +39,11 @@ class EmployeeTest < ActiveSupport::TestCase
 
 
   test "enum_validations" do
-    employee = Employee.new(person: Person.new)
+    employee = Employee.new(some_valid_params(employment_status: :full_time,
+                                              gender: :male,
+                                              marital_status: :married,
+                                              days_week: :five))
 
-    employee.first_name = "Joe"
-    employee.last_name = "Smith"
-    employee.title = "Director of Himself"
-    employee.department = "Computer Services"
-
-    employee.hours_day = 12
-
-    employee.employment_status = "full_time"
-    employee.gender = "male"
-    employee.marital_status = "married"
-    employee.days_week = "five"
 
     assert employee.valid?
 
@@ -132,12 +114,7 @@ class EmployeeTest < ActiveSupport::TestCase
   end
 
   test "numeric_validations" do
-    employee = Employee.new(person: Person.new)
-
-    employee.first_name = "Joe"
-    employee.last_name = "Smith"
-    employee.title = "Directork of Himself"
-    employee.department = "Computer Services"
+    employee = Employee.new some_valid_params
 
     employee.hours_day = "-2"
 
@@ -161,5 +138,14 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "Full Name Rev" do
     assert_equal "Skywalker, Luke", @luke.full_name_rev
+  end
+
+  def some_valid_params(params={})
+    {first_name: 'Joe',
+     last_name: 'Shmoe',
+     title: 'Director',
+     department: 'Computer Services',
+     hours_day: 12,
+     supervisor: @yoda}.merge params
   end
 end

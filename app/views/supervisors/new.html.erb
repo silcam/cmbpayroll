@@ -1,0 +1,8 @@
+<h2><%= t :Add_new_supervisor %></h2>
+
+<%= render 'shared/error_messages', errors: @supervisor.errors %>
+
+<%= form_for @supervisor, html: {class: 'auto-width'} do |form| %>
+  <%= render 'form', form: form %>
+  <%= form.submit t(:Save), class: 'btn btn-primary' %>
+<% end %>

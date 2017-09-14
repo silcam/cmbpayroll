@@ -75,6 +75,12 @@ fr:
   Marital_status: Etat civil
   Wage: Salaire
 
+  # Supervisors
+  Supervisors: Superviseurs
+  Supervisor: Superviseur
+  New_supervisor: Nouveau superviseur
+  Add_new_supervisor: Ajouter un superviseur
+
   # Children
   Children: Enfants
   Children_of: Enfants de  # TODO - This isn't perfect if the next word starts with a vowel.

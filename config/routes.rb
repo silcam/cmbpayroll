@@ -27,6 +27,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :supervisors, except: [:edit, :update, :show]
+
   resources 'payslips', only: [ :index, :show ]
 
   # Payslips (temp routes)

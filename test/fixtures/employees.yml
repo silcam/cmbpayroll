@@ -1,8 +1,27 @@
 Luke:
   person: Luke
+  supervisor: Yoda
+  title: Title
+  department: Department
+  hours_day: 8
 
 Anakin:
   person: Anakin
+  supervisor: Emperor
+  title: Title
+  department: Department
+  hours_day: 8
 
 Chewie:
   person: Chewie
+  supervisor: Han
+  title: Title
+  department: Department
+  hours_day: 8
+
+Han:
+  person: Han
+  supervisor: Yoda
+  title: Title
+  department: Department
+  hours_day: 8

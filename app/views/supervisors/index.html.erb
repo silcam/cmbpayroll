@@ -1,0 +1,27 @@
+<%= provide :title, t(:Supervisors) %>
+
+<%= link_to t(:Add_new_supervisor), new_supervisor_path, class: 'btn btn-primary btn-w-marge' %>
+
+<table class="table">
+  <tr>
+    <th><%= t :Supervisor %></th>
+    <th colspan="2"></th>
+  </tr>
+  <% @supervisors.each do |supervisor| %>
+    <tr>
+      <td><%= supervisor.full_name %></td>
+      <td>
+        <% if supervisor.employees.empty? %>
+          <%= t :No_employees %>
+        <% else %>
+          <%= link_to t(:View_employees), employees_path(supervisor: supervisor.id) %>
+        <% end %>
+      </td>
+      <td>
+        <% if supervisor.employees.empty? %>
+          <%= link_to t(:Delete), supervisor, method: :delete %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>

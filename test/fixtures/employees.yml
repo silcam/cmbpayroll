@@ -1,8 +1,15 @@
 Luke:
   person: Luke
+  supervisor: Yoda
 
 Anakin:
   person: Anakin
+  supervisor: Emperor
 
 Chewie:
   person: Chewie
+  supervisor: Han
+
+Han:
+  person: Han
+  supervisor: Yoda

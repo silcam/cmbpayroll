@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170913094806) do
+ActiveRecord::Schema.define(version: 20170914073507) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -87,7 +87,9 @@ ActiveRecord::Schema.define(version: 20170913094806) do
     t.integer "days_week"
     t.integer "wage"
     t.bigint "person_id"
+    t.bigint "supervisor_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
+    t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"
   end
 
   create_table "holidays", force: :cascade do |t|
@@ -125,6 +127,13 @@ ActiveRecord::Schema.define(version: 20170913094806) do
     t.string "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "supervisors", force: :cascade do |t|
+    t.bigint "person_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["person_id"], name: "index_supervisors_on_person_id"
   end
 
   create_table "users", force: :cascade do |t|

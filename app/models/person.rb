@@ -4,6 +4,7 @@ class Person < ApplicationRecord
   has_one :employee
   has_one :child
   has_one :user
+  has_one :supervisor
 
   has_many :children, foreign_key: :parent_id
 

@@ -13,3 +13,15 @@ Chewie:
 LukeJr:
   first_name: Luke Jr.
   last_name: Skywalker
+
+Emperor:
+  first_name: Emperor
+  last_name: Palpatine
+
+Yoda:
+  first_name: Yoda
+  last_name: Yoda
+
+Han:
+  first_name: Han
+  last_name: Solo

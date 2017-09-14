@@ -3,6 +3,8 @@ include ApplicationHelper
 class Employee < ApplicationRecord
   include BelongsToPerson
 
+  belongs_to :supervisor
+
   has_many :charges
   has_many :children, {through: :person, source: :children}
   has_many :work_hours

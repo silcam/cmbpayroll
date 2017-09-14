@@ -9,7 +9,7 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new_with_person
+    @user = User.new
   end
 
   def create

@@ -22,6 +22,13 @@ class Person < ApplicationRecord
     "#{last_name}, #{first_name}"
   end
 
+  def self.non_supervisors
+    Person.left_outer_joins(:supervisor)
+        .left_outer_joins(:child)
+        .where('supervisors.id IS NULL')
+        .where('children.id IS NULL')
+  end
+
   def self.non_users
     Person.left_outer_joins(:user)
         .left_outer_joins(:child)

@@ -34,6 +34,13 @@ class PersonTest < ActiveSupport::TestCase
     assert_equal 'Skywalker, Luke', @luke.full_name_rev
   end
 
+  test "Non-supervisors list" do
+    nonsups = Person.non_supervisors
+    assert_includes nonsups, people(:Chewie)
+    refute_includes nonsups, people(:Yoda)
+    refute_includes nonsups, @lukejr
+  end
+
   test "Non-users list" do
     nonusers = Person.non_users
     assert_includes nonusers, people(:Chewie)

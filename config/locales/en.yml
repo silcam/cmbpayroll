@@ -75,6 +75,11 @@ en:
   Marital_status: Marital Status
   Wage: Wage
 
+  # Supervisors
+  Supervisors: Supervisors
+  Supervisor: Supervisor
+  Add_new_supervisor: Add New Supervisor
+
   # Children
   Children: Children
   Children_of: Children of

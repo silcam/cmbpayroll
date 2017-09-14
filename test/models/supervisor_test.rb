@@ -14,4 +14,15 @@ class SupervisorTest < ActiveSupport::TestCase
     luke = employees :Luke
     assert_includes @yoda.employees, luke
   end
+
+  test "Cannot destroy supervisor with employees" do
+    assert_raises (ActiveRecord::DeleteRestrictionError){ @yoda.destroy }
+  end
+
+  test "Can destroy sup without employees" do
+    emperor = supervisors :Emperor
+    @yoda.employees.each{ |e| e.update(supervisor: emperor) }
+    @yoda.reload
+    assert @yoda.destroy
+  end
 end

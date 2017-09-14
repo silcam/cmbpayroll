@@ -37,6 +37,14 @@ class Payslip < ApplicationRecord
     return tmp_total
   end
 
+  def period
+    if (period_year && period_month)
+      return Period.new(period_year, period_month)
+    else
+      return nil
+    end
+  end
+
   def self.process(employee, period)
     # Do all the stuff that is needed to process a payslip for this user
     # TODO: more validation

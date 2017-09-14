@@ -1,8 +1,20 @@
 <% employee = Employee.find(params[:employee][:id]) %>
 
+<%= link_to "<< #{t(:Back)}", payslips_url %>
+
 <h2>Processing Payslip for <%= employee.full_name %></h2>
 
-<h4 style="color:red">For testing purposes at this point...</h4>
+
+<% if (@payslip && !@payslip.errors.empty?) %>
+<h4>Errors Processing Payslip:</h4>
+  <ul>
+  <% @payslip.errors.each do |err| %>
+    <li><%= err %></li>
+  <% end %>
+  </ul>
+<% end %>
+
+
 
 
 <h4><%= t :Hours_for %> <%= Period.current.short_name %></h4>

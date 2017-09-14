@@ -3,7 +3,6 @@ class PayslipsController < ApplicationController
   before_action :set_employee, only: [ :index ]
 
   def index
-
     if (@employee)
       # show history for single employee
       render "employee_history"
@@ -14,7 +13,13 @@ class PayslipsController < ApplicationController
   end
 
   def show
-    @payslip = Payslip.find(params[:id])
+    # TODO: cleanup and fix routes to make this
+    # not necessary
+    if (params[:id] == "process" || params[:id] == "process_complete")
+      redirect_to payslips_url()
+    else
+      @payslip = Payslip.find(params[:id])
+    end
   end
 
   def process_employee
@@ -32,7 +37,11 @@ class PayslipsController < ApplicationController
 
     @payslip = Payslip.process(@employee, @period)
 
-    redirect_to payslip_url(@payslip)
+    unless (@payslip.valid?)
+      render 'process_employee'
+    else
+      redirect_to payslip_url(@payslip)
+    end
 
   end
 

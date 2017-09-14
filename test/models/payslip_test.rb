@@ -336,4 +336,21 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
+  def test_payslip_can_return_period
+
+    payslip = Payslip.new
+    assert_nil(payslip.period)
+
+    payslip = Payslip.new({
+        payslip_date: "2017-07-31",
+        period_year: Period.current.year,
+        period_month: Period.current.month
+    })
+
+    period = payslip.period()
+
+    assert_equal(0, Period.current <=> period, "should be equal")
+
+  end
+
 end

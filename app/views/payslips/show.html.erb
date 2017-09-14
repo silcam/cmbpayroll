@@ -1,15 +1,280 @@
 <% employee = Employee.find(@payslip.employee.id) %>
 
-<h2>Payslip #<%= @payslip.id %></h2>
+<div class="row">
 
-<h4 style="color:red">For testing purposes at this point...</h4>
+  <div class="col-md-6">
+    <!-- left side -->
+
+    <div class="row">
+      <div class="col-sm-12">
+        <h1 class="text-uppercase"><%= t(:Payslip) %></h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <hr class="thicker" />
+        <hr class="thicker" />
+        <br />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        Raison sociale
+      </div>
+      <div class="col-sm-6">
+        SIL<br />
+        BP 1299, Yaoundé
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        No. d'immatriculation
+      </div>
+      <div class="col-sm-6">
+        XXXXXXXXXXXXX
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        Nom du travailleur
+      </div>
+      <div class="col-sm-6">
+        <%= @payslip.employee.full_name %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        Matricule No.
+      </div>
+      <div class="col-sm-6">
+        XXXXXXXXXXXXX
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-6">
+        Catégorie professionnelle
+      </div>
+      <div class="col-sm-3">
+        CAT: <%= @payslip.employee.category %>
+      </div>
+      <div class="col-sm-3">
+        ECH: <%= @payslip.employee.echelon %>
+      </div>
+
+    </div> <!-- /row -->
+
+    <div class="row">
+
+      <div class="col-sm-6">
+        Taux de rémunération (mensuel)
+      </div>
+      <div class="col-sm-3">
+        <%= @payslip.employee.wage %> CFA
+      </div>
+      <div class="col-sm-3">
+        <%= @payslip.employee.wage %>
+      </div>
+
+    </div> <!-- /row -->
+
+    <div class="row">
+
+      <div class="col-sm-6">
+        Taux de rémunération (mensuel)
+      </div>
+      <div class="col-sm-3">
+        <%= @payslip.employee.wage %> CFA
+      </div>
+      <div class="col-sm-3">
+        <%= @payslip.employee.wage %>
+      </div>
+
+    </div> <!-- /row -->
+
+  </div> <!-- /left_side -->
+  <div class="col-md-6">
+    <!-- right side -->
+
+    <div class="row">
+
+      <div class="col-sm-12">
+        <h3 class="text-center">DEDUCTIONS DU SALAIRE</h3>
+        <p class="text-center"><%= @payslip.payslip_date %></p>
+      </div>
+
+    </div>
+    <div class="row">
+
+      <div class="col-sm-6">
+        Nom
+      </div>
+      <div class="col-sm-6">
+        <%= @payslip.employee.full_name %>
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-6">
+        Salaire net (arrondi)
+      </div>
+      <div class="col-sm-6">
+        94245
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-6">
+        Paiement pret:
+      </div>
+      <div class="col-sm-6">
+        XXXXXXX
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-6">
+        BEGIN LIST OF CHARGES:
+      </div>
+      <div class="col-sm-6">
+        XXXX CFA
+      </div>
+
+    </div>
+    <div class="row">
+
+      <div class="col-sm-6">
+        AMICAL
+      </div>
+      <div class="col-sm-6">
+        XXXX CFA
+      </div>
+
+    </div>
+    <div class="row">
+
+      <div class="col-sm-6">
+        Autres
+      </div>
+      <div class="col-sm-6">
+        XXXX CFA
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-6">
+        MONTANT DES DEDUCTIONS
+      </div>
+      <div class="col-sm-2 text-right" style="border-top:1px solid black">
+        0
+      </div>
+      <div class="col-sm-2 text-center">
+        &ndash; &ndash;
+      </div>
+      <div class="col-sm-2 text-right" style="border-top:1px solid black">
+        0
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-10">
+        CFA (payés)
+      </div>
+      <div class="col-sm-2 text-right" style="border-bottom:1px solid black">
+        94235
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-1">
+      </div>
+      <div class="col-sm-11">
+        <h3>CONGE ACCUMULE</h3>
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-4">
+      </div>
+      <div class="col-sm-1" style="border-bottom:1px solid black">
+        Jours
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-4">
+        Ce mois-ci
+      </div>
+      <div class="col-sm-1">
+        1.5
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-4">
+        Jusqu'aujourd'hui
+      </div>
+      <div class="col-sm-1">
+        25.5
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-4">
+        Dernier congé
+      </div>
+      <div class="col-sm-1">
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">&nbsp;</div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-7 text-uppercase" style="border-bottom:1px solid black">
+        <%= @payslip.employee.full_name %>
+      </div>
+      <div class="col-sm-5">
+        Divers:
+      </div>
+
+    </div>
+
+  </div> <!-- /right_side -->
+</div>
 
 <br /><br />
 
-<h4>Employee Name: <%= @payslip.employee.full_name %></h4>
-
 <p>
-Pay Date: <%= @payslip.payslip_date %><br />
 Last Processed Date: <%= @payslip.last_processed %><br />
 </p>
 

@@ -5,12 +5,18 @@
     <h2>View Payroll History for <%= @employee.full_name %></h2>
 
     <table class="table">
+      <thead>
+        <th>Pay Period</th>
+        <th>Payslip Record</th>
+      </thead>
+      <tbody>
     <% @employee.payslips.each do |slip| %>
       <tr>
-        <td><%= slip.period_year %> <%= slip.period_month %></td>
+        <td><%= slip.period.start %> - <%= slip.period.finish %></td>
         <td><%= link_to("Payslip #{slip.id}", payslip_path(slip)) %></td>
       </tr>
     <% end %>
+      </tbody>
     </table>
 
   </div>

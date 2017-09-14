@@ -1,15 +1,19 @@
 class EmployeesController < ApplicationController
 
   def index
-    @employees = Employee.all
+    if params[:supervisor]
+      @employees = Supervisor.find(params[:supervisor]).employees
+    else
+      @employees = Employee.all
+    end
   end
 
   def new
-    @employee = Employee.new_with_person
+    @employee = Employee.new
   end
 
   def create
-    @employee = Employee.new_with_person(employee_params)
+    @employee = Employee.new(employee_params)
     if @employee.save
       redirect_to employees_path
     else
@@ -26,8 +30,12 @@ class EmployeesController < ApplicationController
   end
 
   def update
-    @employee = Employee.update(params[:id], employee_params)
-    redirect_to employees_path
+    @employee = Employee.find params[:id]
+    if @employee.update employee_params
+      redirect_to employees_path
+    else
+      render :edit
+    end
   end
 
   def destroy
@@ -38,32 +46,45 @@ class EmployeesController < ApplicationController
   end
 
   private
-    def employee_params
-        params.require(:employee).permit(
-            :first_name,
-            :last_name,
-            :name,
-            :title,
-            :department,
-            :cnps,
-            :dipe,
-            :birth_date,
-            :contract_start,
-            :contract_end,
-            :category,
-            :echelon,
-            :wage_scale,
-            :wage_period,
-            :last_raise_date,
-            :taxable_percentage,
-            :transportation,
-            :hours_day,
-            :days_week,
-            :employment_status,
-            :gender,
-            :marital_status,
-            :wage
-        )
+  def employee_params
+    permitted = [
+        :first_name,
+        :last_name,
+        :name,
+        :title,
+        :department,
+        :cnps,
+        :dipe,
+        :birth_date,
+        :contract_start,
+        :contract_end,
+        :category,
+        :echelon,
+        :wage_scale,
+        :wage_period,
+        :taxable_percentage,
+        :transportation,
+        :hours_day,
+        :days_week,
+        :employment_status,
+        :gender,
+        :marital_status,
+        :wage]
+    if params[:employee][:supervisor_id].to_i >= 1  # A valid id
+      permitted << :supervisor_id
+    else
+      @supervisor = build_supervisor params[:employee][:supervisor]
+      params[:employee][:supervisor_id] = @supervisor.id
+      permitted << :supervisor_id
     end
+    params.require(:employee).permit(permitted)
+  end
 
+  def build_supervisor(sup_params)
+    if sup_params[:person_id].to_i >= 1
+      Supervisor.create(person_id: sup_params[:person_id])
+    else
+      Supervisor.create sup_params.permit(:first_name, :last_name)
+    end
+  end
 end

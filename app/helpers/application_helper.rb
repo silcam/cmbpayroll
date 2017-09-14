@@ -34,10 +34,10 @@ module ApplicationHelper
     options_for_select(mondays, mondays[1])
   end
 
-  def options_for_select_plus(collection, value, display, extras)
+  def options_for_select_plus(collection, value, display, selected, extras)
     array = collection.collect{ |member| [member.send(display), member.send(value)]}
     array += extras
-    options_for_select(array)
+    options_for_select(array, selected)
   end
 
   # def assemble_date(hash, prefix)

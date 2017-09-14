@@ -34,6 +34,7 @@ class ActiveSupport::TestCase
     employee.title = "Title"
     employee.department = "Department"
     employee.hours_day = 23
+    employee.supervisor = supervisors :Yoda
     employee.save
 
     return employee

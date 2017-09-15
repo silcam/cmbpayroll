@@ -2,8 +2,6 @@ class Payslip < ApplicationRecord
 
   has_many :earnings
   has_many :deductions
-  has_many :withholdings
-  has_many :payments
 
   belongs_to :employee
 
@@ -12,6 +10,18 @@ class Payslip < ApplicationRecord
             :period_month,
             :payslip_date,
                presence: {message: I18n.t(:Not_blank)}
+
+
+  def self.current_period
+    return self.from_period( Period.current)
+  end
+
+  def self.from_period( period )
+    payslip = Payslip.new
+    payslip.period_year = period.year
+    payslip.period_month = period.month
+    return payslip
+  end
 
   def has_earnings?
     # query these items to see if there are any.
@@ -32,6 +42,20 @@ class Payslip < ApplicationRecord
 
     earnings.each do |record|
       tmp_total += record.total() if record.valid?
+    end
+
+    return tmp_total
+  end
+
+  def total_deductions
+    if (deductions.empty?)
+      return 0
+    end
+
+    tmp_total = 0
+
+    deductions.each do |record|
+      tmp_total += record.amount() if record.valid?
     end
 
     return tmp_total
@@ -64,11 +88,12 @@ class Payslip < ApplicationRecord
       payslip.payslip_date = Date.today
     end
 
-    # TODO: do this?
     payslip.earnings.delete_all
-
     self.process_hours(payslip, employee, period)
     self.process_bonuses(payslip, employee)
+
+    payslip.deductions.delete_all
+    self.process_deductions(payslip, employee)
 
     payslip.last_processed = DateTime.now
 
@@ -113,9 +138,7 @@ class Payslip < ApplicationRecord
   end
 
   def self.process_bonuses(payslip, employee)
-
     employee.bonuses.each do |emp_bonus|
-
       earning = Earning.new
       earning.description = emp_bonus.name
       if (emp_bonus.bonus_type == "percentage")
@@ -126,6 +149,22 @@ class Payslip < ApplicationRecord
 
       earning.save
       payslip.earnings << earning
+    end
+  end
+
+  def self.process_deductions(payslip, employee)
+    employee.charges.each do |charge|
+
+      next if (charge.date < payslip.period.start ||
+                  charge.date > payslip.period.finish)
+
+      deduction = Deduction.new
+
+      deduction.note = charge.note
+      deduction.amount = charge.amount
+      deduction.date = charge.date
+
+      payslip.deductions << deduction
     end
   end
 

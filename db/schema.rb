@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170914100516) do
+ActiveRecord::Schema.define(version: 20170915103331) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,6 +50,16 @@ ActiveRecord::Schema.define(version: 20170914100516) do
     t.bigint "parent_id"
     t.index ["parent_id"], name: "index_children_on_parent_id"
     t.index ["person_id"], name: "index_children_on_person_id"
+  end
+
+  create_table "deductions", force: :cascade do |t|
+    t.string "note"
+    t.integer "amount"
+    t.datetime "date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "payslip_id"
+    t.index ["payslip_id"], name: "index_deductions_on_payslip_id"
   end
 
   create_table "earnings", force: :cascade do |t|

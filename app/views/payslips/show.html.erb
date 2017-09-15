@@ -143,36 +143,22 @@
 
     </div>
 
+
+<% @payslip.deductions.all.each do |record| %>
+
     <div class="row">
 
       <div class="col-sm-6">
-        BEGIN LIST OF CHARGES:
+        <span class="text-uppercase"><%= record.note %> (<%= record.date.strftime("%b-%d") %>)</span>
       </div>
-      <div class="col-sm-6">
-        XXXX CFA
+      <div class="col-sm-2 text-right">
+        <%= record.amount %> CFA
       </div>
+      <div class="col-sm-4"></div>
 
     </div>
-    <div class="row">
 
-      <div class="col-sm-6">
-        AMICAL
-      </div>
-      <div class="col-sm-6">
-        XXXX CFA
-      </div>
-
-    </div>
-    <div class="row">
-
-      <div class="col-sm-6">
-        Autres
-      </div>
-      <div class="col-sm-6">
-        XXXX CFA
-      </div>
-
-    </div>
+<% end %>
 
     <div class="row">
 
@@ -180,7 +166,7 @@
         MONTANT DES DEDUCTIONS
       </div>
       <div class="col-sm-2 text-right" style="border-top:1px solid black">
-        0
+        <%= @payslip.total_deductions() %> CFA
       </div>
       <div class="col-sm-2 text-center">
         &ndash; &ndash;
@@ -294,8 +280,17 @@ Last Processed Date: <%= @payslip.last_processed %><br />
 <% end %>
 </ul>
 
-<h4>Charges:</h4>
+<h4>Deductions:</h4>
+
+<ul>
+<% @payslip.deductions.all.each do |record| %>
+  <li><%= record.note %>, <%= record.amount %> FCFA on <%= record.date %></li>
+<% end %>
+</ul>
+
 
 <h4>Totals:</h4>
+
+<p>TBD</p>
 
 </p>

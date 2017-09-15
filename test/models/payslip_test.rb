@@ -2,6 +2,19 @@ require "test_helper"
 
 class PayslipTest < ActiveSupport::TestCase
 
+  test "from_period_methods" do
+      payslip = Payslip.current_period
+
+      assert_equal(Period.current.year, payslip.period_year)
+      assert_equal(Period.current.month, payslip.period_month)
+
+      january = Period.new(2017, 1)
+      payslip = Payslip.from_period(january)
+
+      assert_equal(january.year, payslip.period_year)
+      assert_equal(january.month, payslip.period_month)
+  end
+
   test "must be valid with correct attributes" do
     employee = return_valid_employee()
 
@@ -291,7 +304,7 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
-  def test_payslip_with_period_information
+  test "test_payslip_with_period_information" do
     payslip = Payslip.new
     payslip.period_year = Period.current.year
     payslip.period_month = Period.current.month
@@ -303,7 +316,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(Date.today.month, payslip.period_month, "month is correct")
   end
 
-  def test_cannot_make_two_payslips_same_period
+  test "test_cannot_make_two_payslips_same_period" do
     employee = return_valid_employee()
 
     payslip = Payslip.new({
@@ -336,7 +349,7 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
-  def test_payslip_can_return_period
+  test "test_payslip_can_return_period" do
 
     payslip = Payslip.new
     assert_nil(payslip.period)
@@ -353,4 +366,61 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
+  #test "must_have_deductions_to_process" do
+  #  assert(false)
+  #end
+
+
+  test "charges_become_deductions" do
+
+    # have an employee
+    employee = return_valid_employee()
+
+    # make charges
+    charge1 = Charge.new
+    charge1.note = "CHARGE1"
+    charge1.amount = 1000
+    charge1.date = Date.today
+    employee.charges << charge1
+
+    puts charge1.errors.inspect
+    assert(charge1.valid?, "charge 1 is valid")
+
+    charge2 = Charge.new
+    charge2.note = "CHARGE2"
+    charge2.amount = 2000
+    charge2.date = Date.today
+    employee.charges << charge2
+
+    puts charge2.errors.inspect
+    assert(charge2.valid?, "charge 2 is valid")
+
+    assert_equal(2, employee.charges.size, "should have 2 charges")
+    assert(employee.valid?, "should be valid")
+
+    # process a payslip
+    payslip = Payslip.process(employee, Period.current)
+
+    # verify there are deductions for the charges.
+    assert_equal(2, payslip.deductions.size, "payslip should have 2 deductions")
+
+    count = 0
+    payslip.deductions.each do |ded|
+      if (ded.note == "CHARGE1")
+         assert_equal(1000, ded.amount)
+         assert_equal(Date.today, ded.date)
+         count += 1
+      end
+
+      if (ded.note == "CHARGE2")
+         assert_equal(2000, ded.amount)
+         assert_equal(Date.today, ded.date)
+         count += 1
+      end
+    end
+
+    assert_equal(2, count, "found both deductions")
+    assert_equal(charge1.amount + charge2.amount, payslip.total_deductions())
+
+  end
 end

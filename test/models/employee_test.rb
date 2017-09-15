@@ -55,7 +55,7 @@ class EmployeeTest < ActiveSupport::TestCase
     employee.employment_status = "part_time"
 
     assert employee.errors.empty?
-    Rails.logger.error(employee.errors.messages)
+    Rails.logger.debug(employee.errors.messages)
     assert employee.valid?
 
     ## GENDER

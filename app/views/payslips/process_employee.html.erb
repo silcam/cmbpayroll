@@ -11,6 +11,12 @@
   <% @payslip.errors.each do |err| %>
     <li><%= err %></li>
   <% end %>
+  <% @payslip.deductions.each do |err| %>
+    <li><%= err.errors.inspect %></li>
+  <% end %>
+  <% @payslip.earnings.each do |err| %>
+    <li><%= err.errors.inspect %></li>
+  <% end %>
   </ul>
 <% end %>
 

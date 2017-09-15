@@ -2,8 +2,6 @@ class Payslip < ApplicationRecord
 
   has_many :earnings
   has_many :deductions
-  has_many :withholdings
-  has_many :payments
 
   belongs_to :employee
 
@@ -12,6 +10,18 @@ class Payslip < ApplicationRecord
             :period_month,
             :payslip_date,
                presence: {message: I18n.t(:Not_blank)}
+
+
+  def self.current_period
+    return self.from_period( Period.current)
+  end
+
+  def self.from_period( period )
+    payslip = Payslip.new
+    payslip.period_year = period.year
+    payslip.period_month = period.month
+    return payslip
+  end
 
   def has_earnings?
     # query these items to see if there are any.
@@ -37,12 +47,37 @@ class Payslip < ApplicationRecord
     return tmp_total
   end
 
+  def total_deductions
+    if (deductions.empty?)
+      return 0
+    end
+
+    tmp_total = 0
+
+    deductions.each do |record|
+      tmp_total += record.amount() if record.valid?
+    end
+
+    return tmp_total
+  end
+
   def period
     if (period_year && period_month)
       return Period.new(period_year, period_month)
     else
       return nil
     end
+  end
+
+  def self.process_all(period)
+    payslips = Array.new
+
+    Employee.all.each do |emp|
+      tmp_payslip = Payslip.process(emp, period)
+      payslips.push(tmp_payslip)
+    end
+
+    return payslips
   end
 
   def self.process(employee, period)
@@ -52,6 +87,7 @@ class Payslip < ApplicationRecord
     #         the current period? (or the previous period)?
 
     payslip = Payslip.find_by(
+                  employee_id: employee.id,
                   period_year: period.year,
                   period_month: period.month)
 
@@ -64,18 +100,19 @@ class Payslip < ApplicationRecord
       payslip.payslip_date = Date.today
     end
 
-    # TODO: do this?
     payslip.earnings.delete_all
-
     self.process_hours(payslip, employee, period)
     self.process_bonuses(payslip, employee)
 
+    payslip.deductions.delete_all
+    self.process_deductions(payslip, employee)
+
     payslip.last_processed = DateTime.now
 
-    payslip.save
-    employee.save
-
     employee.payslips << payslip
+
+    #payslip.save
+    #employee.save
 
     return payslip
   end
@@ -107,15 +144,13 @@ class Payslip < ApplicationRecord
         earning.overtime = true
       end
 
-      earning.save
       payslip.earnings << earning
+      #earning.save
     end
   end
 
   def self.process_bonuses(payslip, employee)
-
     employee.bonuses.each do |emp_bonus|
-
       earning = Earning.new
       earning.description = emp_bonus.name
       if (emp_bonus.bonus_type == "percentage")
@@ -124,8 +159,25 @@ class Payslip < ApplicationRecord
         earning.amount = emp_bonus.quantity
       end
 
-      earning.save
       payslip.earnings << earning
+      #earning.save
+    end
+  end
+
+  def self.process_deductions(payslip, employee)
+    employee.charges.each do |charge|
+
+      next if (charge.date < payslip.period.start ||
+                  charge.date > payslip.period.finish)
+
+      deduction = Deduction.new
+
+      deduction.note = charge.note
+      deduction.amount = charge.amount
+      deduction.date = charge.date
+
+      payslip.deductions << deduction
+      #deduction.save
     end
   end
 

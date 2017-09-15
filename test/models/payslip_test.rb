@@ -2,6 +2,19 @@ require "test_helper"
 
 class PayslipTest < ActiveSupport::TestCase
 
+  test "from_period_methods" do
+      payslip = Payslip.current_period
+
+      assert_equal(Period.current.year, payslip.period_year)
+      assert_equal(Period.current.month, payslip.period_month)
+
+      january = Period.new(2017, 1)
+      payslip = Payslip.from_period(january)
+
+      assert_equal(january.year, payslip.period_year)
+      assert_equal(january.month, payslip.period_month)
+  end
+
   test "must be valid with correct attributes" do
     employee = return_valid_employee()
 
@@ -264,7 +277,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip.earnings.each do |record|
 
-        puts record.inspect
+        Rails.logger.debug(record.inspect)
         # verify hours in earning records
         if (record.overtime == true && record.hours = 5.4)
             assert_equal(5.4, record.hours)
@@ -291,7 +304,7 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
-  def test_payslip_with_period_information
+  test "test_payslip_with_period_information" do
     payslip = Payslip.new
     payslip.period_year = Period.current.year
     payslip.period_month = Period.current.month
@@ -303,7 +316,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(Date.today.month, payslip.period_month, "month is correct")
   end
 
-  def test_cannot_make_two_payslips_same_period
+  test "test_cannot_make_two_payslips_same_period" do
     employee = return_valid_employee()
 
     payslip = Payslip.new({
@@ -336,7 +349,7 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
-  def test_payslip_can_return_period
+  test "test_payslip_can_return_period" do
 
     payslip = Payslip.new
     assert_nil(payslip.period)
@@ -350,6 +363,130 @@ class PayslipTest < ActiveSupport::TestCase
     period = payslip.period()
 
     assert_equal(0, Period.current <=> period, "should be equal")
+
+  end
+
+
+  test "charges_become_deductions" do
+
+    # have an employee
+    employee = return_valid_employee()
+
+    # make charges
+    charge1 = Charge.new
+    charge1.note = "CHARGE1"
+    charge1.amount = 1000
+    charge1.date = Date.today
+    employee.charges << charge1
+
+    Rails.logger.debug(charge1.errors.inspect)
+    assert(charge1.valid?, "charge 1 is valid")
+
+    charge2 = Charge.new
+    charge2.note = "CHARGE2"
+    charge2.amount = 2000
+    charge2.date = Date.today
+    employee.charges << charge2
+
+    Rails.logger.debug(charge2.errors.inspect)
+    assert(charge2.valid?, "charge 2 is valid")
+
+    assert_equal(2, employee.charges.size, "should have 2 charges")
+    assert(employee.valid?, "should be valid")
+
+    # process a payslip
+    payslip = Payslip.process(employee, Period.current)
+
+    # verify there are deductions for the charges.
+    assert_equal(2, payslip.deductions.size, "payslip should have 2 deductions")
+
+    count = 0
+    payslip.deductions.each do |ded|
+      if (ded.note == "CHARGE1")
+         assert_equal(1000, ded.amount)
+         assert_equal(Date.today, ded.date)
+         count += 1
+      end
+
+      if (ded.note == "CHARGE2")
+         assert_equal(2000, ded.amount)
+         assert_equal(Date.today, ded.date)
+         count += 1
+      end
+    end
+
+    assert_equal(2, count, "found both deductions")
+    assert_equal(charge1.amount + charge2.amount, payslip.total_deductions())
+
+  end
+
+
+  test "process_all_payslips_for_period" do
+
+    employee_count = Employee.all.size
+
+    # have an employee
+    employee1 = return_valid_employee()
+    employee1.first_name = "EMPNumber"
+    employee1.last_name = "One"
+    employee1.save
+    assert(employee1.valid?, "employee 1 should be valid")
+    assert_equal(0, employee1.payslips.size, "should have no payslips initially")
+
+    employee2 = return_valid_employee()
+    employee2.first_name = "EMPNumber"
+    employee2.last_name = "Two"
+    employee2.save
+    assert(employee2.valid?, "employee 2 should be valid")
+    assert_equal(0, employee2.payslips.size, "should have no payslips initially")
+
+    # made two employees
+    assert_equal(2, Employee.all.size - employee_count)
+
+    # each employee doesn't have a payslip
+    assert_equal(0, employee1.payslips.size)
+    assert_equal(0, employee2.payslips.size)
+
+    # process all payslips
+    payslips = Payslip.process_all(Period.current)
+
+    # processed one for each employee
+    assert_equal(employee_count + 2, payslips.size)
+
+    # let's checkout each object
+    val = true
+    count = 0
+    payslips.each do |record|
+      next unless (record.employee.full_name == employee1.full_name ||
+                   record.employee.full_name == employee2.full_name)
+      count += 1
+      unless (record.valid?)
+        val = false
+      end
+    end
+    assert_equal(2, count, "found one payslip for each employee")
+    assert(val, "one of the payslips isn't valid")
+
+    payslips.each do |ps|
+      Rails.logger.debug("   -> PS(#{ps.id}) for: #{ps.employee.full_name}")
+    end
+
+    Employee.all.each do |record|
+      next unless (record.full_name == employee1.full_name ||
+                   record.full_name == employee2.full_name)
+      Rails.logger.debug("oooooX for #{record.full_name}:")
+      Rails.logger.debug("     V: #{record.payslips.size}")
+      unless (record.valid?)
+        val = false
+      end
+    end
+
+    employee1.reload
+    employee2.reload
+
+    # make sure each employee received a payslip
+    assert_equal(1, employee1.payslips.size, "employee 1 should now have 1 payslip")
+    assert_equal(1, employee2.payslips.size, "employee 2 should now have 1 payslip")
 
   end
 

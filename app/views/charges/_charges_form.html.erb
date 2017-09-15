@@ -16,7 +16,7 @@
   <div class="form-group">
     <%= form.label :note, t(:Note), style: 'display: block;' %>
     <%= select_tag 'standard_charge_note_id',
-                   options_for_select_plus(StandardChargeNote.all, :id, :note, [t(:Other)]),
+                   options_for_select_plus(StandardChargeNote.all, :id, :note, nil, [t(:Other)]),
                    class: 'form-control form-control-inline' %>
     <%= form.text_field :note, class: 'form-control form-control-inline', style: 'display: none;' %>
   </div>

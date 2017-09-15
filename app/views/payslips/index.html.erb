@@ -11,5 +11,18 @@
     <%= submit_tag("Submit") %>
     <% end %>
 
+    <hr />
+
+    <%= form_tag("/payslips/process_all", method: "post") do %>
+
+    <p>
+      Process all payslips for the current period? (<%= Period.current %>)<br />
+    </p>
+
+    <%= submit_tag("Submit") %>
+    <% end %>
+
+
+
   </div>
 

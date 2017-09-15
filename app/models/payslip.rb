@@ -69,6 +69,17 @@ class Payslip < ApplicationRecord
     end
   end
 
+  def self.process_all(period)
+    payslips = Array.new
+
+    Employee.all.each do |emp|
+      tmp_payslip = Payslip.process(emp, period)
+      payslips.push(tmp_payslip)
+    end
+
+    return payslips
+  end
+
   def self.process(employee, period)
     # Do all the stuff that is needed to process a payslip for this user
     # TODO: more validation
@@ -76,6 +87,7 @@ class Payslip < ApplicationRecord
     #         the current period? (or the previous period)?
 
     payslip = Payslip.find_by(
+                  employee_id: employee.id,
                   period_year: period.year,
                   period_month: period.month)
 
@@ -97,10 +109,10 @@ class Payslip < ApplicationRecord
 
     payslip.last_processed = DateTime.now
 
-    payslip.save
-    employee.save
-
     employee.payslips << payslip
+
+    #payslip.save
+    #employee.save
 
     return payslip
   end
@@ -132,8 +144,8 @@ class Payslip < ApplicationRecord
         earning.overtime = true
       end
 
-      earning.save
       payslip.earnings << earning
+      #earning.save
     end
   end
 
@@ -147,8 +159,8 @@ class Payslip < ApplicationRecord
         earning.amount = emp_bonus.quantity
       end
 
-      earning.save
       payslip.earnings << earning
+      #earning.save
     end
   end
 
@@ -165,6 +177,7 @@ class Payslip < ApplicationRecord
       deduction.date = charge.date
 
       payslip.deductions << deduction
+      #deduction.save
     end
   end
 

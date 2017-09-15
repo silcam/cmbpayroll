@@ -24,7 +24,7 @@ class Bonus < ApplicationRecord
   # unassigned or assigned, respectively.
   #
   def self.assign_to_employee(employee, bonus_hash)
-    puts "Hash #{bonus_hash.inspect}"
+    logger.debug("Hash #{bonus_hash.inspect}")
 
     bonus_hash.each do |k,v|
       begin

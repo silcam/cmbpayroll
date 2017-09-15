@@ -23,7 +23,7 @@ class Earning < ApplicationRecord
 
   def has_amount_percentage_or_rate
     unless (has_valid_amount() || has_valid_hourly_rate() || has_valid_percentage())
-      errors.add(:percentage, "must have percentage, amount or an hourly rate with hours")
+      errors.add(:percentage, "must have percentage, amount or an hourly rate (wage) with hours")
     end
   end
 

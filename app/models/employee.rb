@@ -39,4 +39,33 @@ class Employee < ApplicationRecord
     hours[:normal] = hours[:normal] - Vacation.missed_hours_so_far(self)
     hours
   end
+
+  def advance_amount
+    # TODO verify that this is the correct behavior
+    return (wage / 2.0).round
+  end
+
+  def has_advance_charge(period)
+    if (count_advance_charge(period) > 0)
+      return true
+    else
+      return false
+    end
+  end
+
+  def count_advance_charge(period)
+    count = 0
+
+    charges.each do |charge|
+      next if (charge.date < period.start)
+      next if (charge.date > period.finish)
+
+      if (charge.note == Charge::ADVANCE)
+        count += 1
+      end
+    end
+
+    return count
+  end
+
 end

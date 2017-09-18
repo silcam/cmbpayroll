@@ -23,6 +23,10 @@ class PeriodTest < ActiveSupport::TestCase
     assert_equal Date.new(2017, 7, 1), @july.start
   end
 
+  test "Mid Month" do
+    assert_equal Date.new(2017, 7, 15), @july.mid_month
+  end
+
   test "Finish" do
     assert_equal Date.new(2017, 7, 31), @july.finish
     p = Period.new(2017, 12)

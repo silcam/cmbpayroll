@@ -2,7 +2,7 @@
 
 <%= link_to "<< #{t(:Back)}", payslips_url %>
 
-<h2>Processing Payslip for <%= employee.full_name %></h2>
+<h2>Processing <% if (params[:advance]) %>MID-MONTH ADVANCE<% end %> Payslip for <%= employee.full_name %></h2>
 
 
 <% if (@payslip && !@payslip.errors.empty?) %>
@@ -21,8 +21,6 @@
 <% end %>
 
 
-
-
 <h4><%= t :Hours_for %> <%= Period.current.short_name %></h4>
 
 <p>
@@ -32,10 +30,18 @@
 </p>
 
 
-Complete payslip processing?<br />
+<% if (params[:advance]) %>
+<p>
+MID-MONTH ADVANCE amount for <%= employee.full_name %>: <%= employee.advance_amount %> FCFA<br />
+</p>
+<% end %>
+
+
+Complete <% if (params[:advance]) %>MID-MONTH ADVANCE<% end %> payslip processing?<br />
 
 <%= form_tag("/payslips/process_complete", method: "post") do %>
 
+<% if (params[:advance]) %><input type="hidden" name="advance" value="true" /><% end %>
 <%= hidden_field(:employee, :id, :value => employee.id) %>
 <% period = Period.current %>
 <%= hidden_field(:period, :year, :value => period.year) %>

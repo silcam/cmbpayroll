@@ -132,6 +132,18 @@ class EmployeeTest < ActiveSupport::TestCase
     assert employee.errors.empty?
   end
 
+  test "Computer Advance" do
+    employee = return_valid_employee()
+    employee.wage = 20000
+
+    # normally half
+    assert_equal(10000, employee.advance_amount())
+
+    # round up? TODO: correct?
+    employee.wage = 2555
+    assert_equal(1278, employee.advance_amount())
+  end
+
   test "Full Name" do
     assert_equal "Luke Skywalker", @luke.full_name
   end

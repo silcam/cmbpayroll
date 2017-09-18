@@ -4,9 +4,13 @@
 
     <h2><%= t(:Payslip_management) %></h2>
 
+    <hr />
+
     <%= form_tag("/payslips/process", method: "post") do %>
 
+    <p>
       Process a payslip for: <%= collection_select(:employee, :id, @employees, :id, :full_name, {:prompt => "Select an employee..."}) %>
+    </p>
 
     <%= submit_tag("Submit") %>
     <% end %>
@@ -17,6 +21,18 @@
 
     <p>
       Process all payslips for the current period? (<%= Period.current %>)<br />
+    </p>
+
+    <%= submit_tag("Submit") %>
+    <% end %>
+
+    <hr />
+
+    <%= form_tag("/payslips/process", method: "post") do %>
+    <input type="hidden" name="advance" value="true" />
+
+    <p>
+      Process a <em><b>MID-MONTH ADVANCE</b></em> payslip for: <%= collection_select(:employee, :id, @employees, :id, :full_name, {:prompt => "Select an employee..."}) %>
     </p>
 
     <%= submit_tag("Submit") %>

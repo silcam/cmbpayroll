@@ -23,6 +23,25 @@ class Payslip < ApplicationRecord
     return payslip
   end
 
+  def self.process(employee, period=Period.current)
+    return self.process_payslip(employee, period, false)
+  end
+
+  def self.process_with_advance(employee, period=Period.current)
+    return self.process_payslip(employee, period, true)
+  end
+
+  def self.process_all(period)
+    payslips = Array.new
+
+    Employee.all.each do |emp|
+      tmp_payslip = Payslip.process(emp, period)
+      payslips.push(tmp_payslip)
+    end
+
+    return payslips
+  end
+
   def has_earnings?
     # query these items to see if there are any.
     if (self.earnings.empty?)
@@ -69,18 +88,10 @@ class Payslip < ApplicationRecord
     end
   end
 
-  def self.process_all(period)
-    payslips = Array.new
 
-    Employee.all.each do |emp|
-      tmp_payslip = Payslip.process(emp, period)
-      payslips.push(tmp_payslip)
-    end
+  private
 
-    return payslips
-  end
-
-  def self.process(employee, period)
+  def self.process_payslip(employee, period, with_advance)
     # Do all the stuff that is needed to process a payslip for this user
     # TODO: more validation
     # TODO: Are there rules that the period must be
@@ -100,6 +111,10 @@ class Payslip < ApplicationRecord
       payslip.payslip_date = Date.today
     end
 
+    if (with_advance)
+      self.process_advance(employee, period)
+    end
+
     payslip.earnings.delete_all
     self.process_hours(payslip, employee, period)
     self.process_bonuses(payslip, employee)
@@ -117,20 +132,6 @@ class Payslip < ApplicationRecord
     return payslip
   end
 
-  # TODO: is this needed anymore?
-  # TODO: maybe call this 'total'?
-  def process
-    unless (self.valid?)
-        return
-    end
-
-    # do other things, but that's all for now.
-    if (self.last_processed.nil?)
-        self.last_processed = DateTime.now
-    end
-  end
-
-  private
 
   def self.process_hours(payslip, employee, period)
     hours = WorkHour.total_hours(employee, period)
@@ -149,6 +150,11 @@ class Payslip < ApplicationRecord
     end
   end
 
+  # TODO: does this need to know about
+  # the period and recreate bonuses at the
+  # time?  Right now this only processed
+  # bonuses for today regardless of the
+  # requested period
   def self.process_bonuses(payslip, employee)
     employee.bonuses.each do |emp_bonus|
       earning = Earning.new
@@ -166,7 +172,6 @@ class Payslip < ApplicationRecord
 
   def self.process_deductions(payslip, employee)
     employee.charges.each do |charge|
-
       next if (charge.date < payslip.period.start ||
                   charge.date > payslip.period.finish)
 
@@ -181,4 +186,17 @@ class Payslip < ApplicationRecord
     end
   end
 
+  def self.process_advance(employee, period)
+    return if (employee.has_advance_charge(period))
+
+    charge = Charge.new
+    charge.date = period.mid_month()
+    charge.amount = employee.advance_amount()
+    charge.note = Charge::ADVANCE
+
+    employee.charges << charge
+
+    charge.save
+    employee.save
+  end
 end

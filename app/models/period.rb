@@ -22,6 +22,10 @@ class Period
     (start >> 1) - 1
   end
 
+  def mid_month
+    Date.new(@year, @month, 15)
+  end
+
   def to_range
     (start .. finish)
   end

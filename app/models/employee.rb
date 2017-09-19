@@ -33,6 +33,14 @@ class Employee < ApplicationRecord
   enum wage_scale: [ :one, :two, :three ], _prefix: :wage_scale
   enum wage_period: [ :hourly, :monthly ]
 
+  def self.list_departments
+    depts = Hash.new
+    Employee.all.each do |emp|
+      depts[emp.department] = 1
+    end
+    return depts.keys
+  end
+
   def total_hours_so_far
     #TODO is this logic redundant with something somewhere else?
     hours = WorkHour.total_hours_so_far(self)

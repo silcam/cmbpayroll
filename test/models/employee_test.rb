@@ -152,6 +152,29 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal "Skywalker, Luke", @luke.full_name_rev
   end
 
+  test "List_Departments_Lists_Departments" do
+    departments = Employee.list_departments()
+    assert(departments.is_a?(Array))
+    count = departments.size
+
+    employee = return_valid_employee()
+    random_dept = random_string(20)
+    employee.department = random_dept
+
+    employee.save
+
+    new_dept_list = Employee.list_departments()
+    assert_equal(count + 1, new_dept_list.size)
+
+    found = false
+    new_dept_list.each do |x|
+      if (x == random_dept)
+        found = true
+      end
+    end
+    assert(found, "found random department in list")
+  end
+
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',

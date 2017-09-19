@@ -13,7 +13,7 @@ class WorkHoursController < ApplicationController
 
   def update
     begin
-      WorkHour.update(@employee,params['hours'])
+      WorkHour.update(@employee, params['hours'], params['depts'])
       redirect_to employee_work_hours_path(@employee)
     rescue InvalidHoursException => e
       @errors = e.errors

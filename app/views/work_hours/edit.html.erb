@@ -44,6 +44,12 @@
                                class: css_class,
                                data: {'dow' => date.wday} %>
             <% end %>
+
+            <span>
+              <input id="show-work-loan-<%= date %>" type="checkbox" class="toggle-dept" /> Dept Loan?<br />
+              <%= select("depts", "#{date}", options_for_select(Employee.list_departments()), {}, { class: "toggle-on-checkbox", id: "dept-select-for-#{date}", style: "display: none", disabled: "disabled" }) %>
+            </span>
+
           </td>
       <% end %>
     </tr>

@@ -1,5 +1,6 @@
-<h1><%= t(:New_bonus) %></h1>
+<% provide(:title, t(:New_bonus)) %>
+
+<%= link_to "<< #{t(:Bonuses)}", bonuses_path %>
 
 <%= render 'form', bonus: @bonus %>
 
-<%= link_to t(:Back), bonuses_path %>

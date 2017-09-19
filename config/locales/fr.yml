@@ -141,6 +141,9 @@ fr:
   Assign_to_employee: Attribuer à Employé
   Unassign: Ôter
   Unassign_bonus: Ôtez cette prime
+  Manage_bonuses: Gérer les primes
+  percentage: Pourcentage
+  fixed: Fixé
 
   # Reports
   Reports: Rapports

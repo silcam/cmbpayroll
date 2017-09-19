@@ -1,5 +1,5 @@
-<h1><%= t(:Bonuses) %></h1>
+<% provide :title, t(:Bonuses) %>
+
+<%= link_to t(:New_bonus), new_bonus_path, class: 'btn btn-primary' %>
 
 <%= render "index" %>
-
-<%= link_to t(:New_bonus), new_bonus_path %>

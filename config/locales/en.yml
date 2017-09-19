@@ -40,7 +40,7 @@ en:
   Other: Other
   New: New
   Birth_date: Birth Date
-  Return_to: Retourner to
+  Return_to: Return to
   Gender: Gender
   Cancel: Cancel
 
@@ -141,6 +141,9 @@ en:
   Assign_to_employee: Assign to Employee
   Unassign: Unassign
   Unassign_bonus: Unassign Bonus
+  Manage_bonsus: Mangage Bonuses
+  percentage: Percentage
+  fixed: Fixed
 
   # Reports
   Reports: Reports

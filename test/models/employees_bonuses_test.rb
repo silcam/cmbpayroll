@@ -97,7 +97,7 @@ class EmployeesBonusesTest < ActiveSupport::TestCase
     assert(employee.id)
 
     # assign to employee via method
-    bonus_hash = { bonus.id => "1", bonus2.id => "0" }
+    bonus_hash = { bonus.id => "1" }
 
     Bonus.assign_to_employee(employee, bonus_hash)
 
@@ -106,7 +106,7 @@ class EmployeesBonusesTest < ActiveSupport::TestCase
     refute(employee.bonuses.exists?(bonus2.id))
 
     # assign the other bonus
-    bonus_hash = { bonus.id => "0", bonus2.id => "1" }
+    bonus_hash = { bonus2.id => "1" }
 
     Bonus.assign_to_employee(employee, bonus_hash)
 
@@ -124,7 +124,7 @@ class EmployeesBonusesTest < ActiveSupport::TestCase
     assert(employee.bonuses.exists?(bonus2.id))
 
     # assign none
-    bonus_hash = { bonus.id => "0", bonus2.id => "0" }
+    bonus_hash = nil
 
     Bonus.assign_to_employee(employee, bonus_hash)
 

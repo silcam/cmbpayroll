@@ -18,25 +18,16 @@ class Bonus < ApplicationRecord
 
   #
   # Should receive a hash of the form
-  #     { "1111" => 0, "222" => 1 }
-  # Where 111 and 222 are bonus ids and
-  # 0 and 1 indicate if the bonus should be
-  # unassigned or assigned, respectively.
+  #     { "222" => 1 }
+  # Where checked bonuses are in the hash
+  # and unchecked bonuses are not
   #
   def self.assign_to_employee(employee, bonus_hash)
-    logger.debug("Hash #{bonus_hash.inspect}")
-
-    bonus_hash.each do |k,v|
-      begin
-        bonus = Bonus.find(k)
-        if v == "1"
-          employee.bonuses << bonus
-        else
-          employee.bonuses.delete(bonus)
-        end
-      rescue ActiveRecord::RecordNotUnique
-        # ignore
-      end
+    if bonus_hash.nil?
+      employee.bonuses.clear
+    else
+      new_bonuses = Bonus.where(id: bonus_hash.keys)
+      employee.bonuses = new_bonuses
     end
   end
 

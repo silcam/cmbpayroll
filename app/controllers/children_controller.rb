@@ -5,7 +5,8 @@ class ChildrenController < ApplicationController
   # GET /children
   # GET /children.json
   def index
-    @children = Child.all
+    @employee = Employee.find(params[:employee_id])
+    @children = @employee.children.all
   end
 
   # GET /children/1

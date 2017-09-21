@@ -1,5 +1,7 @@
 class Charge < ApplicationRecord
 
+  ADVANCE="Salary Advance"
+
   belongs_to :employee
 
   validates :amount, numericality: {only_integer: true, message: I18n.t(:Must_be_whole_number)}
@@ -10,4 +12,5 @@ class Charge < ApplicationRecord
   def self.for_period(period=Period.current)
     where(date: period.to_range)
   end
+
 end

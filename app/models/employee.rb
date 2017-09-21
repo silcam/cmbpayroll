@@ -33,7 +33,44 @@ class Employee < ApplicationRecord
   enum wage_scale: [ :one, :two, :three ], _prefix: :wage_scale
   enum wage_period: [ :hourly, :monthly ]
 
+  def self.list_departments
+    depts = Hash.new
+    Employee.all.each do |emp|
+      depts[emp.department] = 1
+    end
+    return depts.keys
+  end
+
   def total_hours_so_far
     WorkHour.total_hours_so_far self
   end
+
+  def advance_amount
+    # TODO verify that this is the correct behavior
+    return (wage / 2.0).round
+  end
+
+  def has_advance_charge(period)
+    if (count_advance_charge(period) > 0)
+      return true
+    else
+      return false
+    end
+  end
+
+  def count_advance_charge(period)
+    count = 0
+
+    charges.each do |charge|
+      next if (charge.date < period.start)
+      next if (charge.date > period.finish)
+
+      if (charge.note == Charge::ADVANCE)
+        count += 1
+      end
+    end
+
+    return count
+  end
+
 end

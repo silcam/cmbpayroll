@@ -110,6 +110,105 @@ class WorkHourTest < ActiveSupport::TestCase
     refute WorkHour.default_hours?(Date.new(2017, 9, 5), '9')
   end
 
+  test "Can Override Dept" do
+
+    employee0 = return_valid_employee()
+    employee0_dept_name = random_string(15)
+    employee0.department = employee0_dept_name
+    employee0.save
+
+    employee1 = return_valid_employee()
+
+    hours = {'2017-08-07'=>'6',
+             '2017-08-08'=>'5',
+             '2017-08-09'=>'9',
+             '2017-08-10'=>'7'}
+
+    depts = {'2017-08-08'=>employee0_dept_name}
+
+    WorkHour.update employee1, hours, depts
+
+    assert_equal 6, employee1.work_hours.find_by(date: '2017-08-07').hours
+    assert_equal 5, employee1.work_hours.find_by(date: '2017-08-08').hours
+    assert_equal 9, employee1.work_hours.find_by(date: '2017-08-09').hours
+    assert_equal 7, employee1.work_hours.find_by(date: '2017-08-10').hours
+
+    assert_equal(employee0_dept_name, employee1.work_hours.find_by(date: '2017-08-08').department)
+  end
+
+  test "merge hours and dept hashes" do
+    hours = {'2017-08-01'=>'5',
+             '2017-08-02'=>'7',
+             '2017-08-03'=>'2',
+             '2017-08-04'=>'8'}
+
+    loans = {'2017-08-03'=>'TESTDEPT'}
+
+    merged_hash = WorkHour.merge_hashes(hours, loans)
+
+    assert_equal('5', merged_hash['2017-08-01'])
+    assert_equal('7', merged_hash['2017-08-02'])
+    assert_equal('8', merged_hash['2017-08-04'])
+
+    assert_equal('2', merged_hash['2017-08-03']['hours'])
+    assert_equal('TESTDEPT', merged_hash['2017-08-03']['dept'])
+  end
+
+  test "merge hours with null results in hash" do
+    hours = {'2017-08-01'=>'5',
+             '2017-08-02'=>'7',
+             '2017-08-03'=>'2',
+             '2017-08-04'=>'8'}
+
+    merged_hash = WorkHour.merge_hashes(hours, nil)
+
+    assert_equal('5', merged_hash['2017-08-01'])
+    assert_equal('7', merged_hash['2017-08-02'])
+    assert_equal('2', merged_hash['2017-08-03'])
+    assert_equal('8', merged_hash['2017-08-04'])
+  end
+
+  test "Merge hours and dept hashes without overlap" do
+    hours = {'2017-08-01'=>'5',
+             '2017-08-02'=>'7',
+             '2017-08-04'=>'8'}
+
+    loans = {'2017-08-03'=>'TESTDEPT'}
+
+    merged_hash = WorkHour.merge_hashes(hours, loans)
+
+    assert_equal('5', merged_hash['2017-08-01'])
+    assert_equal('7', merged_hash['2017-08-02'])
+    assert_equal('8', merged_hash['2017-08-04'])
+
+    assert_equal('8', merged_hash['2017-08-03']['hours'])
+    assert_equal('TESTDEPT', merged_hash['2017-08-03']['dept'])
+  end
+
+  test "cannot loan to own department" do
+    employee = return_valid_employee()
+    dept_name = random_string(15)
+    employee.department = dept_name
+    employee.save
+
+    hours = {'2017-08-07'=>'6',
+             '2017-08-08'=>'5',
+             '2017-08-09'=>'9',
+             '2017-08-10'=>'7'}
+
+    depts = {'2017-08-08'=>dept_name}
+
+    WorkHour.update employee, hours, depts
+
+    assert_equal 6, employee.work_hours.find_by(date: '2017-08-07').hours
+    assert_equal 5, employee.work_hours.find_by(date: '2017-08-08').hours
+    assert_equal 9, employee.work_hours.find_by(date: '2017-08-09').hours
+    assert_equal 7, employee.work_hours.find_by(date: '2017-08-10').hours
+
+    assert_nil(employee.work_hours.find_by(date: '2017-08-08').department,
+        "should be nil, an overridden department shouldn't be saved if own department")
+  end
+
   def some_valid_params
     {employee: @luke, date: '2017-08-09', hours: 9}
   end

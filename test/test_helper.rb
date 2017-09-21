@@ -51,4 +51,8 @@ class ActiveSupport::TestCase
     payslip.earnings << earnings
   end
 
+  def random_string(length=10)
+    return (0..length-1).map { (65 + rand(26)).chr }.join
+  end
+
 end

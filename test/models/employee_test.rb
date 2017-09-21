@@ -132,12 +132,47 @@ class EmployeeTest < ActiveSupport::TestCase
     assert employee.errors.empty?
   end
 
+  test "Computer Advance" do
+    employee = return_valid_employee()
+    employee.wage = 20000
+
+    # normally half
+    assert_equal(10000, employee.advance_amount())
+
+    # round up? TODO: correct?
+    employee.wage = 2555
+    assert_equal(1278, employee.advance_amount())
+  end
+
   test "Full Name" do
     assert_equal "Luke Skywalker", @luke.full_name
   end
 
   test "Full Name Rev" do
     assert_equal "Skywalker, Luke", @luke.full_name_rev
+  end
+
+  test "List_Departments_Lists_Departments" do
+    departments = Employee.list_departments()
+    assert(departments.is_a?(Array))
+    count = departments.size
+
+    employee = return_valid_employee()
+    random_dept = random_string(20)
+    employee.department = random_dept
+
+    employee.save
+
+    new_dept_list = Employee.list_departments()
+    assert_equal(count + 1, new_dept_list.size)
+
+    found = false
+    new_dept_list.each do |x|
+      if (x == random_dept)
+        found = true
+      end
+    end
+    assert(found, "found random department in list")
   end
 
   def some_valid_params(params={})

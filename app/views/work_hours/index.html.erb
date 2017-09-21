@@ -28,6 +28,7 @@
                 <td><%= work_hour.date.strftime "%A" %></td>
                 <td><%= std_datestring work_hour.date %></td>
                 <td><%= work_hour.hours %> <%= t :Hours %></td>
+                <td><%= work_hour.department %></td>
               </tr>
           <% end %>
         </table>

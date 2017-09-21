@@ -52,6 +52,7 @@ en:
   Hours_for_week: Hours for the week
   Regular_hours: Regular Hours
   Overtime_hours: Overtime Hours
+  Holiday_overtime_hours: Holiday Overtime Hours
   Period: Period
   Start_date: Start Date
   End_date: End Date

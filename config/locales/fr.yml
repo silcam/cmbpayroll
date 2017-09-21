@@ -52,6 +52,7 @@ fr:
   Hours_for_week: Heures pour la semaine
   Regular_hours: Heures normales
   Overtime_hours: Heures supplémentaires
+  Holiday_overtime_hours: Heures pour jours fériés
   Period: Mois
   Start_date: Date de commencement
   End_date: Date de fin

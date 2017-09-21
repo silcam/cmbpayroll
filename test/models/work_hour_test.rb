@@ -52,16 +52,16 @@ class WorkHourTest < ActiveSupport::TestCase
   end
 
   test "Total Hours with holiday" do
-    exp = {normal: (20 * 8), overtime: 0}
+    exp = {normal: (20 * 8)}
     assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 12))
 
     WorkHour.create(employee: @luke, date: '2017-12-25', hours: 2)
-    exp[:overtime] = 2
+    exp[:holiday] = 2
     assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 12))
   end
 
   test "Total Hours with Vacation" do
-    exp = {normal: (17 * 8), overtime: 0} # 5 days of vacation from the 5th to 9th
+    exp = {normal: (17 * 8)} # 5 days of vacation from the 5th to 9th
     assert_equal exp, WorkHour.total_hours(employees(:Anakin), Period.new(2017, 6))
   end
 
@@ -108,6 +108,28 @@ class WorkHourTest < ActiveSupport::TestCase
   test "Default Hours?" do
     assert WorkHour.default_hours?(Date.new(2017, 9, 5), '8')
     refute WorkHour.default_hours?(Date.new(2017, 9, 5), '9')
+  end
+
+  test "Calculate Overtime" do
+    exp = {normal: 8}
+    day = {hours: 8}
+    assert_equal exp, WorkHour.calculate_overtime( Date.new(2017, 9, 21), day)
+
+    exp = {holiday: 8}
+    day = {hours: 8, holiday: 'Talk like a Pirate Day'}
+    assert_equal exp, WorkHour.calculate_overtime( Date.new(2017, 9, 20), day)
+
+    exp = {holiday: 12}
+    day = {hours: 12}
+    assert_equal exp, WorkHour.calculate_overtime( Date.new(2017, 9, 17), day)
+
+    exp = {normal: 6}
+    day = {hours: 6}
+    assert_equal exp, WorkHour.calculate_overtime( Date.new(2017, 9, 21), day)
+
+    exp = {normal: 8, overtime: 4}
+    day = {hours: 12}
+    assert_equal exp, WorkHour.calculate_overtime( Date.new(2017, 9, 21), day)
   end
 
   test "Can Override Dept" do

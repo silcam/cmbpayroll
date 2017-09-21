@@ -101,10 +101,25 @@ class WorkHour < ApplicationRecord
     hours.to_d == default_hours(date)
   end
 
+  def self.calculate_overtime(date, day_hash)
+    return {} if day_hash[:hours] == 0
+    return {holiday: day_hash[:hours]} if holiday_overtime? date, day_hash
+    if day_hash[:hours] > workday
+      {normal: workday, overtime: (day_hash[:hours]-workday)}
+    else
+      {normal: day_hash[:hours]}
+    end
+  end
+
+  def self.holiday_overtime?(date, day_hash)
+    date.sunday? or day_hash.has_key? :holiday
+  end
+
   def self.workday
     8 #TODO hardcoded constant 1 wkday = 8 hrs
   end
 
+  # TODO: Does this do anything other than replicate Hash.merge() ?
   def self.merge_hashes(first, second)
     return first if (second == nil)
     return second if (first == nil)
@@ -137,20 +152,16 @@ class WorkHour < ApplicationRecord
   end
 
   def self.total_hours_for(employee, start, finish)
-    normal = 0
-    overtime = 0
+    hours = {}
     days = complete_days_hash(employee, start, finish)
     days.each do |date, day|
       unless day[:vacation]
-        if is_off_day? date, day[:holiday]
-          overtime += day[:hours]
-        else
-          normal += [workday, day[:hours]].min
-          overtime += (day[:hours] - workday) if day[:hours] > workday
+        hours.merge! calculate_overtime(date, day) do |key, oldval, newval|
+          oldval + newval
         end
       end
     end
-    {normal: normal, overtime: overtime}
+    hours
   end
 
   def self.parse_hours(hours)

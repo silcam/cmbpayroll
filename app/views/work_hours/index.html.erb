@@ -4,10 +4,16 @@
 <h3 style="margin-bottom: 40px;">
   <% hours_worked = @employee.total_hours_so_far %>
   <%= Period.current.month_name %> :
-  <%= hours_worked[:normal] %>
+  <%= number_to_human hours_worked[:normal] or 0 %>
   <small><%= t :Regular_hours %></small>
-  <%= hours_worked[:overtime] %>
-  <small><%= t :Overtime_hours %></small>
+  <% if hours_worked[:overtime] %>
+    <%= number_to_human hours_worked[:overtime] %>
+    <small><%= t :Overtime_hours %></small>
+  <% end %>
+  <% if hours_worked[:holiday] %>
+    <%= number_to_human hours_worked[:holiday] %>
+    <small><%= t :Holiday_overtime_hours %></small>
+  <% end %>
 </h3>
 
 <div class="row">

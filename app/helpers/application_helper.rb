@@ -22,6 +22,10 @@ module ApplicationHelper
     date - diff
   end
 
+  def next_sunday(date=Date.today)
+    last_monday(date) + 6
+  end
+
   def mondays_for_select
     monday = last_monday
     mondays = []

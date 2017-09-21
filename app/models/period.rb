@@ -26,6 +26,10 @@ class Period
     Date.new(@year, @month, 15)
   end
 
+  def length
+    finish.day
+  end
+
   def to_range
     (start .. finish)
   end

@@ -35,7 +35,7 @@
       <% dates.each do |date| %>
           <td>
             <% if @week[date][:vacation] %>
-              <label><%= t :Vacation %></label>
+              <label style="display: block;"><%= t :Vacation %></label>
             <% else %>
               <% css_class = 'form-control' %>
               <% css_class += ' off-day-field' if is_off_day?(date, @week[date][:holiday]) %>

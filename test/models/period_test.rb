@@ -33,6 +33,10 @@ class PeriodTest < ActiveSupport::TestCase
     assert_equal Date.new(2017, 12, 31), p.finish
   end
 
+  test "Length" do
+    assert_equal 28, Period.new(2017, 2).length
+  end
+
   test "To Range" do
     assert_equal (Date.new(2017, 7, 1)..Date.new(2017, 7, 31)), @july.to_range
   end

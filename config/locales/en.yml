@@ -115,6 +115,7 @@ en:
   # WorkHours
   Enter_hours: Enter Hours
   Enter_hours_overtime: Enter Hours / Overtime
+  Enter_hours_week_of: Enter hours for the week of
   Enter_overtime: Enter Overtime
   after_start_date: must be after start date
   not_during_vacation: can't be during vacation

@@ -115,6 +115,7 @@ fr:
   # WorkHours
   Enter_hours: Saisir heures
   Enter_hours_overtime: Saisir heures (supplémentaires)
+  Enter_hours_week_of: Saisir heures pour la semaine de 
   Enter_overtime: Saisir surtravail
   after_start_date: doit être après le date de commencement
   not_during_vacation: ne peut pas coïncider avec des vacances

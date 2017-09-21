@@ -33,7 +33,12 @@ class Vacation < ApplicationRecord
   end
 
   def destroyable?
-    # TODO Revisit this rule
+    # TODO Revisit this rule for destroying vacation
+    end_date > Period.current.start
+  end
+
+  def editable?
+    # TODO Revisit this rule for editing vacation
     end_date > Period.current.start
   end
 

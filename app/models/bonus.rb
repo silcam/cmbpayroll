@@ -7,6 +7,10 @@ class Bonus < ApplicationRecord
 
   enum bonus_type: [ :percentage, :fixed ]
 
+  # TODO: Revisit this.
+  # Do we really want to round the bonuses?
+  # That could make people think that it's wrong
+  # And trim can be replaced by Rails' number_to_human
   def display_quantity
     adj_quantity = trim(round(quantity))
     if (bonus_type == "percentage")

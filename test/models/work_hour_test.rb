@@ -60,6 +60,11 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 12))
   end
 
+  test "Total Hours with Vacation" do
+    exp = {normal: (17 * 8), overtime: 0} # 5 days of vacation from the 5th to 9th
+    assert_equal exp, WorkHour.total_hours(employees(:Anakin), Period.new(2017, 6))
+  end
+
   test "Lukes Week of Aug 7, 2017" do
     week = WorkHour.days_hash_for_week @luke, Date.new(2017, 8, 8)
     assert_equal 7, week.length

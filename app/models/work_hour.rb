@@ -110,11 +110,13 @@ class WorkHour < ApplicationRecord
     overtime = 0
     days = complete_days_hash(employee, start, finish)
     days.each do |date, day|
-      if is_off_day? date, day[:holiday]
-        overtime += day[:hours]
-      else
-        normal += [workday, day[:hours]].min
-        overtime += (day[:hours] - workday) if day[:hours] > workday
+      unless day[:vacation]
+        if is_off_day? date, day[:holiday]
+          overtime += day[:hours]
+        else
+          normal += [workday, day[:hours]].min
+          overtime += (day[:hours] - workday) if day[:hours] > workday
+        end
       end
     end
     {normal: normal, overtime: overtime}

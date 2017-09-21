@@ -34,9 +34,6 @@ class Employee < ApplicationRecord
   enum wage_period: [ :hourly, :monthly ]
 
   def total_hours_so_far
-    #TODO is this logic redundant with something somewhere else?
-    hours = WorkHour.total_hours_so_far(self)
-    hours[:normal] = hours[:normal] - Vacation.missed_hours_so_far(self)
-    hours
+    WorkHour.total_hours_so_far self
   end
 end

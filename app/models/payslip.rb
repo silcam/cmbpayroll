@@ -141,7 +141,7 @@ class Payslip < ApplicationRecord
       earning.rate = employee.wage
       earning.hours = value
 
-      if (key == :overtime)
+      if (key == :holiday)
         earning.overtime = true
       end
 

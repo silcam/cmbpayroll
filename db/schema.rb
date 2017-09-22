@@ -172,6 +172,19 @@ ActiveRecord::Schema.define(version: 20170921151325) do
     t.index ["employee_id"], name: "index_vacations_on_employee_id"
   end
 
+  create_table "wages", force: :cascade do |t|
+    t.integer "category", null: false
+    t.string "echelon", null: false
+    t.integer "echelonalt", null: false
+    t.integer "basewage", null: false
+    t.integer "basewageb", null: false
+    t.integer "basewagec", null: false
+    t.integer "basewaged", null: false
+    t.integer "basewagee", null: false
+    t.index ["category", "echelon", "echelonalt"], name: "index_wages_on_category_and_echelon_and_echelonalt", unique: true
+    t.index ["echelon"], name: "index_wages_on_echelon"
+  end
+
   create_table "work_hours", force: :cascade do |t|
     t.bigint "employee_id"
     t.date "date"

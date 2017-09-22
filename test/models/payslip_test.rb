@@ -197,7 +197,7 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update employee, hours
 
     ### verify hours
-    exp = {:normal => 171.5, :overtime => 2.2}
+    exp = {:normal => 172.5, :holiday => 1.2}
     assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
 
     payslip = Payslip.process(employee, Period.new(2017,8))
@@ -251,7 +251,7 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update employee, hours
 
     ### verify hours
-    exp = {:normal => 171.5, :overtime => 5.4}
+    exp = {:normal => 175.7, :holiday => 1.2}
     assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
 
     payslip = Payslip.process(employee, Period.new(2017,8))
@@ -266,16 +266,14 @@ class PayslipTest < ActiveSupport::TestCase
     count = 0
 
     payslip.earnings.each do |record|
-
-        Rails.logger.debug(record.inspect)
         # verify hours in earning records
-        if (record.overtime == true && record.hours = 5.4)
-            assert_equal(5.4, record.hours)
+        if (record.overtime == true && record.hours = 1.2)
+            assert_equal(1.2, record.hours)
             count+=1
         end
 
-        if (record.overtime == false && record.hours == 171.5)
-            assert_equal(171.5, record.hours)
+        if (record.overtime == false && record.hours == 175.7)
+            assert_equal(175.7, record.hours)
             count+=1
         end
 

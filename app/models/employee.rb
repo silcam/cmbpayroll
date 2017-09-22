@@ -41,6 +41,23 @@ class Employee < ApplicationRecord
     return depts.keys
   end
 
+  def wage
+    if (echelon == "g")
+      self[:wage]
+    else
+      find_wage()
+    end
+  end
+
+  def find_wage
+    wage = Wage.find_wage(category, echelon)
+    if wage.nil?
+      return -1
+    else
+      return wage.basewage
+    end
+  end
+
   def total_hours_so_far
     WorkHour.total_hours_so_far self
   end

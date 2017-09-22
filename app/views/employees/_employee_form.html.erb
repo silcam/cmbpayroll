@@ -72,11 +72,17 @@
     </div>
     <div class="form-group">
       <%= f.label :echelon %>
-      <%= f.select :echelon, Employee.echelons.keys, prompt: true %>
+      <%= f.select :echelon, Employee.echelons.keys, { prompt: true }, { id: 'echelon-field' } %>
     </div>
     <div class="form-group">
       <%= f.label :wage %>
-      <%= f.text_field :wage, class: 'form-control' %>
+
+      <% if (@employee.echelon == "g")
+          wage_disabled = false
+         else
+          wage_disabled = true
+         end %>
+      <%= f.text_field :wage, { class: 'form-control', id: 'wage-field', disabled: wage_disabled } %>
     </div>
     <div class="form-group">
       <%= f.label :wage_scale %>

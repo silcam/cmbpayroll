@@ -152,6 +152,17 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal "Skywalker, Luke", @luke.full_name_rev
   end
 
+
+  test "Find_wage_by_attributes" do
+    employee = return_valid_employee()
+
+    employee.category = "three"
+    employee.echelon = "six"
+
+    assert_equal(83755, employee.find_wage())
+
+  end
+
   test "List_Departments_Lists_Departments" do
     departments = Employee.list_departments()
     assert(departments.is_a?(Array))

@@ -217,20 +217,18 @@ class PayslipTest < ActiveSupport::TestCase
     employee.wage = 100
     assert employee.valid?
 
-
     # create bonuses
-
     bonus = Bonus.new
     bonus.name = "First Bonus"
     bonus.quantity = 12.0
-    bonus.bonus_type = "percentage"
+    bonus.percentage!
     assert bonus.valid?
     bonus.save
 
     bonus2 = Bonus.new
     bonus2.name = "Second Bonus"
     bonus2.quantity = 3000
-    bonus2.bonus_type = "fixed"
+    bonus2.fixed!
     assert bonus2.valid?
     bonus2.save
 
@@ -417,6 +415,8 @@ class PayslipTest < ActiveSupport::TestCase
     employee1 = return_valid_employee()
     employee1.first_name = "EMPNumber"
     employee1.last_name = "One"
+    employee1.category_one!
+    employee1.echelon_d!
     employee1.save
     assert(employee1.valid?, "employee 1 should be valid")
     assert_equal(0, employee1.payslips.size, "should have no payslips initially")
@@ -424,6 +424,8 @@ class PayslipTest < ActiveSupport::TestCase
     employee2 = return_valid_employee()
     employee2.first_name = "EMPNumber"
     employee2.last_name = "Two"
+    employee2.category_one!
+    employee2.echelon_f!
     employee2.save
     assert(employee2.valid?, "employee 2 should be valid")
     assert_equal(0, employee2.payslips.size, "should have no payslips initially")
@@ -479,16 +481,16 @@ class PayslipTest < ActiveSupport::TestCase
   end
 
   test "can_create_payslip_advance" do
-
     period = Period.new(2017,8)
 
     # process with flag to handle advance
     employee = return_valid_employee()
-
     payslip = Payslip.process(employee, period)
 
     # advance payslip is created
     payslip.valid?
+    assert payslip.id
+
     assert(employee.payslips.find(payslip.id))
 
     # find charges (check that no advance is created for this month

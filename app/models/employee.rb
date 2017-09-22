@@ -3,6 +3,10 @@ include ApplicationHelper
 class Employee < ApplicationRecord
   include BelongsToPerson
 
+  # TODO: some will probably become variables
+  ADVANCE_AMOUNT = 0.5 # Half
+  INVALID_WAGE = -1
+
   belongs_to :supervisor
 
   has_many :charges
@@ -52,7 +56,7 @@ class Employee < ApplicationRecord
   def find_wage
     wage = Wage.find_wage(category, echelon)
     if wage.nil?
-      return -1
+      return INVALID_WAGE
     else
       return wage.basewage
     end
@@ -64,7 +68,7 @@ class Employee < ApplicationRecord
 
   def advance_amount
     # TODO verify that this is the correct behavior
-    return (wage / 2.0).round
+    return (wage * ADVANCE_AMOUNT).round
   end
 
   def has_advance_charge(period)

@@ -132,11 +132,13 @@ class EmployeeTest < ActiveSupport::TestCase
     assert employee.errors.empty?
   end
 
-  test "Computer Advance" do
+  test "Compute Advance" do
     employee = return_valid_employee()
-    employee.wage = 20000
+    employee.category = "one"
+    employee.echelon = "g"
 
     # normally half
+    employee.wage = 20000
     assert_equal(10000, employee.advance_amount())
 
     # round up? TODO: correct?

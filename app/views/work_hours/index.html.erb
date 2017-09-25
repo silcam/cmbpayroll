@@ -46,8 +46,10 @@
                   <%= t :Vacation %>
                 <% else %>
                   <% unless date >= Date.today %>
-                    <%= number_to_human @days_hash[date][:hours] %>
-                    <small><%= t :Hours %></small>
+                    <% if @days_hash[date][:dept] %>
+                      <p><small><em>Loaned to: <%= Department.find(@days_hash[date][:dept]).name %></em></small></p>
+                    <% end %>
+                    <%= number_to_human @days_hash[date][:hours] %>&nbsp;<small><%= t :Hours %></small>
                   <% end %>
                 <% end %>
               </h3>

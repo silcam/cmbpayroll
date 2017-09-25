@@ -40,8 +40,18 @@ class WorkHour < ApplicationRecord
     days
   end
 
+  def self.work_loans_days_hash(employee, start, finish)
+    work_hours = WorkHour.for(employee, start, finish)
+    days = {}
+    work_hours.each do |work_hour|
+      days[work_hour.date] = {dept: work_hour.department_id}
+    end
+    days
+  end
+
   def self.complete_days_hash(employee, start, finish)
     days = RecursiveHashMerger.merge days_hash(employee, start, finish),
+                                work_loans_days_hash(employee, start, finish),
                                 Holiday.days_hash(start, finish),
                                 Vacation.days_hash(employee, start, finish)
     (start .. finish).each do |day|

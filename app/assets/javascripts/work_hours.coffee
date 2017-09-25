@@ -30,6 +30,11 @@ $(document).on "turbolinks:load", ->
     $('div#report-data').html("Lots of wonderful report data!")
     $('button#download-report').prop('disabled', false)
 
+  $(".toggle-dept").each ->
+    if $(this).is(':checked')
+      $(this).siblings(".toggle-on-checkbox").show()
+      $(this).siblings(".toggle-on-checkbox").prop("disabled", false)
+
 $ ->
   $(".toggle-dept").on("click", () ->
     if $(this).is(':checked')

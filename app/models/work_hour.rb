@@ -2,6 +2,9 @@ include ApplicationHelper
 
 class WorkHour < ApplicationRecord
 
+  NUMBER_OF_HOURS_IN_A_WORKDAY = 8 # TODO make var
+  NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY = 0 # TODO make var
+
   belongs_to :employee
 
   validates :date, presence: true
@@ -94,7 +97,7 @@ class WorkHour < ApplicationRecord
   end
 
   def self.default_hours(date)
-    is_weekday?(date) ? WorkHour.workday : 0  #TODO hardcoded 0 hrs for weekend
+    is_weekday?(date) ?  WorkHour.workday : NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY
   end
 
   def self.default_hours?(date, hours)
@@ -116,13 +119,18 @@ class WorkHour < ApplicationRecord
   end
 
   def self.workday
-    8 #TODO hardcoded constant 1 wkday = 8 hrs
+    NUMBER_OF_HOURS_IN_A_WORKDAY
   end
 
-  # TODO: Does this do anything other than replicate Hash.merge() ?
+  # This is needed because I need to make a modification to the
+  # resulting, merged hash in cases when there isn't a key
+  # collision (key only exists in second).  Hash.merge only runs
+  # its block on a key collision.
+  #
+  # TODO: Change hash expectations so merging is simpler
   def self.merge_hashes(first, second)
-    return first if (second == nil)
-    return second if (first == nil)
+    return first if (second.nil?)
+    return second if (first.nil?)
 
     new_hash = Hash.new
 

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+Admin:
+  name: Admin
+  description: Administration Employees
+  account: "1234"
+
+LSS:
+  name: LSS
+  description: LSS Employees
+  account: "2345"

@@ -52,7 +52,7 @@ class EmployeesController < ApplicationController
         :last_name,
         :name,
         :title,
-        :department,
+        :department_id,
         :cnps,
         :dipe,
         :birth_date,

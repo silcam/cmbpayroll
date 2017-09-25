@@ -8,6 +8,7 @@ class Employee < ApplicationRecord
   INVALID_WAGE = -1
 
   belongs_to :supervisor
+  belongs_to :department
 
   has_many :charges
   has_many :children, {through: :person, source: :children}
@@ -17,7 +18,7 @@ class Employee < ApplicationRecord
 
   has_and_belongs_to_many :bonuses
 
-  validates :title, :department, presence: {message: I18n.t(:Not_blank)}
+  validates :title, presence: {message: I18n.t(:Not_blank)}
   validates :hours_day, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }
   validates :wage, presence: true, if: :echelon_requires_wage?
 
@@ -59,6 +60,14 @@ class Employee < ApplicationRecord
       return INVALID_WAGE
     else
       return wage.basewage
+    end
+  end
+
+  def department_name
+    if (department.nil?)
+      return ""
+    else
+      return department.name
     end
   end
 

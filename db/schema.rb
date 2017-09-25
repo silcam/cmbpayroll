@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170921151325) do
+ActiveRecord::Schema.define(version: 20170925093718) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,14 @@ ActiveRecord::Schema.define(version: 20170921151325) do
     t.index ["payslip_id"], name: "index_deductions_on_payslip_id"
   end
 
+  create_table "departments", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.string "account"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "earnings", force: :cascade do |t|
     t.string "description"
     t.datetime "created_at", null: false
@@ -79,7 +87,6 @@ ActiveRecord::Schema.define(version: 20170921151325) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "title"
-    t.string "department"
     t.string "cnps"
     t.string "dipe"
     t.datetime "contract_start"
@@ -98,6 +105,8 @@ ActiveRecord::Schema.define(version: 20170921151325) do
     t.integer "wage"
     t.bigint "person_id"
     t.bigint "supervisor_id"
+    t.bigint "department_id"
+    t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
     t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"
   end
@@ -191,10 +200,12 @@ ActiveRecord::Schema.define(version: 20170921151325) do
     t.float "hours"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "department"
+    t.bigint "department_id"
+    t.index ["department_id"], name: "index_work_hours_on_department_id"
     t.index ["employee_id"], name: "index_work_hours_on_employee_id"
   end
 
   add_foreign_key "earnings", "payslips"
+  add_foreign_key "employees", "departments"
   add_foreign_key "payslips", "employees"
 end

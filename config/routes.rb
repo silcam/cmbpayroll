@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resources :vacations, except: :show
   resources :bonuses
+  resources :departments
   resources :holidays, except: [:show, :new] do
     collection do
       post 'generate/:year', to: 'holidays#generate', as: :generate

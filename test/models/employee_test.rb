@@ -5,6 +5,7 @@ class EmployeeTest < ActiveSupport::TestCase
   def setup
     @luke = employees :Luke
     @yoda = supervisors :Yoda
+    @admin = departments :Admin
   end
 
   test "Employee has association" do
@@ -15,9 +16,30 @@ class EmployeeTest < ActiveSupport::TestCase
   test "Associations" do
     lukes_coke = charges :LukesCoke
     luke_jr = children :LukeJr
+    dept = departments :Admin
+
     assert_includes @luke.charges, lukes_coke
     assert_equal @yoda, @luke.supervisor
+    assert_equal @admin, @luke.department
     assert_includes @luke.children, luke_jr
+  end
+
+  test "Destroy with Department" do
+    @emp = return_valid_employee()
+
+    dept = Department.new
+    dept.name = "TEST"
+    dept.description = "TEST"
+    dept.account = "TEST"
+    dept.save
+
+    @emp.department = dept
+    @emp.save
+
+    assert @emp.destroy
+
+    refute_nil dept.id
+    refute_nil dept
   end
 
   test "validations" do
@@ -165,34 +187,11 @@ class EmployeeTest < ActiveSupport::TestCase
 
   end
 
-  test "List_Departments_Lists_Departments" do
-    departments = Employee.list_departments()
-    assert(departments.is_a?(Array))
-    count = departments.size
-
-    employee = return_valid_employee()
-    random_dept = random_string(20)
-    employee.department = random_dept
-
-    employee.save
-
-    new_dept_list = Employee.list_departments()
-    assert_equal(count + 1, new_dept_list.size)
-
-    found = false
-    new_dept_list.each do |x|
-      if (x == random_dept)
-        found = true
-      end
-    end
-    assert(found, "found random department in list")
-  end
-
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',
      title: 'Director',
-     department: 'Computer Services',
+     department: @admin,
      hours_day: 12,
      supervisor: @yoda}.merge params
   end

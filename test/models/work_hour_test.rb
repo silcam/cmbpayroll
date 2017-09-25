@@ -4,6 +4,7 @@ class WorkHourTest < ActiveSupport::TestCase
   def setup
     @luke = employees :Luke
     @lukes_overtime = work_hours :LukesOvertime
+    @admin = departments :Admin
   end
 
   test "Validate Presence of Required Attributes" do
@@ -135,8 +136,13 @@ class WorkHourTest < ActiveSupport::TestCase
   test "Can Override Dept" do
 
     employee0 = return_valid_employee()
-    employee0_dept_name = random_string(15)
-    employee0.department = employee0_dept_name
+
+    dept0 = Department.new
+    dept0.name = random_string(15)
+    dept0.description = dept0.name
+    dept0.account = "dept0"
+
+    employee0.department = dept0
     employee0.save
 
     employee1 = return_valid_employee()
@@ -146,7 +152,7 @@ class WorkHourTest < ActiveSupport::TestCase
              '2017-08-09'=>'9',
              '2017-08-10'=>'7'}
 
-    depts = {'2017-08-08'=>employee0_dept_name}
+    depts = {'2017-08-08'=>dept0.id}
 
     WorkHour.update employee1, hours, depts
 
@@ -155,7 +161,7 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal 9, employee1.work_hours.find_by(date: '2017-08-09').hours
     assert_equal 7, employee1.work_hours.find_by(date: '2017-08-10').hours
 
-    assert_equal(employee0_dept_name, employee1.work_hours.find_by(date: '2017-08-08').department)
+    assert_equal(dept0.id, employee1.work_hours.find_by(date: '2017-08-08').department_id)
   end
 
   test "merge hours and dept hashes" do
@@ -209,8 +215,13 @@ class WorkHourTest < ActiveSupport::TestCase
 
   test "cannot loan to own department" do
     employee = return_valid_employee()
-    dept_name = random_string(15)
-    employee.department = dept_name
+
+    dept = Department.new
+    dept.name = random_string(15)
+    dept.description = dept.name
+    dept.account = "4444H"
+
+    employee.department = dept
     employee.save
 
     hours = {'2017-08-07'=>'6',
@@ -218,7 +229,7 @@ class WorkHourTest < ActiveSupport::TestCase
              '2017-08-09'=>'9',
              '2017-08-10'=>'7'}
 
-    depts = {'2017-08-08'=>dept_name}
+    depts = {'2017-08-08'=>dept.id}
 
     WorkHour.update employee, hours, depts
 
@@ -227,7 +238,7 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal 9, employee.work_hours.find_by(date: '2017-08-09').hours
     assert_equal 7, employee.work_hours.find_by(date: '2017-08-10').hours
 
-    assert_nil(employee.work_hours.find_by(date: '2017-08-08').department,
+    assert_nil(employee.work_hours.find_by(date: '2017-08-08').department_id,
         "should be nil, an overridden department shouldn't be saved if own department")
   end
 

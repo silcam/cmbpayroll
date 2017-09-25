@@ -64,19 +64,19 @@ class WorkHour < ApplicationRecord
     merged_hash.each do |day, hours|
       hours, dept = parse_hours(hours)
 
-      if (employee.department == dept)
+      if (employee.department_id == dept)
         dept = nil
       end
 
       day = Date.strptime day
       work_hour = employee.work_hours.find_by(date: day)
       if work_hour.nil?
-        employee.work_hours.create(date: day, hours: hours, department: dept) unless default_hours?(day, hours)
+        employee.work_hours.create(date: day, hours: hours, department_id: dept) unless default_hours?(day, hours)
       else
         if default_hours?(day, hours)
           work_hour.destroy
         else
-          work_hour.update(hours: hours, department: dept)
+          work_hour.update(hours: hours, department_id: dept)
         end
       end
     end

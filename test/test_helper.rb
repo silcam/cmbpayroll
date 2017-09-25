@@ -32,7 +32,7 @@ class ActiveSupport::TestCase
     employee.first_name = "Playslip"
     employee.last_name = "Recipient"
     employee.title = "Title"
-    employee.department = "Department"
+    employee.department = departments :Admin
     employee.hours_day = 23
     employee.supervisor = supervisors :Yoda
 

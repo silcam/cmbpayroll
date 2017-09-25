@@ -176,7 +176,6 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal "Skywalker, Luke", @luke.full_name_rev
   end
 
-
   test "Find_wage_by_attributes" do
     employee = return_valid_employee()
 
@@ -185,6 +184,18 @@ class EmployeeTest < ActiveSupport::TestCase
 
     assert_equal(83755, employee.find_wage())
 
+  end
+
+  test "AMICAL" do
+    employee = return_valid_employee()
+    assert_equal(0, employee.amical_amount)
+
+    employee.amical = true
+    assert_equal(3000, employee.amical_amount)
+
+    new_amical_value = 1234567
+    SystemVariable.create!(key: 'amical_amount', value: new_amical_value)
+    assert_equal(new_amical_value, employee.amical_amount)
   end
 
   def some_valid_params(params={})

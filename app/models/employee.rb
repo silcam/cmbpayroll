@@ -71,6 +71,14 @@ class Employee < ApplicationRecord
     end
   end
 
+  def amical_amount
+    if (amical == true)
+      return SystemVariable.value(:amical_amount)
+    else
+      return 0
+    end
+  end
+
   def total_hours_so_far
     WorkHour.total_hours_so_far self
   end

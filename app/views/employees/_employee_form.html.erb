@@ -3,23 +3,23 @@
 
 <%= form_for @employee, html: {class: 'auto-width', name: 'employee_form'} do |f|  %>
     <div class="form-group">
-      <%= f.label t(:First_name) %>
+      <%= f.label :first_name %>
       <%= f.text_field :first_name, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label t(:Last_name) %>
+      <%= f.label :last_name %>
       <%= f.text_field :last_name, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label t(:Birth_date) %>
+      <%= f.label :birth_date %><br />
       <%= date_select( :employee, :birth_date, prompt: true, start_year: 1900, end_year: Date.today.year ) %>
     </div>
     <div class="form-group">
-      <%= f.label t(:Title) %>
+      <%= f.label :title %>
       <%= f.text_field :title, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label t(:Department) %>
+      <%= f.label :department %><br />
       <%= f.collection_select(:department_id, Department.all, :id, :name, prompt: true) %>
     </div>
 
@@ -43,19 +43,19 @@
     </div>
 
     <div class="form-group">
-      <%= f.label :contract_start %>
+      <%= f.label :contract_start %><br />
       <%= date_select( :employee, :contract_start, prompt: true, start_year: 1970 ) %>
     </div>
     <div class="form-group">
-      <%= f.label :contract_end %>
+      <%= f.label :contract_end %><br />
       <%= date_select( :employee, :contract_end, prompt: true, start_year: 1970 ) %>
     </div>
     <div class="form-group">
-      <%= f.label t(:Gender) %>
+      <%= f.label :gender %><br />
       <%= f.select :gender, Person.genders.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label t(:Marital_status) %>
+      <%= f.label :marital_status %><br />
       <%= f.select :marital_status, Employee.marital_statuses.keys, prompt: true %>
     </div>
     <div class="form-group">
@@ -67,11 +67,11 @@
       <%= f.text_field :dipe, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label :category %>
+      <%= f.label :category %><br />
       <%= f.select :category, Employee.categories.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label :echelon %>
+      <%= f.label :echelon %><br />
       <%= f.select :echelon, Employee.echelons.keys, { prompt: true }, { id: 'echelon-field' } %>
     </div>
     <div class="form-group">
@@ -85,11 +85,11 @@
       <%= f.text_field :wage, { class: 'form-control', id: 'wage-field', disabled: wage_disabled } %>
     </div>
     <div class="form-group">
-      <%= f.label :wage_scale %>
+      <%= f.label :wage_scale %><br />
       <%= f.select :wage_scale, Employee.wage_scales.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label :wage_period %>
+      <%= f.label :wage_period %><br />
       <%= f.select :wage_period, Employee.wage_periods.keys, prompt: true %>
     </div>
     <div class="form-group">
@@ -105,18 +105,21 @@
       <%= f.text_field :hours_day, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label :employment_status %>
+      <%= f.label :employment_status %><br />
       <%= f.select :employment_status, Employee.employment_statuses.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label :days_week %>
+      <%= f.label :days_week %><br />
       <%= f.select :days_week, Employee.days_weeks.keys, prompt: true %>
     </div>
     <div class="form-group">
       <%= f.label :amical %>
       <%= f.check_box :amical %>
     </div>
-
+    <div class="form-group">
+      <%= f.label :union %>
+      <%= f.check_box :union %>
+    </div>
 
   <br />
   <%= f.submit t(:Save), class: 'btn btn-primary' %>

@@ -65,14 +65,14 @@
     </tr>
     <tr>
       <th scope="row"><%= t(:Gender) %>:</th>
-      <td><%= @employee.gender %></td>
+      <td><%= Employee.human_attribute_name(@employee.gender) %></td>
       <th scope="row"><%= t(:Marital_status) %>:</th>
-      <td><%= @employee.marital_status %></td>
+      <td><%= Employee.human_attribute_name(@employee.marital_status) %></td>
     </tr>
   </tbody>
 </table>
 
-<table class="table table-bordered">
+<table class="table table-striped">
   <tbody>
     <tr>
       <th scope="row">CNPS:</th>
@@ -88,19 +88,19 @@
       <th scope="row">Echelon:</th>
       <td><%= @employee.echelon %></td>
       <th scope="row"><%= t(:Wage) %></th>
-      <td><%= @employee.wage %></td>
+      <td><%= number_to_currency(@employee.wage, locale: :cm) %></td>
       <th scope="row">Wage Scale:</th>
-      <td><%= @employee.wage_scale %></td>
+      <td><%= Employee.human_attribute_name("wage_scale.#{@employee.wage_scale}") %></td>
       <th scope="row">Wage Period:</th>
-      <td><%= @employee.wage_period %></td>
+      <td><%= Employee.human_attribute_name(@employee.wage_period) %></td>
     </tr>
     <tr>
       <th scope="row">Last Raise Date:</th>
       <td><%= @employee.last_raise_date %></td>
       <th scope="row">Taxable Percentage:</th>
-      <td><%= @employee.taxable_percentage %></td>
+      <td><%= number_to_percentage(@employee.taxable_percentage, precision: 2) %></td>
       <th scope="row">Transportation:</th>
-      <td><%= @employee.transportation %></td>
+      <td><%= number_to_currency(@employee.transportation, locale: :cm) %></td>
       <th scope="row"><%= t(:Hours_per_day) %></th>
       <td><%= @employee.hours_day %></td>
     </tr>
@@ -108,9 +108,11 @@
       <th scope="row"><%= t(:Days_per_week) %></th>
       <td><%= @employee.days_week %></td>
       <th scope="row">Employment Status:</th>
-      <td><%= @employee.employment_status %></td>
+      <td><%= Employee.human_attribute_name(@employee.employment_status) %></td>
       <th scope="row">AMICAL:</th>
-      <td><%= @employee.amical_amount %></td>
+      <td><%= number_to_currency(@employee.amical_amount, locale: :cm) %></td>
+      <th scope="row">Union Dues:</th>
+      <td><%= Employee.human_attribute_name("union.#{@employee.union}") %></td>
     </tr>
     <tr>
   </tbody>

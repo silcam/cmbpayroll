@@ -1,15 +1,9 @@
+---
 fr:
-  activerecord:
-    models:
-      bonus: Prime
-    attributes:
-      bonus:
-        name: Nom
-        quantity: Somme
-        bonus_type: Type
-        comment: Remarque
 
   # General
+  Yes: &Yes Oui
+  No: &No Non
   Payroll: Paie
   Welcome: Bienvenue
   Tasks: Tâches
@@ -39,11 +33,11 @@ fr:
   error: faute
   Other: Autre
   New: Nouveau
-  Birth_date: Jour de naissance
+  Birth_date: &Birth_date Jour de naissance
   Return_to: Retourner à
-  Gender: Sexe
+  Gender: &Gender Sexe
   Cancel: Annuler
-  
+
   #Time and Date
   Date: Date
   Hours: Heures
@@ -56,12 +50,12 @@ fr:
   Period: Mois
   Start_date: Date de commencement
   End_date: Date de fin
-  Hours_per_day: Heures par jour
+  Hours_per_day: &Hours_per_day Heures par jour
   Days_per_week: Jours par semaine
 
   # People
-  First_name: Prénom
-  Last_name: Nom
+  First_name: &First_name Prénom
+  Last_name: &Last_name Nom
   Create_new_person: Créer une nouvelle personne
   Use_existing_person: Utiliser une personne déjà faite
 
@@ -70,15 +64,23 @@ fr:
   Employee: Employé
   New_employee: Nouvel employé
   Name: Nom
-  Department: Département
+  Department: &Department Département
   Status: Statut
-  Title: Titre
-  Marital_status: Etat civil
-  Wage: Salaire
+  Title: &Title Titre
+  Marital_status: &Marital_status État civil
+  Wage: &Wage Salaire
+  Union: &Union Cotisations Syndicales?
+  Amical: &Amical AMICAL
+  Contract_start: &Contract_start Commencement du contrat
+  Contract_end: &Contract_end Fin du contrat
+  Category: &Category Catégorie
+  Echelon: &Echelon Échelon
+  Taxable_percentage: &Taxable_percentage Pourcentage Imposable
+  Transportation: &Transportation Transportation
 
   # Supervisors
   Supervisors: Superviseurs
-  Supervisor: Superviseur
+  Supervisor: &Supervisor Superviseur
   New_supervisor: Nouveau superviseur
   Add_new_supervisor: Ajouter un superviseur
 
@@ -180,4 +182,53 @@ fr:
 
   # Departments
   Department_management: Gestion des départements
+
+  helpers:
+    label:
+      employee:
+        first_name: *First_name
+        last_name: *Last_name
+        birth_date: *Birth_date
+        title: *Title
+        department: *Department
+        supervisor_id: *Supervisor
+        contract_start: *Contract_start
+        contract_end: *Contract_end
+        gender: *Gender
+        marital_status: *Marital_status
+        category: *Category
+        echelon: *Echelon
+        wage: *Wage
+        taxable_percentage: *Taxable_percentage
+        transportation: *Transportation
+        hours_day: *Hours_per_day
+        union: *Union
+        amical: *Amical
+
+  activerecord:
+    models:
+      bonus: Prime
+    attributes:
+      employee:
+        female: Femelle
+        male: Mâle
+        full_time: Plein Temps
+        part_time: Mi-Temps
+        hourly: Taux Horaire
+        monthly: Mensuel
+        married: Marrié(e)
+        single: Célibataire
+      employee/wage_scale:
+        one: 1ere
+        two: 2eme
+        three: 3eme
+      employee/union:
+        'true': *Yes
+        'false': *No
+      bonus:
+        name: Nom
+        quantity: Somme
+        bonus_type: Type
+        comment: Remarque
+
 

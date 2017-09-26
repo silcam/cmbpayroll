@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170926083802) do
+ActiveRecord::Schema.define(version: 20170926110524) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -129,6 +129,7 @@ ActiveRecord::Schema.define(version: 20170926083802) do
     t.bigint "supervisor_id"
     t.bigint "department_id"
     t.boolean "amical", default: false, null: false
+    t.boolean "union", default: false, null: false
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
     t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"

@@ -1,15 +1,9 @@
+---
 en:
-  activerecord:
-    models:
-      bonus: Prime
-    attributes:
-      bonus:
-        name: Name
-        quantity: Quantity
-        bonus_type: Type
-        comment: Comment
 
   # General
+  Yes: &Yes Yes
+  No: &No No
   Payroll: Payroll
   Welcome: Welcome
   Tasks: Tasks
@@ -41,7 +35,7 @@ en:
   New: New
   Birth_date: Birth Date
   Return_to: Return to
-  Gender: Gender
+  Gender: &Gender Gender
   Cancel: Cancel
 
   # Time and Date
@@ -56,12 +50,12 @@ en:
   Period: Period
   Start_date: Start Date
   End_date: End Date
-  Hours_per_day: Hours per day
+  Hours_per_day: &Hours_per_day Hours per day
   Days_per_week: Days per week
 
   # People
-  First_name: First Name
-  Last_name: Last Name
+  First_name: &First_name First Name
+  Last_name: &Last_name Last Name
   Create_new_person: Create New Person
   Use_existing_person: Use Existing Person
 
@@ -70,15 +64,23 @@ en:
   Employee: Employee
   New_employee: New Employee
   Name: Name
-  Department: Department
+  Department: &Department Department
   Status: Status
-  Title: Title
-  Marital_status: Marital Status
-  Wage: Wage
+  Title: &Title Title
+  Marital_status: &Marital_status Marital Status
+  Wage: &Wage Wage
+  Union: &Union Union Dues?
+  Amical: &Amical AMICAL
+  Contract_start: &Contract_start Contract Start
+  Contract_end: &Contract_end Contract End
+  Category: &Category Category
+  Echelon: &Echelon Echelon
+  Taxable_percentage: &Taxable_percentage Taxable Percentage
+  Transportation: &Transportation Transportation
 
   # Supervisors
   Supervisors: Supervisors
-  Supervisor: Supervisor
+  Supervisor: &Supervisor Supervisor
   New_supervisor: New Supervisor
   Add_new_supervisor: Add New Supervisor
 
@@ -180,3 +182,50 @@ en:
 
   # Departments
   Department_management: Department Management
+
+  helpers:
+    label:
+      employee:
+        first_name: *First_name
+        last_name: *Last_name
+        title: *Title
+        department: *Department
+        supervisor_id: *Supervisor
+        contract_start: *Contract_start
+        contract_end: *Contract_end
+        gender: *Gender
+        marital_status: *Marital_status
+        category: *Category
+        echelon: *Echelon
+        wage: *Wage
+        taxable_percentage: *Taxable_percentage
+        transportation: *Transportation
+        hours_day: *Hours_per_day
+        union: *Union
+        amical: *Amical
+
+  activerecord:
+    models:
+      bonus: Prime
+    attributes:
+      employee:
+        female: Female
+        male: Male
+        full_time: Full Time
+        part_time: Part Time
+        hourly: Hourly
+        monthly: Monthly
+        married: Married
+        single: Single
+      employee/wage_scale:
+        one: 1st
+        two: 2nd
+        three: 3rd
+      employee/union:
+        'true': *Yes
+        'false': *No
+      bonus:
+        name: Name
+        quantity: Quantity
+        bonus_type: Type
+        comment: Comment

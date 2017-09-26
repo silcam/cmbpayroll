@@ -81,6 +81,16 @@ class Employee < ApplicationRecord
     end
   end
 
+  def union_dues
+    # TODO figure out why this is the string "t" and
+    # not a boolean value (vs. Amical)
+    if (union == "t")
+      return SystemVariable.value(:union_dues)
+    else
+      return 0
+    end
+  end
+
   def total_hours_so_far
     WorkHour.total_hours_so_far self
   end

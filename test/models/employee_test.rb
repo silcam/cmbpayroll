@@ -198,6 +198,18 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(new_amical_value, employee.amical_amount)
   end
 
+  test "union dues" do
+    employee = return_valid_employee()
+    assert_equal(0, employee.union_dues)
+
+    employee.union = true
+    assert_equal(0.01, employee.union_dues)
+
+    new_union_dues = 0.76
+    SystemVariable.create!(key: 'union_dues', value: new_union_dues)
+    assert_equal(new_union_dues, employee.union_dues)
+  end
+
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',

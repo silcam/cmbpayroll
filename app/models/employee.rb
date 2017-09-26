@@ -3,6 +3,8 @@ include ApplicationHelper
 class Employee < ApplicationRecord
   include BelongsToPerson
 
+  audited allow_mass_assignment: true
+
   # TODO: some will probably become variables
   ADVANCE_AMOUNT = 0.5 # Half
   INVALID_WAGE = -1

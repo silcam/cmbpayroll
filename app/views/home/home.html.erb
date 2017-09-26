@@ -22,28 +22,12 @@
     <h2><%= t :Activity_feed %></h2>
     <hr>
     <ul class="list-unstyled feed">
-      <%
-        feed_items = [{title: 'New employee added',
-                      text: 'Han Solo',
-                      when: 'An hour ago'},
-                      {title: 'Vacation entered',
-                      text: 'Luke Skywalker, Aug 3 - Aug 14',
-                      when: 'Yesterday'},
-                      {title: 'Paychecks Issued',
-                       text: 'July paychecks',
-                       when: 'August 1'},
-                      {title: 'Wage echelon changed',
-                      text: 'Anakin Skywalker, Echelon F',
-                      when: 'July 15'},
-                      {title: 'Overtime entered',
-                       text: 'Lando Calrissian, 4hrs in July',
-                       when: 'July 14'}]
-      %>
-      <% feed_items.each do |item| %>
+      <% feed_items = PayrollAudit.feed_items()
+         feed_items.each do |item| %>
         <li>
-          <strong><%= item[:title] %> : </strong>
-          <%= item[:text] %><br>
-          <i><%= item[:when] %></i>
+          <strong class="text-capitalize"><%= item[:title] %> : </strong>
+          <p><%= item[:text] %></p>
+          <i><%= item[:when] %> by <%= item[:who] %></i>
         </li>
       <% end %>
       <li>

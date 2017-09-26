@@ -37,6 +37,9 @@ gem 'rails-i18n', '~> 5.0.4'
 # User Roles
 gem 'access-granted', '~>1.2.0'
 
+# Audit Trail
+gem 'audited', '~> 4.5'
+
 # Date Validation
 # gem 'validates_timeliness', '~>4.0'
 

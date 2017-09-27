@@ -63,14 +63,18 @@ en:
   Employees: Employees
   Employee: Employee
   New_employee: New Employee
-  Name: Name
+  Employee_information_for: Employee Information for
+  Name: *Last_name
   Department: &Department Department
   Status: Status
   Title: &Title Title
   Marital_status: &Marital_status Marital Status
   Wage: &Wage Wage
-  Union: &Union Union Dues?
+  Union: &Union Union Dues
+  union: *Union
+  Union_dues: *Union
   Amical: &Amical AMICAL
+  amical: *Amical
   Contract_start: &Contract_start Contract Start
   Contract_end: &Contract_end Contract End
   Category: &Category Category
@@ -92,6 +96,7 @@ en:
   Child_first_name: Child's First Name
   Child_birth_date: Child's Birth Date
   Child_student: Student?
+  No_children: No Children
 
   # Charges
   Charges: Charges
@@ -100,7 +105,7 @@ en:
   Add_charge: Add Charge
   Enter_charges: Enter Charges
   New_loan: New Loan
-  Type: Type
+  Type: &Type Type
   Detail: Detail
   Must_be_whole_number: must be a whole number.
   Amount: Amount
@@ -139,7 +144,6 @@ en:
   New_bonus: New Bonus
   Editing_bonus: Editing Bonus
   Quantity: Quantity
-  Type: Type
   Comment: Comment
   Select_bonuses_to_be_assigned: Select bonuses to be assigned to
   Assign_to_employee: Assign to Employee
@@ -148,6 +152,7 @@ en:
   Manage_bonsus: Mangage Bonuses
   percentage: Percentage
   fixed: Fixed
+  No_bonuses: No Bonuses
 
   # Reports
   Reports: Reports
@@ -205,6 +210,9 @@ en:
         amical: *Amical
 
   activerecord:
+    employee:
+      'true': *Yes
+      'false': *No
     models:
       bonus: Prime
     attributes:
@@ -225,7 +233,7 @@ en:
         'true': *Yes
         'false': *No
       bonus:
-        name: Name
+        name: *Last_name
         quantity: Quantity
-        bonus_type: Type
+        bonus_type: *Type
         comment: Comment

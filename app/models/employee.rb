@@ -84,11 +84,18 @@ class Employee < ApplicationRecord
   def union_dues
     # TODO figure out why this is the string "t" and
     # not a boolean value (vs. Amical)
-    if (union == "t")
-      return SystemVariable.value(:union_dues)
+    if (union == "t" || union == true)
+      return wage() * SystemVariable.value(:union_dues)
     else
       return 0
     end
+  end
+
+  def deductable_expenses
+      expense_hash = {
+        amical: :amical_amount,
+        union: :union_dues
+      }
   end
 
   def total_hours_so_far

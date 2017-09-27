@@ -120,14 +120,12 @@ class Payslip < ApplicationRecord
     self.process_bonuses(payslip, employee)
 
     payslip.deductions.delete_all
-    self.process_deductions(payslip, employee)
+    self.process_charges(payslip, employee)
+    self.process_employee_deduction(payslip, employee)
 
     payslip.last_processed = DateTime.now
 
     employee.payslips << payslip
-
-    #payslip.save
-    #employee.save
 
     return payslip
   end
@@ -146,7 +144,6 @@ class Payslip < ApplicationRecord
       end
 
       payslip.earnings << earning
-      #earning.save
     end
   end
 
@@ -166,11 +163,10 @@ class Payslip < ApplicationRecord
       end
 
       payslip.earnings << earning
-      #earning.save
     end
   end
 
-  def self.process_deductions(payslip, employee)
+  def self.process_charges(payslip, employee)
     employee.charges.each do |charge|
       next if (charge.date < payslip.period.start ||
                   charge.date > payslip.period.finish)
@@ -182,7 +178,24 @@ class Payslip < ApplicationRecord
       deduction.date = charge.date
 
       payslip.deductions << deduction
-      #deduction.save
+    end
+  end
+
+  def self.process_employee_deduction(payslip, employee)
+    expenses_hash = employee.deductable_expenses()
+
+    expenses_hash.each do |k,v|
+      amount = employee.send(v)
+
+      if (amount > 0)
+        deduction = Deduction.new
+
+        deduction.note = k
+        deduction.amount = amount
+        deduction.date = payslip.period.start
+
+        payslip.deductions << deduction
+      end
     end
   end
 
@@ -195,8 +208,5 @@ class Payslip < ApplicationRecord
     charge.note = Charge::ADVANCE
 
     employee.charges << charge
-
-    charge.save
-    employee.save
   end
 end

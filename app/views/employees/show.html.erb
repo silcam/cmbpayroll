@@ -34,7 +34,7 @@
   </li>
 </ul>
 
-<h2>Employee Information for <%= @employee.full_name %></h2>
+<h2><%= t(:Employee_information_for) %> <%= @employee.full_name %></h2>
 
 
 <table class="table table-striped">
@@ -65,9 +65,9 @@
     </tr>
     <tr>
       <th scope="row"><%= t(:Gender) %>:</th>
-      <td><%= Employee.human_attribute_name(@employee.gender) %></td>
+      <td><%= t(@employee&.gender&.humanize, default: "") %></td>
       <th scope="row"><%= t(:Marital_status) %>:</th>
-      <td><%= Employee.human_attribute_name(@employee.marital_status) %></td>
+      <td><%= t(@employee&.marital_status&.humanize, default: "") %></td>
     </tr>
   </tbody>
 </table>
@@ -81,7 +81,7 @@
       <td><%= @employee.dipe %></td>
       <th scope="row"><%= t(:Birth_date) %></th>
       <td><%= @employee.birth_date %></td>
-      <th scope="row">Category:</th>
+      <th scope="row"><%= t(:Category) %></th>
       <td><%= @employee.category %></td>
     </tr>
     <tr>
@@ -89,17 +89,17 @@
       <td><%= @employee.echelon %></td>
       <th scope="row"><%= t(:Wage) %></th>
       <td><%= number_to_currency(@employee.wage, locale: :cm) %></td>
-      <th scope="row">Wage Scale:</th>
-      <td><%= Employee.human_attribute_name("wage_scale.#{@employee.wage_scale}") %></td>
-      <th scope="row">Wage Period:</th>
-      <td><%= Employee.human_attribute_name(@employee.wage_period) %></td>
+      <th scope="row"><%= t(:Wage_scale) %></th>
+      <td><%= t("wage_scale.#{@employee.wage_scale}", default: "") %></td>
+      <th scope="row"><%= t(:Wage_period) %></th>
+      <td><%= t(@employee.wage_period, default: "") %></td>
     </tr>
     <tr>
       <th scope="row">Last Raise Date:</th>
       <td><%= @employee.last_raise_date %></td>
-      <th scope="row">Taxable Percentage:</th>
+      <th scope="row"><%= t(:Taxable_percentage) %></th>
       <td><%= number_to_percentage(@employee.taxable_percentage, precision: 2) %></td>
-      <th scope="row">Transportation:</th>
+      <th scope="row"><%= t(:Transportation) %></th>
       <td><%= number_to_currency(@employee.transportation, locale: :cm) %></td>
       <th scope="row"><%= t(:Hours_per_day) %></th>
       <td><%= @employee.hours_day %></td>
@@ -107,12 +107,12 @@
     <tr>
       <th scope="row"><%= t(:Days_per_week) %></th>
       <td><%= @employee.days_week %></td>
-      <th scope="row">Employment Status:</th>
-      <td><%= Employee.human_attribute_name(@employee.employment_status) %></td>
-      <th scope="row">AMICAL:</th>
+      <th scope="row"><%= t(:Employment_status) %></th>
+      <td><%= t(@employee.employment_status, default: "") %></td>
+      <th scope="row"><%= t(:Amical) %></th>
       <td><%= number_to_currency(@employee.amical_amount, locale: :cm) %></td>
-      <th scope="row">Union Dues:</th>
-      <td><%= Employee.human_attribute_name("union.#{@employee.union}") %></td>
+      <th scope="row"><%= t(:Union_dues) %>?</th>
+      <td><%= t("employee.#{@employee.union}", scope: [:activerecord ]) %> (<%= number_to_currency(@employee.union_dues, locale: :cm) %>)</td>
     </tr>
     <tr>
   </tbody>
@@ -120,7 +120,7 @@
 
 <% if (@employee.children.empty?) %>
   <p>
-   <%= t(:no_children) %>
+   <%= t(:No_children) %>
   </p>
 <% else %>
   <table class="table">

@@ -3,12 +3,10 @@ class Deduction < ApplicationRecord
   belongs_to :payslip
 
   # :note (String)
-  # :amount (integer)
+  # :amount (decimal)
   # :date (DateTime)
 
   validates :note, :amount, :date, presence: {message: I18n.t(:Not_blank)}
-  # TODO: should this be only positive integers?
-  validates :amount, numericality: {only_integer: true, message: I18n.t(:Must_be_whole_number)}
   validate :date_is_valid_for_payslip
 
   private

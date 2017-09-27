@@ -391,12 +391,14 @@ class PayslipTest < ActiveSupport::TestCase
       if (ded.note == "CHARGE1")
          assert_equal(1000, ded.amount)
          assert_equal(Date.today, ded.date)
+         assert(ded.valid?, "should be valid")
          count += 1
       end
 
       if (ded.note == "CHARGE2")
          assert_equal(2000, ded.amount)
          assert_equal(Date.today, ded.date)
+         assert(ded.valid?, "should be valid")
          count += 1
       end
     end
@@ -540,6 +542,41 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
+  test "payslips deduct amical and union dues" do
+    # have an employee
+    employee = return_valid_employee()
+
+    # give amical and union
+    # (should use default system vars)
+    employee.amical = true
+    employee.union = true
+
+    union_dues = employee.union_dues
+    amical_value = SystemVariable.value(:amical_amount)
+
+    # process a payslip
+    payslip = Payslip.process(employee, Period.current)
+
+    # verify there are deductions for Amical and Union.
+    assert_equal(2, payslip.deductions.size, "payslip should have 2 deductions")
+
+    count = 0
+    payslip.deductions.each do |ded|
+      if (/amical/i =~ ded.note)
+         assert_equal(amical_value, ded.amount)
+         assert_equal(Date.today.beginning_of_month(), ded.date)
+         count += 1
+      end
+
+      if (/union/i =~ ded.note)
+         assert_equal(union_dues, ded.amount)
+         assert_equal(Date.today.beginning_of_month(), ded.date)
+         count += 1
+      end
+    end
+
+    assert_equal(2, count, "found both deductions")
+  end
 
   private
 

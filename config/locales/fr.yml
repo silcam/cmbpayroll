@@ -63,14 +63,18 @@ fr:
   Employees: Employés
   Employee: Employé
   New_employee: Nouvel employé
-  Name: Nom
+  Employee_information_for: Details de l'employee 
+  Name: *Last_name
   Department: &Department Département
   Status: Statut
   Title: &Title Titre
   Marital_status: &Marital_status État civil
   Wage: &Wage Salaire
-  Union: &Union Cotisations Syndicales?
+  Union: &Union Cotisations Syndicales
+  union: *Union
+  Union_dues: *Union
   Amical: &Amical AMICAL
+  amical: *Amical
   Contract_start: &Contract_start Commencement du contrat
   Contract_end: &Contract_end Fin du contrat
   Category: &Category Catégorie
@@ -92,6 +96,7 @@ fr:
   Child_first_name: Prénom de l'enfant
   Child_birth_date: Jour de naissance de l'enfant
   Child_student: Etudiant?
+  No_children: Aucun Enfants
 
   # Charges
   Charges: Charges
@@ -100,7 +105,7 @@ fr:
   Add_charge: Ajouter une charge
   Enter_charges: Saisir charges
   New_loan: Nouveau prêt
-  Type: Type
+  Type: &Type Type
   Detail: Détail
   Must_be_whole_number: doit être un nombre entier.
   Amount: Montant
@@ -139,7 +144,6 @@ fr:
   New_bonus: Nouvelle Prime
   Editing_bonus: Modifier les primes
   Quantity: Somme
-  Type: Type
   Comment: Remarque
   Select_bonuses_to_be_assigned: Choissisez les primes pour attribuer à
   Assign_to_employee: Attribuer à Employé
@@ -148,6 +152,7 @@ fr:
   Manage_bonuses: Gérer les primes
   percentage: Pourcentage
   fixed: Fixé
+  No_bonuses: Aucun Primes
 
   # Reports
   Reports: Rapports
@@ -206,6 +211,9 @@ fr:
         amical: *Amical
 
   activerecord:
+    employee:
+      'true': *Yes
+      'false': *No
     models:
       bonus: Prime
     attributes:
@@ -226,9 +234,9 @@ fr:
         'true': *Yes
         'false': *No
       bonus:
-        name: Nom
+        name: *Last_name
         quantity: Somme
-        bonus_type: Type
+        bonus_type: *Type
         comment: Remarque
 
 

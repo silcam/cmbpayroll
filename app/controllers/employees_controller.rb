@@ -71,7 +71,7 @@ class EmployeesController < ApplicationController
         :marital_status,
         :wage,
         :amical,
-        :union]
+        :uniondues]
     if params[:employee][:supervisor_id].to_i >= 1  # A valid id
       permitted << :supervisor_id
     else

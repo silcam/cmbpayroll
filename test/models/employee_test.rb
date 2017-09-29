@@ -200,18 +200,18 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "union dues" do
     employee = return_valid_employee()
-    assert_equal(0, employee.union_dues)
+    assert_equal(0, employee.union_dues_amount)
 
     employee.wage = 10000
     employee.category_one!
     employee.echelon_g!
 
-    employee.union = true
-    assert_equal(100, employee.union_dues)
+    employee.uniondues = true
+    assert_equal(100, employee.union_dues_amount)
 
     new_union_dues = 0.76
     SystemVariable.create!(key: 'union_dues', value: new_union_dues)
-    assert_equal(employee.wage * new_union_dues, employee.union_dues)
+    assert_equal(employee.wage * new_union_dues, employee.union_dues_amount)
   end
 
 
@@ -219,13 +219,13 @@ class EmployeeTest < ActiveSupport::TestCase
     employee = return_valid_employee()
 
     employee.amical = true
-    employee.union = true
+    employee.uniondues = true
 
     expenses_hash = employee.deductable_expenses()
     assert_equal(2, expenses_hash.length)
 
     employee.amical = true
-    employee.union = false
+    employee.uniondues = false
 
     expenses_hash = employee.deductable_expenses()
     assert_equal(2, expenses_hash.length)
@@ -233,7 +233,7 @@ class EmployeeTest < ActiveSupport::TestCase
     assert(expenses_hash[:amical])
 
     assert_equal(:amical_amount, expenses_hash[:amical])
-    assert_equal(:union_dues, expenses_hash[:union])
+    assert_equal(:union_dues_amount, expenses_hash[:union])
 
     assert_equal(3000, employee.send(expenses_hash[:amical]))
     assert_equal(0, employee.send(expenses_hash[:union]))

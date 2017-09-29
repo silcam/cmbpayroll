@@ -8,3 +8,7 @@ cm:
         separator: ','
         strip_insignificant_zeros: false
         unit: 'FCFA'
+
+  date:
+    formats:
+      short: "%d/%m/%Y"

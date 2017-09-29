@@ -40,6 +40,9 @@ gem 'access-granted', '~>1.2.0'
 # Audit Trail
 gem 'audited', '~> 4.5'
 
+# Reports
+gem 'dossier', '~> 2.13', '>= 2.13.1'
+
 # Date Validation
 # gem 'validates_timeliness', '~>4.0'
 

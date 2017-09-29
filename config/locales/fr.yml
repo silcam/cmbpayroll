@@ -191,6 +191,26 @@ fr:
   # Departments
   Department_management: Gestion des départements
 
+  reports:
+    Employee_report: Le Rapport des Employés
+    Employee_report_by_dept: Le Rapport des Employés par Département
+    Download_report_as: Télécharger le rapport comme
+    Report_for_period: Le rapport pour la période
+    Select_a_report: Choisissez un rapport
+    Select_a_period: Choisissez une période
+    marital_statuses:
+      m: M
+      s: C
+      n: ''
+    genders:
+      m: M
+      f: F
+      n: ''
+    employment_statuses:
+      p: M
+      f: P
+      n: ''
+
   helpers:
     label:
       employee:

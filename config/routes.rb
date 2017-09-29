@@ -34,6 +34,10 @@ Rails.application.routes.draw do
 
   resources 'payslips', only: [ :index, :show ]
 
+  # Reports index
+  get 'reports', to: 'reports#index'
+  get 'report_display', to: 'reports#show'
+
   # Payslips (temp routes)
   post 'payslips/process', to: 'payslips#process_employee'
   post 'payslips/process_complete', to: 'payslips#process_employee_complete'
@@ -57,5 +61,4 @@ Rails.application.routes.draw do
   get 'mock_vacation', to: 'mock#vacation'
   get 'charges', to: 'mock#charges'
   get 'hours/edit', to: 'mock#hours_edit'
-  get 'reports', to: 'mock#reports'
 end

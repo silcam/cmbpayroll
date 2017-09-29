@@ -1,0 +1,11 @@
+= render(partial: 'dossier/reports/chooser')
+
+%h2= @report.formatted_title
+
+%p= "#{t(:Report_for_period, scope: :reports)}: #{@report.report_period.start} - #{@report.report_period.finish}"
+
+%div.download-links
+  = "#{t(:Download_report_as, scope: :reports)}:"
+  = link_to 'CSV', report_display_path(format: 'csv', options: report.options, report: report)
+  |
+  = link_to 'XLS', report_display_path(format: 'xls', options: report.options, report: report)

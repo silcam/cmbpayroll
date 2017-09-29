@@ -191,6 +191,26 @@ en:
   # Departments
   Department_management: Department Management
 
+  reports:
+    Employee_report: Employee Report
+    Employee_report_by_dept: Employee Report - By Department
+    Download_report_as: Download report as
+    Report_for_period: Report for period
+    Select_a_report: Select a Report
+    Select_a_period: Select a Period
+    marital_statuses:
+      m: M
+      s: S
+      n: ''
+    genders:
+      m: M
+      f: F
+      n: ''
+    employment_statuses:
+      p: P
+      f: F
+      n: ''
+
   helpers:
     label:
       employee:

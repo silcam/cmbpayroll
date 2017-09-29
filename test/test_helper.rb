@@ -35,6 +35,7 @@ class ActiveSupport::TestCase
     employee.department = departments :Admin
     employee.hours_day = 23
     employee.supervisor = supervisors :Yoda
+    employee.contract_start = '2010-07-11'
 
     employee.category_three!
     employee.echelon_d!

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170927090201) do
+ActiveRecord::Schema.define(version: 20170929132637) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -154,6 +154,10 @@ ActiveRecord::Schema.define(version: 20170927090201) do
     t.bigint "employee_id"
     t.integer "period_month"
     t.integer "period_year"
+    t.decimal "vacation_earned"
+    t.decimal "vacation_balance"
+    t.date "last_vacation_start"
+    t.date "last_vacation_end"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 

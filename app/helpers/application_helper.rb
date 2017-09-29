@@ -13,7 +13,7 @@ module ApplicationHelper
   end
 
   def std_datestring(date)
-    date.strftime("%-d %b %Y")
+    date.try(:strftime, "%-d %b %Y")
   end
 
   def last_monday(date=Date.today)

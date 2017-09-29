@@ -214,7 +214,7 @@
         Ce mois-ci
       </div>
       <div class="col-sm-1">
-        1.5
+        <%= number_to_human(@payslip.vacation_earned, precision: 2) %>
       </div>
 
     </div>
@@ -225,7 +225,7 @@
         Jusqu'aujourd'hui
       </div>
       <div class="col-sm-1">
-        25.5
+        <%= number_to_human(@payslip.vacation_balance, precision: 2) %>
       </div>
 
     </div>
@@ -236,6 +236,9 @@
         Dernier congé
       </div>
       <div class="col-sm-1">
+        <%= std_datestring(@payslip.last_vacation_start) %>
+        -
+        <%= std_datestring(@payslip.last_vacation_end) %>
       </div>
 
     </div>

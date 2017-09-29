@@ -54,6 +54,14 @@ class Period
     Period.new(year, month)
   end
 
+  def past_january
+    Period.new(@year, 1)
+  end
+
+  def next_december
+    Period.new(@year, 12)
+  end
+
   def weekdays
     Period.count_weekdays(start, finish)
   end

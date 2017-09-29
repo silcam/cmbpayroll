@@ -137,6 +137,9 @@ fr:
   Overlap_message: Ces vacances coïncident avec des heures de travail déjà saisies. Clicker 'Enregister' supprimera ces heures.
   Save_vacation_and_delete_work_hours: Enregister vacances et supprimer ces heures
   Other_upcoming_vacation: Autres vacances futures
+  Total_vacation: Jours de vacances permis
+  Vacation_used_or_planned: Jours utilisés et prevus
+  Remaining_days: Jours qui restent
 
   # Bonuses
   Bonuses: Primes

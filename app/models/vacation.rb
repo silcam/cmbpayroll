@@ -50,21 +50,35 @@ class Vacation < ApplicationRecord
     Vacation.all.where("start_date > ?", Period.current.finish)
   end
 
-  def self.missed_days(employee, period=Period.current)
-    missed_days_for employee, period.start, period.finish
+  def self.days(employee, year=Date.today.year)
+    service = year - employee.contract_start.year
+    service += -1 unless service == 0 # Rounds down
+    factor = service / SystemVariable.value(:supplemental_days_period)
+    supplemental = factor * SystemVariable.value(:supplemental_days)
+    SystemVariable.value(:vacation_days) + supplemental
   end
 
-  def self.missed_hours(employee, period=Period.current)
-    missed_days(employee, period) * WorkHour.workday
+  def self.days_used(employee, year=Date.today.year, up_to=Period.new(year, 12))
+    days = days_hash employee, Period.new(year, 1).start, up_to.finish
+    # TODO: What about weekends and holidays ?
+    days.count
   end
 
-  def self.missed_days_so_far(employee)
-    missed_days_for employee, Period.current.start, yesterday
-  end
+  # def self.missed_days(employee, period=Period.current)
+  #   missed_days_for employee, period.start, period.finish
+  # end
+  #
+  # def self.missed_hours(employee, period=Period.current)
+  #   missed_days(employee, period) * WorkHour.workday
+  # end
 
-  def self.missed_hours_so_far(employee)
-    Vacation.missed_days_so_far(employee) * WorkHour.workday
-  end
+  # def self.missed_days_so_far(employee)
+  #   missed_days_for employee, Period.current.start, yesterday
+  # end
+  #
+  # def self.missed_hours_so_far(employee)
+  #   Vacation.missed_days_so_far(employee) * WorkHour.workday
+  # end
 
   def self.days_hash(employee, start, finish)
     vacations = employee.vacations.where(overlap_clause(start, finish))
@@ -99,21 +113,21 @@ class Vacation < ApplicationRecord
     Vacation.overlap_clause(start_date, end_date)
   end
 
-  def self.missed_days_for(employee, start_date, end_date)
-    vacations = employee
-                    .vacations
-                    .where(overlap_clause(start_date, end_date))
-    missed = 0
-    vacations.each do |vacation|
-      (vacation.start_date .. vacation.end_date).each do |day|
-        if( is_weekday?(day) and
-            (start_date .. end_date) === day )
-          missed += 1
-        end
-      end
-    end
-    missed
-  end
+  # def self.missed_days_for(employee, start_date, end_date)
+  #   vacations = employee
+  #                   .vacations
+  #                   .where(overlap_clause(start_date, end_date))
+  #   missed = 0
+  #   vacations.each do |vacation|
+  #     (vacation.start_date .. vacation.end_date).each do |day|
+  #       if( is_weekday?(day) and
+  #           (start_date .. end_date) === day )
+  #         missed += 1
+  #       end
+  #     end
+  #   end
+  #   missed
+  # end
 
   def self.overlap_clause(start_date, end_date)
     ["(start_date BETWEEN :start AND :end) OR

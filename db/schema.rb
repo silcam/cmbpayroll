@@ -129,7 +129,7 @@ ActiveRecord::Schema.define(version: 20170927090201) do
     t.bigint "supervisor_id"
     t.bigint "department_id"
     t.boolean "amical", default: false, null: false
-    t.string "union", default: "f", null: false
+    t.boolean "union", default: false, null: false
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
     t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"

@@ -23,7 +23,9 @@ Rails.application.routes.draw do
         end
       end
       resources :charges, except: [:edit, :update, :show]
-      resources :vacations, except: :show
+      resources :vacations, except: :show do
+        get 'days_summary', on: :collection
+      end
       resources :payslips, only: [ :index, :show ]
     end
   end

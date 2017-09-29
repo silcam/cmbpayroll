@@ -51,6 +51,14 @@ class PeriodTest < ActiveSupport::TestCase
     assert_equal Period.new(2016, 12), Period.new(2017, 1).previous
   end
 
+  test "Past January" do
+    assert_equal Period.new(2017, 1), @july.past_january
+  end
+
+  test "Next December" do
+    assert_equal Period.new(2017, 12), @july.next_december
+  end
+
   test "Weekdays" do
     assert_equal 21, @july.weekdays
   end

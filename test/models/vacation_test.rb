@@ -119,6 +119,34 @@ class VacationTest < ActiveSupport::TestCase
     end
   end
 
+  test "Days" do
+    Date.stub :today, Date.new(2017, 10, 31) do
+      # Luke started this year
+      assert_equal 18, Vacation.days(@luke)
+      assert_equal 18, Vacation.days(@luke, 2022)
+      assert_equal 20, Vacation.days(@luke, 2023)
+      # Anakin started in 2000
+      assert_equal 24, Vacation.days(@anakin)
+    end
+  end
+
+  test "Days Used" do
+    Date.stub :today, Date.new(2017, 5, 31) do
+      # Anakin will take off June 5-9
+      assert_equal 5, Vacation.days_used(@anakin)
+      assert_equal 0, Vacation.days_used(@anakin, 2017, Period.current)
+      # Check year boundary
+      Vacation.create(employee: @luke, start_date: '2017-12-30', end_date: '2018-01-02')
+      assert_equal 2, Vacation.days_used(@luke, 2018)
+    end
+  end
+
+  test "Days Hash" do
+    days = Vacation.days_hash(@luke, Date.new(2017, 7, 30), Date.new(2017, 8, 2))
+    assert_equal 2, days.length
+    assert days[Date.new(2017, 7, 31)][:vacation]
+  end
+
   # test "Missed Days and Hours" do
   #   june = Period.new(2017, 6)
   #   assert_equal 5, Vacation.missed_days(@anakin, june)
@@ -128,12 +156,6 @@ class VacationTest < ActiveSupport::TestCase
   #     assert_equal 16, Vacation.missed_hours_so_far(@anakin)
   #   end
   # end
-
-  test "Days Hash" do
-    days = Vacation.days_hash(@luke, Date.new(2017, 7, 30), Date.new(2017, 8, 2))
-    assert_equal 2, days.length
-    assert days[Date.new(2017, 7, 31)][:vacation]
-  end
 
   def some_valid_params(mods={})
     {employee: @luke, start_date: '2017-08-09', end_date: '2017-08-10'}.merge(mods)

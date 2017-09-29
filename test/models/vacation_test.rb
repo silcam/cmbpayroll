@@ -119,15 +119,15 @@ class VacationTest < ActiveSupport::TestCase
     end
   end
 
-  test "Missed Days and Hours" do
-    june = Period.new(2017, 6)
-    assert_equal 5, Vacation.missed_days(@anakin, june)
-    assert_equal 40, Vacation.missed_hours(@anakin, june)
-    Date.stub :today, Date.new(2017, 6, 7) do
-      assert_equal 2, Vacation.missed_days_so_far(@anakin)
-      assert_equal 16, Vacation.missed_hours_so_far(@anakin)
-    end
-  end
+  # test "Missed Days and Hours" do
+  #   june = Period.new(2017, 6)
+  #   assert_equal 5, Vacation.missed_days(@anakin, june)
+  #   assert_equal 40, Vacation.missed_hours(@anakin, june)
+  #   Date.stub :today, Date.new(2017, 6, 7) do
+  #     assert_equal 2, Vacation.missed_days_so_far(@anakin)
+  #     assert_equal 16, Vacation.missed_hours_so_far(@anakin)
+  #   end
+  # end
 
   test "Days Hash" do
     days = Vacation.days_hash(@luke, Date.new(2017, 7, 30), Date.new(2017, 8, 2))

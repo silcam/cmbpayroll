@@ -57,7 +57,8 @@ class WorkHour < ApplicationRecord
     (start .. finish).each do |day|
       days[day] = {} unless days.has_key? day
       unless days[day].has_key? :hours
-        if is_off_day? day, days[day][:holiday]
+        if is_off_day?(day, days[day][:holiday]) or
+          day < employee.contract_start
           days[day][:hours] = 0
         else
           days[day][:hours] = workday
@@ -74,7 +75,7 @@ class WorkHour < ApplicationRecord
     merged_hash.each do |day, hours|
       hours, dept = parse_hours(hours)
 
-      if (employee.department_id == dept)
+      if employee.department_id == dept
         dept = nil
       end
 
@@ -183,7 +184,7 @@ class WorkHour < ApplicationRecord
   end
 
   def self.parse_hours(hours)
-    if (hours.respond_to?('each'))
+    if hours.respond_to?('each')
       tmp_hours = hours
       hours = tmp_hours['hours']
       dept = tmp_hours['dept']

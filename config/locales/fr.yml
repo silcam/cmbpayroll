@@ -70,8 +70,8 @@ fr:
   Title: &Title Titre
   Marital_status: &Marital_status État civil
   Wage: &Wage Salaire
-  Union: &Union Cotisations Syndicales
-  union: *Union
+  Uniondues: &Union Cotisations Syndicales
+  uniondues: *Union
   Union_dues: *Union
   Amical: &Amical AMICAL
   amical: *Amical
@@ -210,7 +210,7 @@ fr:
         taxable_percentage: *Taxable_percentage
         transportation: *Transportation
         hours_day: *Hours_per_day
-        union: *Union
+        uniondues: *Union
         amical: *Amical
 
   activerecord:
@@ -233,13 +233,8 @@ fr:
         one: 1ere
         two: 2eme
         three: 3eme
-      employee/union:
-        'true': *Yes
-        'false': *No
       bonus:
         name: *Last_name
         quantity: Somme
         bonus_type: *Type
         comment: Remarque
-
-

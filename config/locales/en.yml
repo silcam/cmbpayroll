@@ -33,7 +33,7 @@ en:
   error: error
   Other: Other
   New: New
-  Birth_date: Birth Date
+  Birth_date: &Birth_date Birth Date
   Return_to: Return to
   Gender: &Gender Gender
   Cancel: Cancel
@@ -70,8 +70,8 @@ en:
   Title: &Title Title
   Marital_status: &Marital_status Marital Status
   Wage: &Wage Wage
-  Union: &Union Union Dues
-  union: *Union
+  Uniondues: &Union Union Dues
+  uniondues: *Union
   Union_dues: *Union
   Amical: &Amical AMICAL
   amical: *Amical
@@ -196,6 +196,7 @@ en:
       employee:
         first_name: *First_name
         last_name: *Last_name
+        birth_date: *Birth_date
         title: *Title
         department: *Department
         supervisor_id: *Supervisor
@@ -209,7 +210,7 @@ en:
         taxable_percentage: *Taxable_percentage
         transportation: *Transportation
         hours_day: *Hours_per_day
-        union: *Union
+        uniondues: *Union
         amical: *Amical
 
   activerecord:
@@ -232,9 +233,6 @@ en:
         one: 1st
         two: 2nd
         three: 3rd
-      employee/union:
-        'true': *Yes
-        'false': *No
       bonus:
         name: *Last_name
         quantity: Quantity

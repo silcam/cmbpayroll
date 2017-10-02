@@ -549,9 +549,9 @@ class PayslipTest < ActiveSupport::TestCase
     # give amical and union
     # (should use default system vars)
     employee.amical = true
-    employee.union = true
+    employee.uniondues = true
 
-    union_dues = employee.union_dues
+    union_dues = employee.union_dues_amount
     amical_value = SystemVariable.value(:amical_amount)
 
     # process a payslip

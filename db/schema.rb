@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170929144100) do
+ActiveRecord::Schema.define(version: 20171004103012) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -140,6 +140,13 @@ ActiveRecord::Schema.define(version: 20170929144100) do
     t.date "date"
     t.date "observed"
     t.date "bridge"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "last_posted_periods", force: :cascade do |t|
+    t.integer "year"
+    t.integer "month"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

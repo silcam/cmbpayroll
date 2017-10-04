@@ -51,6 +51,7 @@ class VacationTest < ActiveSupport::TestCase
   end
 
   test "Vacation can obviously overlap itself" do
+    LastPostedPeriod.unpost # Reopen July so we can edit
     assert @lukes_vacation.update end_date: '2017-07-30'
   end
 
@@ -100,14 +101,15 @@ class VacationTest < ActiveSupport::TestCase
   end
 
   test "Period Vacations" do
-    chewie = employees :Chewie
-    chewie1 = Vacation.create(employee: chewie, start_date: '2017-06-15', end_date: '2017-07-01')
-    chewie2 = Vacation.create(employee: chewie, start_date: '2017-07-30', end_date: '2017-08-15')
-    july_vacays = Vacation.for_period(Period.new(2017, 7))
-    assert_includes july_vacays, @lukes_vacation
-    assert_includes july_vacays, chewie1
-    assert_includes july_vacays, chewie2
-    refute_includes Vacation.for_period, @lukes_vacation
+    on_sep_5 do
+      chewie = employees :Chewie
+      chewie1 = Vacation.create(employee: chewie, start_date: '2017-11-15', end_date: '2017-12-01')
+      chewie2 = Vacation.create(employee: chewie, start_date: '2017-12-30', end_date: '2018-01-15')
+      dec_vacays = Vacation.for_period(Period.new(2017, 12))
+      assert_includes dec_vacays, chewie1
+      assert_includes dec_vacays, chewie2
+      refute_includes Vacation.for_period, @lukes_vacation
+    end
   end
 
   test "Upcoming Vacations" do

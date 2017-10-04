@@ -38,6 +38,11 @@ en:
   Gender: &Gender Gender
   Cancel: Cancel
 
+  # Error messages
+  cant_be_in_future: can't be in the future.
+  cant_be_during_posted_period: is in a period that is already posted.
+  cant_change_during_posted_period: is in a period that is already posted.
+
   # Time and Date
   Date: Date
   Hours: Hours
@@ -111,8 +116,6 @@ en:
   Amount: Amount
   Note: Note
   Standard_charge_notes: Standard Charge Notes
-  cant_be_in_future: can't be in the future.
-  cant_be_during_posted_period: is in a period that is already posted.
 
   # Payslips
   Payslip: Payslip

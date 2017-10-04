@@ -38,6 +38,11 @@ fr:
   Gender: &Gender Sexe
   Cancel: Annuler
 
+  # Error messages
+  cant_be_in_future: ne peut pas être au futur.
+  cant_be_during_posted_period: est en un mois déjà finalisé.
+  cant_change_during_posted_period: est en un mois déjà finalisé.
+
   #Time and Date
   Date: Date
   Hours: Heures
@@ -111,8 +116,6 @@ fr:
   Amount: Montant
   Note: Note
   Standard_charge_notes: Notes standards pour charges
-  cant_be_in_future: ne peut pas être au futur.
-  cant_be_during_posted_period: est en un mois déjà finalisé.
 
   # Payslips
   Payslip: Bulletin de paie

@@ -118,6 +118,8 @@ en:
   Payslip_management: Payslip Management
   For_the_month: for the month
   Process: Process
+  post_success_message: Pay period successfully posted.
+  post_failure_message: Errors prevented this pay period from being posted.
 
   # WorkHours
   Enter_hours: Enter Hours

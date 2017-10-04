@@ -8,12 +8,23 @@ class LastPostedPeriod < ApplicationRecord
     Period.new period.year, period.month
   end
 
-  def self.set(year, month)
-    period = LastPostedPeriod.first
-    if period.nil?
-      LastPostedPeriod.create! year: year, month: month
-    else
-      period.update! year: year, month: month
-    end
+  def self.current
+    last = LastPostedPeriod.get
+    return last.next unless last.nil?
+    Period.current.previous
+  end
+
+  def self.post_current
+    period = LastPostedPeriod.current
+    posted_period = LastPostedPeriod.first_or_initialize
+    posted_period.update year: period.year, month: period.month
+    posted_period.save!
+  end
+
+  def self.unpost
+    period = LastPostedPeriod.get
+    return if period.nil?
+    period = period.previous
+    LastPostedPeriod.first.update year: period.year, month: period.month
   end
 end

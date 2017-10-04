@@ -118,6 +118,8 @@ fr:
   Payslip_management: Gestion des bullitens de paie
   For_the_month: du mois
   Process: Exécuter
+  post_success_message: Mois finalisé.
+  post_failure_message: Des erreurs ont bloqué la finalisation de ce mois.
 
   # WorkHours
   Enter_hours: Saisir heures

@@ -1,5 +1,7 @@
 <% provide(:title, "Payslips") %>
 
+<% current_period = LastPostedPeriod.current %>
+
   <div class="col-md-6" style="border:1px dotted gray; padding:20px">
 
     <h2><%= t(:Payslip_management) %></h2>
@@ -20,10 +22,33 @@
     <%= form_tag("/payslips/process_all", method: "post") do %>
 
     <p>
-      Process all payslips for the current period? (<%= Period.current %>)<br />
+      Process all payslips for the current period (<%= current_period %>)<br />
     </p>
 
     <%= submit_tag("Submit") %>
+    <% end %>
+
+    <hr />
+
+    <%= form_tag(payslip_post_period_path, method: "post") do %>
+
+    <p>
+      Post the current period (<%= current_period %>)<br />
+      No further changes to this period will be permitted.
+    </p>
+
+    <%= submit_tag("Submit") %>
+    <% end %>
+
+    <hr />
+
+    <%= form_tag(payslip_unpost_period_path, method: "post") do %>
+      <p>
+        Reopen the last posted period (<%= LastPostedPeriod.get %>)<br />
+        <span class="alert-danger">Use with care.</span>
+      </p>
+
+      <%= submit_tag("Submit") %>
     <% end %>
 
     <hr />

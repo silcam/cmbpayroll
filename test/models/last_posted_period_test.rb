@@ -10,16 +10,33 @@ class LastPostedPeriodTest < ActiveSupport::TestCase
     assert_equal exp, LastPostedPeriod.get
   end
 
-  test "Set" do
-    LastPostedPeriod.set 2017, 8
+  test "Current" do
+    exp = Period.new(2017, 8)
+    assert_equal exp, LastPostedPeriod.current
+  end
+
+  test "Current when empty" do
+    Date.stub :today, Date.new(2017, 10, 31) do
+      LastPostedPeriod.first.destroy!
+      assert_nil LastPostedPeriod.get
+      exp = Period.new(2017, 9)
+      assert_equal exp, LastPostedPeriod.current
+    end
+  end
+
+  test "Post Current" do
+    LastPostedPeriod.post_current
     assert_equal Period.new(2017, 8), LastPostedPeriod.get
     assert_equal 1, LastPostedPeriod.all.count
   end
 
-  test "Initial Set" do
-    LastPostedPeriod.first.destroy!
-    assert_nil LastPostedPeriod.get
-    LastPostedPeriod.set(2017, 8)
-    assert_equal Period.new(2017, 8), LastPostedPeriod.get
+  test "Initial Post Current" do
+    Date.stub :today, Date.new(2017, 10, 31) do
+      LastPostedPeriod.first.destroy!
+      assert_nil LastPostedPeriod.get
+      LastPostedPeriod.post_current
+      exp = Period.new(2017, 9)
+      assert_equal exp, LastPostedPeriod.get
+    end
   end
 end

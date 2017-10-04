@@ -34,10 +34,12 @@ Rails.application.routes.draw do
 
   resources 'payslips', only: [ :index, :show ]
 
-  # Payslips (temp routes)
-  post 'payslips/process', to: 'payslips#process_employee'
-  post 'payslips/process_complete', to: 'payslips#process_employee_complete'
-  post 'payslips/process_all', to: 'payslips#process_all_employees'
+  # Payslips
+  post 'payslips/process', to: 'payslips#process_employee', as: :payslip_process_employee
+  post 'payslips/process_complete', to: 'payslips#process_employee_complete', as: :payslip_process_employee_complete
+  post 'payslips/process_all', to: 'payslips#process_all_employees', as: :payslip_process_all
+  post 'payslips/post_period', to: 'payslips#post_period', as: :payslip_post_period
+  post 'payslips/unpost_period', to: 'payslips#unpost_period', as: :payslip_unpost_period
 
   # Work Hours
   get 'employees/:employee_id/work_hours',      to: 'work_hours#index', as: :employee_work_hours

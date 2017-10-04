@@ -111,6 +111,8 @@ en:
   Amount: Amount
   Note: Note
   Standard_charge_notes: Standard Charge Notes
+  cant_be_in_future: can't be in the future.
+  cant_be_during_posted_period: is in a period that is already posted.
 
   # Payslips
   Payslip: Payslip

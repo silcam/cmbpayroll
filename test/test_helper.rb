@@ -27,6 +27,12 @@ class ActiveSupport::TestCase
     click_button 'Log in'
   end
 
+  def on_sep_5
+    Date.stub :today, Date.new(2017, 9, 5) do
+      yield
+    end
+  end
+
   def return_valid_employee
     employee = Employee.new
     employee.first_name = "Playslip"

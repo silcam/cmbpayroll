@@ -43,12 +43,6 @@
                                number_to_human(@week[date][:hours]),
                                class: css_class,
                                data: {'dow' => date.wday} %>
-
-              <span>
-                <input <% if @week[date][:dept] %>checked="checked"<% end %> id="show-work-loan-<%= date %>" type="checkbox" class="toggle-dept" /> Dept Loan?<br />
-                <%= select("depts", "#{date}", options_from_collection_for_select(Department.all, :id, :name, @week[date][:dept]), {}, { class: "toggle-on-checkbox", id: "dept-select-for-#{date}", style: "display: none", disabled: "disabled" }) %>
-              </span>
-
             <% end %>
           </td>
       <% end %>

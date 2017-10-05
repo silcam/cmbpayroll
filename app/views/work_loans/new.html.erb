@@ -1,0 +1,28 @@
+<% provide :title,  t(:Work_loans) %>
+
+    <h2>Create a Work Loan</h2>
+
+    <% if @work_loan.errors.any? %>
+      Errors creating work loan:<br />
+      <ul>
+      <% @work_loan.errors.full_messages.each do |err| %>
+        <li><%= err %></li>
+      <% end %>
+      </ul>
+    <% end %>
+
+    <br />
+
+    <%= form_for [@employee, @work_loan] do |f| %>
+      <%= f.label :employee %> <%= f.select :employee_id, options_from_collection_for_select(@employees, 'id', 'full_name', @work_loan.employee_id), { prompt: 'Select an Employee' } %><br />
+      was loaned to<br />
+      <%= f.label :department_id %> <%= f.select :department_id, options_from_collection_for_select(@departments, 'id', 'name', @work_loan.department_id), { prompt: 'Select a Department' } %><br />
+      For <%= f.text_field :hours %> <%= f.label :hours %><br />
+      on <%= f.text_field :date, class: 'datepicker', placeholder: 'DD/MM/YYYY' %> <%= f.label :date %> <br />
+
+    <br />
+
+      <%= f.submit "Create" %>
+    <% end %>
+
+    <br />

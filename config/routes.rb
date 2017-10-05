@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resources :vacations, except: :show
   resources :bonuses
+  resources :work_loans, only: [ :index, :new, :create, :destroy ]
   resources :departments
   resources :holidays, except: [:show, :new] do
     collection do

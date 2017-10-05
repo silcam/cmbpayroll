@@ -40,18 +40,8 @@ class WorkHour < ApplicationRecord
     days
   end
 
-  def self.work_loans_days_hash(employee, start, finish)
-    work_hours = WorkHour.for(employee, start, finish)
-    days = {}
-    work_hours.each do |work_hour|
-      days[work_hour.date] = {dept: work_hour.department_id}
-    end
-    days
-  end
-
   def self.complete_days_hash(employee, start, finish)
     days = RecursiveHashMerger.merge days_hash(employee, start, finish),
-                                work_loans_days_hash(employee, start, finish),
                                 Holiday.days_hash(start, finish),
                                 Vacation.days_hash(employee, start, finish)
     (start .. finish).each do |day|
@@ -68,26 +58,18 @@ class WorkHour < ApplicationRecord
     days
   end
 
-  def self.update(employee, days_hours, days_depts = nil)
-    merged_hash = self.merge_hashes(days_hours, days_depts)
-
-    validate_hours!(merged_hash)
-    merged_hash.each do |day, hours|
-      hours, dept = parse_hours(hours)
-
-      if employee.department_id == dept
-        dept = nil
-      end
-
+  def self.update(employee, days_hours)
+    validate_hours!(days_hours)
+    days_hours.each do |day, hours|
       day = Date.strptime day
       work_hour = employee.work_hours.find_by(date: day)
       if work_hour.nil?
-        employee.work_hours.create(date: day, hours: hours, department_id: dept) unless default_hours?(day, hours)
+        employee.work_hours.create(date: day, hours: hours) unless default_hours?(day, hours)
       else
         if default_hours?(day, hours)
           work_hour.destroy
         else
-          work_hour.update(hours: hours, department_id: dept)
+          work_hour.update(hours: hours)
         end
       end
     end
@@ -96,8 +78,6 @@ class WorkHour < ApplicationRecord
   def self.validate_hours!(days_hours)
     errors = []
     days_hours.each do |day, hours|
-      hours, dept = parse_hours(hours)
-
       begin
         raise "Out of Range" unless (0..24) === hours.to_d
       rescue
@@ -133,33 +113,6 @@ class WorkHour < ApplicationRecord
     NUMBER_OF_HOURS_IN_A_WORKDAY
   end
 
-  # This is needed because I need to make a modification to the
-  # resulting, merged hash in cases when there isn't a key
-  # collision (key only exists in second).  Hash.merge only runs
-  # its block on a key collision.
-  #
-  # TODO: Change hash expectations so merging is simpler
-  def self.merge_hashes(first, second)
-    return first if (second.nil?)
-    return second if (first.nil?)
-
-    new_hash = Hash.new
-
-    first_ary = first.keys
-    second_ary = second.keys
-    union_ary = first_ary|second_ary
-
-    union_ary.each do |x|
-      if (second_ary.index(x))
-        new_hash[x] = { 'hours' => first[x] ||= "8", 'dept' => second[x] }
-      else
-        new_hash[x] = first[x]
-      end
-    end
-
-    return new_hash
-  end
-
   private
 
   def not_during_vacation
@@ -182,18 +135,6 @@ class WorkHour < ApplicationRecord
     end
     hours
   end
-
-  def self.parse_hours(hours)
-    if hours.respond_to?('each')
-      tmp_hours = hours
-      hours = tmp_hours['hours']
-      dept = tmp_hours['dept']
-      return hours, dept
-    else
-      return hours, nil
-    end
-  end
-
 end
 
 class InvalidHoursException < Exception

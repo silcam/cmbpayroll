@@ -38,6 +38,11 @@ en:
   Gender: &Gender Gender
   Cancel: Cancel
 
+  # Error messages
+  cant_be_in_future: can't be in the future.
+  cant_be_during_posted_period: is in a period that is already posted.
+  cant_change_during_posted_period: is in a period that is already posted.
+
   # Time and Date
   Date: Date
   Hours: Hours
@@ -118,6 +123,8 @@ en:
   Payslip_management: Payslip Management
   For_the_month: for the month
   Process: Process
+  post_success_message: Pay period successfully posted.
+  post_failure_message: Errors prevented this pay period from being posted.
 
   # WorkHours
   Enter_hours: Enter Hours

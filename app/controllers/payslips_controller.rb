@@ -27,7 +27,7 @@ class PayslipsController < ApplicationController
   end
 
   def process_all_employees
-      @payslips = Payslip.process_all(Period.current)
+      @payslips = Payslip.process_all(LastPostedPeriod.current)
   end
 
   def process_employee_complete
@@ -51,6 +51,24 @@ class PayslipsController < ApplicationController
       redirect_to payslip_url(@payslip)
     end
   end
+
+  def post_period
+    @payslips = Payslip.process_all LastPostedPeriod.current
+    if @payslips.any?{ |payslip| payslip.errors.any? }
+      @post_period_success = false
+    else
+      @post_period_success = true
+      LastPostedPeriod.post_current
+    end
+    render :process_all_employees
+  end
+
+  def unpost_period
+    LastPostedPeriod.unpost
+    redirect_to payslips_path
+  end
+
+  private
 
   def set_employee
     @employee = Employee.find(params[:employee_id]) if params[:employee_id]

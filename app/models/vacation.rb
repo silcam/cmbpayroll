@@ -8,6 +8,7 @@ class Vacation < ApplicationRecord
   validates :end_date, presence: true
   validate :end_date_after_start
   validate :doesnt_overlap_existing
+  validate :dont_violate_posted_period
 
   default_scope { order(:start_date) }
 
@@ -33,13 +34,11 @@ class Vacation < ApplicationRecord
   end
 
   def destroyable?
-    # TODO Revisit this rule for destroying vacation
-    end_date > Period.current.start
+    not LastPostedPeriod.in_posted_period? start_date
   end
 
   def editable?
-    # TODO Revisit this rule for editing vacation
-    end_date > Period.current.start
+    not LastPostedPeriod.in_posted_period? end_date
   end
 
   def self.for_period(period = Period.current)
@@ -111,6 +110,21 @@ class Vacation < ApplicationRecord
 
   def overlap_clause
     Vacation.overlap_clause(start_date, end_date)
+  end
+
+  def dont_violate_posted_period
+    if new_record?
+      if LastPostedPeriod.in_posted_period? start_date
+        errors.add :start_date, I18n.t(:cant_be_during_posted_period)
+      end
+    else
+      if start_date_changed? and LastPostedPeriod.in_posted_period? start_date, start_date_was
+        errors.add :start_date, I18n.t(:cant_change_during_posted_period)
+      end
+      if end_date_changed? and LastPostedPeriod.in_posted_period? end_date, end_date_was
+        errors.add :end_date, I18n.t(:cant_change_during_posted_period)
+      end
+    end
   end
 
   # def self.missed_days_for(employee, start_date, end_date)

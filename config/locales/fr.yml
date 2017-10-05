@@ -38,6 +38,11 @@ fr:
   Gender: &Gender Sexe
   Cancel: Annuler
 
+  # Error messages
+  cant_be_in_future: ne peut pas être au futur.
+  cant_be_during_posted_period: est en un mois déjà finalisé.
+  cant_change_during_posted_period: est en un mois déjà finalisé.
+
   #Time and Date
   Date: Date
   Hours: Heures
@@ -118,6 +123,8 @@ fr:
   Payslip_management: Gestion des bullitens de paie
   For_the_month: du mois
   Process: Exécuter
+  post_success_message: Mois finalisé.
+  post_failure_message: Des erreurs ont bloqué la finalisation de ce mois.
 
   # WorkHours
   Enter_hours: Saisir heures

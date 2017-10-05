@@ -1,11 +1,8 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+LukeJuly:
+  employee: Luke
+  period_month: 7
+  period_year: 2017
+  vacation_earned: 1.5
+  vacation_balance: 4
+  last_vacation_start: 2017-07-01
+  last_vacation_end: 2017-07-31

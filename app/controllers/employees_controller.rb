@@ -56,6 +56,7 @@ class EmployeesController < ApplicationController
         :cnps,
         :dipe,
         :birth_date,
+        :first_day,
         :contract_start,
         :contract_end,
         :category,

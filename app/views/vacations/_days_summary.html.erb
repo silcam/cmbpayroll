@@ -1,20 +1,9 @@
-<% days = Vacation.days employee %>
-<% days_used = Vacation.days_used employee %>
-<% days_left = days - days_used %>
-
 <ul class="list-inline">
   <li>
-    <b><%= t :Total_vacation %>:</b>
-    <%= days %>
-  </li>
-  <li>
-    <b><%= t :Vacation_used_or_planned %>:</b>
-    <%= days_used %>
-  </li>
-  <li>
-    <b><%= t :Remaining_days %>:</b>
-    <span <%= 'style="color: red;"'.html_safe if days_left < 0 %>>
-      <%= days_left %>
+    <b><%= t :Vacation_balance %>:</b>
+    <% balance = Vacation.balance employee, Period.current %>
+    <span <%= 'style="color: red;"'.html_safe if balance < 0 %>>
+        <%= balance %>
     </span>
   </li>
 </ul>

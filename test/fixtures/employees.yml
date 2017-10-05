@@ -5,6 +5,7 @@ Luke:
   department: Admin
   hours_day: 8
   contract_start: 2017-01-01
+  first_day: 2016-12-01
 
 Anakin:
   person: Anakin
@@ -13,6 +14,7 @@ Anakin:
   department: Admin
   hours_day: 8
   contract_start: 2000-01-01
+  first_day: 2000-01-01
 
 Chewie:
   person: Chewie
@@ -20,7 +22,7 @@ Chewie:
   title: Title
   department: Admin
   hours_day: 8
-  contract_start: 2017-01-01
+  first_day: 2017-08-04
 
 Han:
   person: Han
@@ -29,3 +31,4 @@ Han:
   department: LSS
   hours_day: 8
   contract_start: 2017-01-01
+  first_day: 2016-12-01

@@ -43,6 +43,7 @@ class Period
     end
     Period.new(year, month)
   end
+  alias_method :succ, :next
 
   def previous
     year = @year

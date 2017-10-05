@@ -129,4 +129,8 @@ class Employee < ApplicationRecord
     return count
   end
 
+  def payslip_for(period)
+    payslips.for_period(period).first
+  end
+
 end

@@ -23,11 +23,12 @@ class PayslipsController < ApplicationController
   end
 
   def process_employee
-
+    @period = LastPostedPeriod.current
   end
 
   def process_all_employees
-      @payslips = Payslip.process_all(LastPostedPeriod.current)
+    @period = LastPostedPeriod.current
+    @payslips = Payslip.process_all(LastPostedPeriod.current)
   end
 
   def process_employee_complete

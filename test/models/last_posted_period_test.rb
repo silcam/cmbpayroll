@@ -39,4 +39,10 @@ class LastPostedPeriodTest < ActiveSupport::TestCase
       assert_equal exp, LastPostedPeriod.get
     end
   end
+
+  test "posted?" do
+    assert LastPostedPeriod.posted? Period.new(2017, 6)
+    assert LastPostedPeriod.posted? Period.new(2017, 7)
+    refute LastPostedPeriod.posted? Period.new(2017, 8)
+  end
 end

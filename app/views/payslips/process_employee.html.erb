@@ -21,10 +21,10 @@
 <% end %>
 
 
-<h4><%= t :Hours_for %> <%= Period.current.short_name %></h4>
+<h4><%= t :Hours_for %> <%= @period.short_name %></h4>
 
 <p>
-<% hours = WorkHour.total_hours(employee, Period.current) %>
+<% hours = WorkHour.total_hours(employee, @period) %>
 <%= t :Regular_hours %> <%= t :For_the_month %>: <%= hours[:normal] %><br />
 <%= t :Overtime_hours %> <%= t :For_the_month %>: <%= hours[:overtime] %><br />
 </p>
@@ -43,7 +43,7 @@ Complete <% if (params[:advance]) %>MID-MONTH ADVANCE<% end %> payslip processin
 
 <% if (params[:advance]) %><input type="hidden" name="advance" value="true" /><% end %>
 <%= hidden_field(:employee, :id, :value => employee.id) %>
-<% period = Period.current %>
+<% period = @period %>
 <%= hidden_field(:period, :year, :value => period.year) %>
 <%= hidden_field(:period, :month, :value => period.month) %>
 

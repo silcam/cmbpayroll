@@ -49,18 +49,43 @@ class Vacation < ApplicationRecord
     Vacation.all.where("start_date > ?", Period.current.finish)
   end
 
-  def self.days(employee, year=Date.today.year)
-    service = year - employee.contract_start.year
-    service += -1 unless service == 0 # Rounds down
-    factor = service / SystemVariable.value(:supplemental_days_period)
-    supplemental = factor * SystemVariable.value(:supplemental_days)
-    SystemVariable.value(:vacation_days) + supplemental
+  def self.days_earned(employee, period)
+    return 0 if period.finish < employee.first_day
+    earned = SystemVariable.value(:vacation_days) / 12.0
+    if period.month == employee.contract_start.try(:month)
+      years = period.year - employee.contract_start.year
+      multiple = years / SystemVariable.value(:supplemental_days_period) # Integer division intentional
+      earned += multiple * SystemVariable.value(:supplemental_days)
+    end
+    earned
   end
 
-  def self.days_used(employee, year=Date.today.year, up_to=Period.new(year, 12))
-    days = days_hash employee, Period.new(year, 1).start, up_to.finish
-    # TODO: What about weekends and holidays ?
-    days.count
+  def self.days_used(employee, period)
+    days = RecursiveHashMerger.merge Vacation.days_hash(employee, period.start, period.finish),
+                                     Holiday.days_hash(period.start, period.finish)
+    used = 0
+    days.each do |date, day|
+      if day[:vacation] and not is_off_day?(date, day[:holiday])
+        used += 1
+      end
+    end
+    used
+  end
+
+  def self.balance(employee, period)
+    if LastPostedPeriod.posted? period
+      payslip = employee.payslip_for period
+      return payslip.nil? ? 0 : payslip.vacation_balance
+    else
+      payslip = employee.payslip_for LastPostedPeriod.get
+      start_period = payslip.nil? ? Period.from_date(employee.first_day).previous
+                         : LastPostedPeriod.get
+      balance = payslip.nil? ? 0 : payslip.vacation_balance
+      (start_period.next .. period).each do |p|
+        balance = balance + days_earned(employee, p) - days_used(employee, p)
+      end
+    end
+    balance
   end
 
   def self.days_hash(employee, start, finish)

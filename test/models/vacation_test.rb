@@ -158,26 +158,54 @@ class VacationTest < ActiveSupport::TestCase
     end
   end
 
-  test "Days" do
-    Date.stub :today, Date.new(2017, 10, 31) do
-      # Luke started this year
-      assert_equal 18, Vacation.days(@luke)
-      assert_equal 18, Vacation.days(@luke, 2022)
-      assert_equal 20, Vacation.days(@luke, 2023)
-      # Anakin started in 2000
-      assert_equal 24, Vacation.days(@anakin)
-    end
+  test "Days Earned" do
+    # Before hire
+    assert_equal 0, Vacation.days_earned(@luke, Period.new(2016, 11))
+
+    # Normal month
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2017, 1))
+
+    # Supp Days
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2021, 1))
+    assert_equal 3.5, Vacation.days_earned(@luke, Period.new(2022, 1))
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2022, 2))
+    assert_equal 3.5, Vacation.days_earned(@luke, Period.new(2026, 1))
+    assert_equal 5.5, Vacation.days_earned(@luke, Period.new(2027, 1))
   end
 
   test "Days Used" do
-    Date.stub :today, Date.new(2017, 5, 31) do
-      # Anakin will take off June 5-9
-      assert_equal 5, Vacation.days_used(@anakin)
-      assert_equal 0, Vacation.days_used(@anakin, 2017, Period.current)
-      # Check year boundary
-      Vacation.create(employee: @luke, start_date: '2017-12-30', end_date: '2018-01-02')
-      assert_equal 2, Vacation.days_used(@luke, 2018)
-    end
+    # Before hire
+    assert_equal 0, Vacation.days_used(@luke, Period.new(2016, 11))
+
+    # Normal Month
+    assert_equal 0, Vacation.days_used(@luke, Period.new(2017, 6))
+
+    # Took off all of July
+    assert_equal 21, Vacation.days_used(@luke, Period.new(2017, 7))
+
+    # Doesn't count Holidays
+    @luke.vacations << Vacation.new(start_date: '2017-12-25', end_date: '2017-12-26')
+    assert_equal 1, Vacation.days_used(@luke, Period.new(2017, 12))
+  end
+
+  test "Vacation Balance" do
+    # From before first payslip
+    assert_equal 0, Vacation.balance(@luke, Period.new(2016, 11))
+
+    # From Posted Payslip
+    assert_equal 4, Vacation.balance(@luke, Period.new(2017, 7))
+
+    # For following periods
+    assert_equal 5.5, Vacation.balance(@luke, Period.new(2017, 8))
+    assert_equal 7, Vacation.balance(@luke, Period.new(2017, 9))
+    @luke.vacations << Vacation.new(start_date: '2017-09-04', end_date: '2017-09-08')
+    assert_equal 2, Vacation.balance(@luke, Period.new(2017, 9))
+
+    # For new employees
+    chewie = employees :Chewie # Started 4 Aug
+    assert_equal 1.5, Vacation.balance(chewie, Period.new(2017, 8))
+    chewie.vacations << Vacation.new(start_date: '2017-08-07', end_date: '2017-08-11')
+    assert_equal -3.5, Vacation.balance(chewie, Period.new(2017, 8))
   end
 
   test "Days Hash" do

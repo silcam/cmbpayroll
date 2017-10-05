@@ -12,6 +12,10 @@ class Payslip < ApplicationRecord
                presence: {message: I18n.t(:Not_blank)}
 
 
+  scope :for_period, ->(period) {
+    where(period_year: period.year, period_month: period.month)
+  }
+
   def self.current_period
     return self.from_period( Period.current)
   end
@@ -212,12 +216,9 @@ class Payslip < ApplicationRecord
   end
 
   def self.process_vacation(payslip, employee, period)
-    vacation_days = Vacation.days(employee, period.year)
-    payslip.vacation_earned = vacation_days / 12.0
-    earned_to_date = vacation_days * period.month / 12.0
-    vacation_used = Vacation.days_used(employee, period.year, period)
-    payslip.vacation_balance = earned_to_date - vacation_used
-    last_vacation = employee.vacations.where('end_date < ?', period.finish).last
+    payslip.vacation_earned = Vacation.days_earned(employee, period)
+    payslip.vacation_balance = Vacation.balance(employee, period)
+    last_vacation = employee.vacations.where('end_date <= ?', period.finish).last
     unless last_vacation.nil?
       payslip.last_vacation_start = last_vacation.start_date
       payslip.last_vacation_end = last_vacation.end_date

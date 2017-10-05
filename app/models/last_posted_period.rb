@@ -28,6 +28,10 @@ class LastPostedPeriod < ApplicationRecord
     LastPostedPeriod.first.update year: period.year, month: period.month
   end
 
+  def self.posted?(period)
+    period <= LastPostedPeriod.get
+  end
+
   def self.in_posted_period?(*dates)
     dates.each do |date|
       return true if date and date <= LastPostedPeriod.get.finish

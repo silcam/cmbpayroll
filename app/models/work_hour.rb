@@ -58,7 +58,7 @@ class WorkHour < ApplicationRecord
       days[day] = {} unless days.has_key? day
       unless days[day].has_key? :hours
         if is_off_day?(day, days[day][:holiday]) or
-          day < employee.contract_start
+          day < employee.first_day
           days[day][:hours] = 0
         else
           days[day][:hours] = workday

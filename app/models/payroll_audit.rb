@@ -20,7 +20,7 @@ class PayrollAudit
         end
       end
 
-      item_hash[:who] = User.find(item.user_id).full_name
+      item_hash[:who] = User.find_by(id: item.user_id).try(:full_name)
       item_hash[:when] =  "#{time_ago_in_words(item.created_at)} ago"
 
       feed_items << item_hash

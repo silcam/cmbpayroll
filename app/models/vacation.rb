@@ -12,7 +12,14 @@ class Vacation < ApplicationRecord
 
   default_scope { order(:start_date) }
 
-  after_save :remove_overlapped_work_hours
+  def save(*args)
+    if super(*args)
+      remove_overlapped_work_hours
+      true
+    else
+      false
+    end
+  end
 
   def overlaps_work_hours?
     not overlapped_work_hours(false).empty?

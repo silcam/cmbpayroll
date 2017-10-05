@@ -78,6 +78,10 @@ class Period
     start.strftime("%B %Y")
   end
 
+  def l_name
+    I18n.l(start, format: :name)
+  end
+
   def to_s
     start.strftime("%Y-%m")
   end

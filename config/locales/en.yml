@@ -1,5 +1,8 @@
 ---
 en:
+  date:
+    formats:
+      name: "%B %Y"
 
   # General
   Yes: &Yes Yes
@@ -37,6 +40,7 @@ en:
   Return_to: Return to
   Gender: &Gender Gender
   Cancel: Cancel
+  Create: Create
 
   # Error messages
   cant_be_in_future: can't be in the future.
@@ -135,6 +139,16 @@ en:
   not_during_vacation: can't be during vacation
   OT_and_partial: Overtime and Partial Days
   invalid_hours: is not a valid number of hours.
+
+  # WorkLoans
+  Work_loans: Work Loans
+  Work_loans_for: Work Loans for
+  Totals_for_the_period: Totals for the period
+  Total_loaned_hours: Total loaned hours
+  Total_loaned_hours_per_department: Total loaned hours per department
+  New_work_loan: New Work Loan
+  Create_a_work_loan: Create a Work Loan
+  Errors_creating_work_loan: Errors creating a Work Loan
 
   # Vacations
   Enter_vacation: Enter Vacation

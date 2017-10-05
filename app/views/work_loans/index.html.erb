@@ -1,14 +1,14 @@
 <% provide :title,  t(:Work_loans) %>
 
-<h2>Work Loans for: <%= @period.name %></h2>
+<h2><%= t(:Work_loans_for) %>: <%= @period.l_name %></h2>
 
 <%= render 'shared/period_nav', period: @period, path: work_loans_path, future: true %>
 
 <% if @has_hours %>
-<h3>Totals for the Period:</h3>
+<h3><%= t(:Totals_for_the_period) %>:</h3>
 
-Total Loaned Hours: <strong><%= @total_hours %></strong><br />
-Total Loaned Hours per Department:<br />
+<%= t(:Total_loaned_hours) %>: <strong><%= @total_hours %></strong><br />
+<%= t(:Total_loaned_hours_per_department) %>:<br />
   <ul>
   <% @dept_hash.each do |dept,hours| %>
       <li><strong><%= dept.name %></strong>: <%= hours %></li>
@@ -19,10 +19,10 @@ Total Loaned Hours per Department:<br />
 <table class="table">
   <thead>
     <tr>
-      <th>Employee</th>
-      <th>Hours</th>
-      <th>Dept</th>
-      <th>Date</th>
+      <th><%= t(:Employee) %></th>
+      <th><%= t(:Hours) %></th>
+      <th><%= t(:Department) %></th>
+      <th><%= t(:Date) %></th>
       <th></th>
     </tr>
   </thead>

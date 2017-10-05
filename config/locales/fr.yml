@@ -1,5 +1,8 @@
 ---
 fr:
+  date:
+    formats:
+      name: "%B %Y"
 
   # General
   Yes: &Yes Oui
@@ -37,6 +40,7 @@ fr:
   Return_to: Retourner à
   Gender: &Gender Sexe
   Cancel: Annuler
+  Create: Créer
 
   # Error messages
   cant_be_in_future: ne peut pas être au futur.
@@ -135,6 +139,16 @@ fr:
   not_during_vacation: ne peut pas coïncider avec des vacances
   OT_and_partial: Surtravail et jours partiels
   invalid_hours: n'est pas un nombre valide d'heures.
+
+  # WorkLoans
+  Work_loans: Prêts de Travail
+  Work_loans_for: Les Prêts de Travail pendant
+  Totals_for_the_period: Les montants pendant la période
+  Total_loaned_hours: Le montant des heures prêtées pendant la période
+  Total_loaned_hours_per_department: Le montant des heures prêtées par département
+  New_work_loan: Nouveau prêt de travail
+  Create_a_work_loan: Créer un prêt de travail
+  Errors_creating_work_loan: Il y a des erreurs pendant la création du prêt de travail
 
   # Vacations
   Vacation: Vacances

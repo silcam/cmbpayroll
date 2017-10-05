@@ -18,10 +18,12 @@
     <%= link_to t(:View), employee_charges_path(@employee) %> |
     <%= link_to t(:Add), new_employee_charge_path(@employee, referred_by: request.path) %>
   </li>
-  <li>
-    <label><%= :Hours %>:</label>
-    <%= link_to t(:View), employee_work_hours_path(@employee) %>
-  </li>
+  <% if @employee.hourly? %>
+    <li>
+      <label><%= :Hours %>:</label>
+      <%= link_to t(:View), employee_work_hours_path(@employee) %>
+    </li>
+  <% end %>
   <li>
     <label><%= :Bonuses %>:</label>
     <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee) %>
@@ -32,7 +34,7 @@
   </li>
 </ul>
 
-<h2>Employee Information for <%= @employee.full_name %></h2>
+<h2><%= t(:Employee_information_for) %> <%= @employee.full_name %></h2>
 
 
 <table class="table table-striped">
@@ -47,7 +49,7 @@
       <th scope="row"><%= t(:Title) %>:</th>
       <td><%= @employee.title %></td>
       <th scope="row"><%= t(:Department) %>:</th>
-      <td><%= @employee.department %></td>
+      <td><%= @employee.department_name %></td>
     </tr>
     <tr>
       <th scope="row"><%= t(:Supervisor) %>:</th>
@@ -63,14 +65,14 @@
     </tr>
     <tr>
       <th scope="row"><%= t(:Gender) %>:</th>
-      <td><%= @employee.gender %></td>
+      <td><%= t(@employee&.gender&.humanize, default: "") %></td>
       <th scope="row"><%= t(:Marital_status) %>:</th>
-      <td><%= @employee.marital_status %></td>
+      <td><%= t(@employee&.marital_status&.humanize, default: "") %></td>
     </tr>
   </tbody>
 </table>
 
-<table class="table table-bordered">
+<table class="table table-striped">
   <tbody>
     <tr>
       <th scope="row">CNPS:</th>
@@ -79,34 +81,39 @@
       <td><%= @employee.dipe %></td>
       <th scope="row"><%= t(:Birth_date) %></th>
       <td><%= @employee.birth_date %></td>
-      <th scope="row">Category:</th>
+      <th scope="row"><%= t(:Category) %></th>
       <td><%= @employee.category %></td>
     </tr>
     <tr>
       <th scope="row">Echelon:</th>
       <td><%= @employee.echelon %></td>
       <th scope="row"><%= t(:Wage) %></th>
-      <td><%= @employee.wage %></td>
-      <th scope="row">Wage Scale:</th>
-      <td><%= @employee.wage_scale %></td>
-      <th scope="row">Wage Period:</th>
-      <td><%= @employee.wage_period %></td>
+      <td><%= number_to_currency(@employee.wage, locale: :cm) %></td>
+      <th scope="row"><%= t(:Wage_scale) %></th>
+      <td><%= t("wage_scale.#{@employee.wage_scale}", default: "") %></td>
+      <th scope="row"><%= t(:Wage_period) %></th>
+      <td><%= t(@employee.wage_period, default: "") %></td>
     </tr>
     <tr>
       <th scope="row">Last Raise Date:</th>
       <td><%= @employee.last_raise_date %></td>
-      <th scope="row">Taxable Percentage:</th>
-      <td><%= @employee.taxable_percentage %></td>
-      <th scope="row">Transportation:</th>
-      <td><%= @employee.transportation %></td>
+      <th scope="row"><%= t(:Taxable_percentage) %></th>
+      <td><%= number_to_percentage(@employee.taxable_percentage, precision: 2) %></td>
+      <th scope="row"><%= t(:Transportation) %></th>
+      <td><%= number_to_currency(@employee.transportation, locale: :cm) %></td>
       <th scope="row"><%= t(:Hours_per_day) %></th>
       <td><%= @employee.hours_day %></td>
     </tr>
     <tr>
       <th scope="row"><%= t(:Days_per_week) %></th>
       <td><%= @employee.days_week %></td>
-      <th scope="row">Employment Status:</th>
-      <td><%= @employee.employment_status %></td>
+      <th scope="row"><%= t(:Employment_status) %></th>
+      <td><%= t(@employee.employment_status, default: "") %></td>
+      <th scope="row"><%= t(:Amical) %></th>
+      <td><%= number_to_currency(@employee.amical_amount, locale: :cm) %></td>
+      <th scope="row"><%= t(:Union_dues) %>?</th>
+
+      <td><%= t("employee.#{@employee.uniondues}", scope: [:activerecord ]) %> (<%= number_to_currency(@employee.union_dues_amount, locale: :cm) %>)</td>
     </tr>
     <tr>
   </tbody>
@@ -114,7 +121,7 @@
 
 <% if (@employee.children.empty?) %>
   <p>
-   <%= t(:no_children) %>
+   <%= t(:No_children) %>
   </p>
 <% else %>
   <table class="table">

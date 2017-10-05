@@ -11,7 +11,7 @@
       <%= f.text_field :last_name, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label :birth_date %>
+      <%= f.label :birth_date %><br />
       <%= date_select( :employee, :birth_date, prompt: true, start_year: 1900, end_year: Date.today.year ) %>
     </div>
     <div class="form-group">
@@ -19,8 +19,8 @@
       <%= f.text_field :title, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label :department %>
-      <%= f.text_field :department, class: 'form-control' %>
+      <%= f.label :department %><br />
+      <%= f.collection_select(:department_id, Department.all, :id, :name, prompt: true) %>
     </div>
 
     <div class="form-group">
@@ -43,47 +43,57 @@
     </div>
 
     <div class="form-group">
-      <%= f.label :contract_start %>
+      <%= f.label :first_day %><br />
+      <%= date_select( :employee, :first_day, prompt: true, start_year: 1970 ) %>
+    </div>
+    <div class="form-group">
+      <%= f.label :contract_start %><br />
       <%= date_select( :employee, :contract_start, prompt: true, start_year: 1970 ) %>
     </div>
     <div class="form-group">
-      <%= f.label :contract_end %>
+      <%= f.label :contract_end %><br />
       <%= date_select( :employee, :contract_end, prompt: true, start_year: 1970 ) %>
     </div>
     <div class="form-group">
-      <%= f.label :gender %>
+      <%= f.label :gender %><br />
       <%= f.select :gender, Person.genders.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label :marital_status %>
+      <%= f.label :marital_status %><br />
       <%= f.select :marital_status, Employee.marital_statuses.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label :cnps %>
+      <%= f.label :cnps, { class: "text-uppercase" } %>
       <%= f.text_field :cnps, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label :dipe %>
+      <%= f.label :dipe, { class: "text-uppercase" } %>
       <%= f.text_field :dipe, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label :category %>
+      <%= f.label :category %><br />
       <%= f.select :category, Employee.categories.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label :echelon %>
-      <%= f.select :echelon, Employee.echelons.keys, prompt: true %>
+      <%= f.label :echelon %><br />
+      <%= f.select :echelon, Employee.echelons.keys, { prompt: true }, { id: 'echelon-field' } %>
     </div>
     <div class="form-group">
       <%= f.label :wage %>
-      <%= f.text_field :wage, class: 'form-control' %>
+
+      <% if (@employee.echelon == "g")
+          wage_disabled = false
+         else
+          wage_disabled = true
+         end %>
+      <%= f.text_field :wage, { class: 'form-control', id: 'wage-field', disabled: wage_disabled } %>
     </div>
     <div class="form-group">
-      <%= f.label :wage_scale %>
+      <%= f.label :wage_scale %><br />
       <%= f.select :wage_scale, Employee.wage_scales.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label :wage_period %>
+      <%= f.label :wage_period %><br />
       <%= f.select :wage_period, Employee.wage_periods.keys, prompt: true %>
     </div>
     <div class="form-group">
@@ -99,14 +109,21 @@
       <%= f.text_field :hours_day, class: 'form-control' %>
     </div>
     <div class="form-group">
-      <%= f.label :employment_status %>
+      <%= f.label :employment_status %><br />
       <%= f.select :employment_status, Employee.employment_statuses.keys, prompt: true %>
     </div>
     <div class="form-group">
-      <%= f.label :days_week %>
+      <%= f.label :days_week %><br />
       <%= f.select :days_week, Employee.days_weeks.keys, prompt: true %>
     </div>
-
+    <div class="form-group">
+      <%= f.label :amical %>
+      <%= f.check_box :amical %>
+    </div>
+    <div class="form-group">
+      <%= f.label :uniondues %>?
+      <%= f.check_box :uniondues %>
+    </div>
 
   <br />
   <%= f.submit t(:Save), class: 'btn btn-primary' %>

@@ -10,8 +10,18 @@
         <td><%= vacation.employee.full_name %></td>
         <td><%= std_datestring vacation.start_date %></td>
         <td><%= std_datestring vacation.end_date %></td>
-        <td><%= link_to t(:Edit), edit_vacation_path(vacation, referred_by: request.path) %></td>
-        <td><%= link_to t(:Delete),  vacation_path(vacation, referred_by: request.path), method: :delete %></td>
+        <% referred_by = request.path %>
+        <% referred_by += "?period=#{@period.to_s}" if @period %>
+        <td>
+          <% if vacation.editable? %>
+            <%= link_to t(:Edit), edit_vacation_path(vacation, referred_by: referred_by) %>
+          <% end %>
+        </td>
+        <td>
+          <% if vacation.destroyable? %>
+            <%= link_to t(:Delete),  vacation_path(vacation, referred_by: referred_by), method: :delete %>
+          <% end %>
+        </td>
       </tr>
   <% end %>
 </table>

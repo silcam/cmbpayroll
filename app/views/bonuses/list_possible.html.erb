@@ -2,10 +2,12 @@
 
 <h1><%= t('Select_bonuses_to_be_assigned') %> <%= @employee.full_name %></h1>
 
+<%= link_to t(:Manage_bonuses), bonuses_path %>
+
 <%= form_for @employee, url: { action: "assign" } do |f| %>
 
 <%= render "index" %>
 
-<%= f.submit t(:Assign_to_employee) %>
+<%= f.submit t(:Assign_to_employee), class: 'btn btn-primary' %>
 
 <% end %>

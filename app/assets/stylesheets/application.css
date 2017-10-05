@@ -13,3 +13,28 @@
  *= require_tree .
  *= require_self
  */
+
+.report {
+  font-size:9pt;
+  line-height:1.1;
+}
+
+.report td {
+  white-space:nowrap;
+}
+
+.report td {
+  text-transform:uppercase;
+}
+
+.report td.summary {
+  text-transform:none;
+  font-weight:bold
+}
+
+.download-links {
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+

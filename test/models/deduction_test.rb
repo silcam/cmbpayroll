@@ -49,4 +49,18 @@ class DeductionTest < ActiveSupport::TestCase
 
   end
 
+  def test_cameroonian_localization
+
+    deduction = Deduction.new
+    deduction.note = "Non-Integer Number"
+    deduction.date = Date.today
+
+    deduction.amount = 999.9
+    assert_equal("1 000 FCFA", number_to_currency(deduction.amount, locale: :cm))
+
+    deduction.amount = 999.2
+    assert_equal("999 FCFA", number_to_currency(deduction.amount, locale: :cm))
+
+  end
+
 end

@@ -52,10 +52,11 @@ class EmployeesController < ApplicationController
         :last_name,
         :name,
         :title,
-        :department,
+        :department_id,
         :cnps,
         :dipe,
         :birth_date,
+        :first_day,
         :contract_start,
         :contract_end,
         :category,
@@ -69,7 +70,9 @@ class EmployeesController < ApplicationController
         :employment_status,
         :gender,
         :marital_status,
-        :wage]
+        :wage,
+        :amical,
+        :uniondues]
     if params[:employee][:supervisor_id].to_i >= 1  # A valid id
       permitted << :supervisor_id
     else

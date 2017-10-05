@@ -13,13 +13,17 @@ module ApplicationHelper
   end
 
   def std_datestring(date)
-    date.strftime("%-d %b %Y")
+    date.try(:strftime, "%-d %b %Y")
   end
 
   def last_monday(date=Date.today)
     diff = date.wday - 1 # 1 == Monday
     diff += 7 if diff < 0
     date - diff
+  end
+
+  def next_sunday(date=Date.today)
+    last_monday(date) + 6
   end
 
   def mondays_for_select

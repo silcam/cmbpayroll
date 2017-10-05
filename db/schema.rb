@@ -10,10 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170925093718) do
+ActiveRecord::Schema.define(version: 20171005104807) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "audits", force: :cascade do |t|
+    t.integer "auditable_id"
+    t.string "auditable_type"
+    t.integer "associated_id"
+    t.string "associated_type"
+    t.integer "user_id"
+    t.string "user_type"
+    t.string "username"
+    t.string "action"
+    t.jsonb "audited_changes"
+    t.integer "version", default: 0
+    t.string "comment"
+    t.string "remote_address"
+    t.string "request_uuid"
+    t.datetime "created_at"
+    t.index ["associated_id", "associated_type"], name: "associated_index"
+    t.index ["auditable_id", "auditable_type"], name: "auditable_index"
+    t.index ["created_at"], name: "index_audits_on_created_at"
+    t.index ["request_uuid"], name: "index_audits_on_request_uuid"
+    t.index ["user_id", "user_type"], name: "user_index"
+  end
 
   create_table "bonuses", force: :cascade do |t|
     t.string "name"
@@ -54,7 +76,7 @@ ActiveRecord::Schema.define(version: 20170925093718) do
 
   create_table "deductions", force: :cascade do |t|
     t.string "note"
-    t.integer "amount"
+    t.decimal "amount"
     t.datetime "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -106,6 +128,9 @@ ActiveRecord::Schema.define(version: 20170925093718) do
     t.bigint "person_id"
     t.bigint "supervisor_id"
     t.bigint "department_id"
+    t.boolean "amical", default: false, null: false
+    t.boolean "uniondues", default: false, null: false
+    t.date "first_day"
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
     t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"
@@ -120,6 +145,13 @@ ActiveRecord::Schema.define(version: 20170925093718) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "last_posted_periods", force: :cascade do |t|
+    t.integer "year"
+    t.integer "month"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "payslips", force: :cascade do |t|
     t.datetime "payslip_date"
     t.datetime "last_processed"
@@ -130,6 +162,10 @@ ActiveRecord::Schema.define(version: 20170925093718) do
     t.bigint "employee_id"
     t.integer "period_month"
     t.integer "period_year"
+    t.decimal "vacation_earned"
+    t.decimal "vacation_balance"
+    t.date "last_vacation_start"
+    t.date "last_vacation_end"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 
@@ -201,6 +237,7 @@ ActiveRecord::Schema.define(version: 20170925093718) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "department_id"
+    t.string "type"
     t.index ["department_id"], name: "index_work_hours_on_department_id"
     t.index ["employee_id"], name: "index_work_hours_on_employee_id"
   end

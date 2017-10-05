@@ -1,10 +1,18 @@
 
 <%= link_to "<< #{t(:Back)}", payslips_url %>
 
-<h2>Processed Payslips for <%= Period.current %></h2>
+<h2>Processed Payslips for <%= @period %></h2>
 
 
 <h4>Payslips Processed:</h4>
+
+<% if defined? @post_period_success %>
+  <% if @post_period_success %>
+    <p class="alert-success"><%= t :post_success_message %></p>
+  <% else %>
+    <p class="alert-danger"><%= t :post_failure_message %></p>
+  <% end %>
+<% end %>
 
 <ul>
 <% @payslips.each do |slip| %>

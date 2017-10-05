@@ -1,0 +1,48 @@
+<% provide :title,  t(:Work_loans) %>
+
+<h2><%= t(:Work_loans_for) %>: <%= @period.l_name %></h2>
+
+<%= render 'shared/period_nav', period: @period, path: work_loans_path, future: true %>
+
+<% if @has_hours %>
+<h3><%= t(:Totals_for_the_period) %>:</h3>
+
+<%= t(:Total_loaned_hours) %>: <strong><%= @total_hours %></strong><br />
+<%= t(:Total_loaned_hours_per_department) %>:<br />
+  <ul>
+  <% @dept_hash.each do |dept,hours| %>
+      <li><strong><%= dept.name %></strong>: <%= hours %></li>
+  <% end %>
+  </ul>
+<% end %>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th><%= t(:Employee) %></th>
+      <th><%= t(:Hours) %></th>
+      <th><%= t(:Department) %></th>
+      <th><%= t(:Date) %></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @work_loans.each do |loan| %>
+      <tr>
+        <td><%= loan.employee.full_name %></td>
+        <td><%= loan.hours %></td>
+        <td><%= loan.department.name %></td>
+        <td><%= loan.date %></td>
+        <td><%= link_to t(:Destroy), loan, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+
+
+<br>
+
+<%= link_to t(:New_work_loan), new_work_loan_path() %>

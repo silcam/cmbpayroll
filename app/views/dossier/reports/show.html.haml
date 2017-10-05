@@ -1,0 +1,21 @@
+= render :partial => "dossier/reports/report_header", :locals => { :report => @report }
+
+= render_options(@report)
+
+%table.table.table-condensed.table-hover.report
+  %thead
+    %tr
+      - @report.results.headers.each do |header|
+        %th= @report.format_header(header)
+  %tbody
+    - @report.results.body.each do |row|
+      %tr
+        - row.each do |value|
+          %td= value
+
+  - if @report.results.footers.any?
+    %tfoot
+      - @report.results.footers.each do |row|
+        %tr
+          - row.each do |value|
+            %th= value

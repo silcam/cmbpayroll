@@ -1,6 +1,6 @@
 class VacationsController < ApplicationController
 
-  before_action :set_employee, only: [:index, :new]
+  before_action :set_employee, only: [:index, :new, :days_summary]
   before_action :set_vacation, only: [:edit, :update, :destroy]
 
   #TODO Find a solution for why Feb 31 saves as Mar 3
@@ -57,6 +57,10 @@ class VacationsController < ApplicationController
   def destroy
     @vacation.destroy
     follow_redirect vacations_path
+  end
+
+  def days_summary
+    render layout: false
   end
 
   private

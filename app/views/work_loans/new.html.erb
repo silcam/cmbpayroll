@@ -1,0 +1,54 @@
+<% provide :title,  t(:Work_loans) %>
+
+    <h2><%= t(:Create_a_work_loan) %></h2>
+
+    <% if @work_loan.errors.any? %>
+      <%= t(:Errors_creating_work_loan) %>:<br />
+      <ul>
+      <% @work_loan.errors.full_messages.each do |err| %>
+        <li><%= err %></li>
+      <% end %>
+      </ul>
+    <% end %>
+
+    <br />
+
+    <%= form_for [@employee, @work_loan] do |f| %>
+      <div class="form-group">
+        <%= f.label t(:Employee) %>
+        <%= f.select :employee_id, options_from_collection_for_select(@employees, 'id', 'full_name', @work_loan.employee_id), { prompt: 'Select an Employee' }, class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= f.label :department_id, t(:Department) %>
+        <%= f.select :department_id, options_from_collection_for_select(@departments, 'id', 'name', @work_loan.department_id), { prompt: 'Select a Department' }, class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= f.label t(:Hours) %>
+        <%= f.text_field :hours, class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= f.label t(:Date) %>
+        <div class="input-group date" id="datepicker">
+          <%= f.text_field :date, placeholder: 'DD/MM/YYYY', class: 'form-control' %>
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= f.submit t(:Create) %>
+      </div>
+    <% end %>
+
+    <script>
+      $(function() {
+          $('#datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+            <% if I18n.locale == :en %>
+              locale: 'en'
+            <% else %>
+              locale: 'fr'
+            <% end %>
+          });
+      });
+    </script>

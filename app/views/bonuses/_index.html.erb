@@ -3,25 +3,30 @@
 <table class="table">
   <thead>
     <tr>
-      <% if @employee %><th></th><% end %>
+      <% if @employee %>
+        <th></th>
+      <% end %>
       <th><%= t(:Name) %></th>
       <th><%= t(:Quantity) %></th>
       <th><%= t(:Comment) %></th>
-      <th colspan="3"></th>
+      <th colspan="2"></th>
     </tr>
   </thead>
 
   <tbody>
     <% @bonuses.each do |bonus| %>
       <tr>
-        <% if @employee %><td><%= check_box(:bonus, bonus.id) %></td><% end %>
+        <% if @employee %>
+          <td>
+            <%= check_box_tag("bonus[#{bonus.id}]", 1, @employee.bonuses.include?(bonus)) %>
+          </td>
+        <% end %>
         <td><%= bonus.name %></td>
         <td><%= bonus.display_quantity %></td>
         <td><%= bonus.comment %></td>
         <% unless @employee %>
-        <td><%= link_to t(:Show), bonus %></td>
-        <td><%= link_to t(:Edit), edit_bonus_path(bonus) %></td>
-        <td><%= link_to t(:Destroy), bonus, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
+          <td><%= link_to t(:Edit), edit_bonus_path(bonus) %></td>
+          <td><%= link_to t(:Delete), bonus, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
         <% end %>
       </tr>
     <% end %>

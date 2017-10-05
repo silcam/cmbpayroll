@@ -1,0 +1,36 @@
+= render :partial => "dossier/reports/report_header", :locals => { :report => @report }
+
+= render_options(@report)
+
+%table.table.table-condensed.table-hover.report
+
+  - dept_index = @report.results.headers.index("Department")
+  - num_cols = @report.results.headers.size
+  %thead
+    %tr
+      - @report.results.headers.each do |header|
+        %th= @report.format_header(header)
+  %tbody
+    - last_seen = nil
+    - count = 0
+    - @report.results.body.each do |row|
+      - dept = row[dept_index]
+      - if (last_seen == nil || last_seen == dept)
+        - last_seen = dept
+        - count += 1
+      - else
+        %tr
+          %td.summary{ :colspan => "#{num_cols}" }= " Number of Employees in #{last_seen}: #{count}"
+        - last_seen = dept
+        - count = 1
+      %tr
+        - row.each do |value|
+          %td= value
+    %td.summary{ :colspan => "#{num_cols}" }= " Number of Employees in #{last_seen}: #{count}"
+
+  - if @report.results.footers.any?
+    %tfoot
+      - @report.results.footers.each do |row|
+        %tr
+          - row.each do |value|
+            %th= value

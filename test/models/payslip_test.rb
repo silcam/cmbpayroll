@@ -113,8 +113,6 @@ class PayslipTest < ActiveSupport::TestCase
     payslip.period_year = Period.current.year
     payslip.period_month = Period.current.month
 
-    payslip.process()
-
     refute(payslip.valid?, "payslip should not be valid without earnings")
     refute(payslip.errors[:earnings].empty?, "yep, errors")
 
@@ -129,14 +127,7 @@ class PayslipTest < ActiveSupport::TestCase
   test "last processed date should be generated" do
     employee = return_valid_employee()
 
-    payslip = employee.payslips.create()
-    payslip.payslip_date = "2017-07-31"
-    payslip.period_year = Period.current.year
-    payslip.period_month = Period.current.month
-
-    create_earnings(payslip)
-
-    payslip.process()
+    payslip = Payslip.process(employee)
 
     refute_nil(payslip.last_processed)
   end
@@ -149,12 +140,14 @@ class PayslipTest < ActiveSupport::TestCase
     payslip.period_year = Period.current.year
     payslip.period_month = Period.current.month
 
-    payslip.process()
-
     refute(payslip.valid?, "payslip should not be valid without earnings")
     refute(payslip.errors[:earnings].empty?, "yep, errors")
 
-    create_earnings(payslip)
+    # create an earning record with zeros (should be valid)
+    earning = Earning.new
+    earning.hours = 0
+    earning.rate = 0
+    payslip.earnings << earning
 
     assert(payslip.earnings.size == 1, "should have one earnings record")
 
@@ -187,10 +180,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip.earnings << earning_overtime
 
     assert(payslip.earnings.size == 2, "should have two earnings records")
-
-    payslip.process()
     assert_equal(12500, payslip.total_earnings())
-
   end
 
 
@@ -207,7 +197,7 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update employee, hours
 
     ### verify hours
-    exp = {:normal => 171.5, :overtime => 2.2}
+    exp = {:normal => 172.5, :holiday => 1.2}
     assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
 
     payslip = Payslip.process(employee, Period.new(2017,8))
@@ -227,20 +217,18 @@ class PayslipTest < ActiveSupport::TestCase
     employee.wage = 100
     assert employee.valid?
 
-
     # create bonuses
-
     bonus = Bonus.new
     bonus.name = "First Bonus"
     bonus.quantity = 12.0
-    bonus.bonus_type = "percentage"
+    bonus.percentage!
     assert bonus.valid?
     bonus.save
 
     bonus2 = Bonus.new
     bonus2.name = "Second Bonus"
     bonus2.quantity = 3000
-    bonus2.bonus_type = "fixed"
+    bonus2.fixed!
     assert bonus2.valid?
     bonus2.save
 
@@ -261,7 +249,7 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update employee, hours
 
     ### verify hours
-    exp = {:normal => 171.5, :overtime => 5.4}
+    exp = {:normal => 175.7, :holiday => 1.2}
     assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
 
     payslip = Payslip.process(employee, Period.new(2017,8))
@@ -276,16 +264,14 @@ class PayslipTest < ActiveSupport::TestCase
     count = 0
 
     payslip.earnings.each do |record|
-
-        Rails.logger.debug(record.inspect)
         # verify hours in earning records
-        if (record.overtime == true && record.hours = 5.4)
-            assert_equal(5.4, record.hours)
+        if (record.overtime == true && record.hours = 1.2)
+            assert_equal(1.2, record.hours)
             count+=1
         end
 
-        if (record.overtime == false && record.hours == 171.5)
-            assert_equal(171.5, record.hours)
+        if (record.overtime == false && record.hours == 175.7)
+            assert_equal(175.7, record.hours)
             count+=1
         end
 
@@ -405,12 +391,14 @@ class PayslipTest < ActiveSupport::TestCase
       if (ded.note == "CHARGE1")
          assert_equal(1000, ded.amount)
          assert_equal(Date.today, ded.date)
+         assert(ded.valid?, "should be valid")
          count += 1
       end
 
       if (ded.note == "CHARGE2")
          assert_equal(2000, ded.amount)
          assert_equal(Date.today, ded.date)
+         assert(ded.valid?, "should be valid")
          count += 1
       end
     end
@@ -429,6 +417,8 @@ class PayslipTest < ActiveSupport::TestCase
     employee1 = return_valid_employee()
     employee1.first_name = "EMPNumber"
     employee1.last_name = "One"
+    employee1.category_one!
+    employee1.echelon_d!
     employee1.save
     assert(employee1.valid?, "employee 1 should be valid")
     assert_equal(0, employee1.payslips.size, "should have no payslips initially")
@@ -436,6 +426,8 @@ class PayslipTest < ActiveSupport::TestCase
     employee2 = return_valid_employee()
     employee2.first_name = "EMPNumber"
     employee2.last_name = "Two"
+    employee2.category_one!
+    employee2.echelon_f!
     employee2.save
     assert(employee2.valid?, "employee 2 should be valid")
     assert_equal(0, employee2.payslips.size, "should have no payslips initially")
@@ -489,5 +481,120 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(1, employee2.payslips.size, "employee 2 should now have 1 payslip")
 
   end
+
+  test "can_create_payslip_advance" do
+    period = Period.new(2017,8)
+
+    # process with flag to handle advance
+    employee = return_valid_employee()
+    payslip = Payslip.process(employee, period)
+
+    # advance payslip is created
+    payslip.valid?
+    assert payslip.id
+
+    assert(employee.payslips.find(payslip.id))
+
+    # find charges (check that no advance is created for this month
+    count = employee.count_advance_charge(period)
+    assert_equal(0, count, "should not find a Salary Advance charge")
+
+    count = count_advance_deductions(payslip, period)
+    assert_equal(0, count, "should find a Salary Advance deduction")
+
+    # confirmation happens
+    payslip = Payslip.process_with_advance(employee, period)
+
+    # advance payslip is created
+    payslip.valid?
+    assert(employee.payslips.find(payslip.id))
+
+    # appropriate charges are created for the user to indicate payment has been made
+    count = employee.count_advance_charge(period)
+    assert_equal(1, count, "should find a Salary Advance charge")
+
+    count = count_advance_deductions(payslip, period)
+    assert_equal(1, count, "should find a Salary Advance deduction")
+
+    # it is not in a finalized? state
+    # TODO, this doesn't exist
+
+    # a payslip can be re-created and the advance is still there.
+
+    # let's re-run the payslip (unconfirmed)
+    payslip = Payslip.process(employee, period)
+
+    count = employee.count_advance_charge(period)
+    assert_equal(1, count, "should find a Salary Advance charge")
+
+    count = count_advance_deductions(payslip, period)
+    assert_equal(1, count, "should find a Salary Advance deduction")
+
+    # let's re-run the payslip (confirmed)
+    # it should not recreate another charge for the same peirod
+    payslip = Payslip.process_with_advance(employee, period)
+
+    count = employee.count_advance_charge(period)
+    assert_equal(1, count, "should find a Salary Advance charge")
+
+    count = count_advance_deductions(payslip, period)
+    assert_equal(1, count, "should find a Salary Advance deduction")
+
+  end
+
+  test "payslips deduct amical and union dues" do
+    # have an employee
+    employee = return_valid_employee()
+
+    # give amical and union
+    # (should use default system vars)
+    employee.amical = true
+    employee.uniondues = true
+
+    union_dues = employee.union_dues_amount
+    amical_value = SystemVariable.value(:amical_amount)
+
+    # process a payslip
+    payslip = Payslip.process(employee, Period.current)
+
+    # verify there are deductions for Amical and Union.
+    assert_equal(2, payslip.deductions.size, "payslip should have 2 deductions")
+
+    count = 0
+    payslip.deductions.each do |ded|
+      if (/amical/i =~ ded.note)
+         assert_equal(amical_value, ded.amount)
+         assert_equal(Date.today.beginning_of_month(), ded.date)
+         count += 1
+      end
+
+      if (/union/i =~ ded.note)
+         assert_equal(union_dues, ded.amount)
+         assert_equal(Date.today.beginning_of_month(), ded.date)
+         count += 1
+      end
+    end
+
+    assert_equal(2, count, "found both deductions")
+  end
+
+  private
+
+  def count_advance_deductions(payslip, period)
+    count = 0
+
+    # find charges (check that no advance is created for this month
+    payslip.deductions.each do |ded|
+      next if (ded.date < period.start)
+      next if (ded.date > period.finish)
+
+      if (ded.note == Charge::ADVANCE)
+        count += 1
+      end
+    end
+
+    return count
+  end
+
 
 end

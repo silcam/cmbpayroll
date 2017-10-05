@@ -7,47 +7,30 @@
       <li><%= link_to t(:Employees), 'employees' %></li>
       <li><%= link_to t(:Hours), 'work_hours' %></li>
       <li><%= link_to t(:Vacation), vacations_path %></li>
-      <li><%= link_to t(:Payslip_management), 'payslips' %></li>
       <li><%= link_to t(:Bonuses), 'bonuses' %></li>
       <li><%= link_to t(:Charges), charges_path %></li>
+      <li><%= link_to t(:Work_loans), work_loans_path %></li>
       <li><%= link_to t(:Reports), 'reports' %></li>
       <li><%= link_to t(:Events), 'events' %></li>
       <li><%= link_to t(:Users), users_path %></li>
       <li><%= link_to t(:Standard_charge_notes), standard_charge_notes_path %></li>
       <li><%= link_to t(:Holidays), holidays_path %></li>
+      <li><%= link_to t(:Payslip_management), 'payslips' %></li>
+      <li><%= link_to t(:Department_management), 'departments' %></li>
     </ul>
   </div>
   <div class="col-md-6">
     <h2><%= t :Activity_feed %></h2>
     <hr>
     <ul class="list-unstyled feed">
-      <%
-        feed_items = [{title: 'New employee added',
-                      text: 'Han Solo',
-                      when: 'An hour ago'},
-                      {title: 'Vacation entered',
-                      text: 'Luke Skywalker, Aug 3 - Aug 14',
-                      when: 'Yesterday'},
-                      {title: 'Paychecks Issued',
-                       text: 'July paychecks',
-                       when: 'August 1'},
-                      {title: 'Wage echelon changed',
-                      text: 'Anakin Skywalker, Echelon F',
-                      when: 'July 15'},
-                      {title: 'Overtime entered',
-                       text: 'Lando Calrissian, 4hrs in July',
-                       when: 'July 14'}]
-      %>
-      <% feed_items.each do |item| %>
+      <% feed_items = PayrollAudit.feed_items()
+         feed_items.each do |item| %>
         <li>
-          <strong><%= item[:title] %> : </strong>
-          <%= item[:text] %><br>
-          <i><%= item[:when] %></i>
+          <strong class="text-capitalize"><%= item[:title] %> : </strong>
+          <p><%= item[:text] %></p>
+          <i><%= item[:when] %> by <%= item[:who] %></i>
         </li>
       <% end %>
-      <li>
-        ...
-      </li>
       <li>
         <%= link_to t(:More_history), '#' %>
       </li>

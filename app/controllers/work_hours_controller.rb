@@ -3,7 +3,13 @@ class WorkHoursController < ApplicationController
   before_action :get_employee
 
   def index
-    @work_hours = @employee.work_hours.current_period
+    @period = get_params_period
+    @hours_worked = (@period == Period.current) ?
+                        @employee.total_hours_so_far :
+                        WorkHour.total_hours(@employee, @period)
+    @days_hash = WorkHour.complete_days_hash @employee,
+                                             @period.start,
+                                             @period.finish
   end
 
   def edit
@@ -13,7 +19,7 @@ class WorkHoursController < ApplicationController
 
   def update
     begin
-      WorkHour.update(@employee,params['hours'])
+      WorkHour.update(@employee, params['hours'])
       redirect_to employee_work_hours_path(@employee)
     rescue InvalidHoursException => e
       @errors = e.errors

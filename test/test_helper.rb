@@ -5,6 +5,8 @@ require 'minitest/rails/capybara'
 
 Minitest::Reporters.use!
 
+`rails db:seed`
+
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
@@ -27,15 +29,26 @@ class ActiveSupport::TestCase
     click_button 'Log in'
   end
 
+  def on_sep_5
+    Date.stub :today, Date.new(2017, 9, 5) do
+      yield
+    end
+  end
+
   def return_valid_employee
     employee = Employee.new
     employee.first_name = "Playslip"
     employee.last_name = "Recipient"
     employee.title = "Title"
-    employee.department = "Department"
+    employee.department = departments :Admin
     employee.hours_day = 23
     employee.supervisor = supervisors :Yoda
-    employee.wage = 5000
+    employee.first_day = '2010-07-11'
+    employee.contract_start = '2010-07-11'
+
+    employee.category_three!
+    employee.echelon_d!
+
     employee.save
 
     return employee
@@ -49,6 +62,10 @@ class ActiveSupport::TestCase
     earnings.rate = 1
 
     payslip.earnings << earnings
+  end
+
+  def random_string(length=10)
+    return (0..length-1).map { (65 + rand(26)).chr }.join
   end
 
 end

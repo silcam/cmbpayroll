@@ -1,15 +1,12 @@
+---
 fr:
-  activerecord:
-    models:
-      bonus: Prime
-    attributes:
-      bonus:
-        name: Nom
-        quantity: Somme
-        bonus_type: Type
-        comment: Remarque
+  date:
+    formats:
+      name: "%B %Y"
 
   # General
+  Yes: &Yes Oui
+  No: &No Non
   Payroll: Paie
   Welcome: Bienvenue
   Tasks: Tâches
@@ -39,11 +36,17 @@ fr:
   error: faute
   Other: Autre
   New: Nouveau
-  Birth_date: Jour de naissance
+  Birth_date: &Birth_date Jour de naissance
   Return_to: Retourner à
-  Gender: Sexe
+  Gender: &Gender Sexe
   Cancel: Annuler
-  
+  Create: Créer
+
+  # Error messages
+  cant_be_in_future: ne peut pas être au futur.
+  cant_be_during_posted_period: est en un mois déjà finalisé.
+  cant_change_during_posted_period: est en un mois déjà finalisé.
+
   #Time and Date
   Date: Date
   Hours: Heures
@@ -52,15 +55,16 @@ fr:
   Hours_for_week: Heures pour la semaine
   Regular_hours: Heures normales
   Overtime_hours: Heures supplémentaires
+  Holiday_overtime_hours: Heures pour jours fériés
   Period: Mois
   Start_date: Date de commencement
   End_date: Date de fin
-  Hours_per_day: Heures par jour
+  Hours_per_day: &Hours_per_day Heures par jour
   Days_per_week: Jours par semaine
 
   # People
-  First_name: Prénom
-  Last_name: Nom
+  First_name: &First_name Prénom
+  Last_name: &Last_name Nom
   Create_new_person: Créer une nouvelle personne
   Use_existing_person: Utiliser une personne déjà faite
 
@@ -68,16 +72,28 @@ fr:
   Employees: Employés
   Employee: Employé
   New_employee: Nouvel employé
-  Name: Nom
-  Department: Département
+  Employee_information_for: Details de l'employee 
+  Name: *Last_name
+  Department: &Department Département
   Status: Statut
-  Title: Titre
-  Marital_status: Etat civil
-  Wage: Salaire
+  Title: &Title Titre
+  Marital_status: &Marital_status État civil
+  Wage: &Wage Salaire
+  Uniondues: &Union Cotisations Syndicales
+  uniondues: *Union
+  Union_dues: *Union
+  Amical: &Amical AMICAL
+  amical: *Amical
+  Contract_start: &Contract_start Commencement du contrat
+  Contract_end: &Contract_end Fin du contrat
+  Category: &Category Catégorie
+  Echelon: &Echelon Échelon
+  Taxable_percentage: &Taxable_percentage Pourcentage Imposable
+  Transportation: &Transportation Transportation
 
   # Supervisors
   Supervisors: Superviseurs
-  Supervisor: Superviseur
+  Supervisor: &Supervisor Superviseur
   New_supervisor: Nouveau superviseur
   Add_new_supervisor: Ajouter un superviseur
 
@@ -89,6 +105,7 @@ fr:
   Child_first_name: Prénom de l'enfant
   Child_birth_date: Jour de naissance de l'enfant
   Child_student: Etudiant?
+  No_children: Aucun Enfants
 
   # Charges
   Charges: Charges
@@ -97,7 +114,7 @@ fr:
   Add_charge: Ajouter une charge
   Enter_charges: Saisir charges
   New_loan: Nouveau prêt
-  Type: Type
+  Type: &Type Type
   Detail: Détail
   Must_be_whole_number: doit être un nombre entier.
   Amount: Montant
@@ -110,15 +127,28 @@ fr:
   Payslip_management: Gestion des bullitens de paie
   For_the_month: du mois
   Process: Exécuter
+  post_success_message: Mois finalisé.
+  post_failure_message: Des erreurs ont bloqué la finalisation de ce mois.
 
   # WorkHours
   Enter_hours: Saisir heures
   Enter_hours_overtime: Saisir heures (supplémentaires)
+  Enter_hours_week_of: Saisir heures pour la semaine de 
   Enter_overtime: Saisir surtravail
   after_start_date: doit être après le date de commencement
   not_during_vacation: ne peut pas coïncider avec des vacances
   OT_and_partial: Surtravail et jours partiels
   invalid_hours: n'est pas un nombre valide d'heures.
+
+  # WorkLoans
+  Work_loans: Prêts de Travail
+  Work_loans_for: Les Prêts de Travail pendant
+  Totals_for_the_period: Les montants pendant la période
+  Total_loaned_hours: Le montant des heures prêtées pendant la période
+  Total_loaned_hours_per_department: Le montant des heures prêtées par département
+  New_work_loan: Nouveau prêt de travail
+  Create_a_work_loan: Créer un prêt de travail
+  Errors_creating_work_loan: Il y a des erreurs pendant la création du prêt de travail
 
   # Vacations
   Vacation: Vacances
@@ -128,6 +158,9 @@ fr:
   Overlap_message: Ces vacances coïncident avec des heures de travail déjà saisies. Clicker 'Enregister' supprimera ces heures.
   Save_vacation_and_delete_work_hours: Enregister vacances et supprimer ces heures
   Other_upcoming_vacation: Autres vacances futures
+  Total_vacation: Jours de vacances permis
+  Vacation_used_or_planned: Jours utilisés et prevus
+  Remaining_days: Jours qui restent
 
   # Bonuses
   Bonuses: Primes
@@ -135,12 +168,15 @@ fr:
   New_bonus: Nouvelle Prime
   Editing_bonus: Modifier les primes
   Quantity: Somme
-  Type: Type
   Comment: Remarque
   Select_bonuses_to_be_assigned: Choissisez les primes pour attribuer à
   Assign_to_employee: Attribuer à Employé
   Unassign: Ôter
   Unassign_bonus: Ôtez cette prime
+  Manage_bonuses: Gérer les primes
+  percentage: Pourcentage
+  fixed: Fixé
+  No_bonuses: Aucun Primes
 
   # Reports
   Reports: Rapports
@@ -172,3 +208,74 @@ fr:
   Observed: Observé
   Bridge: Pont
   New_holiday: Nouveau jour férié
+
+  # Departments
+  Department_management: Gestion des départements
+
+  reports:
+    Employee_report: Le Rapport des Employés
+    Employee_report_by_dept: Le Rapport des Employés par Département
+    Download_report_as: Télécharger le rapport comme
+    Report_for_period: Le rapport pour la période
+    Select_a_report: Choisissez un rapport
+    Select_a_period: Choisissez une période
+    marital_statuses:
+      m: M
+      s: C
+      n: ''
+    genders:
+      m: M
+      f: F
+      n: ''
+    employment_statuses:
+      p: M
+      f: P
+      n: ''
+
+  helpers:
+    label:
+      employee:
+        first_name: *First_name
+        last_name: *Last_name
+        birth_date: *Birth_date
+        title: *Title
+        department: *Department
+        supervisor_id: *Supervisor
+        contract_start: *Contract_start
+        contract_end: *Contract_end
+        gender: *Gender
+        marital_status: *Marital_status
+        category: *Category
+        echelon: *Echelon
+        wage: *Wage
+        taxable_percentage: *Taxable_percentage
+        transportation: *Transportation
+        hours_day: *Hours_per_day
+        uniondues: *Union
+        amical: *Amical
+
+  activerecord:
+    employee:
+      'true': *Yes
+      'false': *No
+    models:
+      bonus: Prime
+    attributes:
+      employee:
+        female: Femelle
+        male: Mâle
+        full_time: Plein Temps
+        part_time: Mi-Temps
+        hourly: Taux Horaire
+        monthly: Mensuel
+        married: Marrié(e)
+        single: Célibataire
+      employee/wage_scale:
+        one: 1ere
+        two: 2eme
+        three: 3eme
+      bonus:
+        name: *Last_name
+        quantity: Somme
+        bonus_type: *Type
+        comment: Remarque

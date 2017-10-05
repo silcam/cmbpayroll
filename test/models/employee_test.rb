@@ -5,6 +5,7 @@ class EmployeeTest < ActiveSupport::TestCase
   def setup
     @luke = employees :Luke
     @yoda = supervisors :Yoda
+    @admin = departments :Admin
   end
 
   test "Employee has association" do
@@ -15,9 +16,30 @@ class EmployeeTest < ActiveSupport::TestCase
   test "Associations" do
     lukes_coke = charges :LukesCoke
     luke_jr = children :LukeJr
+    dept = departments :Admin
+
     assert_includes @luke.charges, lukes_coke
     assert_equal @yoda, @luke.supervisor
+    assert_equal @admin, @luke.department
     assert_includes @luke.children, luke_jr
+  end
+
+  test "Destroy with Department" do
+    @emp = return_valid_employee()
+
+    dept = Department.new
+    dept.name = "TEST"
+    dept.description = "TEST"
+    dept.account = "TEST"
+    dept.save
+
+    @emp.department = dept
+    @emp.save
+
+    assert @emp.destroy
+
+    refute_nil dept.id
+    refute_nil dept
   end
 
   test "validations" do
@@ -132,6 +154,20 @@ class EmployeeTest < ActiveSupport::TestCase
     assert employee.errors.empty?
   end
 
+  test "Compute Advance" do
+    employee = return_valid_employee()
+    employee.category = "one"
+    employee.echelon = "g"
+
+    # normally half
+    employee.wage = 20000
+    assert_equal(10000, employee.advance_amount())
+
+    # round up? TODO: correct?
+    employee.wage = 2555
+    assert_equal(1278, employee.advance_amount())
+  end
+
   test "Full Name" do
     assert_equal "Luke Skywalker", @luke.full_name
   end
@@ -140,11 +176,74 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal "Skywalker, Luke", @luke.full_name_rev
   end
 
+  test "Find_wage_by_attributes" do
+    employee = return_valid_employee()
+
+    employee.category = "three"
+    employee.echelon = "six"
+
+    assert_equal(83755, employee.find_wage())
+
+  end
+
+  test "AMICAL" do
+    employee = return_valid_employee()
+    assert_equal(0, employee.amical_amount)
+
+    employee.amical = true
+    assert_equal(3000, employee.amical_amount)
+
+    new_amical_value = 1234567
+    SystemVariable.create!(key: 'amical_amount', value: new_amical_value)
+    assert_equal(new_amical_value, employee.amical_amount)
+  end
+
+  test "union dues" do
+    employee = return_valid_employee()
+    assert_equal(0, employee.union_dues_amount)
+
+    employee.wage = 10000
+    employee.category_one!
+    employee.echelon_g!
+
+    employee.uniondues = true
+    assert_equal(100, employee.union_dues_amount)
+
+    new_union_dues = 0.76
+    SystemVariable.create!(key: 'union_dues', value: new_union_dues)
+    assert_equal(employee.wage * new_union_dues, employee.union_dues_amount)
+  end
+
+
+  test "deductable_expenses" do
+    employee = return_valid_employee()
+
+    employee.amical = true
+    employee.uniondues = true
+
+    expenses_hash = employee.deductable_expenses()
+    assert_equal(2, expenses_hash.length)
+
+    employee.amical = true
+    employee.uniondues = false
+
+    expenses_hash = employee.deductable_expenses()
+    assert_equal(2, expenses_hash.length)
+
+    assert(expenses_hash[:amical])
+
+    assert_equal(:amical_amount, expenses_hash[:amical])
+    assert_equal(:union_dues_amount, expenses_hash[:union])
+
+    assert_equal(3000, employee.send(expenses_hash[:amical]))
+    assert_equal(0, employee.send(expenses_hash[:union]))
+  end
+
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',
      title: 'Director',
-     department: 'Computer Services',
+     department: @admin,
      hours_day: 12,
      supervisor: @yoda}.merge params
   end

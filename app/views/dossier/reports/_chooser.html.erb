@@ -1,0 +1,18 @@
+
+<%= form_tag(report_display_url(), method: 'get', class: 'form-inline') %>
+
+  <div class="form-group">
+    <label><%= t :Report %></label>
+    <%= select_tag 'report',
+                   options_for_select(@report_options), { prompt: t(:Select_a_report, scope: :reports), class: 'form-control' } %>
+  </div>
+  <div class="form-group">
+    <label><%= t :Period %></label>
+    <%= select_tag 'options[period]',
+                   options_for_select(@periods), { prompt: t(:Select_a_period, scope: :reports), class: 'form-control' } %>
+  </div>
+  <%= submit_tag t(:Display), { class: 'btn btn-primary' } %>
+
+</form>
+
+<hr>

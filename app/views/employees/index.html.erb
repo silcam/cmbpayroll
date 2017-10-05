@@ -13,7 +13,7 @@
     <tr>
       <td><%= link_to employee.full_name, employee_path(employee) %></td>
       <td><%= employee.title %></td>
-      <td><%= employee.department %></td>
+      <td><%= employee.department_name %></td>
       <td><%= link_to t(:Add_charge), new_employee_charge_path(employee) %></td>
     </tr>
   <% end %>

@@ -2,6 +2,9 @@ include ApplicationHelper
 
 class WorkHour < ApplicationRecord
 
+  NUMBER_OF_HOURS_IN_A_WORKDAY = 8 # TODO make var
+  NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY = 0 # TODO make var
+
   belongs_to :employee
 
   validates :date, presence: true
@@ -44,7 +47,8 @@ class WorkHour < ApplicationRecord
     (start .. finish).each do |day|
       days[day] = {} unless days.has_key? day
       unless days[day].has_key? :hours
-        if is_off_day? day, days[day][:holiday]
+        if is_off_day?(day, days[day][:holiday]) or
+          day < employee.first_day
           days[day][:hours] = 0
         else
           days[day][:hours] = workday
@@ -84,15 +88,29 @@ class WorkHour < ApplicationRecord
   end
 
   def self.default_hours(date)
-    is_weekday?(date) ? WorkHour.workday : 0  #TODO hardcoded 0 hrs for weekend
+    is_weekday?(date) ?  WorkHour.workday : NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY
   end
 
   def self.default_hours?(date, hours)
     hours.to_d == default_hours(date)
   end
 
+  def self.calculate_overtime(date, day_hash)
+    return {} if day_hash[:hours] == 0
+    return {holiday: day_hash[:hours]} if holiday_overtime? date, day_hash
+    if day_hash[:hours] > workday
+      {normal: workday, overtime: (day_hash[:hours]-workday)}
+    else
+      {normal: day_hash[:hours]}
+    end
+  end
+
+  def self.holiday_overtime?(date, day_hash)
+    date.sunday? or day_hash.has_key? :holiday
+  end
+
   def self.workday
-    8 #TODO hardcoded constant 1 wkday = 8 hrs
+    NUMBER_OF_HOURS_IN_A_WORKDAY
   end
 
   private
@@ -106,18 +124,16 @@ class WorkHour < ApplicationRecord
   end
 
   def self.total_hours_for(employee, start, finish)
-    normal = 0
-    overtime = 0
+    hours = {}
     days = complete_days_hash(employee, start, finish)
     days.each do |date, day|
-      if is_off_day? date, day[:holiday]
-        overtime += day[:hours]
-      else
-        normal += [workday, day[:hours]].min
-        overtime += (day[:hours] - workday) if day[:hours] > workday
+      unless day[:vacation]
+        hours.merge! calculate_overtime(date, day) do |key, oldval, newval|
+          oldval + newval
+        end
       end
     end
-    {normal: normal, overtime: overtime}
+    hours
   end
 end
 

@@ -23,10 +23,18 @@ class PeriodTest < ActiveSupport::TestCase
     assert_equal Date.new(2017, 7, 1), @july.start
   end
 
+  test "Mid Month" do
+    assert_equal Date.new(2017, 7, 15), @july.mid_month
+  end
+
   test "Finish" do
     assert_equal Date.new(2017, 7, 31), @july.finish
     p = Period.new(2017, 12)
     assert_equal Date.new(2017, 12, 31), p.finish
+  end
+
+  test "Length" do
+    assert_equal 28, Period.new(2017, 2).length
   end
 
   test "To Range" do
@@ -41,6 +49,14 @@ class PeriodTest < ActiveSupport::TestCase
   test "Previous" do
     assert_equal Period.new(2017, 6), @july.previous
     assert_equal Period.new(2016, 12), Period.new(2017, 1).previous
+  end
+
+  test "Past January" do
+    assert_equal Period.new(2017, 1), @july.past_january
+  end
+
+  test "Next December" do
+    assert_equal Period.new(2017, 12), @july.next_december
   end
 
   test "Weekdays" do

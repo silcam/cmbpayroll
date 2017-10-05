@@ -1,0 +1,9 @@
+<ul class="list-inline">
+  <li>
+    <b><%= t :Vacation_balance %>:</b>
+    <% balance = Vacation.balance employee, Period.current %>
+    <span <%= 'style="color: red;"'.html_safe if balance < 0 %>>
+        <%= balance %>
+    </span>
+  </li>
+</ul>

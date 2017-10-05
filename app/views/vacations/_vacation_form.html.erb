@@ -9,9 +9,19 @@
                                {}, class: 'form-control' %>
   </div>
 
+  <div id="days-summary">
+    <% unless @vacation.employee.nil? %>
+      <%= render 'days_summary', employee: @vacation.employee %>
+    <% end %>
+  </div>
+
   <div class="form-group">
     <%= form.label :start_date, t(:Start_date), style: 'display: block;' %>
-    <%= form.date_select :start_date, {}, class: 'form-control form-control-inline' %>
+    <% if LastPostedPeriod.in_posted_period? @vacation.start_date %>
+      <p><%= @vacation.start_date.strftime("%Y %B %e") %></p>
+    <% else %>
+      <%= form.date_select :start_date, {}, class: 'form-control form-control-inline' %>
+    <% end %>
   </div>
 
   <div class="form-group">

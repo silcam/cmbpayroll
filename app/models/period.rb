@@ -22,6 +22,14 @@ class Period
     (start >> 1) - 1
   end
 
+  def mid_month
+    Date.new(@year, @month, 15)
+  end
+
+  def length
+    finish.day
+  end
+
   def to_range
     (start .. finish)
   end
@@ -35,6 +43,7 @@ class Period
     end
     Period.new(year, month)
   end
+  alias_method :succ, :next
 
   def previous
     year = @year
@@ -44,6 +53,14 @@ class Period
       year = @year - 1
     end
     Period.new(year, month)
+  end
+
+  def past_january
+    Period.new(@year, 1)
+  end
+
+  def next_december
+    Period.new(@year, 12)
   end
 
   def weekdays
@@ -60,6 +77,10 @@ class Period
 
   def name
     start.strftime("%B %Y")
+  end
+
+  def l_name
+    I18n.l(start, format: :name)
   end
 
   def to_s

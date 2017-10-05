@@ -1,38 +1,68 @@
 <%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
 
 <h2><%= t :Hours_for %> <%= @employee.full_name %></h2>
-<h3 style="margin-bottom: 40px;">
-  <% hours_worked = @employee.total_hours_so_far %>
-  <%= Period.current.month_name %> :
-  <%= hours_worked[:normal] %>
+
+
+<div style="margin-bottom: 8px;">
+  <%= form_tag edit_employee_work_hours_path, method: :get, class: 'inline-fields' do %>
+      <label><%= t :Enter_hours_week_of %></label>
+      <%= select_tag :week, mondays_for_select, class: 'form-control' %>
+      <%= submit_tag t(:Go), class: 'btn btn-primary' %>
+  <% end %>
+</div>
+
+<h3 >
+  <%= @period.month_name %> :
+  <%= number_to_human @hours_worked[:normal] or 0 %>
   <small><%= t :Regular_hours %></small>
-  <%= hours_worked[:overtime] %>
-  <small><%= t :Overtime_hours %></small>
+  <% if @hours_worked[:overtime] %>
+    <%= number_to_human @hours_worked[:overtime] %>
+    <small><%= t :Overtime_hours %></small>
+  <% end %>
+  <% if @hours_worked[:holiday] %>
+    <%= number_to_human @hours_worked[:holiday] %>
+    <small><%= t :Holiday_overtime_hours %></small>
+  <% end %>
 </h3>
 
-<div class="row">
-  <div class="col-md-6">
-    <h4><%= t :Enter_hours %></h4>
-    <%= form_tag edit_employee_work_hours_path, method: :get, class: 'inline-fields' do %>
-        <label><%= t :Week_of %></label>
-        <%= select_tag :week, mondays_for_select, class: 'form-control' %>
-        <%= submit_tag t(:Go), class: 'btn btn-primary' %>
-    <% end %>
-  </div>
-  <div class="col-md-6">
-    <% unless @work_hours.empty? %>
-        <h4><%= t :OT_and_partial %></h4>
-        <table class="table" style="width: auto;">
-          <% @work_hours.reverse_each do |work_hour| %>
-              <tr>
-                <td><%= work_hour.date.strftime "%A" %></td>
-                <td><%= std_datestring work_hour.date %></td>
-                <td><%= work_hour.hours %> <%= t :Hours %></td>
-              </tr>
-          <% end %>
-        </table>
-    <% end %>
+<%= render 'shared/period_nav', path: employee_work_hours_path(@employee), period: @period %>
 
-  </div>
-</div>
+    <% date = @period.start %>
+    <table class="table table-bordered">
+      <% while date < @period.finish %>
+        <tr>
+          <% unless date.monday? %>
+            <% (last_monday(date)..(date-1)).each do %>
+              <td class="col-md-1"></td>
+            <% end %>
+          <% end %>
+
+          <% begin %>
+            <td class="col-md-1">
+              <h5><b><%= date.strftime("%-d %b") %></b></h5>
+              <i><%= @days_hash[date][:holiday] %></i><br>
+              <h3>
+                <% if @days_hash[date][:vacation] %>
+                  <%= t :Vacation %>
+                <% else %>
+                  <% unless date >= Date.today %>
+                    <% if @days_hash[date][:dept] %>
+                      <p><small><em>Loaned to: <%= Department.find(@days_hash[date][:dept]).name %></em></small></p>
+                    <% end %>
+                    <%= number_to_human @days_hash[date][:hours] %>&nbsp;<small><%= t :Hours %></small>
+                  <% end %>
+                <% end %>
+              </h3>
+            </td>
+            <% date += 1 %>
+          <% end until date.monday? or date > @period.finish %>
+
+          <% unless date.monday? %>
+            <% (date .. next_sunday(date)).each do %>
+              <td class="col-md-1"></td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
 

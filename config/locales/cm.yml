@@ -1,0 +1,14 @@
+cm:
+  number:
+    currency:
+      format:
+        delimiter: ' '
+        format: '%n %u'
+        precision: 0
+        separator: ','
+        strip_insignificant_zeros: false
+        unit: 'FCFA'
+
+  date:
+    formats:
+      short: "%d/%m/%Y"

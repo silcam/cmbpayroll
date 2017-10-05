@@ -1,15 +1,12 @@
+---
 en:
-  activerecord:
-    models:
-      bonus: Prime
-    attributes:
-      bonus:
-        name: Name
-        quantity: Quantity
-        bonus_type: Type
-        comment: Comment
+  date:
+    formats:
+      name: "%B %Y"
 
   # General
+  Yes: &Yes Yes
+  No: &No No
   Payroll: Payroll
   Welcome: Welcome
   Tasks: Tasks
@@ -39,10 +36,16 @@ en:
   error: error
   Other: Other
   New: New
-  Birth_date: Birth Date
-  Return_to: Retourner to
-  Gender: Gender
+  Birth_date: &Birth_date Birth Date
+  Return_to: Return to
+  Gender: &Gender Gender
   Cancel: Cancel
+  Create: Create
+
+  # Error messages
+  cant_be_in_future: can't be in the future.
+  cant_be_during_posted_period: is in a period that is already posted.
+  cant_change_during_posted_period: is in a period that is already posted.
 
   # Time and Date
   Date: Date
@@ -52,15 +55,16 @@ en:
   Hours_for_week: Hours for the week
   Regular_hours: Regular Hours
   Overtime_hours: Overtime Hours
+  Holiday_overtime_hours: Holiday Overtime Hours
   Period: Period
   Start_date: Start Date
   End_date: End Date
-  Hours_per_day: Hours per day
+  Hours_per_day: &Hours_per_day Hours per day
   Days_per_week: Days per week
 
   # People
-  First_name: First Name
-  Last_name: Last Name
+  First_name: &First_name First Name
+  Last_name: &Last_name Last Name
   Create_new_person: Create New Person
   Use_existing_person: Use Existing Person
 
@@ -68,16 +72,28 @@ en:
   Employees: Employees
   Employee: Employee
   New_employee: New Employee
-  Name: Name
-  Department: Department
+  Employee_information_for: Employee Information for
+  Name: *Last_name
+  Department: &Department Department
   Status: Status
-  Title: Title
-  Marital_status: Marital Status
-  Wage: Wage
+  Title: &Title Title
+  Marital_status: &Marital_status Marital Status
+  Wage: &Wage Wage
+  Uniondues: &Union Union Dues
+  uniondues: *Union
+  Union_dues: *Union
+  Amical: &Amical AMICAL
+  amical: *Amical
+  Contract_start: &Contract_start Contract Start
+  Contract_end: &Contract_end Contract End
+  Category: &Category Category
+  Echelon: &Echelon Echelon
+  Taxable_percentage: &Taxable_percentage Taxable Percentage
+  Transportation: &Transportation Transportation
 
   # Supervisors
   Supervisors: Supervisors
-  Supervisor: Supervisor
+  Supervisor: &Supervisor Supervisor
   New_supervisor: New Supervisor
   Add_new_supervisor: Add New Supervisor
 
@@ -89,6 +105,7 @@ en:
   Child_first_name: Child's First Name
   Child_birth_date: Child's Birth Date
   Child_student: Student?
+  No_children: No Children
 
   # Charges
   Charges: Charges
@@ -97,7 +114,7 @@ en:
   Add_charge: Add Charge
   Enter_charges: Enter Charges
   New_loan: New Loan
-  Type: Type
+  Type: &Type Type
   Detail: Detail
   Must_be_whole_number: must be a whole number.
   Amount: Amount
@@ -110,15 +127,28 @@ en:
   Payslip_management: Payslip Management
   For_the_month: for the month
   Process: Process
+  post_success_message: Pay period successfully posted.
+  post_failure_message: Errors prevented this pay period from being posted.
 
   # WorkHours
   Enter_hours: Enter Hours
   Enter_hours_overtime: Enter Hours / Overtime
+  Enter_hours_week_of: Enter hours for the week of
   Enter_overtime: Enter Overtime
   after_start_date: must be after start date
   not_during_vacation: can't be during vacation
   OT_and_partial: Overtime and Partial Days
   invalid_hours: is not a valid number of hours.
+
+  # WorkLoans
+  Work_loans: Work Loans
+  Work_loans_for: Work Loans for
+  Totals_for_the_period: Totals for the period
+  Total_loaned_hours: Total loaned hours
+  Total_loaned_hours_per_department: Total loaned hours per department
+  New_work_loan: New Work Loan
+  Create_a_work_loan: Create a Work Loan
+  Errors_creating_work_loan: Errors creating a Work Loan
 
   # Vacations
   Enter_vacation: Enter Vacation
@@ -128,6 +158,9 @@ en:
   Overlap_message: This vacation overlaps previously entered work hours. Clicking Save will delete these work hours.
   Save_vacation_and_delete_work_hours: Save Vacation and Delete Hours
   Other_upcoming_vacation: Other Upcoming Vacation
+  Total_vacation: Vacation days allowed
+  Vacation_used_or_planned: Vacation used or planned
+  Remaining_days: Remaining days
 
   # Bonuses
   Bonuses: Bonuses
@@ -135,12 +168,15 @@ en:
   New_bonus: New Bonus
   Editing_bonus: Editing Bonus
   Quantity: Quantity
-  Type: Type
   Comment: Comment
   Select_bonuses_to_be_assigned: Select bonuses to be assigned to
   Assign_to_employee: Assign to Employee
   Unassign: Unassign
   Unassign_bonus: Unassign Bonus
+  Manage_bonsus: Mangage Bonuses
+  percentage: Percentage
+  fixed: Fixed
+  No_bonuses: No Bonuses
 
   # Reports
   Reports: Reports
@@ -172,3 +208,74 @@ en:
   Observed: Observed
   Bridge: Bridge
   New_holiday: New Holiday
+
+  # Departments
+  Department_management: Department Management
+
+  reports:
+    Employee_report: Employee Report
+    Employee_report_by_dept: Employee Report - By Department
+    Download_report_as: Download report as
+    Report_for_period: Report for period
+    Select_a_report: Select a Report
+    Select_a_period: Select a Period
+    marital_statuses:
+      m: M
+      s: S
+      n: ''
+    genders:
+      m: M
+      f: F
+      n: ''
+    employment_statuses:
+      p: P
+      f: F
+      n: ''
+
+  helpers:
+    label:
+      employee:
+        first_name: *First_name
+        last_name: *Last_name
+        birth_date: *Birth_date
+        title: *Title
+        department: *Department
+        supervisor_id: *Supervisor
+        contract_start: *Contract_start
+        contract_end: *Contract_end
+        gender: *Gender
+        marital_status: *Marital_status
+        category: *Category
+        echelon: *Echelon
+        wage: *Wage
+        taxable_percentage: *Taxable_percentage
+        transportation: *Transportation
+        hours_day: *Hours_per_day
+        uniondues: *Union
+        amical: *Amical
+
+  activerecord:
+    employee:
+      'true': *Yes
+      'false': *No
+    models:
+      bonus: Prime
+    attributes:
+      employee:
+        female: Female
+        male: Male
+        full_time: Full Time
+        part_time: Part Time
+        hourly: Hourly
+        monthly: Monthly
+        married: Married
+        single: Single
+      employee/wage_scale:
+        one: 1st
+        two: 2nd
+        three: 3rd
+      bonus:
+        name: *Last_name
+        quantity: Quantity
+        bonus_type: *Type
+        comment: Comment

@@ -51,6 +51,7 @@ class VacationTest < ActiveSupport::TestCase
   end
 
   test "Vacation can obviously overlap itself" do
+    LastPostedPeriod.unpost # Reopen July so we can edit
     assert @lukes_vacation.update end_date: '2017-07-30'
   end
 
@@ -91,6 +92,13 @@ class VacationTest < ActiveSupport::TestCase
   test "Can't delete old vacations" do
     refute @lukes_vacation.destroy
     assert_raises(Exception){ @lukes_vacation.destroy! }
+
+    v = end_of_aug_vacay
+    v.save!
+    assert v.destroyable?
+    LastPostedPeriod.post_current
+    refute v.destroyable?
+    assert_raises(Exception){ v.destroy! }
   end
 
   test "Can delete future vacations just fine" do
@@ -99,15 +107,46 @@ class VacationTest < ActiveSupport::TestCase
     assert_nil Vacation.find_by(id: future_vacay.id), "The failure of this test is a friendly reminder that the codebase is now over 10 years old :)"
   end
 
+  test "Can't create vacations in posted period" do
+    LastPostedPeriod.post_current
+    refute end_of_aug_vacay.save
+    LastPostedPeriod.unpost
+    assert end_of_aug_vacay.save
+  end
+
+  test "Editing vacations and the Posted Period and You" do
+    v = end_of_aug_vacay
+    v.save!
+    LastPostedPeriod.post_current
+    v.end_date = '2017-09-30'
+    assert v.save
+    v.start_date = '2017-08-30'
+    refute v.save
+
+    v.reload
+    v.start_date = '2017-09-01'
+    refute v.save
+
+    v.reload
+    v.end_date = '2017-08-31'
+    refute v.save
+
+    v.reload
+    LastPostedPeriod.post_current
+    v.end_date = '2017-09-29'
+    refute v.save
+  end
+
   test "Period Vacations" do
-    chewie = employees :Chewie
-    chewie1 = Vacation.create(employee: chewie, start_date: '2017-06-15', end_date: '2017-07-01')
-    chewie2 = Vacation.create(employee: chewie, start_date: '2017-07-30', end_date: '2017-08-15')
-    july_vacays = Vacation.for_period(Period.new(2017, 7))
-    assert_includes july_vacays, @lukes_vacation
-    assert_includes july_vacays, chewie1
-    assert_includes july_vacays, chewie2
-    refute_includes Vacation.for_period, @lukes_vacation
+    on_sep_5 do
+      chewie = employees :Chewie
+      chewie1 = Vacation.create(employee: chewie, start_date: '2017-11-15', end_date: '2017-12-01')
+      chewie2 = Vacation.create(employee: chewie, start_date: '2017-12-30', end_date: '2018-01-15')
+      dec_vacays = Vacation.for_period(Period.new(2017, 12))
+      assert_includes dec_vacays, chewie1
+      assert_includes dec_vacays, chewie2
+      refute_includes Vacation.for_period, @lukes_vacation
+    end
   end
 
   test "Upcoming Vacations" do
@@ -119,20 +158,74 @@ class VacationTest < ActiveSupport::TestCase
     end
   end
 
-  test "Missed Days and Hours" do
-    june = Period.new(2017, 6)
-    assert_equal 5, Vacation.missed_days(@anakin, june)
-    assert_equal 40, Vacation.missed_hours(@anakin, june)
-    Date.stub :today, Date.new(2017, 6, 7) do
-      assert_equal 2, Vacation.missed_days_so_far(@anakin)
-      assert_equal 16, Vacation.missed_hours_so_far(@anakin)
-    end
+  test "Days Earned" do
+    # Before hire
+    assert_equal 0, Vacation.days_earned(@luke, Period.new(2016, 11))
+
+    # Normal month
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2017, 1))
+
+    # Supp Days
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2021, 1))
+    assert_equal 3.5, Vacation.days_earned(@luke, Period.new(2022, 1))
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2022, 2))
+    assert_equal 3.5, Vacation.days_earned(@luke, Period.new(2026, 1))
+    assert_equal 5.5, Vacation.days_earned(@luke, Period.new(2027, 1))
+  end
+
+  test "Days Used" do
+    # Before hire
+    assert_equal 0, Vacation.days_used(@luke, Period.new(2016, 11))
+
+    # Normal Month
+    assert_equal 0, Vacation.days_used(@luke, Period.new(2017, 6))
+
+    # Took off all of July
+    assert_equal 21, Vacation.days_used(@luke, Period.new(2017, 7))
+
+    # Doesn't count Holidays
+    @luke.vacations << Vacation.new(start_date: '2017-12-25', end_date: '2017-12-26')
+    assert_equal 1, Vacation.days_used(@luke, Period.new(2017, 12))
+  end
+
+  test "Vacation Balance" do
+    # From before first payslip
+    assert_equal 0, Vacation.balance(@luke, Period.new(2016, 11))
+
+    # From Posted Payslip
+    assert_equal 4, Vacation.balance(@luke, Period.new(2017, 7))
+
+    # For following periods
+    assert_equal 5.5, Vacation.balance(@luke, Period.new(2017, 8))
+    assert_equal 7, Vacation.balance(@luke, Period.new(2017, 9))
+    @luke.vacations << Vacation.new(start_date: '2017-09-04', end_date: '2017-09-08')
+    assert_equal 2, Vacation.balance(@luke, Period.new(2017, 9))
+
+    # For new employees
+    chewie = employees :Chewie # Started 4 Aug
+    assert_equal 1.5, Vacation.balance(chewie, Period.new(2017, 8))
+    chewie.vacations << Vacation.new(start_date: '2017-08-07', end_date: '2017-08-11')
+    assert_equal -3.5, Vacation.balance(chewie, Period.new(2017, 8))
   end
 
   test "Days Hash" do
     days = Vacation.days_hash(@luke, Date.new(2017, 7, 30), Date.new(2017, 8, 2))
     assert_equal 2, days.length
     assert days[Date.new(2017, 7, 31)][:vacation]
+  end
+
+  # test "Missed Days and Hours" do
+  #   june = Period.new(2017, 6)
+  #   assert_equal 5, Vacation.missed_days(@anakin, june)
+  #   assert_equal 40, Vacation.missed_hours(@anakin, june)
+  #   Date.stub :today, Date.new(2017, 6, 7) do
+  #     assert_equal 2, Vacation.missed_days_so_far(@anakin)
+  #     assert_equal 16, Vacation.missed_hours_so_far(@anakin)
+  #   end
+  # end
+
+  def end_of_aug_vacay
+    @luke.vacations.new(start_date: '2017-08-31', end_date: '2017-09-01')
   end
 
   def some_valid_params(mods={})

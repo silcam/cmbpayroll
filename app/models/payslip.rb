@@ -12,6 +12,10 @@ class Payslip < ApplicationRecord
                presence: {message: I18n.t(:Not_blank)}
 
 
+  scope :for_period, ->(period) {
+    where(period_year: period.year, period_month: period.month)
+  }
+
   def self.current_period
     return self.from_period( Period.current)
   end
@@ -21,6 +25,25 @@ class Payslip < ApplicationRecord
     payslip.period_year = period.year
     payslip.period_month = period.month
     return payslip
+  end
+
+  def self.process(employee, period=Period.current)
+    return self.process_payslip(employee, period, false)
+  end
+
+  def self.process_with_advance(employee, period=Period.current)
+    return self.process_payslip(employee, period, true)
+  end
+
+  def self.process_all(period)
+    payslips = Array.new
+
+    Employee.all.each do |emp|
+      tmp_payslip = Payslip.process(emp, period)
+      payslips.push(tmp_payslip)
+    end
+
+    return payslips
   end
 
   def has_earnings?
@@ -69,18 +92,10 @@ class Payslip < ApplicationRecord
     end
   end
 
-  def self.process_all(period)
-    payslips = Array.new
 
-    Employee.all.each do |emp|
-      tmp_payslip = Payslip.process(emp, period)
-      payslips.push(tmp_payslip)
-    end
+  private
 
-    return payslips
-  end
-
-  def self.process(employee, period)
+  def self.process_payslip(employee, period, with_advance)
     # Do all the stuff that is needed to process a payslip for this user
     # TODO: more validation
     # TODO: Are there rules that the period must be
@@ -100,37 +115,26 @@ class Payslip < ApplicationRecord
       payslip.payslip_date = Date.today
     end
 
+    if (with_advance)
+      self.process_advance(employee, period)
+    end
+
     payslip.earnings.delete_all
     self.process_hours(payslip, employee, period)
     self.process_bonuses(payslip, employee)
 
     payslip.deductions.delete_all
-    self.process_deductions(payslip, employee)
+    self.process_charges(payslip, employee)
+    self.process_employee_deduction(payslip, employee)
+    self.process_vacation(payslip, employee, period)
 
     payslip.last_processed = DateTime.now
 
     employee.payslips << payslip
 
-    #payslip.save
-    #employee.save
-
     return payslip
   end
 
-  # TODO: is this needed anymore?
-  # TODO: maybe call this 'total'?
-  def process
-    unless (self.valid?)
-        return
-    end
-
-    # do other things, but that's all for now.
-    if (self.last_processed.nil?)
-        self.last_processed = DateTime.now
-    end
-  end
-
-  private
 
   def self.process_hours(payslip, employee, period)
     hours = WorkHour.total_hours(employee, period)
@@ -140,15 +144,19 @@ class Payslip < ApplicationRecord
       earning.rate = employee.wage
       earning.hours = value
 
-      if (key == :overtime)
+      if (key == :holiday)
         earning.overtime = true
       end
 
       payslip.earnings << earning
-      #earning.save
     end
   end
 
+  # TODO: does this need to know about
+  # the period and recreate bonuses at the
+  # time?  Right now this only processed
+  # bonuses for today regardless of the
+  # requested period
   def self.process_bonuses(payslip, employee)
     employee.bonuses.each do |emp_bonus|
       earning = Earning.new
@@ -160,13 +168,11 @@ class Payslip < ApplicationRecord
       end
 
       payslip.earnings << earning
-      #earning.save
     end
   end
 
-  def self.process_deductions(payslip, employee)
+  def self.process_charges(payslip, employee)
     employee.charges.each do |charge|
-
       next if (charge.date < payslip.period.start ||
                   charge.date > payslip.period.finish)
 
@@ -177,8 +183,45 @@ class Payslip < ApplicationRecord
       deduction.date = charge.date
 
       payslip.deductions << deduction
-      #deduction.save
     end
   end
 
+  def self.process_employee_deduction(payslip, employee)
+    expenses_hash = employee.deductable_expenses()
+
+    expenses_hash.each do |k,v|
+      amount = employee.send(v)
+
+      if (amount > 0)
+        deduction = Deduction.new
+
+        deduction.note = k
+        deduction.amount = amount
+        deduction.date = payslip.period.start
+
+        payslip.deductions << deduction
+      end
+    end
+  end
+
+  def self.process_advance(employee, period)
+    return if (employee.has_advance_charge(period))
+
+    charge = Charge.new
+    charge.date = period.mid_month()
+    charge.amount = employee.advance_amount()
+    charge.note = Charge::ADVANCE
+
+    employee.charges << charge
+  end
+
+  def self.process_vacation(payslip, employee, period)
+    payslip.vacation_earned = Vacation.days_earned(employee, period)
+    payslip.vacation_balance = Vacation.balance(employee, period)
+    last_vacation = employee.vacations.where('end_date <= ?', period.finish).last
+    unless last_vacation.nil?
+      payslip.last_vacation_start = last_vacation.start_date
+      payslip.last_vacation_end = last_vacation.end_date
+    end
+  end
 end

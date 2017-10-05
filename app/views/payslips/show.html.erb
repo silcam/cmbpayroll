@@ -76,10 +76,10 @@
         Taux de rémunération (mensuel)
       </div>
       <div class="col-sm-3">
-        <%= @payslip.employee.wage %> CFA
+        <%= number_to_currency(@payslip.employee.wage, locale: :cm) %>
       </div>
       <div class="col-sm-3">
-        <%= @payslip.employee.wage %>
+        <%= number_to_currency(@payslip.employee.wage, locale: :cm) %>
       </div>
 
     </div> <!-- /row -->
@@ -90,10 +90,10 @@
         Taux de rémunération (mensuel)
       </div>
       <div class="col-sm-3">
-        <%= @payslip.employee.wage %> CFA
+        <%= number_to_currency(@payslip.employee.wage, locale: :cm) %>
       </div>
       <div class="col-sm-3">
-        <%= @payslip.employee.wage %>
+        <%= number_to_currency(@payslip.employee.wage, locale: :cm) %>
       </div>
 
     </div> <!-- /row -->
@@ -149,10 +149,10 @@
     <div class="row">
 
       <div class="col-sm-6">
-        <span class="text-uppercase"><%= record.note %> (<%= record.date.strftime("%b-%d") %>)</span>
+        <span class="text-uppercase"><%= t(record.note, default: record.note) %> (<%= record.date.strftime("%b-%d") %>)</span>
       </div>
       <div class="col-sm-2 text-right">
-        <%= record.amount %> CFA
+        <%= number_to_currency(record.amount, locale: :cm) %>
       </div>
       <div class="col-sm-4"></div>
 
@@ -166,7 +166,7 @@
         MONTANT DES DEDUCTIONS
       </div>
       <div class="col-sm-2 text-right" style="border-top:1px solid black">
-        <%= @payslip.total_deductions() %> CFA
+        <%= number_to_currency(@payslip.total_deductions(), locale: :cm) %>
       </div>
       <div class="col-sm-2 text-center">
         &ndash; &ndash;
@@ -214,7 +214,7 @@
         Ce mois-ci
       </div>
       <div class="col-sm-1">
-        1.5
+        <%= number_to_human(@payslip.vacation_earned, precision: 2) %>
       </div>
 
     </div>
@@ -225,7 +225,7 @@
         Jusqu'aujourd'hui
       </div>
       <div class="col-sm-1">
-        25.5
+        <%= number_to_human(@payslip.vacation_balance, precision: 2) %>
       </div>
 
     </div>
@@ -236,6 +236,9 @@
         Dernier congé
       </div>
       <div class="col-sm-1">
+        <%= std_datestring(@payslip.last_vacation_start) %>
+        -
+        <%= std_datestring(@payslip.last_vacation_end) %>
       </div>
 
     </div>

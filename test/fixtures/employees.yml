@@ -2,26 +2,33 @@ Luke:
   person: Luke
   supervisor: Yoda
   title: Title
-  department: Department
+  department: Admin
   hours_day: 8
+  contract_start: 2017-01-01
+  first_day: 2016-12-01
 
 Anakin:
   person: Anakin
   supervisor: Emperor
   title: Title
-  department: Department
+  department: Admin
   hours_day: 8
+  contract_start: 2000-01-01
+  first_day: 2000-01-01
 
 Chewie:
   person: Chewie
   supervisor: Han
   title: Title
-  department: Department
+  department: Admin
   hours_day: 8
+  first_day: 2017-08-04
 
 Han:
   person: Han
   supervisor: Yoda
   title: Title
-  department: Department
+  department: LSS
   hours_day: 8
+  contract_start: 2017-01-01
+  first_day: 2016-12-01

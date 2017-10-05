@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   resources :vacations, except: :show
   resources :bonuses
+  resources :work_loans, only: [ :index, :new, :create, :destroy ]
+  resources :departments
   resources :holidays, except: [:show, :new] do
     collection do
       post 'generate/:year', to: 'holidays#generate', as: :generate
@@ -22,7 +24,9 @@ Rails.application.routes.draw do
         end
       end
       resources :charges, except: [:edit, :update, :show]
-      resources :vacations, except: :show
+      resources :vacations, except: :show do
+        get 'days_summary', on: :collection
+      end
       resources :payslips, only: [ :index, :show ]
     end
   end
@@ -31,10 +35,16 @@ Rails.application.routes.draw do
 
   resources 'payslips', only: [ :index, :show ]
 
-  # Payslips (temp routes)
-  post 'payslips/process', to: 'payslips#process_employee'
-  post 'payslips/process_complete', to: 'payslips#process_employee_complete'
-  post 'payslips/process_all', to: 'payslips#process_all_employees'
+  # Reports index
+  get 'reports', to: 'reports#index'
+  get 'report_display', to: 'reports#show'
+
+  # Payslips
+  post 'payslips/process', to: 'payslips#process_employee', as: :payslip_process_employee
+  post 'payslips/process_complete', to: 'payslips#process_employee_complete', as: :payslip_process_employee_complete
+  post 'payslips/process_all', to: 'payslips#process_all_employees', as: :payslip_process_all
+  post 'payslips/post_period', to: 'payslips#post_period', as: :payslip_post_period
+  post 'payslips/unpost_period', to: 'payslips#unpost_period', as: :payslip_unpost_period
 
   # Work Hours
   get 'employees/:employee_id/work_hours',      to: 'work_hours#index', as: :employee_work_hours
@@ -54,5 +64,4 @@ Rails.application.routes.draw do
   get 'mock_vacation', to: 'mock#vacation'
   get 'charges', to: 'mock#charges'
   get 'hours/edit', to: 'mock#hours_edit'
-  get 'reports', to: 'mock#reports'
 end

@@ -129,7 +129,7 @@ class Vacation < ApplicationRecord
 
   def in_posted_period?(*dates)
     dates.each do |date|
-      return true if date and date < LastPostedPeriod.get.finish
+      return true if date and date <= LastPostedPeriod.get.finish
     end
     false
   end

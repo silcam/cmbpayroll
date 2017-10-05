@@ -92,12 +92,49 @@ class VacationTest < ActiveSupport::TestCase
   test "Can't delete old vacations" do
     refute @lukes_vacation.destroy
     assert_raises(Exception){ @lukes_vacation.destroy! }
+
+    v = end_of_aug_vacay
+    v.save!
+    assert v.destroyable?
+    LastPostedPeriod.post_current
+    refute v.destroyable?
+    assert_raises(Exception){ v.destroy! }
   end
 
   test "Can delete future vacations just fine" do
     future_vacay = Vacation.create(employee: @luke, start_date: '2027-09-05', end_date: '2027-09-05')
     future_vacay.destroy
     assert_nil Vacation.find_by(id: future_vacay.id), "The failure of this test is a friendly reminder that the codebase is now over 10 years old :)"
+  end
+
+  test "Can't create vacations in posted period" do
+    LastPostedPeriod.post_current
+    refute end_of_aug_vacay.save
+    LastPostedPeriod.unpost
+    assert end_of_aug_vacay.save
+  end
+
+  test "Editing vacations and the Posted Period and You" do
+    v = end_of_aug_vacay
+    v.save!
+    LastPostedPeriod.post_current
+    v.end_date = '2017-09-30'
+    assert v.save
+    v.start_date = '2017-08-30'
+    refute v.save
+
+    v.reload
+    v.start_date = '2017-09-01'
+    refute v.save
+
+    v.reload
+    v.end_date = '2017-08-31'
+    refute v.save
+
+    v.reload
+    LastPostedPeriod.post_current
+    v.end_date = '2017-09-29'
+    refute v.save
   end
 
   test "Period Vacations" do
@@ -158,6 +195,10 @@ class VacationTest < ActiveSupport::TestCase
   #     assert_equal 16, Vacation.missed_hours_so_far(@anakin)
   #   end
   # end
+
+  def end_of_aug_vacay
+    @luke.vacations.new(start_date: '2017-08-31', end_date: '2017-09-01')
+  end
 
   def some_valid_params(mods={})
     {employee: @luke, start_date: '2017-08-09', end_date: '2017-08-10'}.merge(mods)

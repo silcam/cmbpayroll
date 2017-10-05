@@ -14,15 +14,41 @@
     <br />
 
     <%= form_for [@employee, @work_loan] do |f| %>
-      <%= f.label :employee %> <%= f.select :employee_id, options_from_collection_for_select(@employees, 'id', 'full_name', @work_loan.employee_id), { prompt: 'Select an Employee' } %><br />
-      was loaned to<br />
-      <%= f.label :department_id %> <%= f.select :department_id, options_from_collection_for_select(@departments, 'id', 'name', @work_loan.department_id), { prompt: 'Select a Department' } %><br />
-      For <%= f.text_field :hours %> <%= f.label :hours %><br />
-      on <%= f.text_field :date, class: 'datepicker', placeholder: 'DD/MM/YYYY' %> <%= f.label :date %> <br />
-
-    <br />
-
-      <%= f.submit "Create" %>
+      <div class="form-group">
+        <%= f.label :employee %>
+        <%= f.select :employee_id, options_from_collection_for_select(@employees, 'id', 'full_name', @work_loan.employee_id), { prompt: 'Select an Employee' }, class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= f.label :department_id %>
+        <%= f.select :department_id, options_from_collection_for_select(@departments, 'id', 'name', @work_loan.department_id), { prompt: 'Select a Department' }, class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= f.label :hours %>
+        <%= f.text_field :hours, class: 'form-control' %>
+      </div>
+      <div class="form-group">
+        <%= f.label :date %>
+        <div class="input-group date" id="datepicker">
+          <%= f.text_field :date, placeholder: 'DD/MM/YYYY', class: 'form-control' %>
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <%= f.submit "Create" %>
+      </div>
     <% end %>
 
-    <br />
+    <script>
+      $(function() {
+          $('#datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+            <% if I18n.locale == :en %>
+              locale: 'en'
+            <% else %>
+              locale: 'fr'
+            <% end %>
+          });
+      });
+    </script>

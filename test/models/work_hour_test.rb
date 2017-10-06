@@ -103,13 +103,13 @@ class WorkHourTest < ActiveSupport::TestCase
   end
 
   test "Default Hours" do
-    assert_equal 8, WorkHour.default_hours(Date.new(2017, 9, 5))
-    assert_equal 0, WorkHour.default_hours(Date.new(2017, 9, 9))
+    assert_equal 8, WorkHour.default_hours(Date.new(2017, 9, 5), nil)
+    assert_equal 0, WorkHour.default_hours(Date.new(2017, 9, 9), nil)
   end
 
   test "Default Hours?" do
-    assert WorkHour.default_hours?(Date.new(2017, 9, 5), '8')
-    refute WorkHour.default_hours?(Date.new(2017, 9, 5), '9')
+    assert WorkHour.default_hours?(Date.new(2017, 9, 5), nil, '8')
+    refute WorkHour.default_hours?(Date.new(2017, 9, 5), nil, '9')
   end
 
   test "Calculate Overtime" do

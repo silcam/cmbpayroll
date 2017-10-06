@@ -14,7 +14,7 @@ class WorkHourTest < ActiveSupport::TestCase
     params = some_valid_params
     params[:date] = 'abc'
     refute WorkHour.new(params).save, "Should not save with invalid date"
-    params[:date] = '2017-02-31'
+    params[:date] = '2018-02-31'
     refute WorkHour.new(params).save, "Should not save with invalid date"
     params[:date] = ''
     refute WorkHour.new(params).save, "Should not save with blank date"
@@ -30,6 +30,12 @@ class WorkHourTest < ActiveSupport::TestCase
     params = some_valid_params
     params[:date] = '2017-07-01'
     refute WorkHour.new(params).save, "Should not save if date is during vacation"
+  end
+
+  test "Inside the posted period" do
+    # Posted period is July 2017
+    refute WorkHour.create(some_valid_params.merge(date: '2017-07-31')).persisted?
+    assert WorkHour.create(some_valid_params.merge(date: '2017-08-01')).persisted?
   end
 
   test "Current Period" do
@@ -77,27 +83,23 @@ class WorkHourTest < ActiveSupport::TestCase
   test "Update" do
     hours = {'2017-08-07'=>'8', '2017-08-08'=>'12', '2017-08-09'=>'9', '2017-08-10'=>'8'}
     WorkHour.update @luke, hours
-    assert_nil @luke.work_hours.find_by(date: '2017-08-07'), "This should have been deleted"
-    assert_nil @luke.work_hours.find_by(date: '2017-08-10'), "This should not have been created"
+    assert_equal 8,  @luke.work_hours.find_by(date: '2017-08-07').hours, "This should have been updated"
+    assert_equal 8, @luke.work_hours.find_by(date: '2017-08-10').hours, "This should have been created"
     assert_equal 12, @luke.work_hours.find_by(date: '2017-08-08').hours
     assert_equal 9, @luke.work_hours.find_by(date: '2017-08-09').hours
   end
 
   test "Validate Valid Hours" do
     hours = {'2017-08-31'=>'8.1', '2017-09-01'=>'24', '2017-09-02'=>'0'}
-    assert_nil WorkHour.validate_hours!(hours), "Should run without raising an exception"
+    success, errors = WorkHour.update @luke, hours
+    assert success, "Should run without raising an exception"
   end
 
   test "Validate Invalid Hours" do
     hours = {'2017-08-31'=>'-1', '2017-09-01'=>'25', '2017-09-02'=>'two'}
-    begin
-      WorkHour.validate_hours! hours
-      assert false # An exception must be thrown
-    rescue InvalidHoursException => e
-      assert_equal 3, e.errors.count
-    else
-      assert false # Expecting an InvalidHoursException
-    end
+    success, errors = WorkHour.update @luke, hours
+    refute success, "Update should not succeed with invalid hours"
+    assert_equal 3, errors.count
   end
 
   test "Default Hours" do

@@ -1,0 +1,66 @@
+<% date = @period.start %>
+<table class="table table-bordered">
+
+  <!-- Days of the week headers -->
+  <tr>
+    <% (Date.new(2017, 10, 2) .. Date.new(2017, 10, 8)).each do |d| %>
+        <th><%= l(d, format: "%A") %></th>
+    <% end %>
+  </tr>
+  <% while date < @period.finish %>
+      <tr>
+
+        <!-- Empty boxes until the first -->
+        <% unless date.monday? %>
+            <% (last_monday(date)..(date-1)).each do %>
+                <td class="col-md-1"></td>
+            <% end %>
+        <% end %>
+
+        <!-- A week -->
+        <% begin %>
+            <td class="col-md-1">
+              <% day_hash = @days_hash[date] %>
+              <h5><b><%= date.strftime("%-d %b") %></b></h5>
+              <i><%= day_hash[:holiday] %></i><br>
+
+              <h3>
+                <% if day_hash[:vacation] %>
+                    <%= t :Vacation %>
+
+                <% else %>
+                  <% if form %>
+                    <% hours = day_hash[:hours] || WorkHour.default_hours(date, day_hash[:holiday]) %>
+                    <% css_class = 'form-control' %>
+                    <% css_class += ' off-day-field' if is_off_day?(date, day_hash[:holiday]) %>
+                    <%= text_field_tag "hours[#{date}]",
+                                       number_to_human(hours),
+                                       class: css_class %>
+
+
+                  <% else %>
+                    <% unless day_hash[:hours].nil? %>
+                      <% if day_hash[:dept] %>
+                          <p><small><em>Loaned to: <%= Department.find(day_hash[:dept]).name %></em></small></p>
+                      <% end %>
+                      <span <%= 'style="color: blue;"'.html_safe unless WorkHour.default_hours?(date, day_hash[:holiday], day_hash[:hours]) %>>
+                        <%= number_to_human day_hash[:hours] %>&nbsp;
+                        <small><%= t :Hours %></small>
+                      </span>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </h3>
+            </td>
+            <% date += 1 %>
+        <% end until date.monday? or date > @period.finish %>
+
+        <!-- Empty boxes after the end of the month -->
+        <% unless date.monday? %>
+            <% (date .. next_sunday(date)).each do %>
+                <td class="col-md-1"></td>
+            <% end %>
+        <% end %>
+      </tr>
+  <% end %>
+</table>

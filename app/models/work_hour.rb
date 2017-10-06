@@ -8,8 +8,9 @@ class WorkHour < ApplicationRecord
   belongs_to :employee
 
   validates :date, presence: true
-  validates :hours, numericality: true
+  validates :hours, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24}
   validate :not_during_vacation
+  validate :not_during_posted_period
 
   default_scope { order(:date) }
   scope :current_period, -> { where(date: Period.current_as_range)}
@@ -46,57 +47,31 @@ class WorkHour < ApplicationRecord
                                 Vacation.days_hash(employee, start, finish)
     (start .. finish).each do |day|
       days[day] = {} unless days.has_key? day
-      unless days[day].has_key? :hours
-        if is_off_day?(day, days[day][:holiday]) or
-          day < employee.first_day
-          days[day][:hours] = 0
-        else
-          days[day][:hours] = workday
-        end
-      end
     end
     days
   end
 
   def self.update(employee, days_hours)
-    validate_hours!(days_hours)
+    all_errors = []
     days_hours.each do |day, hours|
       day = Date.strptime day
-      work_hour = employee.work_hours.find_by(date: day)
-      if work_hour.nil?
-        employee.work_hours.create(date: day, hours: hours) unless default_hours?(day, hours)
-      else
-        if default_hours?(day, hours)
-          work_hour.destroy
-        else
-          work_hour.update(hours: hours)
-        end
-      end
+      work_hour = employee.work_hours.find_or_initialize_by(date: day)
+      work_hour.update(hours: hours)
+      all_errors << work_hour.errors if work_hour.errors.any?
     end
+    return all_errors.empty?, all_errors
   end
 
-  def self.validate_hours!(days_hours)
-    errors = []
-    days_hours.each do |day, hours|
-      begin
-        raise "Out of Range" unless (0..24) === hours.to_d
-      rescue
-        errors << "#{hours} #{I18n.t(:invalid_hours)}"
-      end
-    end
-    raise InvalidHoursException.new(errors) unless errors.empty?
+  def self.default_hours(date, holiday)
+    is_off_day?(date, holiday) ? NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY : WorkHour.workday
   end
 
-  def self.default_hours(date)
-    is_weekday?(date) ?  WorkHour.workday : NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY
-  end
-
-  def self.default_hours?(date, hours)
-    hours.to_d == default_hours(date)
+  def self.default_hours?(date, holiday, hours)
+    hours.to_d == default_hours(date, holiday)
   end
 
   def self.calculate_overtime(date, day_hash)
-    return {} if day_hash[:hours] == 0
+    return {} if day_hash[:hours].nil? or day_hash[:hours] == 0
     return {holiday: day_hash[:hours]} if holiday_overtime? date, day_hash
     if day_hash[:hours] > workday
       {normal: workday, overtime: (day_hash[:hours]-workday)}
@@ -113,6 +88,20 @@ class WorkHour < ApplicationRecord
     NUMBER_OF_HOURS_IN_A_WORKDAY
   end
 
+  # Developer helper method. Call from the Rails console to populate some WorkHours
+  # Comment out this line before running: validate :not_during_posted_period
+  def self.fill_in_workhours(end_date)
+    holidays = Holiday.days_hash(Date.new(2016, 1, 1), end_date)
+    Employee.all.each do |emp|
+      (emp.first_day .. end_date).each do |d|
+        if emp.work_hours.find_by(date: d).nil?
+          hours = is_off_day?(d, holidays[d]) ? 0 : 8
+          emp.work_hours << WorkHour.new(date: d, hours: hours)
+        end
+      end
+    end
+  end
+
   private
 
   def not_during_vacation
@@ -120,6 +109,12 @@ class WorkHour < ApplicationRecord
         where("start_date <= :date AND end_date >= :date", {date: date}).
         empty?
       errors.add(:date, I18n.t(:not_during_vacation))
+    end
+  end
+
+  def not_during_posted_period
+    if date and date <= LastPostedPeriod.get.finish
+      errors.add(:date, I18n.t(:cant_change_during_posted_period))
     end
   end
 

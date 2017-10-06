@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
     redirect_to not_allowed_path
   end
 
-  def get_params_period
-    params[:period] ? Period.fr_str(params[:period]) : Period.current
+  def get_params_period(default=Period.current)
+    params[:period] ? Period.fr_str(params[:period]) : default
   end
 end

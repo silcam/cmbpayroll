@@ -20,7 +20,7 @@ en:
   No_change: No Change
   Edit: Edit
   Save: Save
-  Delete: Delete
+  Delete: &Delete Delete
   Display: Display
   Download: Download
   Logout: Logout
@@ -31,7 +31,7 @@ en:
   Add: Add
   Show: Show
   Back: Back
-  Destroy: Destroy
+  Destroy: *Delete
   Assign: Assign
   Are_you_sure: Are you sure?
   error: error
@@ -155,6 +155,27 @@ en:
   Create_a_work_loan: Create a Work Loan
   Errors_creating_work_loan: Errors creating a Work Loan
   Department_or_person: Department or Person
+
+  #Loans
+  eight_month_term: 8 months
+  six_month_term: 6 months
+  Loans: Loans
+  Unpaid_loans_for: Unpaid Loans For
+  Paid_loans: Paid Loans For
+  Add_a_loan_payment: Add a Loan Payment
+  Loan_payment: Loan Payment
+  Original_amount: Original Amount
+  Origination: Origination
+  Term: Term
+  Outstanding_balance: Outstanding Balance
+  Total_outstanding: Total Outstanding Balance for All Loans
+  Total_amount: Total Amount of All Loans
+  New_payment_for_loan: New Payment for Loan
+  On_date: on
+  Create_a_new_loan: Create a New Loan
+  Create_a_new_payment: Create a New Payment
+  Editing_payment_for_loan: Editing Payment for Loan
+  Editing_loan: Modifiant un prêt
 
   # Vacations
   Enter_vacation: Enter Vacation

@@ -1,0 +1,9 @@
+<% provide :title,  t(:Loans) %>
+
+<h1><%= t(:New_payment_for_loan) %> (<%= number_to_currency(@loan.amount, locale: :cm) %> <%= t(:On_date) %> <%= @loan.origination %>)</h1>
+
+<%= form_for(@payment, url:  loan_loan_payments_path(@loan)) do |form| %>
+  <%= render 'form', form: form, loan: @loan %>
+<% end %>
+
+<%= link_to t(:Back), employee_loans_path(@employee), class: 'btn btn-default' %>

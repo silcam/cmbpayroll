@@ -1,0 +1,53 @@
+  <% if loan.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(loan.errors.count, "error") %> prohibited this loan from being saved:</h2>
+
+      <ul>
+      <% loan.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label t(:Amount) %>
+    <%= form.text_field :amount, id: :loan_amount, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label t(:Comment) %>
+    <%= form.text_field :comment, id: :loan_comment, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label t(:Origination) %>
+    <div class="input-group date" id="datepicker">
+      <%= form.text_field :origination, placeholder: 'DD/MM/YYYY', id: :loan_origination, class: 'form-control' %>
+      <span class="input-group-addon">
+        <span class="glyphicon glyphicon-calendar"></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= form.label t(:Term) %>
+    <%= form.select :term, Loan.terms.keys, { prompt: true }, id: :term, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.submit t(:Create_a_new_loan), :class => 'btn btn-primary' %>
+  </div>
+
+  <script>
+    $(function() {
+        $('#datepicker').datetimepicker({
+          format: 'DD/MM/YYYY',
+          <% if I18n.locale == :en %>
+            locale: 'en'
+          <% else %>
+            locale: 'fr'
+          <% end %>
+        });
+    });
+  </script>

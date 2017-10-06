@@ -16,6 +16,9 @@ Rails.application.routes.draw do
   shallow do
     resources :employees do
       resources :children
+      resources :loans, except: [:show] do
+        resources :loan_payments, except: [:show]
+      end
       resources :bonuses, only: [ :index ] do
         collection do
           get 'list_possible', to: 'bonuses#index'

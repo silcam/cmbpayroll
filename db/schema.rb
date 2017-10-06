@@ -152,6 +152,26 @@ ActiveRecord::Schema.define(version: 20171009134702) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "loan_payments", force: :cascade do |t|
+    t.float "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "loan_id"
+    t.index ["amount"], name: "index_loan_payments_on_amount"
+    t.index ["loan_id"], name: "index_loan_payments_on_loan_id"
+  end
+
+  create_table "loans", force: :cascade do |t|
+    t.float "amount"
+    t.string "comment"
+    t.date "origination"
+    t.integer "term"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "employee_id"
+    t.index ["employee_id"], name: "index_loans_on_employee_id"
+  end
+
   create_table "payslips", force: :cascade do |t|
     t.datetime "payslip_date"
     t.datetime "last_processed"

@@ -1,0 +1,22 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  employee: Luke
+  amount: 6000
+  term: six_month_term
+  comment: "Loan One"
+  origination: 2017-10-06
+
+augloan:
+  employee: Luke
+  amount: 5000
+  term: six_month_term
+  comment: august
+  origination: 2017-08-06
+
+septloan:
+  employee: Luke
+  amount: 3000
+  term: six_month_term
+  comment: september
+  origination: 2017-09-06

@@ -18,6 +18,7 @@ class Employee < ApplicationRecord
   has_many :work_loans
   has_many :vacations
   has_many :payslips
+  has_many :loans
 
   has_and_belongs_to_many :bonuses
 

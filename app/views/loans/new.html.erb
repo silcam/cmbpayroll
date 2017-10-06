@@ -1,0 +1,9 @@
+<% provide :title,  t(:Loans) %>
+
+<h1><%= t(:New_loan) %></h1>
+
+<%= form_for(@loan, url: employee_loans_path(@employee)) do |form| %>
+  <%= render 'form', form: form, loan: @loan %>
+<% end %>
+
+<%= link_to t(:Back), employee_loans_path, class: 'btn btn-default' %>

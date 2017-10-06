@@ -20,7 +20,7 @@ fr:
   No_change: Aucun changement
   Edit: Éditer
   Save: Enregistrer
-  Delete: Supprimer
+  Delete: &Delete Supprimer
   Display: Montrer
   Download: Télécharger
   Logout: Déconnexion
@@ -31,7 +31,7 @@ fr:
   Add: Ajouter
   Show: Montrer
   Back: Retourner
-  Destroy: Supprimer
+  Destroy: *Delete
   Assign: Attribuer
   Are_you_sure: Vous êtes sûr?
   error: faute
@@ -155,6 +155,27 @@ fr:
   Create_a_work_loan: Créer un prêt de travail
   Errors_creating_work_loan: Il y a des erreurs pendant la création du prêt de travail
   Department_or_person: Département ou personne
+
+  #Loans
+  eight_month_term: 8 mois
+  six_month_term: 6 mois
+  Loans: Prêts
+  Unpaid_loans_for: Les prêts non-payés de
+  Paid_loans: Les prêts payés
+  Add_a_loan_payment: Ajouter un paiement
+  Loan_payment: Un paiement
+  Original_amount: Le Montant original
+  Origination: Création
+  Term: Durée
+  Outstanding_balance: Le montant restant à payer
+  Total_outstanding: Le montant restant à payer
+  Total_amount: Le montant restant à payer
+  New_payment_for_loan: Nouveau paiement
+  On_date: le
+  Create_a_new_loan: Créer un nouveau prêt
+  Create_a_new_payment: Créer un nouveau paiement
+  Editing_payment_for_loan: Modifiant un paiement
+  Editing_loan: Modifiant un prêt
 
   # Vacations
   Vacation: Vacances

@@ -4,17 +4,17 @@
 
 <ul class="list-inline" style="margin-top: 15px;">
   <li>
-    <label><%= :Children %>:</label>
+    <label><%= t(:Children) %>:</label>
     <%= link_to t(:View), employee_children_path(@employee) %> |
     <%= link_to t(:Add), new_employee_child_path(@employee) %>
   </li>
   <li>
-    <label><%= :Vacation %>:</label>
+    <label><%= t(:Vacation) %>:</label>
     <%= link_to t(:View), employee_vacations_path(@employee) %> |
     <%= link_to t(:Add), new_employee_vacation_path(@employee, referred_by: employee_vacations_path(@employee)) %>
   </li>
   <li>
-    <label><%= :Charges %>:</label>
+    <label><%= t(:Charges) %>:</label>
     <%= link_to t(:View), employee_charges_path(@employee) %> |
     <%= link_to t(:Add), new_employee_charge_path(@employee, referred_by: request.path) %>
   </li>
@@ -23,12 +23,16 @@
     <%= link_to t(:View), employee_work_hours_path(@employee) %> |
     <%= link_to t(:Enter), edit_employee_work_hours_path(@employee) %>
   </li>
+    <label><%= t(:Loans) %>:</label>
+    <%= link_to t(:View), employee_loans_path(@employee) %> |
+    <%= link_to t(:Add), new_employee_loan_path(@employee, referred_by: request.path) %>
+  </li>
   <li>
-    <label><%= :Bonuses %>:</label>
+    <label><%= t(:Bonuses) %>:</label>
     <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee) %>
   </li>
   <li>
-    <label><%= :Payslips %>:</label>
+    <label><%= t(:Payslips) %>:</label>
     <%= link_to t(:View), employee_payslips_path(@employee) %>
   </li>
 </ul>

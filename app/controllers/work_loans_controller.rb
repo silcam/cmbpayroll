@@ -34,7 +34,7 @@ class WorkLoansController < ApplicationController
   private
 
   def work_loan_params
-    params.require(:work_loan).permit(:employee_id, :date, :hours, :department_id)
+    params.require(:work_loan).permit(:employee_id, :date, :hours, :department_person)
   end
 
   def get_departments

@@ -1,6 +1,7 @@
 class WorkLoan < WorkHour
   belongs_to :employee
-  belongs_to :department
+
+  validates :department_person, presence: true
 
   def self.for_period(period = Period.current)
     WorkLoan.where(date: period.to_range())
@@ -19,7 +20,7 @@ class WorkLoan < WorkHour
   end
 
   def self.total_hours_per_department(period=Period.current)
-    WorkLoan.unscoped().where(date: period.to_range()).group(:department).sum(:hours)
+    WorkLoan.unscoped().where(date: period.to_range()).group(:department_person).sum(:hours)
   end
 
 end

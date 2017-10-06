@@ -17,8 +17,8 @@ class WorkLoanTest < ActiveSupport::TestCase
     period = Period.new(2017,8)
     assert_equal(184, WorkHour.total_hours(employee, period)[:normal])
 
-    create_and_assign_loan(employee, period, 3)
-    create_and_assign_loan(employee, period, 3)
+    create_and_assign_loan(employee, period, 3, @admin)
+    create_and_assign_loan(employee, period, 3, @admin)
 
     work_hours = WorkHour.new
     work_hours.date = period.start
@@ -37,13 +37,13 @@ class WorkLoanTest < ActiveSupport::TestCase
     period = Period.new(2017,8)
 
     # This period
-    create_and_assign_loan(employee1, period, 1)
+    create_and_assign_loan(employee1, period, 1, @admin)
 
     # Next period #1
-    create_and_assign_loan(employee2, period.next, 2)
+    create_and_assign_loan(employee2, period.next, 2, @admin)
 
     # Next period #2
-    create_and_assign_loan(employee1, period.next, 3)
+    create_and_assign_loan(employee1, period.next, 3, @admin)
 
     current_period_loans = WorkLoan.for_period(period)
     assert_equal(1, current_period_loans.size)
@@ -82,24 +82,26 @@ class WorkLoanTest < ActiveSupport::TestCase
     assert_equal(11, WorkLoan.total_hours_for_period(period.next))
 
     #Total Hours per Period per Employee per Department
-    assert_equal({ @admin => 7 }, WorkLoan.total_hours_per_department(period))
-    assert_equal({ @admin => 6, @lss => 5 }, WorkLoan.total_hours_per_department(period.next))
+    assert_equal({ "Admin" => 7 }, WorkLoan.total_hours_per_department(period))
+    assert_equal({ "Admin" => 6, "LSS" => 5 }, WorkLoan.total_hours_per_department(period.next))
 
     refute(WorkLoan.has_hours_for_period?(period.previous))
     assert(WorkLoan.has_hours_for_period?(period))
   end
 
   def some_valid_params
-    {employee: @luke, date: '2017-08-09', hours: 9, department_id: @admin.id}
+    {employee: @luke, date: '2017-08-09', hours: 9, department_person: @admin.name}
   end
 
-  def create_and_assign_loan(employee, period, hours, department = @admin)
+  def create_and_assign_loan(employee, period, hours, department = nil, other = nil)
     work_loan = WorkLoan.new
 
     work_loan.date = period.start
     work_loan.hours = hours
-    work_loan.department = department
+    work_loan.department_person = department.name
+    work_loan.other = other
 
     employee.work_loans << work_loan
+    work_loan
   end
 end

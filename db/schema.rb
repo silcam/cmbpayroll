@@ -236,10 +236,9 @@ ActiveRecord::Schema.define(version: 20171006154127) do
     t.float "hours"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "department_id"
     t.string "type"
     t.boolean "sick", default: false
-    t.index ["department_id"], name: "index_work_hours_on_department_id"
+    t.string "department_person"
     t.index ["employee_id"], name: "index_work_hours_on_employee_id"
   end
 

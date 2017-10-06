@@ -11,7 +11,7 @@
 <%= t(:Total_loaned_hours_per_department) %>:<br />
   <ul>
   <% @dept_hash.each do |dept,hours| %>
-      <li><strong><%= dept.name %></strong>: <%= hours %></li>
+      <li><strong><%= dept %></strong>: <%= hours %></li>
   <% end %>
   </ul>
 <% end %>
@@ -21,7 +21,7 @@
     <tr>
       <th><%= t(:Employee) %></th>
       <th><%= t(:Hours) %></th>
-      <th><%= t(:Department) %></th>
+      <th><%= t(:Department_or_person) %></th>
       <th><%= t(:Date) %></th>
       <th></th>
     </tr>
@@ -32,7 +32,7 @@
       <tr>
         <td><%= loan.employee.full_name %></td>
         <td><%= loan.hours %></td>
-        <td><%= loan.department.name %></td>
+        <td><%= loan.department_person %></td>
         <td><%= loan.date %></td>
         <td><%= link_to t(:Destroy), loan, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
       </tr>

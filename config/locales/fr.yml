@@ -139,6 +139,8 @@ fr:
   not_during_vacation: ne peut pas coïncider avec des vacances
   OT_and_partial: Surtravail et jours partiels
   invalid_hours: n'est pas un nombre valide d'heures.
+  Sick: Malade
+  Sick_day: Malade
 
   # WorkLoans
   Work_loans: Prêts de Travail

@@ -3,7 +3,8 @@ class WorkHoursController < ApplicationController
   before_action :get_employee
 
   def index
-    @period = get_params_period
+    @period = get_params_period(LastPostedPeriod.current)
+    # TODO Revisit this
     @hours_worked = (@period == Period.current) ?
                         @employee.total_hours_so_far :
                         WorkHour.total_hours(@employee, @period)
@@ -13,20 +14,17 @@ class WorkHoursController < ApplicationController
   end
 
   def edit
-    date = Date.strptime params[:week]
-    @week = WorkHour.days_hash_for_week(@employee, date)
+    @period = LastPostedPeriod.current
+    @days_hash = WorkHour.complete_days_hash(@employee, @period.start, @period.finish)
   end
 
   def update
-    begin
-      WorkHour.update(@employee, params['hours'])
+    success, @all_errors = WorkHour.update(@employee, params['hours'], params['sick'])
+    if success
       redirect_to employee_work_hours_path(@employee)
-    rescue InvalidHoursException => e
-      @errors = e.errors
-      @week = WorkHour.days_hash_for_week(@employee, Date.strptime(params['hours'].keys.first))
-      @week.each do |date, day|
-        day[:hours] = params['hours'][date.to_s] if params['hours'].has_key?(date.to_s)
-      end
+    else
+      @period = LastPostedPeriod.current
+      @days_hash = WorkHour.complete_days_hash @employee, @period.start, @period.finish
       render 'edit'
     end
   end

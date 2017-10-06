@@ -4,10 +4,8 @@
 
 
 <div style="margin-bottom: 8px;">
-  <%= form_tag edit_employee_work_hours_path, method: :get, class: 'inline-fields' do %>
-      <label><%= t :Enter_hours_week_of %></label>
-      <%= select_tag :week, mondays_for_select, class: 'form-control' %>
-      <%= submit_tag t(:Go), class: 'btn btn-primary' %>
+  <% if @period == LastPostedPeriod.current %>
+    <%= link_to t(:Enter_hours), edit_employee_work_hours_path(@employee), class: 'btn btn-primary' %>
   <% end %>
 </div>
 
@@ -27,42 +25,5 @@
 
 <%= render 'shared/period_nav', path: employee_work_hours_path(@employee), period: @period %>
 
-    <% date = @period.start %>
-    <table class="table table-bordered">
-      <% while date < @period.finish %>
-        <tr>
-          <% unless date.monday? %>
-            <% (last_monday(date)..(date-1)).each do %>
-              <td class="col-md-1"></td>
-            <% end %>
-          <% end %>
-
-          <% begin %>
-            <td class="col-md-1">
-              <h5><b><%= date.strftime("%-d %b") %></b></h5>
-              <i><%= @days_hash[date][:holiday] %></i><br>
-              <h3>
-                <% if @days_hash[date][:vacation] %>
-                  <%= t :Vacation %>
-                <% else %>
-                  <% unless date >= Date.today %>
-                    <% if @days_hash[date][:dept] %>
-                      <p><small><em>Loaned to: <%= Department.find(@days_hash[date][:dept]).name %></em></small></p>
-                    <% end %>
-                    <%= number_to_human @days_hash[date][:hours] %>&nbsp;<small><%= t :Hours %></small>
-                  <% end %>
-                <% end %>
-              </h3>
-            </td>
-            <% date += 1 %>
-          <% end until date.monday? or date > @period.finish %>
-
-          <% unless date.monday? %>
-            <% (date .. next_sunday(date)).each do %>
-              <td class="col-md-1"></td>
-            <% end %>
-          <% end %>
-        </tr>
-      <% end %>
-    </table>
+<%= render 'calendar', form: false %>
 

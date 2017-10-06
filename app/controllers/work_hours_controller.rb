@@ -19,7 +19,7 @@ class WorkHoursController < ApplicationController
   end
 
   def update
-    success, @all_errors = WorkHour.update(@employee, params['hours'])
+    success, @all_errors = WorkHour.update(@employee, params['hours'], params['sick'])
     if success
       redirect_to employee_work_hours_path(@employee)
     else

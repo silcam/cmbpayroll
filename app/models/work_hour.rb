@@ -36,7 +36,7 @@ class WorkHour < ApplicationRecord
     work_hours = WorkHour.for(employee, start, finish)
     days = {}
     work_hours.each do |work_hour|
-      days[work_hour.date] = {hours: work_hour.hours}
+      days[work_hour.date] = {hours: work_hour.hours, sick: work_hour.sick}
     end
     days
   end
@@ -51,12 +51,13 @@ class WorkHour < ApplicationRecord
     days
   end
 
-  def self.update(employee, days_hours)
+  def self.update(employee, days_hours, days_sick)
+    days_sick.each{ |day, sick| days_hours[day] = 0 if sick}
     all_errors = []
     days_hours.each do |day, hours|
       day = Date.strptime day
       work_hour = employee.work_hours.find_or_initialize_by(date: day)
-      work_hour.update(hours: hours)
+      work_hour.update(hours: hours, sick: days_sick[day.to_s])
       all_errors << work_hour.errors if work_hour.errors.any?
     end
     return all_errors.empty?, all_errors

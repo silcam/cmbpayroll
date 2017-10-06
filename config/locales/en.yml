@@ -139,6 +139,8 @@ en:
   not_during_vacation: can't be during vacation
   OT_and_partial: Overtime and Partial Days
   invalid_hours: is not a valid number of hours.
+  Sick: Sick
+  Sick_day: Sick Day
 
   # WorkLoans
   Work_loans: Work Loans

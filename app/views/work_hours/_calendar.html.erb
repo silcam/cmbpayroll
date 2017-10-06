@@ -24,33 +24,40 @@
               <h5><b><%= date.strftime("%-d %b") %></b></h5>
               <i><%= day_hash[:holiday] %></i><br>
 
-              <h3>
-                <% if day_hash[:vacation] %>
-                    <%= t :Vacation %>
+              <% if day_hash[:vacation] %>
+                <h3><%= t :Vacation %></h3>
+
+              <% else %>
+                <% if form %>
+                  <% hours = day_hash[:hours] || WorkHour.default_hours(date, day_hash[:holiday]) %>
+                  <% css_class = 'form-control hours-text' %>
+                  <% css_class += ' off-day-field' if is_off_day?(date, day_hash[:holiday]) %>
+                  <%= text_field_tag "hours[#{date}]",
+                                     number_to_human(hours),
+                                     class: css_class %>
+                  <label>
+                    <%= check_box_tag "sick[#{date}]", 1, day_hash[:sick], class: 'sick-day-checkbox' %>
+                    <%= t :Sick_day %>
+                  </label>
+
 
                 <% else %>
-                  <% if form %>
-                    <% hours = day_hash[:hours] || WorkHour.default_hours(date, day_hash[:holiday]) %>
-                    <% css_class = 'form-control' %>
-                    <% css_class += ' off-day-field' if is_off_day?(date, day_hash[:holiday]) %>
-                    <%= text_field_tag "hours[#{date}]",
-                                       number_to_human(hours),
-                                       class: css_class %>
-
-
-                  <% else %>
+                  <h3>
                     <% unless day_hash[:hours].nil? %>
                       <% if day_hash[:dept] %>
                           <p><small><em>Loaned to: <%= Department.find(day_hash[:dept]).name %></em></small></p>
                       <% end %>
                       <span <%= 'style="color: blue;"'.html_safe unless WorkHour.default_hours?(date, day_hash[:holiday], day_hash[:hours]) %>>
                         <%= number_to_human day_hash[:hours] %>&nbsp;
-                        <small><%= t :Hours %></small>
+                        <small>
+                          <%= t :Hours %>
+                          <%= "(#{t :Sick})" if day_hash[:sick] %>
+                        </small>
                       </span>
                     <% end %>
-                  <% end %>
+                  </h3>
                 <% end %>
-              </h3>
+              <% end %>
             </td>
             <% date += 1 %>
         <% end until date.monday? or date > @period.finish %>

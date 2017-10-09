@@ -52,6 +52,7 @@ class WorkHour < ApplicationRecord
   end
 
   def self.update(employee, days_hours, days_sick)
+    days_sick ||= {}
     days_sick.each{ |day, sick| days_hours[day] = 0 if sick}
     all_errors = []
     days_hours.each do |day, hours|

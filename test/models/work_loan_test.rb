@@ -12,9 +12,10 @@ class WorkLoanTest < ActiveSupport::TestCase
   end
 
   test "WorkLoans don't increase WorkHours totals" do
-    employee = return_valid_employee()
-
     period = Period.new(2017,8)
+    employee = return_valid_employee()
+    generate_work_hours employee, period
+
     assert_equal(184, WorkHour.total_hours(employee, period)[:normal])
 
     create_and_assign_loan(employee, period, 3, @admin)
@@ -57,10 +58,12 @@ class WorkLoanTest < ActiveSupport::TestCase
   end
 
   test "Can Sum Work Loans for periods" do
+    period = Period.new(2017,8)
+
     employee1 = return_valid_employee()
     employee2 = return_valid_employee()
-
-    period = Period.new(2017,8)
+    generate_work_hours employee1, period
+    generate_work_hours employee2, period
 
     # This period
     create_and_assign_loan(employee1, period, 3, @admin)

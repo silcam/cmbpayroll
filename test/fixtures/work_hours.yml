@@ -7,3 +7,13 @@ LukesDayOff:
   date: 2017-08-08
   hours: 0
   employee: Luke
+
+<% (Date.new(2017, 8, 1) .. Date.new(2017, 8, 31)).each do |date| %>
+  <% unless (7..8) === date.day %>
+fix <%= "luke_workhour_#{date}" %>:
+  date: <%= date %>
+  employee: Luke
+  <% hours = ((1..5)===date.wday) ? 8 : 0 %>
+  hours: <%= hours %>
+  <% end %>
+<% end %>

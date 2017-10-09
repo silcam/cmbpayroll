@@ -58,17 +58,19 @@ class WorkHourTest < ActiveSupport::TestCase
   end
 
   test "Total Hours with holiday" do
-    exp = {normal: (20 * 8)}
-    assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 12))
+    exp = WorkHour.total_hours(@luke, Period.new(2017, 8))
 
-    WorkHour.create(employee: @luke, date: '2017-12-25', hours: 2)
-    exp[:holiday] = 2
-    assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 12))
+    Holiday.create!(name: 'Ascension', date: '2017-08-14')
+    exp[:normal] += -8
+    exp[:holiday] = 8
+    assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 8))
   end
 
   test "Total Hours with Vacation" do
-    exp = {normal: (17 * 8)} # 5 days of vacation from the 5th to 9th
-    assert_equal exp, WorkHour.total_hours(employees(:Anakin), Period.new(2017, 6))
+    exp = WorkHour.total_hours(@luke, Period.new(2017, 8))
+    @luke.vacations.create!(start_date: '2017-08-14', end_date: '2017-08-18')
+    exp[:normal] += (-1 * 8 * 5)
+    assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 8))
   end
 
   test "Lukes Week of Aug 7, 2017" do
@@ -82,22 +84,25 @@ class WorkHourTest < ActiveSupport::TestCase
 
   test "Update" do
     hours = {'2017-08-07'=>'8', '2017-08-08'=>'12', '2017-08-09'=>'9', '2017-08-10'=>'8'}
-    WorkHour.update @luke, hours
+    WorkHour.update @luke, hours, {'2017-08-11'=>'1'}
     assert_equal 8,  @luke.work_hours.find_by(date: '2017-08-07').hours, "This should have been updated"
     assert_equal 8, @luke.work_hours.find_by(date: '2017-08-10').hours, "This should have been created"
     assert_equal 12, @luke.work_hours.find_by(date: '2017-08-08').hours
     assert_equal 9, @luke.work_hours.find_by(date: '2017-08-09').hours
+    sickday = @luke.work_hours.find_by(date: '2017-08-11')
+    assert_equal 0, sickday.hours
+    assert sickday.sick
   end
 
   test "Validate Valid Hours" do
     hours = {'2017-08-31'=>'8.1', '2017-09-01'=>'24', '2017-09-02'=>'0'}
-    success, errors = WorkHour.update @luke, hours
+    success, errors = WorkHour.update @luke, hours, {}
     assert success, "Should run without raising an exception"
   end
 
   test "Validate Invalid Hours" do
     hours = {'2017-08-31'=>'-1', '2017-09-01'=>'25', '2017-09-02'=>'two'}
-    success, errors = WorkHour.update @luke, hours
+    success, errors = WorkHour.update @luke, hours, {}
     refute success, "Update should not succeed with invalid hours"
     assert_equal 3, errors.count
   end

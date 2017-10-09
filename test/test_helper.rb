@@ -68,4 +68,11 @@ class ActiveSupport::TestCase
     return (0..length-1).map { (65 + rand(26)).chr }.join
   end
 
+  # Assumes no holidays
+  def generate_work_hours(employee, period)
+    (period.start .. period.finish).each do |date|
+      hours = WorkHour.default_hours date, nil
+      employee.work_hours.create!(date: date, hours: hours)
+    end
+  end
 end

@@ -186,6 +186,7 @@ class PayslipTest < ActiveSupport::TestCase
 
   test "work hours become earnings" do
     employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
 
     hours = {'2017-08-01' => 8,
              '2017-08-02' => 6,
@@ -194,7 +195,7 @@ class PayslipTest < ActiveSupport::TestCase
              '2017-08-05' => 1,
              '2017-08-06' => 1.2}
 
-    WorkHour.update employee, hours
+    WorkHour.update employee, hours, {}
 
     ### verify hours
     exp = {:normal => 172.5, :holiday => 1.2}
@@ -214,6 +215,7 @@ class PayslipTest < ActiveSupport::TestCase
 
   test "bonuses become become earnings" do
     employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
     employee.wage = 100
     assert employee.valid?
 
@@ -246,7 +248,7 @@ class PayslipTest < ActiveSupport::TestCase
              '2017-08-06' => 1.2,
              '2017-08-12' => 3.2}
 
-    WorkHour.update employee, hours
+    WorkHour.update employee, hours, {}
 
     ### verify hours
     exp = {:normal => 175.7, :holiday => 1.2}
@@ -304,11 +306,12 @@ class PayslipTest < ActiveSupport::TestCase
 
   test "test_cannot_make_two_payslips_same_period" do
     employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
 
     payslip = Payslip.new({
-        payslip_date: "2017-07-31",
-        period_year: Period.current.year,
-        period_month: Period.current.month
+        payslip_date: "2017-09-01",
+        period_year: 2017,
+        period_month: 8
     })
     refute_nil(payslip)
 
@@ -322,7 +325,7 @@ class PayslipTest < ActiveSupport::TestCase
     refute_nil(payslip.id)
 
     # Attempt to reprocess payslip
-    processed_payslip = Payslip.process(employee, Period.current)
+    processed_payslip = Payslip.process(employee, Period.new(2017, 8))
     assert(processed_payslip)
     assert(processed_payslip.valid?, "reprocessed payslip should be valid")
 
@@ -412,6 +415,7 @@ class PayslipTest < ActiveSupport::TestCase
   test "process_all_payslips_for_period" do
 
     employee_count = Employee.all.size
+    period = Period.new(2017, 8)
 
     # have an employee
     employee1 = return_valid_employee()
@@ -420,6 +424,7 @@ class PayslipTest < ActiveSupport::TestCase
     employee1.category_one!
     employee1.echelon_d!
     employee1.save
+    generate_work_hours employee1, period
     assert(employee1.valid?, "employee 1 should be valid")
     assert_equal(0, employee1.payslips.size, "should have no payslips initially")
 
@@ -429,6 +434,7 @@ class PayslipTest < ActiveSupport::TestCase
     employee2.category_one!
     employee2.echelon_f!
     employee2.save
+    generate_work_hours employee2, period
     assert(employee2.valid?, "employee 2 should be valid")
     assert_equal(0, employee2.payslips.size, "should have no payslips initially")
 
@@ -440,7 +446,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, employee2.payslips.size)
 
     # process all payslips
-    payslips = Payslip.process_all(Period.current)
+    payslips = Payslip.process_all(period)
 
     # processed one for each employee
     assert_equal(employee_count + 2, payslips.size)
@@ -487,6 +493,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     # process with flag to handle advance
     employee = return_valid_employee()
+    generate_work_hours employee, period
     payslip = Payslip.process(employee, period)
 
     # advance payslip is created
@@ -595,6 +602,4 @@ class PayslipTest < ActiveSupport::TestCase
 
     return count
   end
-
-
 end

@@ -13,6 +13,8 @@
 
 <%= form_tag update_employee_work_hours_path(@employee) do %>
 
+  <%= hidden_field_tag :enter_all, params[:enter_all] %>
+
   <%= render 'calendar', form: true %>
 
   <div id="translated_save" style="display: none"><%= t :Save %></div>

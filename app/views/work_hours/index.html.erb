@@ -1,29 +1,19 @@
-<%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
 
-<h2><%= t :Hours_for %> <%= @employee.full_name %></h2>
+<h2><%= @period.name %></h2>
 
+<% if @employees_needing_entry.empty? %>
+  <h3>
+    <small>
+      <%= t :no_employees_need_hours_entered %>
+    </small>
+  </h3>
+<% else %>
+  <h3>
+    <%= @employees_needing_entry.count %>
+    <small>
+      <%= t :employees_need_hours_entered %>
+    </small>
+  </h3>
 
-<div style="margin-bottom: 8px;">
-  <% if @period == LastPostedPeriod.current %>
-    <%= link_to t(:Enter_hours), edit_employee_work_hours_path(@employee), class: 'btn btn-primary' %>
-  <% end %>
-</div>
-
-<h3 >
-  <%= @period.month_name %> :
-  <%= number_to_human @hours_worked[:normal] or 0 %>
-  <small><%= t :Regular_hours %></small>
-  <% if @hours_worked[:overtime] %>
-    <%= number_to_human @hours_worked[:overtime] %>
-    <small><%= t :Overtime_hours %></small>
-  <% end %>
-  <% if @hours_worked[:holiday] %>
-    <%= number_to_human @hours_worked[:holiday] %>
-    <small><%= t :Holiday_overtime_hours %></small>
-  <% end %>
-</h3>
-
-<%= render 'shared/period_nav', path: employee_work_hours_path(@employee), period: @period %>
-
-<%= render 'calendar', form: false %>
-
+  <%= link_to t(:Enter_hours), edit_employee_work_hours_path(@employees_needing_entry.first, enter_all: true), class: 'btn btn-primary' %>
+<% end %>

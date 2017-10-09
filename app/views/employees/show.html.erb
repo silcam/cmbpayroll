@@ -20,7 +20,8 @@
   </li>
   <li>
     <label><%= :Hours %>:</label>
-    <%= link_to t(:View), employee_work_hours_path(@employee) %>
+    <%= link_to t(:View), employee_work_hours_path(@employee) %> |
+    <%= link_to t(:Enter), edit_employee_work_hours_path(@employee) %>
   </li>
   <li>
     <label><%= :Bonuses %>:</label>

@@ -1,16 +1,19 @@
 class WorkHoursController < ApplicationController
 
-  before_action :get_employee
+  before_action :set_employee
 
   def index
-    @period = get_params_period(LastPostedPeriod.current)
-    # TODO Revisit this
-    @hours_worked = (@period == Period.current) ?
-                        @employee.total_hours_so_far :
-                        WorkHour.total_hours(@employee, @period)
-    @days_hash = WorkHour.complete_days_hash @employee,
-                                             @period.start,
-                                             @period.finish
+    if @employee
+      @period = get_params_period(LastPostedPeriod.current)
+      @hours_worked = WorkHour.total_hours(@employee, @period)
+      @days_hash = WorkHour.complete_days_hash @employee,
+                                               @period.start,
+                                               @period.finish
+      render 'index_for_employee'
+    else
+      @period = LastPostedPeriod.current
+      @employees_needing_entry = WorkHour.employees_lacking_work_hours(@period)
+    end
   end
 
   def edit
@@ -21,7 +24,16 @@ class WorkHoursController < ApplicationController
   def update
     success, @all_errors = WorkHour.update(@employee, params['hours'], params['sick'])
     if success
-      redirect_to employee_work_hours_path(@employee)
+      if params[:enter_all] == 'true'
+        employee = WorkHour.employees_lacking_work_hours(LastPostedPeriod.current).first
+        if employee
+          redirect_to edit_employee_work_hours_path(employee, enter_all: true)
+        else
+          redirect_to work_hours_path
+        end
+      else
+        redirect_to employee_work_hours_path(@employee)
+      end
     else
       @period = LastPostedPeriod.current
       @days_hash = WorkHour.complete_days_hash @employee, @period.start, @period.finish
@@ -35,7 +47,7 @@ class WorkHoursController < ApplicationController
     params.require(:work_hour).permit(:employee_id, :date, :hours)
   end
 
-  def get_employee
-    @employee = Employee.find params[:employee_id]
+  def set_employee
+    @employee = Employee.find(params[:employee_id]) if params[:employee_id]
   end
 end

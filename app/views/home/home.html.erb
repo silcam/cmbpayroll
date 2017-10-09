@@ -4,19 +4,17 @@
     <h2><%= t :Tasks %></h2>
     <hr>
     <ul class="list-unstyled" id="link-list">
-      <li><%= link_to t(:Employees), 'employees' %></li>
-      <li><%= link_to t(:Hours), 'work_hours' %></li>
+      <li><%= link_to t(:Employees), employees_path %></li>
+      <li><%= link_to t(:Hours), work_hours_path %></li>
       <li><%= link_to t(:Vacation), vacations_path %></li>
-      <li><%= link_to t(:Bonuses), 'bonuses' %></li>
-      <li><%= link_to t(:Charges), charges_path %></li>
+      <li><%= link_to t(:Bonuses), bonuses_path %></li>
       <li><%= link_to t(:Work_loans), work_loans_path %></li>
-      <li><%= link_to t(:Reports), 'reports' %></li>
-      <li><%= link_to t(:Events), 'events' %></li>
+      <li><%= link_to t(:Reports), reports_path %></li>
       <li><%= link_to t(:Users), users_path %></li>
       <li><%= link_to t(:Standard_charge_notes), standard_charge_notes_path %></li>
       <li><%= link_to t(:Holidays), holidays_path %></li>
-      <li><%= link_to t(:Payslip_management), 'payslips' %></li>
-      <li><%= link_to t(:Department_management), 'departments' %></li>
+      <li><%= link_to t(:Payslip_management), payslips_path %></li>
+      <li><%= link_to t(:Department_management), departments_path %></li>
     </ul>
   </div>
   <div class="col-md-6">

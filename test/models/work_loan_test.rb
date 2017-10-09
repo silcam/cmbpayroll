@@ -96,13 +96,12 @@ class WorkLoanTest < ActiveSupport::TestCase
     {employee: @luke, date: '2017-08-09', hours: 9, department_person: @admin.name}
   end
 
-  def create_and_assign_loan(employee, period, hours, department = nil, other = nil)
+  def create_and_assign_loan(employee, period, hours, department = nil)
     work_loan = WorkLoan.new
 
     work_loan.date = period.start
     work_loan.hours = hours
     work_loan.department_person = department.name
-    work_loan.other = other
 
     employee.work_loans << work_loan
     work_loan

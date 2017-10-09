@@ -50,13 +50,6 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal exp, WorkHour.total_hours(@luke, Period.new(2017, 8))
   end
 
-  test "Total Hours So Far" do
-    Date.stub :today, Date.new(2017,8,11) do
-      exp = {normal: 56, overtime: 2}
-      assert_equal exp, WorkHour.total_hours_so_far(@luke)
-    end
-  end
-
   test "Total Hours with holiday" do
     exp = WorkHour.total_hours(@luke, Period.new(2017, 8))
 
@@ -92,6 +85,13 @@ class WorkHourTest < ActiveSupport::TestCase
     sickday = @luke.work_hours.find_by(date: '2017-08-11')
     assert_equal 0, sickday.hours
     assert sickday.sick
+  end
+
+  test "Employees Lacking Work Hours" do
+    chewie = employees :Chewie
+    employees = WorkHour.employees_lacking_work_hours(Period.new(2017, 8))
+    assert_includes employees, chewie
+    refute_includes employees, @luke
   end
 
   test "Validate Valid Hours" do

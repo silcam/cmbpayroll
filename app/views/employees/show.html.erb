@@ -18,12 +18,11 @@
     <%= link_to t(:View), employee_charges_path(@employee) %> |
     <%= link_to t(:Add), new_employee_charge_path(@employee, referred_by: request.path) %>
   </li>
-  <% if @employee.hourly? %>
-    <li>
-      <label><%= :Hours %>:</label>
-      <%= link_to t(:View), employee_work_hours_path(@employee) %>
-    </li>
-  <% end %>
+  <li>
+    <label><%= :Hours %>:</label>
+    <%= link_to t(:View), employee_work_hours_path(@employee) %> |
+    <%= link_to t(:Enter), edit_employee_work_hours_path(@employee) %>
+  </li>
   <li>
     <label><%= :Bonuses %>:</label>
     <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee) %>

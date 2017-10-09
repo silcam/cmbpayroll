@@ -23,10 +23,6 @@ class WorkHour < ApplicationRecord
     total_hours_for employee, period.start, period.finish
   end
 
-  def self.total_hours_so_far(employee)
-    total_hours_for employee, Period.current.start, yesterday
-  end
-
   def self.days_hash_for_week(employee, date)
     monday = last_monday date
     complete_days_hash employee, monday, (monday + 6)
@@ -62,6 +58,13 @@ class WorkHour < ApplicationRecord
       all_errors << work_hour.errors if work_hour.errors.any?
     end
     return all_errors.empty?, all_errors
+  end
+
+  def self.employees_lacking_work_hours(period)
+    Employee.where("employees.id NOT IN
+                    (SELECT DISTINCT employee_id FROM work_hours
+                    WHERE work_hours.date BETWEEN :start AND :finish)",
+                   {start: period.start, finish: period.finish})
   end
 
   def self.default_hours(date, holiday)

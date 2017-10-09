@@ -16,6 +16,7 @@ fr:
   Search: Rechercher
   View: Voir
   Modify: Modifier
+  Enter: Saisir
   No_change: Aucun changement
   Edit: Éditer
   Save: Enregistrer
@@ -141,6 +142,8 @@ fr:
   invalid_hours: n'est pas un nombre valide d'heures.
   Sick: Malade
   Sick_day: Malade
+  employees_need_hours_entered: employés ont besoin d'avoir leurs heures saisies pour ce mois.
+  no_employees_need_hours_entered: Toutes heures sont saisies pour ce mois.
 
   # WorkLoans
   Work_loans: Prêts de Travail

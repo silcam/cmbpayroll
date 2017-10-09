@@ -35,7 +35,7 @@
                   <%= text_field_tag "hours[#{date}]",
                                      number_to_human(hours),
                                      class: css_class %>
-                  <label>
+                  <label style="font-weight: normal">
                     <%= check_box_tag "sick[#{date}]", 1, day_hash[:sick], class: 'sick-day-checkbox' %>
                     <%= t :Sick_day %>
                   </label>

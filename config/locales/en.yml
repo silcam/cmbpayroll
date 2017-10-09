@@ -16,6 +16,7 @@ en:
   Search: Search
   View: View
   Modify: Modify
+  Enter: Enter
   No_change: No Change
   Edit: Edit
   Save: Save
@@ -141,6 +142,8 @@ en:
   invalid_hours: is not a valid number of hours.
   Sick: Sick
   Sick_day: Sick Day
+  employees_need_hours_entered: employees need to have hours entered for this period.
+  no_employees_need_hours_entered: All hours have been entered for this period.
 
   # WorkLoans
   Work_loans: Work Loans

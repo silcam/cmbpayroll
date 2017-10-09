@@ -1,7 +1,11 @@
-class WorkLoan < WorkHour
+include ApplicationHelper
+
+class WorkLoan < ApplicationRecord
   belongs_to :employee
 
   validates :department_person, presence: true
+  validates :date, presence: true
+  validates :hours, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24}
 
   def self.for_period(period = Period.current)
     WorkLoan.where(date: period.to_range())
@@ -12,7 +16,7 @@ class WorkLoan < WorkHour
   end
 
   def self.total_hours(employee, period=Period.current)
-    self.for(employee, period.start, period.finish).sum(:hours)
+    where(employee: employee, date: (period.start .. period.finish)).sum(:hours)
   end
 
   def self.total_hours_for_period(period=Period.current)

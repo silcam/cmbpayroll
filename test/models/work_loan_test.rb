@@ -11,23 +11,6 @@ class WorkLoanTest < ActiveSupport::TestCase
     model_validation_hack_test WorkLoan, some_valid_params
   end
 
-  test "WorkLoans don't increase WorkHours totals" do
-    period = Period.new(2017,8)
-    employee = return_valid_employee()
-    generate_work_hours employee, period
-
-    assert_equal(184, WorkHour.total_hours(employee, period)[:normal])
-
-    create_and_assign_loan(employee, period, 3, @admin)
-    create_and_assign_loan(employee, period, 3, @admin)
-
-    hours = {'2017-08-31'=>'13'}
-    WorkHour.update employee, hours, {}
-
-    assert_equal(184, WorkHour.total_hours(employee, period)[:normal])
-    assert_equal(5.0, WorkHour.total_hours(employee, period)[:overtime])
-  end
-
   test "WorkLoans for_period" do
     employee1 = return_valid_employee()
     employee2 = return_valid_employee()

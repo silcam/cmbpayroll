@@ -21,11 +21,8 @@ class WorkLoanTest < ActiveSupport::TestCase
     create_and_assign_loan(employee, period, 3, @admin)
     create_and_assign_loan(employee, period, 3, @admin)
 
-    work_hours = WorkHour.new
-    work_hours.date = period.start
-    work_hours.hours = "13"
-
-    employee.work_hours << work_hours
+    hours = {'2017-08-31'=>'13'}
+    WorkHour.update employee, hours, {}
 
     assert_equal(184, WorkHour.total_hours(employee, period)[:normal])
     assert_equal(5.0, WorkHour.total_hours(employee, period)[:overtime])

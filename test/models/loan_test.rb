@@ -71,6 +71,7 @@ class LoanTest < ActiveSupport::TestCase
 
     payment = LoanPayment.new
     payment.amount = 500
+    payment.date = Date.today
     loan.loan_payments << payment
 
     loan.save
@@ -103,11 +104,11 @@ class LoanTest < ActiveSupport::TestCase
 
     payment1 = LoanPayment.new
     payment1.amount = 333
+    payment1.date = Date.today
     loan1.loan_payments << payment1
 
     assert_equal(3000, Loan.total_amount(employee))
     assert_equal(3000 - 333, Loan.total_balance(employee))
-
   end
 
   test "can compute outstanding balance per loan" do
@@ -125,12 +126,14 @@ class LoanTest < ActiveSupport::TestCase
 
     payment = LoanPayment.new
     payment.amount = 500
+    payment.date = Date.today
     loan.loan_payments << payment
 
     assert_equal(500, loan.balance())
 
     payment = LoanPayment.new
     payment.amount = 5
+    payment.date = Date.today
     loan.loan_payments << payment
 
     assert_equal(495, loan.balance())
@@ -150,11 +153,11 @@ class LoanTest < ActiveSupport::TestCase
     assert_equal(1000, Loan.total_amount(employee))
 
     assert_raise(ActiveRecord::RecordInvalid) do
-      loan.loan_payments.create!(amount: 1500)
+      loan.loan_payments.create!(amount: 1500, date: Date.today)
     end
 
     assert_nothing_raised do
-      loan.loan_payments.create!(amount: 6)
+      loan.loan_payments.create!(amount: 6, date: Date.today)
     end
   end
 
@@ -177,7 +180,7 @@ class LoanTest < ActiveSupport::TestCase
     assert_equal(1, Loan.unpaid_loans(employee).size)
     assert_equal(0, Loan.paid_loans(employee).size)
 
-    loan.loan_payments.create!(amount: 1000)
+    loan.loan_payments.create!(amount: 1000, date: Date.today)
 
     assert(loan.is_paid)
     assert_equal(0, Loan.total_amount(employee))

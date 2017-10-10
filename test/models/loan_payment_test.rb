@@ -11,24 +11,46 @@ class LoanPaymentTest < ActiveSupport::TestCase
     model_validation_hack_test LoanPayment, some_valid_params
   end
 
+  test "Get all payments for period" do
+    anakin = employees :Anakin
+
+    # pay off this loan in july
+    julyloan = loans :twokjuly
+
+    julypay = LoanPayment.new
+    julypay.amount = 2000
+    julypay.date = "2017-07-02"
+    julyloan.loan_payments << julypay
+
+    # this loan's payments should appear in the call
+    augloan = loans :sixkaug
+
+    augpay = LoanPayment.new
+    augpay.amount = 3000
+    augpay.date = "2017-08-02"
+    augloan.loan_payments << augpay
+
+    # get August payments
+    augpayments = LoanPayment.get_all_payments(anakin, Period.new(2017,8))
+    assert_equal(1, augpayments.size())
+  end
+
   test "can't add or edit during posted period" do
-    Date.stub :today, Date.new(2017, 7, 30) do
-      # Can't add loan during posted pay period
-      pay = LoanPayment.new
-      pay.amount = 8
-      pay.loan = loans :julloan
+    # Can't add loan during posted pay period
+    pay = LoanPayment.new
+    pay.amount = 8
+    pay.date = '2017-07-30'
+    pay.loan = loans :julloan
 
-      refute pay.valid?, "should not be able to create during posted period"
-    end
+    refute pay.valid?, "should not be able to create during posted period"
 
-    Date.stub :today, Date.new(2017, 8, 30) do
-      # Can't add loan during posted pay period
-      pay = LoanPayment.new
-      pay.amount = 10
-      pay.loan = loans :augloan
+    # Can't add loan during posted pay period
+    pay = LoanPayment.new
+    pay.amount = 10
+    pay.date = '2017-08-03'
+    pay.loan = loans :augloan
 
-      assert pay.valid?, "should be valid outside of posted period"
-    end
+    assert pay.valid?, "should be valid outside of posted period"
   end
 
   test "can't delete during posted period" do
@@ -47,7 +69,7 @@ class LoanPaymentTest < ActiveSupport::TestCase
   end
 
   def some_valid_params
-    { loan: @loan_one, amount: 90 }
+    { loan: @loan_one, date: '2017-10-02', amount: 90 }
   end
 
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171009134702) do
+ActiveRecord::Schema.define(version: 20171010102129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -157,6 +157,7 @@ ActiveRecord::Schema.define(version: 20171009134702) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "loan_id"
+    t.datetime "date"
     t.index ["amount"], name: "index_loan_payments_on_amount"
     t.index ["loan_id"], name: "index_loan_payments_on_loan_id"
   end
@@ -164,7 +165,7 @@ ActiveRecord::Schema.define(version: 20171009134702) do
   create_table "loans", force: :cascade do |t|
     t.float "amount"
     t.string "comment"
-    t.date "origination"
+    t.datetime "origination"
     t.integer "term"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -186,6 +187,7 @@ ActiveRecord::Schema.define(version: 20171009134702) do
     t.decimal "vacation_balance"
     t.date "last_vacation_start"
     t.date "last_vacation_end"
+    t.decimal "loan_balance"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 

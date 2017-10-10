@@ -3,9 +3,11 @@
 septpay:
   loan: septloan
   amount: 6
+  date: 2017-09-30
   created_at: 2017-09-01
 
 augpay:
   loan: augloan
   amount: 5
+  date: 2017-08-30
   created_at: 2017-08-01

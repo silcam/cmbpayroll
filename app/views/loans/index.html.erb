@@ -2,7 +2,7 @@
 
 <%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
 
-<p class=bg-info" id="notice"><%= notice %></p>
+<p id="notice" class="alert alert-info"><%= notice %></p>
 
 <h2><%= t(:Unpaid_loans_for) %>: <%= @employee.full_name %></h2>
 
@@ -22,7 +22,7 @@
       <tr>
         <td><%= number_to_currency(loan.amount, locale: :cm) %></td>
         <td><%= loan.comment %></td>
-        <td><%= loan.origination %></td>
+        <td><%= l(loan.origination, format: :short) %></td>
         <td><%= t(loan.term) %></td>
         <td><%= link_to t(:Edit), edit_loan_path(loan) %></td>
         <td><%= link_to t(:Add_a_loan_payment), new_loan_loan_payment_path(loan) %></td>
@@ -33,7 +33,7 @@
         <tr>
           <td></td>
           <td><%= number_to_currency(payment.amount, locale: :cm) %> - <em><%= t(:Loan_payment) %></em></td>
-          <td><%= l(payment.created_at, format: :short) %></td>
+          <td><%= l(payment.date, format: :short) %></td>
           <td></td>
           <td><%= link_to t(:Edit), edit_loan_payment_path(payment) %> </td>
           <td> </td>

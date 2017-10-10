@@ -585,6 +585,179 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(2, count, "found both deductions")
   end
 
+  test "payslips includes loan payments as deductions" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+
+    # create loan
+    loan = Loan.new
+    loan.employee = employee
+    loan.origination = "2017-08-01"
+    loan.amount = 50000
+    loan.comment = "aug loan"
+    loan.term = "six_month_term"
+
+    assert(loan.valid?, "loan should be valid")
+
+    pay = LoanPayment.new
+    pay.amount = "2500"
+    pay.date = "2017-08-02"
+    pay.save
+
+    loan.loan_payments << pay
+    loan.save
+
+    assert(pay.valid?, "payment should be valid")
+    assert_equal(Date.new(2017,8,2), pay.date)
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # check deductions
+    deductions = payslip.deductions.where(note: LoanPayment::LOAN_PAYMENT_NOTE)
+    assert_equal(1, deductions.size)
+    assert_equal(pay.amount, deductions.first.amount)
+    assert_equal(pay.date, deductions.first.date)
+
+    # check loan balance
+    assert_equal(loan.amount - pay.amount, payslip.loan_balance)
+  end
+
+  test "Payslip handles no loans" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # check deductions
+    deductions = payslip.deductions.where(note: LoanPayment::LOAN_PAYMENT_NOTE)
+    assert_equal(0, deductions.size)
+
+    # check loan balance
+    assert_equal(0, payslip.loan_balance)
+  end
+
+  test "payslip can be re-run with loans" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+
+    # create loan
+    loan = Loan.new
+    loan.employee = employee
+    loan.origination = "2017-08-01"
+    loan.amount = 8000
+    loan.comment = "aug loan"
+    loan.term = "six_month_term"
+
+    assert(loan.valid?, "loan should be valid")
+
+    pay = LoanPayment.new
+    pay.amount = "2000"
+    pay.date = "2017-08-02"
+    pay.save
+
+    loan.loan_payments << pay
+    loan.save
+
+    assert(pay.valid?, "payment should be valid")
+    assert_equal(Date.new(2017,8,2), pay.date)
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # check deductions
+    deductions = payslip.deductions.where(note: LoanPayment::LOAN_PAYMENT_NOTE)
+    assert_equal(1, deductions.size)
+    assert_equal(pay.amount, deductions.first.amount)
+    assert_equal(pay.date, deductions.first.date)
+
+    # check loan balance
+    assert_equal(loan.amount - pay.amount, payslip.loan_balance)
+
+    # REPROCESS
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    deductions = payslip.deductions.where(note: LoanPayment::LOAN_PAYMENT_NOTE)
+    assert_equal(1, deductions.size)
+    assert_equal(loan.amount - pay.amount, payslip.loan_balance)
+  end
+
+  test "multiple loans make mupltiple deductions" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+
+    # create loan
+    loan = Loan.new
+    loan.employee = employee
+    loan.origination = "2017-08-01"
+    loan.amount = 8000
+    loan.comment = "aug loan"
+    loan.term = "six_month_term"
+
+    loan_other = Loan.new
+    loan_other.employee = employee
+    loan_other.origination = "2017-08-15"
+    loan_other.amount = 10000
+    loan_other.comment = "aug loan 2"
+    loan_other.term = "six_month_term"
+
+    assert(loan.valid?, "loan should be valid")
+    assert(loan_other.valid?, "loan should be valid")
+
+    pay = LoanPayment.new
+    pay.amount = "2000"
+    pay.date = "2017-08-02"
+    pay.save
+
+    loan.loan_payments << pay
+    loan.save
+
+    pay_other = LoanPayment.new
+    pay_other.amount = "2000"
+    pay_other.date = "2017-08-02"
+    pay_other.save
+
+    loan_other.loan_payments << pay_other
+    loan_other.save
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # check deductions
+    deductions = payslip.deductions.where(note: LoanPayment::LOAN_PAYMENT_NOTE)
+    assert_equal(2, deductions.size)
+
+    # check loan balance
+    assert_equal((loan.amount + loan_other.amount) - (pay.amount + pay_other.amount), payslip.loan_balance)
+  end
+
+  test "payslip with paid loan" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+
+    # create loan
+    loan = Loan.new
+    loan.employee = employee
+    loan.origination = "2017-08-01"
+    loan.amount = 8000
+    loan.comment = "aug loan"
+    loan.term = "six_month_term"
+
+    pay = LoanPayment.new
+    pay.amount = "8000"
+    pay.date = "2017-08-02"
+    pay.save
+
+    loan.loan_payments << pay
+    loan.save
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # check deductions
+    deductions = payslip.deductions.where(note: LoanPayment::LOAN_PAYMENT_NOTE)
+    assert_equal(1, deductions.size)
+
+    # check loan balance
+    assert_equal(0, payslip.loan_balance)
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

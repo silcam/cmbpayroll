@@ -7,6 +7,20 @@ one:
   comment: "Loan One"
   origination: 2017-10-06
 
+twokjuly:
+  employee: Anakin
+  amount: 2000
+  term: six_month_term
+  comment: "2000 July"
+  origination: 2017-07-06
+
+sixkaug:
+  employee: Anakin
+  amount: 6000
+  term: six_month_term
+  comment: "6000 Aug"
+  origination: 2017-08-06
+
 julloan:
   employee: Luke
   amount: 4000

@@ -23,7 +23,7 @@
   <div class="form-group">
     <%= form.label t(:Origination) %>
     <div class="input-group date" id="datepicker">
-      <%= form.text_field :origination, placeholder: 'DD/MM/YYYY', id: :loan_origination, class: 'form-control' %>
+      <input type="text" name="loan[origination]" id="loan_origination" class="form-control" />
       <span class="input-group-addon">
         <span class="glyphicon glyphicon-calendar"></span>
       </span>
@@ -42,6 +42,9 @@
   <script>
     $(function() {
         $('#datepicker').datetimepicker({
+          useCurrent: false,
+          showTodayButton: true,
+          defaultDate: moment('<%= loan.origination.strftime('%d/%m/%Y') %>', 'DD/MM/YYYY'),
           format: 'DD/MM/YYYY',
           <% if I18n.locale == :en %>
             locale: 'en'

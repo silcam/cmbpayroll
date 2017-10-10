@@ -1,11 +1,21 @@
 class LoanPayment < ApplicationRecord
   belongs_to :loan
 
+  LOAN_PAYMENT_NOTE="Loan Payment"
+
   validates :amount, numericality: { :greater_than_or_equal_to => 1 }
+  validates :date, presence: true
   validate :not_in_posted_period
 
+  def self.get_all_payments(employee, period)
+    raise ArgumentError if employee.nil? || period.nil?
+
+    joins(:loan).
+      where(date: period.start..period.finish, 'loans.employee_id': employee.id)
+  end
+
   def destroyable?
-    true if created_in_posted_period
+    true if not_in_posted_period
   end
 
   def destroy
@@ -15,14 +25,7 @@ class LoanPayment < ApplicationRecord
   private
 
   def not_in_posted_period
-    return date_in_posted_period(Date.today)
-  end
-
-  def created_in_posted_period
-    return date_in_posted_period(created_at)
-  end
-
-  def date_in_posted_period(date)
+    return false unless date.present?
     if date <= LastPostedPeriod.get.finish
       errors.add :date, I18n.t(:cant_be_during_posted_period)
       false

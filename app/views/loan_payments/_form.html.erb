@@ -16,5 +16,31 @@
   </div>
 
   <div class="form-group">
+    <%= form.label t(:Date) %>
+    <div class="input-group date" id="datepicker">
+      <input type="text" name="loan_payment[date]" id="loan_payment_date" class="form-control" />
+      <span class="input-group-addon">
+        <span class="glyphicon glyphicon-calendar"></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="form-group">
     <%= form.submit t(:Create_a_new_payment), :class => 'btn btn-primary' %>
   </div>
+
+  <script>
+    $(function() {
+        $('#datepicker').datetimepicker({
+          useCurrent: false,
+          showTodayButton: true,
+          defaultDate: moment('<%= @payment.date.strftime('%d/%m/%Y') %>', 'DD/MM/YYYY'),
+          format: 'DD/MM/YYYY',
+          <% if I18n.locale == :en %>
+            locale: 'en'
+          <% else %>
+            locale: 'fr'
+          <% end %>
+        });
+    });
+  </script>

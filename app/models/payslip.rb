@@ -126,6 +126,7 @@ class Payslip < ApplicationRecord
     payslip.deductions.delete_all
     self.process_charges(payslip, employee)
     self.process_employee_deduction(payslip, employee)
+    self.process_loans(payslip, employee, period)
     self.process_vacation(payslip, employee, period)
 
     payslip.last_processed = DateTime.now
@@ -223,5 +224,21 @@ class Payslip < ApplicationRecord
       payslip.last_vacation_start = last_vacation.start_date
       payslip.last_vacation_end = last_vacation.end_date
     end
+  end
+
+  def self.process_loans(payslip, employee, period)
+    payments = LoanPayment.get_all_payments(employee, period)
+
+    payments.each do |pmnt|
+      deduction = Deduction.new
+
+      deduction.note = LoanPayment::LOAN_PAYMENT_NOTE
+      deduction.amount = pmnt.amount
+      deduction.date = pmnt.date
+
+      payslip.deductions << deduction
+    end
+
+    payslip.loan_balance = Loan.total_balance(employee)
   end
 end

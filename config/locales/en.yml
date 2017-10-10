@@ -3,6 +3,9 @@ en:
   date:
     formats:
       name: "%B %Y"
+  time:
+    formats:
+      short: "%d %b %Y"
 
   # General
   Yes: &Yes Yes

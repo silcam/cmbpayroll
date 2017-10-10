@@ -28,6 +28,7 @@ class LoansController < ApplicationController
   end
 
   def update
+    @employee = @loan.employee
     if @loan.update(loan_params)
       redirect_to employee_loans_path(@loan.employee), notice: 'Loan was successfully updated.'
     else

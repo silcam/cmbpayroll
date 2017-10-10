@@ -61,6 +61,14 @@ class Loan < ApplicationRecord
     loans
   end
 
+  def destroyable?
+    true if not_in_posted_period
+  end
+
+  def destroy
+    super if destroyable?
+  end
+
   def is_paid
     if (balance() == 0)
       return true
@@ -79,6 +87,8 @@ class Loan < ApplicationRecord
     if origination.present? && origination <= LastPostedPeriod.get.finish
       errors.add :date, I18n.t(:cant_be_during_posted_period)
       false
+    else
+      true
     end
   end
 

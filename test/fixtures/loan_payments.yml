@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+septpay:
+  loan: septloan
+  amount: 6
+  created_at: 2017-09-01
+
+augpay:
+  loan: augloan
+  amount: 5
+  created_at: 2017-08-01

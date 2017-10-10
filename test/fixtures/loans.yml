@@ -7,6 +7,13 @@ one:
   comment: "Loan One"
   origination: 2017-10-06
 
+julloan:
+  employee: Luke
+  amount: 4000
+  term: six_month_term
+  comment: july
+  origination: 2017-07-06
+
 augloan:
   employee: Luke
   amount: 5000

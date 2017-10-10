@@ -187,7 +187,7 @@ class LoanTest < ActiveSupport::TestCase
 
   end
 
-  test "can't add during posted period" do
+  test "can't add or edit during posted period" do
     on_sep_5 do
       # Can't add loan during posted pay period
       loan = Loan.new
@@ -200,15 +200,21 @@ class LoanTest < ActiveSupport::TestCase
       loan.origination = '2017-08-01'
       assert loan.valid?, "should be valid outside of posted period"
     end
-
-  end
-
-  test "can't edit during posted period" do
-    assert(false)
   end
 
   test "can't delete during posted period" do
-    assert(false)
+    LastPostedPeriod.post_current
+    augloan = loans :augloan
+
+    augloan.destroy
+    assert_includes Loan.all(), augloan
+  end
+
+  test "can delete during posted period" do
+    septloan = loans :septloan
+
+    septloan.destroy
+    refute_includes Loan.all(), septloan
   end
 
   def some_valid_params

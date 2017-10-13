@@ -7,15 +7,42 @@ class WageTest < ActiveSupport::TestCase
 
     wage.category = 4
     wage.echelon = "g"
-    wage.echelonalt = "13"
-    wage.basewage = "13"
+    wage.echelonalt = 13
+    wage.basewage = 13
+    wage.basewageb = 13
+    wage.basewagec = 13
+    wage.basewaged = 13
+    wage.basewagee = 13
 
-    assert(wage.valid?)
+    assert(wage.valid?, "should be valid and ready to be saved")
 
     assert_raise(ActiveRecord::ReadOnlyRecord, "Should not be allowed to save") do
       wage.save
     end
+  end
 
+  test "Should be able to edit a new wage object" do
+    wage = Wage.find_by(category: 1, echelon: 'a', echelonalt: 1)
+
+    wage.basewageb = 13000
+
+    assert(wage.valid?, "should be valid and ready to be saved")
+
+    assert_nothing_raised do
+      wage.save
+    end
+  end
+
+  test "Should not be able to delete a wage object" do
+    wage = Wage.find_by(category: 1, echelon: 'a', echelonalt: 1)
+
+    wage.basewageb = 13000
+
+    assert(wage.valid?, "should be valid and ready to be saved")
+
+    assert_raise(ActiveRecord::ReadOnlyRecord, "Should not be allowed to delete") do
+      wage.destroy
+    end
   end
 
   test "Can lookup wage information" do

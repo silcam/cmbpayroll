@@ -1,8 +1,14 @@
 class Wage < ApplicationRecord
 
+  validates :basewage, :basewageb, :basewagec,
+           :basewaged, :basewagee, presence: { message: I18n.t(:Not_blank)}
+
   def readonly?
-    true
+    # Can be edited, no new ones created.
+    new_record? ? true : false
   end
+  # no deletes either
+  before_destroy { |record| raise ActiveRecord::ReadOnlyRecord }
 
   # TODO: this is gross
   def self.find_wage(input_category, input_echelon)

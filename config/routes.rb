@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   root "home#home"
@@ -54,6 +55,13 @@ Rails.application.routes.draw do
   get 'employees/:employee_id/work_hours',      to: 'work_hours#index', as: :employee_work_hours
   get 'employees/:employee_id/work_hours/edit', to: 'work_hours#edit',  as: :edit_employee_work_hours
   post 'employees/:employee_id/work_hours',    to: 'work_hours#update', as: :update_employee_work_hours
+
+  # Administration
+  get 'admin/index'
+  get 'admin/manage_variables'
+  get 'admin/manage_wages'
+  get 'admin/manage_wage_show'
+  post 'admin/manage_wage_show', to: 'admin#manage_wage_update'
 
   resources :users
 

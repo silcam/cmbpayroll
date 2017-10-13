@@ -1,0 +1,32 @@
+<h2>Manage Wages</h2>
+
+<% if notice %>
+<p id="notice" class="alert alert-info"><%= notice %></p>
+<% end %>
+
+<table class="table table-striped">
+  <tr>
+  <th>Category</th>
+  <th>Echelon</th>
+  <th>Echelon Alt</th>
+  <th>Base Wage</th>
+  <th>Base Wage B</th>
+  <th>Base Wage C</th>
+  <th>Base Wage D</th>
+  <th>Base Wage E</th>
+  <th>Edit</th>
+  </tr>
+<% @wages.each do |wage| %>
+  <tr>
+    <td><%= wage.category %></td>
+    <td><%= wage.echelon %></td>
+    <td><%= wage.echelonalt %></td>
+    <td><%= wage.basewage %></td>
+    <td><%= wage.basewageb %></td>
+    <td><%= wage.basewagec %></td>
+    <td><%= wage.basewaged %></td>
+    <td><%= wage.basewagee %></td>
+    <td><%= link_to 'Edit', admin_manage_wage_show_path(category: wage.category, echelon: wage.echelon, echelonalt: wage.echelonalt) %></td>
+  </tr>
+<% end %>
+</table>

@@ -1,0 +1,53 @@
+<h2>Manage Wages</h2>
+
+<h4>Wage Information for: Category: <%= @wage.category %>, Echelon: <%= @wage.echelon %>, Echelon ALT: <%= @wage.echelonalt %></h4>
+
+<% if @wage.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@wage.errors.count, "error") %> prohibited this record from being saved:</h2>
+    <ul>
+    <% @wage.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<br />
+
+<%= form_for :wage do |f| %>
+   <input type="hidden" name="category" value="<%= @wage.category %>" />
+   <input type="hidden" name="echelon" value="<%= @wage.echelon %>" />
+   <input type="hidden" name="echelonalt" value="<%= @wage.echelonalt %>" />
+
+  <div class="form-group">
+    <%= f.label :basewage, t(:Base_wage) %>
+    <%= f.text_field :basewage, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :basewageb, t(:Base_wage_b)  %>
+    <%= f.text_field :basewageb , class: 'form-control'%>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :basewagec, t(:Base_wage_c)  %>
+    <%= f.text_field :basewagec, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :basewaged, t(:Base_wage_d)  %>
+    <%= f.text_field :basewaged, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :basewagee, t(:Base_wage_e)  %>
+    <%= f.text_field :basewagee, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.submit "Update Record", class: 'btn btn-primary' %>
+  </div>
+
+<% end %>
+

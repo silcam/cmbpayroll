@@ -1,0 +1,20 @@
+<h1>View System Variables</h1>
+
+<table class="table table-striped">
+  <tr>
+    <th>Name</th>
+    <th>Value</th>
+  </tr>
+<% SystemVariable.get_defaults.each do |var| %>
+  <tr>
+    <td><%= var %></td>
+    <td><%= SystemVariable.value(var) %></td>
+  </tr>
+<% end %>
+<% SystemVariable.all.each do |var| %>
+  <tr>
+    <td><%= var.key %></td>
+    <td><%= var.value %></td>
+  </tr>
+<% end %>
+</table>

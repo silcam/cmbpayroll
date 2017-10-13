@@ -1,0 +1,15 @@
+    <h2><%= t :Activity_feed %></h2>
+    <hr>
+    <ul class="list-unstyled feed">
+      <% feed_items = PayrollAudit.feed_items()
+         feed_items.each do |item| %>
+        <li>
+          <strong class="text-capitalize"><%= item[:title] %> : </strong>
+          <p><%= item[:text] %></p>
+          <i><%= item[:when] %> by <%= item[:who] %></i>
+        </li>
+      <% end %>
+      <li>
+        <%= link_to t(:More_history), '#' %>
+      </li>
+    </ul>

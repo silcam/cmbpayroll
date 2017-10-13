@@ -11,4 +11,8 @@ class SystemVariable < ApplicationRecord
   def self.value(key)
     SystemVariable.find_by(key: key).try(:value) or DEFAULTS[key]
   end
+
+  def self.get_defaults
+    DEFAULTS.keys
+  end
 end

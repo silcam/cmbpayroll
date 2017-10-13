@@ -76,3 +76,24 @@ class ActiveSupport::TestCase
     end
   end
 end
+
+module ControllerTestHelper
+  def sign_in_as(user)
+    https!
+    get "/login"
+    assert_response :success
+
+    post "/login", params: { username: user.username, password: user.username }
+    follow_redirect!
+    assert_equal '/', path
+
+    https!(false)
+  end
+
+  def assert_permissions_error
+    assert_response :redirect
+    follow_redirect!
+
+    assert_select "p#permissions-error", "You cannot perform this action."
+  end
+end

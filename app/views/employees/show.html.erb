@@ -6,30 +6,30 @@
   <li>
     <label><%= t(:Children) %>:</label>
     <%= link_to t(:View), employee_children_path(@employee) %> |
-    <%= link_to t(:Add), new_employee_child_path(@employee) %>
+    <%= link_to t(:Add), new_employee_child_path(@employee), id: 'add-child-link' %>
   </li>
   <li>
     <label><%= t(:Vacation) %>:</label>
     <%= link_to t(:View), employee_vacations_path(@employee) %> |
-    <%= link_to t(:Add), new_employee_vacation_path(@employee, referred_by: employee_vacations_path(@employee)) %>
+    <%= link_to t(:Add), new_employee_vacation_path(@employee, referred_by: employee_vacations_path(@employee)), id: 'add-vacation-link' %>
   </li>
   <li>
     <label><%= t(:Charges) %>:</label>
     <%= link_to t(:View), employee_charges_path(@employee) %> |
-    <%= link_to t(:Add), new_employee_charge_path(@employee, referred_by: request.path) %>
+    <%= link_to t(:Add), new_employee_charge_path(@employee, referred_by: request.path), id: 'add-charge-link' %>
   </li>
   <li>
     <label><%= :Hours %>:</label>
     <%= link_to t(:View), employee_work_hours_path(@employee) %> |
-    <%= link_to t(:Enter), edit_employee_work_hours_path(@employee) %>
+    <%= link_to t(:Enter), edit_employee_work_hours_path(@employee), id: 'add-hours-link' %>
   </li>
     <label><%= t(:Loans) %>:</label>
     <%= link_to t(:View), employee_loans_path(@employee) %> |
-    <%= link_to t(:Add), new_employee_loan_path(@employee, referred_by: request.path) %>
+    <%= link_to t(:Add), new_employee_loan_path(@employee, referred_by: request.path), id: 'add-loan-link' %>
   </li>
   <li>
     <label><%= t(:Bonuses) %>:</label>
-    <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee) %>
+    <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee), id: 'assign-bonuses-link' %>
   </li>
   <li>
     <label><%= t(:Payslips) %>:</label>
@@ -167,8 +167,13 @@
   </table>
 <% end %>
 
-<%= link_to t(:Edit), {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary' %> &nbsp;
-<%= link_to t(:Delete), employee_path(@employee), method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'btn btn-danger' %>
+<% if can? :update, @employee %>
+  <%= link_to t(:Edit), {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary', id: 'edit-employee-btn' %> &nbsp;
+<% end %>
+
+<% if can? :destroy, @employee %>
+  <%= link_to t(:Delete), employee_path(@employee), method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'btn btn-danger', id: 'delete-employee-btn' %>
+<% end %>
 
 <br />
 <br />

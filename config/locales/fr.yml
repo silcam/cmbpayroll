@@ -18,7 +18,7 @@ fr:
   More_history: Plus
   Search: Rechercher
   View: Voir
-  Modify: Modifier
+  Modify: &Modify Modifier
   Enter: Saisir
   No_change: Aucun changement
   Edit: Éditer
@@ -45,6 +45,7 @@ fr:
   Gender: &Gender Sexe
   Cancel: Annuler
   Create: Créer
+  Update: *Modify
 
   # Error messages
   cant_be_in_future: ne peut pas être au futur.
@@ -222,13 +223,14 @@ fr:
   Confirm_passwoerd: Confirmer mot de passe
   Users: Utilisateurs
   User: Utilisateur
-  Role: Rôle
+  Role: &Role Rôle
   New_user: Nouvel utilisateur
   Change_password: Changer mot de passe
   Delete_account: Supprimer compte
   Confirm_delete_account: Confirmez la supprimation du compte pour %{name}.
   Change_preferred_language: Changer la langue préférée
   Change_language: Changer la langue
+  Change_role: Changer le rôle
 
   # Holidays
   Holidays: Jours fériés
@@ -241,6 +243,25 @@ fr:
 
   # Departments
   Department_management: Gestion des départements
+
+  # Admin
+  Manage_wages: Gestion des salaires
+  Echelon_alt: Échelon Alt
+  Base_wage: Salaire de base
+  Base_wage_b: Salaire de base B
+  Base_wage_c: Salaire de base C
+  Base_wage_d: Salaire de base D
+  Base_wage_e: Salaire de base E
+  Wage_information_for: Information sur la salaire de
+
+  # Admin Index
+  Payslips_admin_description: Création des bullitens de paie et finalisation des mois
+  Holidays_admin_description: Ajouter ou modifier les jours fériés
+  Charges_admin_description: Ajouter ou modifier les notes standard des charges
+  Users_admin_description: Gestion de utilisateurs (non-employées) du système
+  Departments_admin_description: Ajouter ou modifier les départements
+  Wages_admin_description: Modifier les salaires bases des catégories et échelons
+  Variables_admin_description: Modifier les variables qui dirigent le système
 
   reports:
     Employee_report: Le Rapport des Employés

@@ -42,11 +42,16 @@
                           disabled: true %>
     </div>
 
-    <div class="form-group">
+  <div class="form-group">
     <label>
       <%= t :Username %>
     </label>
     <%= form.text_field :username, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :role, t(:Role) %><br />
+    <%= form.select :role, options_for_select(User.roles.keys), { }, { class: 'form-control' } %>
   </div>
 
   <div class="form-group">

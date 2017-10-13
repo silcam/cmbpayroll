@@ -20,6 +20,16 @@
 <hr>
 
 <%= form_for @user, html: {class: 'auto-width'} do |form| %>
+  <h4><%= t :Change_role %></h4>
+  <%= form.label :role, t(:Role) %>
+  <%= form.select :role, options_for_select(User.roles.keys, @user.role), { }, { class: 'form-control' } %>
+  <br />
+  <%= form.submit t(:Change_role), class: 'btn btn-primary' %>
+<% end %>
+
+<hr>
+
+<%= form_for @user, html: {class: 'auto-width'} do |form| %>
   <h4><%= t :Change_preferred_language %></h4>
   <div class="radio">
     <label>

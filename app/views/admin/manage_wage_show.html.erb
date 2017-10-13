@@ -1,6 +1,8 @@
-<h2>Manage Wages</h2>
+<% provide(:title, t(:Administration)) %>
 
-<h4>Wage Information for: Category: <%= @wage.category %>, Echelon: <%= @wage.echelon %>, Echelon ALT: <%= @wage.echelonalt %></h4>
+<h2><%= t(:Manage_wages) %></h2>
+
+<h4><%= t(:Wage_information_for) %>: <%= t(:Category) %>: <%= @wage.category %>, <%= t(:Echelon) %>: <%= @wage.echelon %>, <%= t(:Echelon_alt) %>: <%= @wage.echelonalt %></h4>
 
 <% if @wage.errors.any? %>
   <div id="error_explanation">
@@ -46,7 +48,7 @@
   </div>
 
   <div class="form-group">
-    <%= f.submit "Update Record", class: 'btn btn-primary' %>
+    <%= f.submit t(:Update), class: 'btn btn-primary' %>
   </div>
 
 <% end %>

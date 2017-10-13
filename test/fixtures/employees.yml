@@ -32,3 +32,21 @@ Han:
   hours_day: 8
   contract_start: 2017-01-01
   first_day: 2016-12-01
+
+Obiwan:
+  person: Obiwan
+  supervisor: Quigon
+  title: Trainee
+  department: LSS
+  hours_day: 8
+  contract_start: 2017-01-01
+  first_day: 2016-12-01
+
+Quigon:
+  person: Quigon
+  supervisor: Yoda
+  title: Jedi
+  department: LSS
+  hours_day: 8
+  contract_start: 2017-01-01
+  first_day: 2016-12-01

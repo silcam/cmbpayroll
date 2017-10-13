@@ -1,4 +1,9 @@
+<% if alert %>
+  <p id="permissions-error" class="bg-danger"><%= alert %></p>
+<% end %>
+
 <%= render 'searches/search_form' %>
+
 <div class="row">
   <div class="col-md-6">
     <h2><%= t :Tasks %></h2>

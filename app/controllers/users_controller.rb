@@ -38,7 +38,7 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    permitted = [:username, :password, :password_confirmation, :language]
+    permitted = [:username, :password, :password_confirmation, :language, :role]
     if params[:new_person]=='true'
       permitted += [:first_name, :last_name]
     else

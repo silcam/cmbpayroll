@@ -25,3 +25,19 @@ Yoda:
 Han:
   first_name: Han
   last_name: Solo
+
+Jarjar:
+  first_name: Jar Jar
+  last_name: Binks
+
+Quigon:
+  first_name: Qui-Gon
+  last_name: Jinn
+
+Macewindu:
+  first_name: Mace
+  last_name: Windu
+
+Obiwan:
+  first_name: Obiwan
+  last_name: Kenobi

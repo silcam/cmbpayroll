@@ -3,7 +3,10 @@ class User < ApplicationRecord
 
   has_secure_password
 
-  validates :username, presence: {message: I18n.t(:Not_blank)}
+  validates :username, :role, presence: {message: I18n.t(:Not_blank)}
 
   enum language: [:en, :fr]
+
+  enum role: { user: 0, supervisor: 1, admin: 2 }
+
 end

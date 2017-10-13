@@ -1,4 +1,6 @@
-<h2>Manage Wages</h2>
+<% provide(:title, t(:Administration)) %>
+
+<h2><%= t(:Manage_wages) %></h2>
 
 <% if notice %>
 <p id="notice" class="alert alert-info"><%= notice %></p>
@@ -6,15 +8,15 @@
 
 <table class="table table-striped">
   <tr>
-  <th>Category</th>
-  <th>Echelon</th>
-  <th>Echelon Alt</th>
-  <th>Base Wage</th>
-  <th>Base Wage B</th>
-  <th>Base Wage C</th>
-  <th>Base Wage D</th>
-  <th>Base Wage E</th>
-  <th>Edit</th>
+  <th><%= t(:Category) %></th>
+  <th><%= t(:Echelon) %></th>
+  <th><%= t(:Echelon_alt) %></th>
+  <th><%= t(:Base_wage) %></th>
+  <th><%= t(:Base_wage_b) %></th>
+  <th><%= t(:Base_wage_c) %></th>
+  <th><%= t(:Base_wage_d) %></th>
+  <th><%= t(:Base_wage_e) %></th>
+  <th><%= t(:Edit) %></th>
   </tr>
 <% @wages.each do |wage| %>
   <tr>
@@ -26,7 +28,7 @@
     <td><%= wage.basewagec %></td>
     <td><%= wage.basewaged %></td>
     <td><%= wage.basewagee %></td>
-    <td><%= link_to 'Edit', admin_manage_wage_show_path(category: wage.category, echelon: wage.echelon, echelonalt: wage.echelonalt) %></td>
+    <td><%= link_to t(:Edit), admin_manage_wage_show_path(category: wage.category, echelon: wage.echelon, echelonalt: wage.echelonalt) %></td>
   </tr>
 <% end %>
 </table>

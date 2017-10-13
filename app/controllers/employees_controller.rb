@@ -1,18 +1,31 @@
 class EmployeesController < ApplicationController
 
+  rescue_from "AccessGranted::AccessDenied" do |exception|
+    redirect_to root_path, alert: "You cannot perform this action."
+  end
+
   def index
-    if params[:supervisor]
-      @employees = Supervisor.find(params[:supervisor]).employees
-    else
+    if current_user.user?
+      @employees = Array.new
+      @employees << Employee.find_by(person_id: current_user.person.id)
+    elsif current_user.supervisor?
+      @employees = Supervisor.find_by(person_id: current_user.person.id).employees
+    elsif current_user.admin?
       @employees = Employee.all
+    else
+      @employees = Array.new
     end
   end
 
   def new
+    authorize! :create, Employee
+
     @employee = Employee.new
   end
 
   def create
+    authorize! :create, Employee
+
     @employee = Employee.new(employee_params)
     if @employee.save
       redirect_to employees_path
@@ -23,14 +36,21 @@ class EmployeesController < ApplicationController
 
   def show
     @employee = Employee.find(params[:id])
+
+    authorize! :read, @employee
   end
 
   def edit
     @employee = Employee.find(params[:id])
+
+    authorize! :update, @employee
   end
 
   def update
     @employee = Employee.find params[:id]
+
+    authorize! :update, @employee
+
     if @employee.update employee_params
       redirect_to employees_path
     else
@@ -40,12 +60,15 @@ class EmployeesController < ApplicationController
 
   def destroy
     @employee = Employee.find(params[:id])
-    @employee.destroy
 
+    authorize! :delete, @employee
+
+    @employee.destroy
     redirect_to employees_path
   end
 
   private
+
   def employee_params
     permitted = [
         :first_name,

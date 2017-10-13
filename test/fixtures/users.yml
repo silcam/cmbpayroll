@@ -1,4 +1,23 @@
 Luke:
   person: Luke
   username: luke
+  role: user
   password_digest: <%= BCrypt::Password.create('luke', cost: 5) %>
+
+Quigon:
+  person: Quigon
+  username: quigon
+  role: supervisor
+  password_digest: <%= BCrypt::Password.create('quigon', cost: 5) %>
+
+JarJar:
+  person: Jarjar
+  username: jarjar
+  role: user
+  password_digest: <%= BCrypt::Password.create('jarjar', cost: 5) %>
+
+MaceWindu:
+  person: Macewindu
+  username: mace
+  role: admin
+  password_digest: <%= BCrypt::Password.create('mace', cost: 5) %>

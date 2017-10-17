@@ -27,10 +27,14 @@
     <%= link_to t(:View), employee_loans_path(@employee) %> |
     <%= link_to t(:Add), new_employee_loan_path(@employee, referred_by: request.path), id: 'add-loan-link' %>
   </li>
+
+  <% if can? :update, Bonus %>
   <li>
     <label><%= t(:Bonuses) %>:</label>
     <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee), id: 'assign-bonuses-link' %>
   </li>
+  <% end %>
+
   <li>
     <label><%= t(:Payslips) %>:</label>
     <%= link_to t(:View), employee_payslips_path(@employee) %>
@@ -144,24 +148,28 @@
 <% end %>
 
 <% if (@employee.bonuses.empty?) %>
-  <p>
+  <p id="no-bonuses">
    <%= t(:No_bonuses) %>
   </p>
 <% else %>
   <table class="table">
     <tr>
       <th><%= t(:Bonus) %></th>
-      <th><%= t(:Unassign) %>?</th>
+<% if can? :update, Bonus %>
+      <th id="unassign-header"><%= t(:Unassign) %>?</th>
+<% end %>
     </tr>
     <% @employee.bonuses.each do |b| %>
       <tr>
         <td><%= b.name %> (<%= b.display_quantity %>)</td>
+<% if can? :update, Bonus %>
         <td>
 <%= form_for b, :url => unassign_employee_bonuses_url(@employee) do |f| %>
   <%= f.hidden_field(:b, :value => b.id) %>
-  <%= f.submit(t(:Unassign_bonus), class: 'btn btn-warning') %>
+  <%= f.submit(t(:Unassign_bonus), class: 'btn btn-warning unassign-button') %>
 <% end %>
         </td>
+<% end %>
       </tr>
     <% end %>
   </table>

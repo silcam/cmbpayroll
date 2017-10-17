@@ -12,7 +12,9 @@
       <li><%= link_to t(:Employees), employees_path %></li>
       <li><%= link_to t(:Hours), work_hours_path %></li>
       <li><%= link_to t(:Vacation), vacations_path %></li>
+  <% if can? :read, Bonus %>
       <li><%= link_to t(:Bonuses), bonuses_path %></li>
+  <% end %>
       <li><%= link_to t(:Work_loans), work_loans_path %></li>
       <li><%= link_to t(:Reports), reports_path %></li>
       <hr />

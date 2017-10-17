@@ -78,6 +78,27 @@ class ActiveSupport::TestCase
 end
 
 module ControllerTestHelper
+
+  def login_user(user_sym)
+    login(user_sym, "user")
+  end
+
+  def login_supervisor(user_sym)
+    login(user_sym, "supervisor")
+  end
+
+  def login_admin(user_sym)
+    login(user_sym, "admin")
+  end
+
+  def login(user_sym, role_sym=nil)
+    luke = users(user_sym)
+    unless (role_sym.nil?)
+      assert_equal(role_sym, luke.role, "incorrect role")
+    end
+    sign_in_as(luke)
+  end
+
   def sign_in_as(user)
     https!
     get "/login"
@@ -90,10 +111,83 @@ module ControllerTestHelper
     https!(false)
   end
 
+  def verify_is_supervisor(supervisor_sym, employee_sym)
+    supervisor = supervisors(supervisor_sym)
+    employee = employees(employee_sym)
+
+    assert_equal(supervisor.person, employee.supervisor.person, "verify relationship")
+  end
+
+  def assert_user_permission(url, method, params=nil)
+    assert_permission("User", url, method, params)
+  end
+
+  def assert_supervisor_permission(url, method, params=nil)
+    assert_permission("Supervisor", url, method, params)
+  end
+
+  def assert_admin_permission(url, method, params=nil)
+    assert_permission("Admin", url, method, params)
+  end
+
+  def refute_user_permission(url, method, params=nil)
+    refute_permission("User", url, method, params)
+  end
+
+  def refute_supervisor_permission(url, method, params=nil)
+    refute_permission("Supervisor", url, method, params)
+  end
+
+  def refute_admin_permission(url, method, params=nil)
+    refute_permission("Admin", url, method, params)
+  end
+
+  def assert_permission(role, url, method, params=nil)
+    make_call(url, method, params)
+
+    begin
+      refute_permissions_error
+    rescue MiniTest::Assertion
+      raise MiniTest::Assertion, "failed checking role: #{role}, for #{method}: #{url}"
+    end
+  end
+
+  def refute_permission(role, url, method, params=nil)
+    make_call(url, method, params)
+
+    begin
+      assert_permissions_error
+    rescue MiniTest::Assertion
+      raise MiniTest::Assertion, "failed checking role: #{role}, for #{method}: #{url}"
+    end
+  end
+
   def assert_permissions_error
     assert_response :redirect
     follow_redirect!
 
     assert_select "p#permissions-error", "You cannot perform this action."
   end
+
+  def refute_permissions_error
+    if (@response.status >= 300 && @response.status < 400)
+      follow_redirect!
+    end
+
+    assert_response :success
+    assert_select "p#permissions-error", false
+  end
+
+  def make_call(url, method, params=nil)
+    if ("get" == method)
+      get url
+    elsif ("post" == method)
+      post url, params
+    elsif ("patch" == method)
+      patch url, params
+    elsif ("delete" == method)
+      delete url
+    end
+  end
+
 end

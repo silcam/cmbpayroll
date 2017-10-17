@@ -28,9 +28,13 @@ class AccessPolicy
       can :update, Employee
       can :destroy, Employee
 
-      # Can administer wages
       can :read, Wage
       can :update, Wage
+
+      can :create, Bonus
+      can :read, Bonus
+      can :update, Bonus
+      can :destroy, Bonus
     end
 
     # More privileged role, in this case supervisors
@@ -70,8 +74,6 @@ class AccessPolicy
       # permissions go here
     end
 
-    #
     # ===================
-    #
   end
 end

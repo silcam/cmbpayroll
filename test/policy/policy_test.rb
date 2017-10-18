@@ -34,6 +34,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, Charge), "admins can read Charges")
     assert(policy.can?(:update, Charge), "admins can update Charges")
     assert(policy.can?(:destroy, Charge), "admins can destroy Charges")
+
+    assert(policy.can?(:create, Department), "admins can create Department")
+    assert(policy.can?(:read, Department), "admins can read Department")
+    assert(policy.can?(:update, Department), "admins can update Department")
+    assert(policy.can?(:destroy, Department), "admins can destroy Department")
   end
 
   test "Policy for Supervisors " do
@@ -75,6 +80,11 @@ class PolicyTest < ActiveSupport::TestCase
 
     refute(policy.can?(:update, Charge), "Quigon can't update Charges")
     refute(policy.can?(:destroy, Charge), "Quigon can't destroy Charges")
+
+    refute(policy.can?(:create, Department), "Supervisors can't create Department")
+    refute(policy.can?(:read, Department), "Supervisors can't read Department")
+    refute(policy.can?(:update, Department), "Supervisors can't update Department")
+    refute(policy.can?(:destroy, Department), "Supervisors can't destroy Department")
   end
 
   test "Multi-level Supervisors " do
@@ -117,6 +127,12 @@ class PolicyTest < ActiveSupport::TestCase
 
     refute(policy.can?(:update, Charge), "Luke can't update Charges")
     refute(policy.can?(:destroy, Charge), "Luke can't destroy Charges")
+
+    refute(policy.can?(:create, Department), "Luke can't create Department")
+    refute(policy.can?(:read, Department), "Luke can't read Department")
+    refute(policy.can?(:update, Department), "Luke can't update Department")
+    refute(policy.can?(:destroy, Department), "Luke can't destroy Department")
+
   end
 
   test "Policy for Non-Privleged Users " do
@@ -139,6 +155,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, luke_charge), "Jar Jar can't see Charges")
     refute(policy.can?(:update, Charge), "Jar Jar can't update Charges")
     refute(policy.can?(:destroy, Charge), "Jar Jar can't destroy Charges")
+
+    refute(policy.can?(:create, Department), "Jar Jar can't create Department")
+    refute(policy.can?(:read, Department), "Jar Jar can't read Department")
+    refute(policy.can?(:update, Department), "Jar Jar can't update Department")
+    refute(policy.can?(:destroy, Department), "Jar Jar can't destroy Department")
   end
 
 end

@@ -34,7 +34,7 @@
         $('#datepicker').datetimepicker({
           useCurrent: false,
           showTodayButton: true,
-          defaultDate: moment('<%= @payment.date.strftime('%d/%m/%Y') %>', 'DD/MM/YYYY'),
+          defaultDate: moment('<%= @payment&.date ? @payment.date.strftime('%d/%m/%Y') : DateTime.now.strftime('%d/%m/%Y') %>', 'DD/MM/YYYY'),
           format: 'DD/MM/YYYY',
           <% if I18n.locale == :en %>
             locale: 'en'

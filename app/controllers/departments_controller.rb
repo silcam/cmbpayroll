@@ -1,29 +1,37 @@
-class DepartmentsController < ApplicationController
+class DepartmentsController < EPSController
   before_action :set_department, only: [:show, :edit, :update, :destroy]
 
   # GET /departments
   # GET /departments.json
   def index
+    authorize! :read, Department
+
     @departments = Department.all
   end
 
   # GET /departments/1
   # GET /departments/1.json
   def show
+    authorize! :read, Department
   end
 
   # GET /departments/new
   def new
+    authorize! :create, Department
+
     @department = Department.new
   end
 
   # GET /departments/1/edit
   def edit
+    authorize! :update, Department
   end
 
   # POST /departments
   # POST /departments.json
   def create
+    authorize! :create, Department
+
     @department = Department.new(department_params)
 
     respond_to do |format|
@@ -40,6 +48,8 @@ class DepartmentsController < ApplicationController
   # PATCH/PUT /departments/1
   # PATCH/PUT /departments/1.json
   def update
+    authorize! :update, Department
+
     respond_to do |format|
       if @department.update(department_params)
         format.html { redirect_to @department, notice: 'Department was successfully updated.' }
@@ -54,6 +64,8 @@ class DepartmentsController < ApplicationController
   # DELETE /departments/1
   # DELETE /departments/1.json
   def destroy
+    authorize! :destroy, Department
+
     @department.destroy
     respond_to do |format|
       format.html { redirect_to departments_url, notice: 'Department was successfully destroyed.' }

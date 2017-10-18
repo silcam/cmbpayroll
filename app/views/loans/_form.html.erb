@@ -44,7 +44,7 @@
         $('#datepicker').datetimepicker({
           useCurrent: false,
           showTodayButton: true,
-          defaultDate: moment('<%= loan.origination.strftime('%d/%m/%Y') %>', 'DD/MM/YYYY'),
+          defaultDate: moment('<%= loan&.origination ? loan.origination.strftime('%d/%m/%Y') : DateTime.now.strftime('%d/%m/%Y') %>', 'DD/MM/YYYY'),
           format: 'DD/MM/YYYY',
           <% if I18n.locale == :en %>
             locale: 'en'

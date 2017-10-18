@@ -40,6 +40,11 @@ class AccessPolicy
       can :read, Charge
       can :update, Charge
       can :destroy, Charge
+
+      can :create, Department
+      can :read, Department
+      can :update, Department
+      can :destroy, Department
     end
 
     # More privileged role, in this case supervisors

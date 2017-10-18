@@ -148,7 +148,7 @@ module ControllerTestHelper
     begin
       refute_permissions_error
     rescue MiniTest::Assertion
-      raise MiniTest::Assertion, "Should have been able to #{method} #{url} (role: #{role})"
+      raise MiniTest::Assertion, "Should've been able to #{method.upcase} #{url} (role: #{role})"
     end
   end
 
@@ -158,7 +158,7 @@ module ControllerTestHelper
     begin
       assert_permissions_error
     rescue MiniTest::Assertion
-      raise MiniTest::Assertion, "Should not have been able to #{method} #{url} (role: #{role})"
+      raise MiniTest::Assertion, "Shouldn't have been able to #{method.upcase} #{url} (role: #{role})"
     end
   end
 

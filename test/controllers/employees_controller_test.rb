@@ -74,8 +74,9 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
     login_supervisor(:Quigon)
     get employee_url(employees(:Quigon))
 
-    assert_response :success
-    assert_select "h2", "Employee Information for #{employees(:Quigon).full_name}"
+    assert_permissions_error
+    #assert_response :success
+    #assert_select "h2", "Employee Information for #{employees(:Quigon).full_name}"
   end
 
   test "SUPERVISOR: GET employee#show for direct report" do

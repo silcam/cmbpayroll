@@ -7,7 +7,9 @@
   </small>
 </h2>
 
-<%= link_to t(:Add_charge), new_employee_charge_path, class: 'btn btn-primary btn-w-marge' %>
+<% if can? :create, Charge %>
+  <%= link_to t(:Add_charge), new_employee_charge_path, class: 'btn btn-primary btn-w-marge', id: 'add-charge-btn' %>
+<% end %>
 
 <%= render 'shared/period_nav',
            period: @period,

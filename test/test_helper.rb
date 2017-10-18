@@ -148,7 +148,7 @@ module ControllerTestHelper
     begin
       refute_permissions_error
     rescue MiniTest::Assertion
-      raise MiniTest::Assertion, "failed checking role: #{role}, for #{method}: #{url}"
+      raise MiniTest::Assertion, "Should have been able to #{method} #{url} (role: #{role})"
     end
   end
 
@@ -158,7 +158,7 @@ module ControllerTestHelper
     begin
       assert_permissions_error
     rescue MiniTest::Assertion
-      raise MiniTest::Assertion, "failed checking role: #{role}, for #{method}: #{url}"
+      raise MiniTest::Assertion, "Should not have been able to #{method} #{url} (role: #{role})"
     end
   end
 

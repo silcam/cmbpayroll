@@ -1,8 +1,4 @@
-class EmployeesController < ApplicationController
-
-  rescue_from "AccessGranted::AccessDenied" do |exception|
-    redirect_to root_path, alert: "You cannot perform this action."
-  end
+class EmployeesController < EPSController
 
   def index
     if current_user.user?

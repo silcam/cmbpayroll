@@ -35,6 +35,11 @@ class AccessPolicy
       can :read, Bonus
       can :update, Bonus
       can :destroy, Bonus
+
+      can :create, Charge
+      can :read, Charge
+      can :update, Charge
+      can :destroy, Charge
     end
 
     # More privileged role, in this case supervisors
@@ -55,23 +60,32 @@ class AccessPolicy
         # can update if user is employee's supervisor
         employee.supervisor.person.id == user.person.id
       end
+
+      can :read, Charge do |charge, user|
+        # can read if charge is for reporting employee
+        charge.employee.supervisor.person.id == user.person.id
+      end
     end
 
-    # An employee can perform limited administration
-    # on herself.
-    role :self do
+    # An employee with user role can perform limited
+    # operations on herself (read, mostly).
+    role :self, proc { |user| user.user?} do
       # permissions go here
 
       can :read, Employee do |employee, user|
         # can read if looking at self
         employee.person.id == user.person.id
       end
+
+      can :read, Charge do |charge, user|
+        # can read if looking at self
+        charge.employee.person.id == user.person.id
+      end
     end
 
     # A user with no role.  In the case of EPS, this
     # user can do nothing
     role :guest do
-      # permissions go here
     end
 
     # ===================

@@ -1,16 +1,23 @@
-class ChargesController < ApplicationController
+class ChargesController < EPSController
   before_action :set_employee, only: [:index, :new, :create]
 
   def index
+    # if can see employee, can see her charges
+    authorize! :read, @employee
+
     @period = get_params_period
     @charges = @employee.charges.for_period @period
   end
 
   def new
+    authorize! :create, Charge
+
     @charge = Charge.new
   end
 
   def create
+    authorize! :create, Charge
+
     @charge = @employee.charges.new(charge_params)
     if @charge.save
       redirect_to employee_charges_path @employee
@@ -20,6 +27,8 @@ class ChargesController < ApplicationController
   end
 
   def destroy
+    authorize! :destroy, Charge
+
     @charge = Charge.find params[:id]
     @charge.destroy
     redirect_to employee_charges_path @charge.employee

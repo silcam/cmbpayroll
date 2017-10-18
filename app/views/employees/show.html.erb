@@ -15,8 +15,10 @@
   </li>
   <li>
     <label><%= t(:Charges) %>:</label>
-    <%= link_to t(:View), employee_charges_path(@employee) %> |
-    <%= link_to t(:Add), new_employee_charge_path(@employee, referred_by: request.path), id: 'add-charge-link' %>
+    <%= link_to t(:View), employee_charges_path(@employee) %>
+    <% if can? :create, Charge %>
+       | <%= link_to t(:Add), new_employee_charge_path(@employee, referred_by: request.path), id: 'add-charge-link' %>
+    <% end %>
   </li>
   <li>
     <label><%= :Hours %>:</label>

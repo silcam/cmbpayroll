@@ -1,4 +1,4 @@
-class BonusesController < ApplicationController
+class BonusesController < EPSController
   before_action :set_bonus, only: [:show, :edit, :update, :destroy]
   before_action :set_employee, only: [:index, :new, :assign, :unassign]
 

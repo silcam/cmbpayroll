@@ -3,13 +3,18 @@ class LoanPaymentsController < ApplicationController
   before_action :set_payment, only: [:destroy, :edit, :update]
 
   def new
+    authorize! :create, LoanPayment
+
     @payment = LoanPayment.new
   end
 
   def edit
+    authorize! :update, LoanPayment
   end
 
   def create
+    authorize! :create, LoanPayment
+
     @payment = nil
 
     begin
@@ -21,15 +26,16 @@ class LoanPaymentsController < ApplicationController
         render :new
       end
     rescue ActiveRecord::RecordInvalid => invalid_error
-      Rails.logger.error("XXXXXXX>>> PAYMENT #{invalid_error.record.errors.inspect}")
-      Rails.logger.error("XXXXXXX>>> LOAN #{@loan}")
-
+      Rails.logger.debug(":PAYMENT: #{invalid_error.record.errors.inspect}")
+      Rails.logger.debug(":LOAN: #{@loan}")
       @payment = invalid_error.record
       render :new
     end
   end
 
   def update
+    authorize! :update, LoanPayment
+
     if @payment.update(payment_params)
       redirect_to employee_loans_path(@employee), notice: 'Payment was successfully updated.'
     else
@@ -38,6 +44,8 @@ class LoanPaymentsController < ApplicationController
   end
 
   def destroy
+    authorize! :destroy, LoanPayment
+
     @payment.destroy
     redirect_to employee_loans_path(@employee), notice: 'Payment was successfully destroyed.'
   end

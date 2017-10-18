@@ -26,8 +26,10 @@
     <%= link_to t(:Enter), edit_employee_work_hours_path(@employee), id: 'add-hours-link' %>
   </li>
     <label><%= t(:Loans) %>:</label>
-    <%= link_to t(:View), employee_loans_path(@employee) %> |
-    <%= link_to t(:Add), new_employee_loan_path(@employee, referred_by: request.path), id: 'add-loan-link' %>
+    <%= link_to t(:View), employee_loans_path(@employee) %>
+    <% if can? :create, Loan %>
+      | <%= link_to t(:Add), new_employee_loan_path(@employee, referred_by: request.path), id: 'add-loan-link' %>
+    <% end %>
   </li>
 
   <% if can? :update, Bonus %>

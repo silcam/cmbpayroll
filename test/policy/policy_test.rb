@@ -39,6 +39,16 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, Department), "admins can read Department")
     assert(policy.can?(:update, Department), "admins can update Department")
     assert(policy.can?(:destroy, Department), "admins can destroy Department")
+
+    assert(policy.can?(:create, Loan), "admins can create Loans")
+    assert(policy.can?(:read, Loan), "admins can read Loans")
+    assert(policy.can?(:update, Loan), "admins can update Loans")
+    assert(policy.can?(:destroy, Loan), "admins can destroy Loans")
+
+    assert(policy.can?(:create, LoanPayment), "admins can create Loan Payments")
+    assert(policy.can?(:read, LoanPayment), "admins can read Loan Payments")
+    assert(policy.can?(:update, LoanPayment), "admins can update Loan Payments")
+    assert(policy.can?(:destroy, LoanPayment), "admins can destroy Loan Payments")
   end
 
   test "Policy for Supervisors " do
@@ -69,14 +79,14 @@ class PolicyTest < ActiveSupport::TestCase
 
     refute(policy.can?(:create, Charge), "Quigon can't create Charges")
 
-    # if for a report
     obiwan_charge = @obiwan.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
     assert(@obiwan.charges.size >= 1, "obiwan has charges")
-    assert(policy.can?(:read, obiwan_charge), "Quigon can read Charges from Report")
-    # if not for a report
+
     chewie_charge = @chewie.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
     assert(@chewie.charges.size >= 1, "chewie has charges")
-    refute(policy.can?(:read, chewie_charge), "Quigon can't read Charges from Non-Report")
+
+    assert(policy.can?(:read, obiwan_charge), "Quigon can read Charges from Report") # if for a report
+    refute(policy.can?(:read, chewie_charge), "Quigon can't read Charges from Non-Report") # if not for a report
 
     refute(policy.can?(:update, Charge), "Quigon can't update Charges")
     refute(policy.can?(:destroy, Charge), "Quigon can't destroy Charges")
@@ -85,6 +95,24 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Department), "Supervisors can't read Department")
     refute(policy.can?(:update, Department), "Supervisors can't update Department")
     refute(policy.can?(:destroy, Department), "Supervisors can't destroy Department")
+
+    obiwan_loan = @obiwan.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    obiwan_loan_pmnt = obiwan_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
+
+    han_loan = @han.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    han_loan_pmnt = han_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
+
+    refute(policy.can?(:create, Loan), "Quigon can't create Loans")
+    assert(policy.can?(:read, obiwan_loan), "Quigon can read Loans for report") # Can read for reports
+    refute(policy.can?(:read, han_loan), "Quigon can't read Loans for other") # Can't read for others
+    refute(policy.can?(:update, Loan), "Quigon can't update Loans")
+    refute(policy.can?(:destroy, Loan), "Quigon can't destroy Loans")
+
+    refute(policy.can?(:create, LoanPayment), "Quigon can't create Loan Payments")
+    assert(policy.can?(:read, obiwan_loan_pmnt), "Quigon can read Loan Payments for reports") # Can read for reports
+    refute(policy.can?(:read, han_loan_pmnt), "Quigon can't read Loan Payments for others") # Can't read for reports
+    refute(policy.can?(:update, LoanPayment), "Quigon can't update Loan Payments")
+    refute(policy.can?(:destroy, LoanPayment), "Quigon can't destroy Loan Payments")
   end
 
   test "Multi-level Supervisors " do
@@ -116,13 +144,12 @@ class PolicyTest < ActiveSupport::TestCase
 
     refute(policy.can?(:create, Charge), "Luke can't create Charges")
 
-    # Can see own
     luke_charge = @luke_emp.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
-    assert(@luke_emp.charges.size >= 1, "luke has charges")
-    assert(policy.can?(:read, luke_charge), "Luke can see own Charges")
-    # Can't see others
     han_charge = @han.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
-    assert(@han.charges.size >= 1, "han has charges")
+    assert(@luke_emp.charges.size >= 1, "luke has charges")
+
+    assert(policy.can?(:read, luke_charge), "Luke can see own Charges") # Can see own
+    assert(@han.charges.size >= 1, "han has charges") # Can't see others
     refute(policy.can?(:read, han_charge), "Luke can't read Charges from Han")
 
     refute(policy.can?(:update, Charge), "Luke can't update Charges")
@@ -133,6 +160,25 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:update, Department), "Luke can't update Department")
     refute(policy.can?(:destroy, Department), "Luke can't destroy Department")
 
+    luke_loan = @luke_emp.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    luke_loan_pmnt = luke_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
+
+    han_loan = @han.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    han_loan_pmnt = han_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
+
+    refute(policy.can?(:create, Loan), "Luke can't create Loans")
+    assert(policy.can?(:read, luke_loan), "Luke can't read Loans") # Can read own
+    refute(policy.can?(:read, han_loan), "Luke can't read Loans") # Can't read other
+
+    refute(policy.can?(:update, Loan), "Luke can't update Loans")
+    refute(policy.can?(:destroy, Loan), "Luke can't destroy Loans")
+
+    refute(policy.can?(:create, LoanPayment), "Luke can't create Loan Payments")
+    assert(policy.can?(:read, luke_loan_pmnt), "Luke can't read Loan Payments") # Can read own
+    refute(policy.can?(:read, han_loan_pmnt), "Luke can't read Loan Payments") # Can't read other
+
+    refute(policy.can?(:update, LoanPayment), "Luke can't update Loan Payments")
+    refute(policy.can?(:destroy, LoanPayment), "Luke can't destroy Loan Payments")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -160,6 +206,17 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Department), "Jar Jar can't read Department")
     refute(policy.can?(:update, Department), "Jar Jar can't update Department")
     refute(policy.can?(:destroy, Department), "Jar Jar can't destroy Department")
-  end
 
+    luke_loan = @luke_emp.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    luke_loan_pmnt = luke_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
+    refute(policy.can?(:create, Loan), "Jar Jar can't create Loans")
+    refute(policy.can?(:read, luke_loan), "Jar Jar can't read Loans")
+    refute(policy.can?(:update, Loan), "Jar Jar can't update Loans")
+    refute(policy.can?(:destroy, Loan), "Jar Jar can't destroy Loans")
+
+    refute(policy.can?(:create, LoanPayment), "Jar Jar can't create Loan Payments")
+    refute(policy.can?(:read, luke_loan_pmnt), "Jar Jar can't read Loan Payments")
+    refute(policy.can?(:update, LoanPayment), "Jar Jar can't update Loan Payments")
+    refute(policy.can?(:destroy, LoanPayment), "Jar Jar can't destroy Loan Payments")
+  end
 end

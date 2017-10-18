@@ -45,6 +45,16 @@ class AccessPolicy
       can :read, Department
       can :update, Department
       can :destroy, Department
+
+      can :create, Loan
+      can :read, Loan
+      can :update, Loan
+      can :destroy, Loan
+
+      can :create, LoanPayment
+      can :read, LoanPayment
+      can :update, LoanPayment
+      can :destroy, LoanPayment
     end
 
     # More privileged role, in this case supervisors
@@ -70,6 +80,16 @@ class AccessPolicy
         # can read if charge is for reporting employee
         charge.employee.supervisor.person.id == user.person.id
       end
+
+      can :read, Loan do |loan, user|
+        # can read if loan is for reporting employee
+        loan.employee.supervisor.person.id == user.person.id
+      end
+
+      can :read, LoanPayment do |loan_payment, user|
+        # can read if loan_payment is for reporting employee
+        loan_payment.loan.employee.supervisor.person.id == user.person.id
+      end
     end
 
     # An employee with user role can perform limited
@@ -85,6 +105,16 @@ class AccessPolicy
       can :read, Charge do |charge, user|
         # can read if looking at self
         charge.employee.person.id == user.person.id
+      end
+
+      can :read, Loan do |loan, user|
+        # can read if looking at self
+        loan.employee.person.id == user.person.id
+      end
+
+      can :read, LoanPayment do |loan_payment, user|
+        # can read if looking at self
+        loan_payment.loan.employee.person.id == user.person.id
       end
     end
 

@@ -18,9 +18,8 @@ class ApplicationController < ActionController::Base
     I18n.locale = current_user.try(:language) || I18n.default_locale
   end
 
-  #TODO set not_allowed_path
   rescue_from "AccessGranted::AccessDenied" do |exception|
-    redirect_to not_allowed_path
+    redirect_to root_path, alert: "You cannot perform this action."
   end
 
   def get_params_period(default=Period.current)

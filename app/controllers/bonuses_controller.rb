@@ -1,10 +1,6 @@
-class BonusesController < EPSController
+class BonusesController < ApplicationController
   before_action :set_bonus, only: [:show, :edit, :update, :destroy]
   before_action :set_employee, only: [:index, :new, :assign, :unassign]
-
-  rescue_from "AccessGranted::AccessDenied" do |exception|
-    redirect_to root_path, alert: "You cannot perform this action."
-  end
 
   # GET /bonuses
   # GET /bonuses.json

@@ -26,9 +26,21 @@
         <td><%= loan.comment %></td>
         <td><%= l(loan.origination, format: :short) %></td>
         <td><%= t(loan.term) %></td>
-        <td><%= link_to t(:Edit), edit_loan_path(loan) %></td>
-        <td><%= link_to t(:Add_a_loan_payment), new_loan_loan_payment_path(loan) %></td>
-        <td><%= link_to t(:Delete), loan, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
+        <td>
+          <% if can? :update, Loan %>
+              <%= link_to t(:Edit), edit_loan_path(loan), class: 'edit-loan-link' %>
+          <% end %>
+        </td>
+        <td>
+          <% if can? :create, LoanPayment %>
+            <%= link_to t(:Add_a_loan_payment), new_loan_loan_payment_path(loan), class: 'add-loanpayment-link' %>
+          <% end %>
+        </td>
+        <td>
+          <% if can? :destroy, Loan %>
+            <%= link_to t(:Delete), loan, method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'delete-loan-link' %>
+          <% end %>
+        </td>
       </tr>
 
       <% loan.loan_payments.each do |payment| %>
@@ -37,10 +49,18 @@
           <td><%= number_to_currency(payment.amount, locale: :cm) %> - <em><%= t(:Loan_payment) %></em></td>
           <td><%= l(payment.date, format: :short) %></td>
           <td></td>
-          <td><%= link_to t(:Edit), edit_loan_payment_path(payment) %> </td>
+          <td>
+            <% if can? :update, LoanPayment %>
+              <%= link_to t(:Edit), edit_loan_payment_path(payment), class: 'edit-loanpayment-link' %>
+            <% end %>
+          </td>
           <td> </td>
-          <td><%= link_to t(:Destroy), payment, method: :delete, data: { confirm: t(:Are_you_sure) } %> </td>
-        </tr>
+          <td>
+            <% if can? :destroy, LoanPayment %>
+              <%= link_to t(:Destroy), payment, method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'delete-loanpayment-link' %>
+            <% end %>
+          </td>
+        </tr> 
       <% end %>
       <% if loan.loan_payments.any? %>
         <tr>
@@ -77,9 +97,17 @@
         <td><%= loan.comment %></td>
         <td><%= loan.origination %></td>
         <td><%= loan.term %></td>
-        <td><%= link_to 'Edit', edit_loan_path(loan) %></td>
+        <td>
+          <% if can? :update, Loan %>
+            <%= link_to 'Edit', edit_loan_path(loan), class: 'edit-paid-loan-link' %>
+          <% end %>
+        </td>
         <td></td>
-        <td><%= link_to 'Destroy', loan, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td>
+          <% if can? :destroy, Loan %>
+            <%= link_to 'Destroy', loan, method: :delete, data: { confirm: 'Are you sure?' }, class: 'delete-paid-loan-link' %>
+          <% end %>
+        </td>
       </tr>
     <% end %>
   </tbody>
@@ -88,4 +116,6 @@
 <br />
 <br />
 
-<%= link_to t(:New_loan), new_employee_loan_path, class: 'btn btn-primary' %>
+<% if can? :create, Loan %>
+  <%= link_to t(:New_loan), new_employee_loan_path, class: 'btn btn-primary', id: 'new-loan-btn' %>
+<% end %>

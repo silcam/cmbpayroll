@@ -1,4 +1,4 @@
-class EmployeesController < EPSController
+class EmployeesController < ApplicationController
 
   def index
     if current_user.user?

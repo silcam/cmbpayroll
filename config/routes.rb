@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     resources :employees do
       resources :children
       resources :loans, except: [:show] do
-        resources :loan_payments, except: [:show]
+        resources :loan_payments, except: [:show, :index]
       end
       resources :bonuses, only: [ :index ] do
         collection do

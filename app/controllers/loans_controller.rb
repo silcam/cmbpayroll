@@ -6,19 +6,30 @@ class LoansController < ApplicationController
     @paid_loans = Loan.paid_loans(@employee)
     @unpaid_loans = Loan.unpaid_loans(@employee)
 
+    @all_loans = @paid_loans | @unpaid_loans
+    @all_loans.each do |loan|
+      authorize! :read, loan
+    end
+
     @total_amount = Loan.total_amount(@employee)
     @total_balance = Loan.total_balance(@employee)
   end
 
   def new
+    authorize! :create, Loan
+
     @loan = Loan.new
   end
 
   def edit
+    authorize! :update, Loan
+
     @employee = @loan.employee
   end
 
   def create
+    authorize! :create, Loan
+
     @loan = @employee.loans.new(loan_params)
     if @loan.save
       redirect_to employee_loans_path(@employee), notice: 'Loan was successfully created.'
@@ -28,6 +39,8 @@ class LoansController < ApplicationController
   end
 
   def update
+    authorize! :update, Loan
+
     @employee = @loan.employee
     if @loan.update(loan_params)
       redirect_to employee_loans_path(@loan.employee), notice: 'Loan was successfully updated.'
@@ -37,8 +50,11 @@ class LoansController < ApplicationController
   end
 
   def destroy
+    authorize! :destroy, Loan
+
+    employee = @loan.employee
     @loan.destroy
-    redirect_to employee_loans_path(@employee), notice: 'Loan was successfully destroyed.'
+    redirect_to employee_loans_path(employee), notice: 'Loan was successfully destroyed.'
   end
 
   private

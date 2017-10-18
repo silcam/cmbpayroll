@@ -45,11 +45,11 @@ class ChargesControllerTest < ActionDispatch::IntegrationTest
     obiwan_charge = obiwan.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
     assert(obiwan.charges.size >= 1, "obiwan has charges")
 
-    refute_user_permission(new_employee_charge_url(employees(:Obiwan)), "get") # new (report)
-    refute_user_permission(employee_charges_url(employees(:Obiwan)), "post", params: { note: 'Test Charge', amount: 1500, date: Date.today }) # create
-    assert_user_permission(employee_charges_url(employees(:Obiwan)), "get") # index (report)
-    refute_user_permission(employee_charges_url(employees(:Han)), "get") # index (non-report)
-    refute_user_permission(charge_url(obiwan_charge), "delete") # delete charge (report)
+    refute_supervisor_permission(new_employee_charge_url(employees(:Obiwan)), "get") # new (report)
+    refute_supervisor_permission(employee_charges_url(employees(:Obiwan)), "post", params: { note: 'Test Charge', amount: 1500, date: Date.today }) # create
+    assert_supervisor_permission(employee_charges_url(employees(:Obiwan)), "get") # index (report)
+    refute_supervisor_permission(employee_charges_url(employees(:Han)), "get") # index (non-report)
+    refute_supervisor_permission(charge_url(obiwan_charge), "delete") # delete charge (report)
   end
 
   test "Supervisor: can't see add charge link on index" do
@@ -82,10 +82,10 @@ class ChargesControllerTest < ActionDispatch::IntegrationTest
     luke_charge = luke_emp.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
     assert(luke_emp.charges.size >= 1, "luke has charges")
 
-    assert_user_permission(new_employee_charge_url(luke_emp), "get") # new
-    assert_user_permission(employee_charges_url(luke_emp), "post", params: { charge: { note: 'Test Charge', amount: 1500, date: Date.today }}) # create
-    assert_user_permission(employee_charges_url(luke_emp), "get") # index
-    assert_user_permission(charge_url(luke_charge), "delete") # delete charge
+    assert_admin_permission(new_employee_charge_url(luke_emp), "get") # new
+    assert_admin_permission(employee_charges_url(luke_emp), "post", params: { charge: { note: 'Test Charge', amount: 1500, date: Date.today }}) # create
+    assert_admin_permission(employee_charges_url(luke_emp), "get") # index
+    assert_admin_permission(charge_url(luke_charge), "delete") # delete charge
   end
 
   test "Admin: can see add charge link on index" do

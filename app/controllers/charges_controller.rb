@@ -1,4 +1,4 @@
-class ChargesController < EPSController
+class ChargesController < ApplicationController
   before_action :set_employee, only: [:index, :new, :create]
 
   def index

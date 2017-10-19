@@ -55,6 +55,11 @@ class AccessPolicy
       can :read, LoanPayment
       can :update, LoanPayment
       can :destroy, LoanPayment
+
+      can :create, StandardChargeNote
+      can :read, StandardChargeNote
+      can :update, StandardChargeNote
+      can :destroy, StandardChargeNote
     end
 
     # More privileged role, in this case supervisors

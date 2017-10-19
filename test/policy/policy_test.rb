@@ -49,6 +49,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, LoanPayment), "admins can read Loan Payments")
     assert(policy.can?(:update, LoanPayment), "admins can update Loan Payments")
     assert(policy.can?(:destroy, LoanPayment), "admins can destroy Loan Payments")
+
+    assert(policy.can?(:create, StandardChargeNote), "admins can create Standard Charge Notes")
+    assert(policy.can?(:read, StandardChargeNote), "admins can read Standard Charge Notes")
+    assert(policy.can?(:update, StandardChargeNote), "admins can update Standard Charge Notes")
+    assert(policy.can?(:destroy, StandardChargeNote), "admins can destroy Standard Charge Notes")
   end
 
   test "Policy for Supervisors " do
@@ -113,6 +118,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, han_loan_pmnt), "Quigon can't read Loan Payments for others") # Can't read for reports
     refute(policy.can?(:update, LoanPayment), "Quigon can't update Loan Payments")
     refute(policy.can?(:destroy, LoanPayment), "Quigon can't destroy Loan Payments")
+
+    refute(policy.can?(:create, StandardChargeNote), "supervisors can't create Standard Charge Notes")
+    refute(policy.can?(:read, StandardChargeNote), "supervisors can't read Standard Charge Notes")
+    refute(policy.can?(:update, StandardChargeNote), "supervisors can't update Standard Charge Notes")
+    refute(policy.can?(:destroy, StandardChargeNote), "supervisors can't destroy Standard Charge Notes")
   end
 
   test "Multi-level Supervisors " do
@@ -218,5 +228,10 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, luke_loan_pmnt), "Jar Jar can't read Loan Payments")
     refute(policy.can?(:update, LoanPayment), "Jar Jar can't update Loan Payments")
     refute(policy.can?(:destroy, LoanPayment), "Jar Jar can't destroy Loan Payments")
+
+    refute(policy.can?(:create, StandardChargeNote), "users can't create Standard Charge Notes")
+    refute(policy.can?(:read, StandardChargeNote), "users can't read Standard Charge Notes")
+    refute(policy.can?(:update, StandardChargeNote), "users can't update Standard Charge Notes")
+    refute(policy.can?(:destroy, StandardChargeNote), "users can't destroy Standard Charge Notes")
   end
 end

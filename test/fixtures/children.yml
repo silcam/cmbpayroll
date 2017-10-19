@@ -2,3 +2,13 @@ LukeJr:
   person: LukeJr
   parent: Luke
   is_student: false
+
+Kylo:
+  person: Kylo
+  parent: Han
+  is_student: true
+
+LilObi:
+  person: LilObi
+  parent: Obiwan
+  is_student: true

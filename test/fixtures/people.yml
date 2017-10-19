@@ -14,6 +14,14 @@ LukeJr:
   first_name: Luke Jr.
   last_name: Skywalker
 
+Kylo:
+  first_name: Kylo
+  last_name: Ren
+
+LilObi:
+  first_name: LilObi
+  last_name: Kenobi
+
 Emperor:
   first_name: Emperor
   last_name: Palpatine

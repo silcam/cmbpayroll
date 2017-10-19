@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   resources :standard_charge_notes, only: [:index, :create, :destroy]
   shallow do
     resources :employees do
-      resources :children
+      resources :children, except: [:show]
       resources :loans, except: [:show] do
         resources :loan_payments, except: [:show, :index]
       end

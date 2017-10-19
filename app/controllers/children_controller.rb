@@ -2,69 +2,58 @@ class ChildrenController < ApplicationController
   before_action :set_child, only: [:show, :edit, :update, :destroy]
   before_action :set_employee, only: [:index, :new, :create]
 
-  # GET /children
-  # GET /children.json
   def index
+    authorize! :read, @employee
+
     @employee = Employee.find(params[:employee_id])
     @children = @employee.children.all
   end
 
-  # GET /children/1
-  # GET /children/1.json
   def show
+    authorize! :read, @child
   end
 
-  # GET /children/new
   def new
+    authorize! :create, Child
+
     @child = Child.new_with_person(parent: @employee.person)
   end
 
-  # GET /children/1/edit
   def edit
+    authorize! :update, Child
   end
 
-  # POST /children
-  # POST /children.json
   def create
+    authorize! :create, Child
+
     @child = Child.new_with_person({parent: @employee.person}.merge(child_params))
 
-    respond_to do |format|
-      if @child.save
-        format.html { redirect_to @child }
-        format.json { render :show, status: :created, location: @child }
-      else
-        format.html { render :new }
-        format.json { render json: @child.errors, status: :unprocessable_entity }
-      end
+    if @child.save
+      redirect_to employee_children_url(@employee)
+    else
+      render :new
     end
   end
 
-  # PATCH/PUT /children/1
-  # PATCH/PUT /children/1.json
   def update
-    respond_to do |format|
-      if @child.update(child_params)
-        format.html { redirect_to @child }
-        format.json { render :show, status: :ok, location: @child }
-      else
-        format.html { render :edit }
-        format.json { render json: @child.errors, status: :unprocessable_entity }
-      end
+    authorize! :update, Child
+
+    if @child.update(child_params)
+      redirect_to employee_children_url(@employee)
+    else
+      render :edit
     end
   end
 
-  # DELETE /children/1
-  # DELETE /children/1.json
   def destroy
+    authorize! :destroy, Child
+
     @child.destroy
-    respond_to do |format|
-      format.html { redirect_to children_urlsession }
-      format.json { head :no_content }
-    end
+    redirect_to employee_children_url(@employee)
   end
 
   private
-  # Use callbacks to share common setup or constraints between actions.
+
   def set_child
     @child = Child.find(params[:id])
     @employee = @child.parent.employee

@@ -5,8 +5,10 @@
 <ul class="list-inline" style="margin-top: 15px;">
   <li>
     <label><%= t(:Children) %>:</label>
-    <%= link_to t(:View), employee_children_path(@employee) %> |
-    <%= link_to t(:Add), new_employee_child_path(@employee), id: 'add-child-link' %>
+    <%= link_to t(:View), employee_children_path(@employee) %>
+    <% if can? :create, Child %>
+     | <%= link_to t(:Add), new_employee_child_path(@employee), id: 'add-child-link' %>
+    <% end %>
   </li>
   <li>
     <label><%= t(:Vacation) %>:</label>

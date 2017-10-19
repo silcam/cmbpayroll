@@ -70,6 +70,11 @@ class AccessPolicy
       can :read, Holiday
       can :update, Holiday
       can :destroy, Holiday
+
+      can :create, Child
+      can :read, Child
+      can :update, Child
+      can :destroy, Child
     end
 
     # More privileged role, in this case supervisors
@@ -140,6 +145,11 @@ class AccessPolicy
       can :read, LoanPayment do |loan_payment, user|
         # can read if looking at self
         loan_payment.loan.employee.person.id == user.person.id
+      end
+
+      can :read, Child do |child, user|
+        # can read if looking at own child
+        child.parent.id == user.person.id
       end
     end
 

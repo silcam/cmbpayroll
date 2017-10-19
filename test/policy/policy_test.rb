@@ -68,6 +68,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, Holiday), "admins can read Holidays")
     assert(policy.can?(:update, Holiday), "admins can update Holidays")
     assert(policy.can?(:destroy, Holiday), "admins can destroy Holidays")
+
+    assert(policy.can?(:create, Child), "admins can create Children")
+    assert(policy.can?(:read, Child), "admins can read Children")
+    assert(policy.can?(:update, Child), "admins can update Children")
+    assert(policy.can?(:destroy, Child), "admins can destroy Children")
   end
 
   test "Policy for Supervisors " do
@@ -155,6 +160,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Holiday), "supervisors can't read Holidays")
     refute(policy.can?(:update, Holiday), "supervisors can't update Holidays")
     refute(policy.can?(:destroy, Holiday), "supervisors can't destroy Holidays")
+
+    refute(policy.can?(:create, Child), "supervisors can't create Children")
+    refute(policy.can?(:read, Child), "supervisors can't read Children")
+    refute(policy.can?(:update, Child), "supervisors can't update Children")
+    refute(policy.can?(:destroy, Child), "supervisors can't destroy Children")
   end
 
   test "Multi-level Supervisors " do
@@ -236,6 +246,15 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Holiday), "users can't read Holidays")
     refute(policy.can?(:update, Holiday), "users can't update Holidays")
     refute(policy.can?(:destroy, Holiday), "users can't destroy Holidays")
+
+    luke_jr = children(:LukeJr)
+    kylo = children(:Kylo)
+
+    refute(policy.can?(:create, Child), "users can't create Children")
+    assert(policy.can?(:read, luke_jr), "users can read own Children")
+    refute(policy.can?(:read, kylo), "users can read other Children")
+    refute(policy.can?(:update, Child), "users can't update Children")
+    refute(policy.can?(:destroy, Child), "users can't destroy Children")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -295,5 +314,12 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Holiday), "non-roled users can't read Holidays")
     refute(policy.can?(:update, Holiday), "non-roled users can't update Holidays")
     refute(policy.can?(:destroy, Holiday), "non-roled users can't destroy Holidays")
+
+    lukejr = children(:LukeJr)
+
+    refute(policy.can?(:create, Child), "non-roled users can't create Children")
+    refute(policy.can?(:read, lukejr), "non-roled users can't read Children")
+    refute(policy.can?(:update, Child), "non-roled users can't update Children")
+    refute(policy.can?(:destroy, Child), "non-roled users can't destroy Children")
   end
 end

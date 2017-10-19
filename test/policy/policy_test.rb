@@ -63,6 +63,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(han_payslip.employee = @han)
     assert(policy.can?(:read, han_payslip), "admins can read Payslips")
     assert(policy.can?(:update, Payslip), "admins admin Payslips")
+
+    assert(policy.can?(:create, Holiday), "admins can create Holidays")
+    assert(policy.can?(:read, Holiday), "admins can read Holidays")
+    assert(policy.can?(:update, Holiday), "admins can update Holidays")
+    assert(policy.can?(:destroy, Holiday), "admins can destroy Holidays")
   end
 
   test "Policy for Supervisors " do
@@ -145,6 +150,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, obiwan_payslip), "supervisors can see payslips for reports")
     refute(policy.can?(:read, han_payslip), "supervisors can see payslips for other employees")
     refute(policy.can?(:update, Payslip), "supervisors can't admin Payslips")
+
+    refute(policy.can?(:create, Holiday), "supervisors can't create Holidays")
+    refute(policy.can?(:read, Holiday), "supervisors can't read Holidays")
+    refute(policy.can?(:update, Holiday), "supervisors can't update Holidays")
+    refute(policy.can?(:destroy, Holiday), "supervisors can't destroy Holidays")
   end
 
   test "Multi-level Supervisors " do
@@ -221,6 +231,11 @@ class PolicyTest < ActiveSupport::TestCase
 
     assert(policy.can?(:read, luke_payslip), "users can read own Payslips")
     refute(policy.can?(:update, Payslip), "users can't admin Payslips")
+
+    refute(policy.can?(:create, Holiday), "users can't create Holidays")
+    refute(policy.can?(:read, Holiday), "users can't read Holidays")
+    refute(policy.can?(:update, Holiday), "users can't update Holidays")
+    refute(policy.can?(:destroy, Holiday), "users can't destroy Holidays")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -275,5 +290,10 @@ class PolicyTest < ActiveSupport::TestCase
 
     refute(policy.can?(:read, luke_payslip), "non-roled users can't read Payslips")
     refute(policy.can?(:update, Payslip), "non-roled users can't admin Payslips")
+
+    refute(policy.can?(:create, Holiday), "non-roled users can't create Holidays")
+    refute(policy.can?(:read, Holiday), "non-roled users can't read Holidays")
+    refute(policy.can?(:update, Holiday), "non-roled users can't update Holidays")
+    refute(policy.can?(:destroy, Holiday), "non-roled users can't destroy Holidays")
   end
 end

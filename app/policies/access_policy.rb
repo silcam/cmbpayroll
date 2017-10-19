@@ -65,6 +65,11 @@ class AccessPolicy
       can :read, StandardChargeNote
       can :update, StandardChargeNote
       can :destroy, StandardChargeNote
+
+      can :create, Holiday
+      can :read, Holiday
+      can :update, Holiday
+      can :destroy, Holiday
     end
 
     # More privileged role, in this case supervisors

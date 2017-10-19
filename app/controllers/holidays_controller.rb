@@ -1,11 +1,15 @@
 class HolidaysController < ApplicationController
 
   def index
+    authorize! :read, Holiday
+
     prepare_index
     @holiday = Holiday.new
   end
 
   def create
+    authorize! :create, Holiday
+
     @holiday = Holiday.new holiday_params
     if @holiday.save
       redirect_to holidays_path(year: @holiday.date.year)
@@ -16,18 +20,24 @@ class HolidaysController < ApplicationController
   end
 
   def generate
+    authorize! :create, Holiday
+
     @year = params[:year].to_i
     Holiday.generate @year
     redirect_to holidays_path(year: @year)
   end
 
   def edit
+    authorize! :update, Holiday
+
     @holiday = Holiday.find params[:id]
     prepare_index @holiday.date.year
     render :index
   end
 
   def update
+    authorize! :update, Holiday
+
     @holiday = Holiday.find params[:id]
     if @holiday.update holiday_params
       redirect_to holidays_path(year: @holiday.date.year)
@@ -38,6 +48,8 @@ class HolidaysController < ApplicationController
   end
 
   def destroy
+    authorize! :destroy, Holiday
+
     @holiday = Holiday.find(params[:id])
     @holiday.destroy
     redirect_to holidays_path(year: @holiday.date.year)

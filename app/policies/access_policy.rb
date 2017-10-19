@@ -30,6 +30,9 @@ class AccessPolicy
       can :update, Employee
       can :destroy, Employee
 
+      can :read, Payslip
+      can :update, Payslip
+
       can :read, Wage
       can :update, Wage
 
@@ -83,6 +86,11 @@ class AccessPolicy
         employee.supervisor.person.id == user.person.id
       end
 
+      can :read, Payslip do |payslip, user|
+        # can read if personal payslip
+        payslip.employee.supervisor.person.id == user.person.id
+      end
+
       can :read, Charge do |charge, user|
         # can read if charge is for reporting employee
         charge.employee.supervisor.person.id == user.person.id
@@ -107,6 +115,11 @@ class AccessPolicy
       can :read, Employee do |employee, user|
         # can read if looking at self
         employee.person.id == user.person.id
+      end
+
+      can :read, Payslip do |payslip, user|
+        # can read if personal payslip
+        payslip.employee.person.id == user.person.id
       end
 
       can :read, Charge do |charge, user|

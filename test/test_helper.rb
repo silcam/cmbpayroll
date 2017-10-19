@@ -54,6 +54,26 @@ class ActiveSupport::TestCase
     return employee
   end
 
+  def create_and_return_payslip(employee)
+    # check posted period
+    period = LastPostedPeriod.get
+    period = Period.current if period.nil?
+    period = period.next
+    refute(LastPostedPeriod.posted?(period))
+
+    # work hours
+    generate_work_hours(employee, period)
+
+    # process payslip
+    payslip = Payslip.process(employee, period)
+    payslip.save
+
+    assert(payslip.valid?, "payslip should be valid (Does the employee have category and echelon set??)")
+    assert(payslip.id, "payslip should exist (is it valid??)")
+
+    payslip
+  end
+
   def create_earnings(payslip)
     earnings = Earning.new
 
@@ -179,13 +199,13 @@ module ControllerTestHelper
   end
 
   def make_call(url, method, params=nil)
-    if ("get" == method)
+    if ("get" == method.downcase)
       get url
-    elsif ("post" == method)
+    elsif ("post" == method.downcase)
       post url, params
-    elsif ("patch" == method)
+    elsif ("patch" == method.downcase)
       patch url, params
-    elsif ("delete" == method)
+    elsif ("delete" == method.downcase)
       delete url
     end
   end

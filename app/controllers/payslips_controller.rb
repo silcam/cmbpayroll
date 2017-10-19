@@ -4,9 +4,13 @@ class PayslipsController < ApplicationController
 
   def index
     if (@employee)
+      authorize! :read, @employee
+
       # show history for single employee
       render "employee_history"
     else
+      authorize! :update, Payslip
+
       # show other stuff
       @employees = Employee.all
     end
@@ -19,19 +23,26 @@ class PayslipsController < ApplicationController
       redirect_to payslips_url()
     else
       @payslip = Payslip.find(params[:id])
+      authorize! :read, @payslip
     end
   end
 
   def process_employee
+    authorize! :update, Payslip
+
     @period = LastPostedPeriod.current
   end
 
   def process_all_employees
+    authorize! :update, Payslip
+
     @period = LastPostedPeriod.current
     @payslips = Payslip.process_all(LastPostedPeriod.current)
   end
 
   def process_employee_complete
+    authorize! :update, Payslip
+
     employee_id = params[:employee][:id].to_i
     period_year = params[:period][:year].to_i
     period_month = params[:period][:month].to_i
@@ -54,6 +65,8 @@ class PayslipsController < ApplicationController
   end
 
   def post_period
+    authorize! :update, Payslip
+
     @payslips = Payslip.process_all LastPostedPeriod.current
     if @payslips.any?{ |payslip| payslip.errors.any? }
       @post_period_success = false
@@ -65,6 +78,8 @@ class PayslipsController < ApplicationController
   end
 
   def unpost_period
+    authorize! :update, Payslip
+
     LastPostedPeriod.unpost
     redirect_to payslips_path
   end

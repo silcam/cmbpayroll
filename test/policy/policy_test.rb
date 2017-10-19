@@ -58,6 +58,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, AdminController), "admins can see Admin Page")
     assert(policy.can?(:read, Wage), "admins admin wages")
     assert(policy.can?(:update, Wage), "admins admin wages")
+
+    han_payslip = create_and_return_payslip(@han)
+    assert(han_payslip.employee = @han)
+    assert(policy.can?(:read, han_payslip), "admins can read Payslips")
+    assert(policy.can?(:update, Payslip), "admins admin Payslips")
   end
 
   test "Policy for Supervisors " do
@@ -131,6 +136,15 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, AdminController), "non-admins cannot see Admin Page")
     refute(policy.can?(:read, Wage), "non-admins cannot admin wages")
     refute(policy.can?(:update, Wage), "non-admins cannot admin wages")
+
+    han_payslip = create_and_return_payslip(@han)
+    assert(han_payslip.employee = @han)
+    obiwan_payslip = create_and_return_payslip(@obiwan)
+    assert(obiwan_payslip.employee = @obiwan)
+
+    assert(policy.can?(:read, obiwan_payslip), "supervisors can see payslips for reports")
+    refute(policy.can?(:read, han_payslip), "supervisors can see payslips for other employees")
+    refute(policy.can?(:update, Payslip), "supervisors can't admin Payslips")
   end
 
   test "Multi-level Supervisors " do
@@ -201,6 +215,12 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, AdminController), "non-admins cannot see Admin Page")
     refute(policy.can?(:read, Wage), "non-admins cannot admin wages")
     refute(policy.can?(:update, Wage), "non-admins cannot admin wages")
+
+    luke_payslip = create_and_return_payslip(@luke_emp)
+    assert(luke_payslip.employee = @luke_emp, "luke owns this payslip")
+
+    assert(policy.can?(:read, luke_payslip), "users can read own Payslips")
+    refute(policy.can?(:update, Payslip), "users can't admin Payslips")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -249,5 +269,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, AdminController), "non-admins cannot see Admin Page")
     refute(policy.can?(:read, Wage), "non-admins cannot admin wages")
     refute(policy.can?(:update, Wage), "non-admins cannot admin wages")
+
+    luke_payslip = create_and_return_payslip(@luke_emp)
+    assert(luke_payslip.employee = @luke_emp, "luke owns this payslip")
+
+    refute(policy.can?(:read, luke_payslip), "non-roled users can't read Payslips")
+    refute(policy.can?(:update, Payslip), "non-roled users can't admin Payslips")
   end
 end

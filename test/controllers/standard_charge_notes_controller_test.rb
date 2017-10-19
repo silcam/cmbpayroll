@@ -18,9 +18,9 @@ class StandardChargeNotesControllerTest < ActionDispatch::IntegrationTest
   test "Loan Payments : Supervisor" do
     login_supervisor(:Quigon)
 
-    refute_user_permission(standard_charge_notes_url(), "get") # index
-    refute_user_permission(standard_charge_notes_url(), "post", params: { standard_charge_note: { note: 'note text' }}) # create
-    refute_user_permission(standard_charge_note_url(standard_charge_notes(:one)), "delete") # delete
+    refute_supervisor_permission(standard_charge_notes_url(), "get") # index
+    refute_supervisor_permission(standard_charge_notes_url(), "post", params: { standard_charge_note: { note: 'note text' }}) # create
+    refute_supervisor_permission(standard_charge_note_url(standard_charge_notes(:one)), "delete") # delete
   end
 
   #### Admin ####
@@ -28,9 +28,9 @@ class StandardChargeNotesControllerTest < ActionDispatch::IntegrationTest
   test "Loan Payments : Admin" do
     login_admin(:MaceWindu)
 
-    assert_user_permission(standard_charge_notes_url(), "get") # index
-    assert_user_permission(standard_charge_notes_url(), "post", params: { standard_charge_note: { note: 'note text' }}) # create
-    assert_user_permission(standard_charge_note_url(standard_charge_notes(:one)), "delete") # delete
+    assert_admin_permission(standard_charge_notes_url(), "get") # index
+    assert_admin_permission(standard_charge_notes_url(), "post", params: { standard_charge_note: { note: 'note text' }}) # create
+    assert_admin_permission(standard_charge_note_url(standard_charge_notes(:one)), "delete") # delete
   end
 
 end

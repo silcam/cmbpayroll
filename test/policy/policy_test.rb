@@ -54,6 +54,10 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, StandardChargeNote), "admins can read Standard Charge Notes")
     assert(policy.can?(:update, StandardChargeNote), "admins can update Standard Charge Notes")
     assert(policy.can?(:destroy, StandardChargeNote), "admins can destroy Standard Charge Notes")
+
+    assert(policy.can?(:read, AdminController), "admins can see Admin Page")
+    assert(policy.can?(:read, Wage), "admins admin wages")
+    assert(policy.can?(:update, Wage), "admins admin wages")
   end
 
   test "Policy for Supervisors " do
@@ -123,6 +127,10 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, StandardChargeNote), "supervisors can't read Standard Charge Notes")
     refute(policy.can?(:update, StandardChargeNote), "supervisors can't update Standard Charge Notes")
     refute(policy.can?(:destroy, StandardChargeNote), "supervisors can't destroy Standard Charge Notes")
+
+    refute(policy.can?(:read, AdminController), "non-admins cannot see Admin Page")
+    refute(policy.can?(:read, Wage), "non-admins cannot admin wages")
+    refute(policy.can?(:update, Wage), "non-admins cannot admin wages")
   end
 
   test "Multi-level Supervisors " do
@@ -189,6 +197,10 @@ class PolicyTest < ActiveSupport::TestCase
 
     refute(policy.can?(:update, LoanPayment), "Luke can't update Loan Payments")
     refute(policy.can?(:destroy, LoanPayment), "Luke can't destroy Loan Payments")
+
+    refute(policy.can?(:read, AdminController), "non-admins cannot see Admin Page")
+    refute(policy.can?(:read, Wage), "non-admins cannot admin wages")
+    refute(policy.can?(:update, Wage), "non-admins cannot admin wages")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -233,5 +245,9 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, StandardChargeNote), "users can't read Standard Charge Notes")
     refute(policy.can?(:update, StandardChargeNote), "users can't update Standard Charge Notes")
     refute(policy.can?(:destroy, StandardChargeNote), "users can't destroy Standard Charge Notes")
+
+    refute(policy.can?(:read, AdminController), "non-admins cannot see Admin Page")
+    refute(policy.can?(:read, Wage), "non-admins cannot admin wages")
+    refute(policy.can?(:update, Wage), "non-admins cannot admin wages")
   end
 end

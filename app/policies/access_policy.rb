@@ -23,6 +23,8 @@ class AccessPolicy
       # permissions go here
 
       # can do everything.
+      can :read, AdminController # see admin pages
+
       can :create, Employee
       can :read, Employee
       can :update, Employee

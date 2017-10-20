@@ -75,6 +75,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:destroy, Child), "admins can destroy Children")
 
     assert(policy.can?(:read, ReportsController), "admins can view Reports")
+
+    assert(policy.can?(:create, Supervisor), "admins can view Supervisors")
+    assert(policy.can?(:read, Supervisor), "admins can view Supervisors")
+    assert(policy.can?(:update, Supervisor), "admins can view Supervisors")
+    assert(policy.can?(:destroy, Supervisor), "admins can view Supervisors")
   end
 
   test "Policy for Supervisors " do
@@ -169,6 +174,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:destroy, Child), "supervisors can't destroy Children")
 
     refute(policy.can?(:read, ReportsController), "supervisors can't view Reports")
+
+    refute(policy.can?(:create, Supervisor), "supervisors can't view Supervisors")
+    refute(policy.can?(:read, Supervisor), "supervisors can't view Supervisors")
+    refute(policy.can?(:update, Supervisor), "supervisors can't view Supervisors")
+    refute(policy.can?(:destroy, Supervisor), "supervisors can't view Supervisors")
   end
 
   test "Multi-level Supervisors " do
@@ -261,6 +271,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:destroy, Child), "users can't destroy Children")
 
     refute(policy.can?(:read, ReportsController), "users can't view Reports")
+
+    refute(policy.can?(:create, Supervisor), "users can't view Supervisors")
+    refute(policy.can?(:read, Supervisor), "users can't view Supervisors")
+    refute(policy.can?(:update, Supervisor), "users can't view Supervisors")
+    refute(policy.can?(:destroy, Supervisor), "users can't view Supervisors")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -329,5 +344,10 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:destroy, Child), "non-roled users can't destroy Children")
 
     refute(policy.can?(:read, ReportsController), "non-roled can't view Reports")
+
+    refute(policy.can?(:create, Supervisor), "non-roled users can't view Supervisors")
+    refute(policy.can?(:read, Supervisor), "non-roled users can't view Supervisors")
+    refute(policy.can?(:update, Supervisor), "non-roled users can't view Supervisors")
+    refute(policy.can?(:destroy, Supervisor), "non-roled users can't view Supervisors")
   end
 end

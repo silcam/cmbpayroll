@@ -1,7 +1,11 @@
 class EmployeesController < ApplicationController
 
   def index
-    if current_user.user?
+    if params[:supervisor]
+      authorize! :read, Supervisor
+
+      @employees = Supervisor.find(params[:supervisor]).employees
+    elsif current_user.user?
       @employees = Array.new
       @employees << Employee.find_by(person_id: current_user.person.id)
     elsif current_user.supervisor?

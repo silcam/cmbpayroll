@@ -1,14 +1,20 @@
 class SupervisorsController < ApplicationController
 
   def index
+    authorize! :read, Supervisor
+
     @supervisors = Supervisor.all.includes(:employees)
   end
 
   def new
+    authorize! :create, Supervisor
+
     @supervisor = Supervisor.new
   end
 
   def create
+    authorize! :create, Supervisor
+
     @supervisor = Supervisor.new supervisor_params
     if @supervisor.save
       follow_redirect supervisors_path
@@ -18,6 +24,8 @@ class SupervisorsController < ApplicationController
   end
 
   def destroy
+    authorize! :destroy, Supervisor
+
     Supervisor.find(params[:id]).destroy
     redirect_to supervisors_path
   end

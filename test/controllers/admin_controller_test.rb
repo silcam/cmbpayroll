@@ -47,7 +47,7 @@ class AdminControllerControllerTest < ActionDispatch::IntegrationTest
     assert_select "a#admin-link", false
   end
 
-  #### USER ####
+  #### Admin ####
 
   test "Admin Pages : Admin" do
     login_admin(:MaceWindu)

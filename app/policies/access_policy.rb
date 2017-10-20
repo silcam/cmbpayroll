@@ -76,6 +76,11 @@ class AccessPolicy
       can :read, Child
       can :update, Child
       can :destroy, Child
+
+      can :create, Supervisor
+      can :read, Supervisor
+      can :update, Supervisor
+      can :destroy, Supervisor
     end
 
     # More privileged role, in this case supervisors

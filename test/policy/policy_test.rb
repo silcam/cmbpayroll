@@ -73,6 +73,8 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, Child), "admins can read Children")
     assert(policy.can?(:update, Child), "admins can update Children")
     assert(policy.can?(:destroy, Child), "admins can destroy Children")
+
+    assert(policy.can?(:read, ReportsController), "admins can view Reports")
   end
 
   test "Policy for Supervisors " do
@@ -165,6 +167,8 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Child), "supervisors can't read Children")
     refute(policy.can?(:update, Child), "supervisors can't update Children")
     refute(policy.can?(:destroy, Child), "supervisors can't destroy Children")
+
+    refute(policy.can?(:read, ReportsController), "supervisors can't view Reports")
   end
 
   test "Multi-level Supervisors " do
@@ -255,6 +259,8 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, kylo), "users can read other Children")
     refute(policy.can?(:update, Child), "users can't update Children")
     refute(policy.can?(:destroy, Child), "users can't destroy Children")
+
+    refute(policy.can?(:read, ReportsController), "users can't view Reports")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -321,5 +327,7 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, lukejr), "non-roled users can't read Children")
     refute(policy.can?(:update, Child), "non-roled users can't update Children")
     refute(policy.can?(:destroy, Child), "non-roled users can't destroy Children")
+
+    refute(policy.can?(:read, ReportsController), "non-roled can't view Reports")
   end
 end

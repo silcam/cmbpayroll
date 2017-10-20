@@ -24,6 +24,7 @@ class AccessPolicy
 
       # can do everything.
       can :read, AdminController # see admin pages
+      can :read, ReportsController # see reports
 
       can :create, Employee
       can :read, Employee

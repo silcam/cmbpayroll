@@ -22,9 +22,12 @@ class ReportsController < ApplicationController
   }
 
   def index
+    authorize! :read, ReportsController
   end
 
   def show
+    authorize! :read, ReportsController
+
     if (REPORTS.has_key?(params[:report]))
       @report = REPORTS[params[:report]][:instance].call(params[:period])
       @report.set_options(params[:options].to_unsafe_h() || {})

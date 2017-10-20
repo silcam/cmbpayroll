@@ -42,6 +42,8 @@ Rails.application.routes.draw do
   # Reports index
   get 'reports', to: 'reports#index'
   get 'report_display', to: 'reports#show'
+  get 'reports/*report', to: 'home#home' # eliminate gem routes
+  get 'multi/reports/*report', to: 'home#home' # eliminate gem routes
 
   # Payslips
   post 'payslips/process', to: 'payslips#process_employee', as: :payslip_process_employee

@@ -24,8 +24,10 @@
   </li>
   <li>
     <label><%= :Hours %>:</label>
-    <%= link_to t(:View), employee_work_hours_path(@employee) %> |
-    <%= link_to t(:Enter), edit_employee_work_hours_path(@employee), id: 'add-hours-link' %>
+    <%= link_to t(:View), employee_work_hours_path(@employee) %>
+    <% if can? :update, WorkHour %>
+      | <%= link_to t(:Enter), edit_employee_work_hours_path(@employee), id: 'add-hours-link' %>
+    <% end %>
   </li>
     <label><%= t(:Loans) %>:</label>
     <%= link_to t(:View), employee_loans_path(@employee) %>

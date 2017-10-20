@@ -24,6 +24,7 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, @chewie), "admins can read Employees")
     assert(policy.can?(:update, @chewie), "admins can update Employees")
     assert(policy.can?(:destroy, @chewie), "admins can destroy Employees")
+    assert(policy.can?(:admin, Employee), "admins can destroy Employees")
 
     assert(policy.can?(:create, Bonus), "admins can create Bonuses")
     assert(policy.can?(:read, Bonus), "admins can read Bonuses")
@@ -85,6 +86,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, WorkLoan), "admins can view WorkLoan")
     assert(policy.can?(:update, WorkLoan), "admins can view WorkLoan")
     assert(policy.can?(:destroy, WorkLoan), "admins can view WorkLoan")
+
+    assert(policy.can?(:create, WorkHour), "admins can view WorkLoan")
+    assert(policy.can?(:read, WorkHour), "admins can view WorkLoan")
+    assert(policy.can?(:update, WorkHour), "admins can view WorkLoan")
+    assert(policy.can?(:destroy, WorkHour), "admins can view WorkLoan")
   end
 
   test "Policy for Supervisors " do
@@ -189,6 +195,17 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, WorkLoan), "supervisors can't view WorkLoan")
     refute(policy.can?(:update, WorkLoan), "supervisors can't view WorkLoan")
     refute(policy.can?(:destroy, WorkLoan), "supervisors can't view WorkLoan")
+
+    generate_work_hours(@han, Period.current)
+    han_work_hour = WorkHour.for(@han, Period.current.start, Period.current.finish).first
+    generate_work_hours(@obiwan, Period.current)
+    obiwan_work_hour = WorkHour.for(@obiwan, Period.current.start, Period.current.finish).first
+
+    refute(policy.can?(:create, WorkHour), "supervisors can't view WorkHour")
+    assert(policy.can?(:read, obiwan_work_hour), "supervisors can view WorkHour for employees")
+    refute(policy.can?(:read, han_work_hour), "supervisors can't view WorkHour for others")
+    refute(policy.can?(:update, WorkHour), "supervisors can't view WorkHour")
+    refute(policy.can?(:destroy, WorkHour), "supervisors can't view WorkHour")
   end
 
   test "Multi-level Supervisors " do # TODO
@@ -291,6 +308,17 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, WorkLoan), "users can't view WorkLoan")
     refute(policy.can?(:update, WorkLoan), "users can't view WorkLoan")
     refute(policy.can?(:destroy, WorkLoan), "users can't view WorkLoan")
+
+    generate_work_hours(@han, Period.current)
+    han_work_hour = WorkHour.for(@han, Period.current.start, Period.current.finish).first
+    generate_work_hours(@luke_emp, Period.current)
+    luke_work_hour = WorkHour.for(@luke_emp, Period.current.start, Period.current.finish).first
+
+    refute(policy.can?(:create, WorkHour), "users can't view WorkHour")
+    assert(policy.can?(:read, luke_work_hour), "users can view WorkHour of self")
+    refute(policy.can?(:read, han_work_hour), "users can't view WorkHour of others")
+    refute(policy.can?(:update, WorkHour), "users can't view WorkHour")
+    refute(policy.can?(:destroy, WorkHour), "users can't view WorkHour")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -302,6 +330,7 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:update, @luke_emp), "Jar Jar can't update Luke")
     refute(policy.can?(:destroy, @luke_emp), "Jar Jar can't destroy Luke")
     refute(policy.can?(:create, Employee), "Jar Jar can't create employees")
+    refute(policy.can?(:admin, Employee), "Jar Jar can't admin employees")
 
     refute(policy.can?(:create, Bonus), "Jar Jar can't create Bonuses")
     refute(policy.can?(:read, Bonus), "Jar Jar can't read Bonuses")
@@ -369,5 +398,13 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, WorkLoan), "non-roled users can't view WorkLoan")
     refute(policy.can?(:update, WorkLoan), "non-roled users can't view WorkLoan")
     refute(policy.can?(:destroy, WorkLoan), "non-roled users can't view WorkLoan")
+
+    generate_work_hours(@luke_emp, Period.current)
+    luke_work_hour = WorkHour.for(@luke_emp, Period.current.start, Period.current.finish).first
+
+    refute(policy.can?(:create, WorkHour), "non-roled users can't view WorkHour")
+    refute(policy.can?(:read, luke_work_hour), "non-roled users can't view WorkHour")
+    refute(policy.can?(:update, WorkHour), "non-roled users can't view WorkHour")
+    refute(policy.can?(:destroy, WorkHour), "non-roled users can't view WorkHour")
   end
 end

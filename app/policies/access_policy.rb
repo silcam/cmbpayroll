@@ -30,6 +30,7 @@ class AccessPolicy
       can :read, Employee
       can :update, Employee
       can :destroy, Employee
+      can :admin, Employee
 
       can :read, Payslip
       can :update, Payslip
@@ -86,6 +87,11 @@ class AccessPolicy
       can :read, WorkLoan
       can :update, WorkLoan
       can :destroy, WorkLoan
+
+      can :create, WorkHour
+      can :read, WorkHour
+      can :update, WorkHour
+      can :destroy, WorkHour
     end
 
     # More privileged role, in this case supervisors
@@ -126,6 +132,11 @@ class AccessPolicy
         # can read if loan_payment is for reporting employee
         loan_payment.loan.employee.supervisor.person.id == user.person.id
       end
+
+      can :read, WorkHour do |work_hour, user|
+        # can read if work_hour is for reporting employee
+        work_hour.employee.supervisor.person.id == user.person.id
+      end
     end
 
     # An employee with user role can perform limited
@@ -161,6 +172,11 @@ class AccessPolicy
       can :read, Child do |child, user|
         # can read if looking at own child
         child.parent.id == user.person.id
+      end
+
+      can :read, WorkHour do |work_hour, user|
+        # can read if looking at own work_hour
+        work_hour.employee.person.id == user.person.id
       end
     end
 

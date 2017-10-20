@@ -4,6 +4,8 @@ class WorkHoursController < ApplicationController
 
   def index
     if @employee
+      authorize! :read, @employee
+
       @period = get_params_period(LastPostedPeriod.current)
       @hours_worked = WorkHour.total_hours(@employee, @period)
       @days_hash = WorkHour.complete_days_hash @employee,
@@ -11,17 +13,23 @@ class WorkHoursController < ApplicationController
                                                @period.finish
       render 'index_for_employee'
     else
+      authorize! :admin, Employee
+
       @period = LastPostedPeriod.current
       @employees_needing_entry = WorkHour.employees_lacking_work_hours(@period)
     end
   end
 
   def edit
+    authorize! :admin, Employee
+
     @period = LastPostedPeriod.current
     @days_hash = WorkHour.complete_days_hash(@employee, @period.start, @period.finish)
   end
 
   def update
+    authorize! :admin, Employee
+
     success, @all_errors = WorkHour.update(@employee, params['hours'], params['sick'])
     if success
       if params[:enter_all] == 'true'

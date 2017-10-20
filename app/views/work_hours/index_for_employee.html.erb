@@ -2,10 +2,11 @@
 
 <h2><%= t :Hours_for %> <%= @employee.full_name %></h2>
 
-
 <div style="margin-bottom: 8px;">
   <% if @period == LastPostedPeriod.current %>
-    <%= link_to t(:Enter_hours), edit_employee_work_hours_path(@employee), class: 'btn btn-primary' %>
+    <% if can? :create, WorkHour %> 
+      <%= link_to t(:Enter_hours), edit_employee_work_hours_path(@employee), class: 'btn btn-primary', id: 'enter-hours-btn' %>
+    <% end %>
   <% end %>
 </div>
 

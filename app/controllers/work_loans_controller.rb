@@ -4,10 +4,14 @@ class WorkLoansController < ApplicationController
   before_action :get_employees, only: [ :new, :create ]
 
   def new
+    authorize! :create, WorkLoan
+
     @work_loan = WorkLoan.new()
   end
 
   def create
+    authorize! :create, WorkLoan
+
     @work_loan = WorkLoan.create(work_loan_params)
     if @work_loan.save
       redirect_to work_loans_url(@work_loan)
@@ -17,6 +21,8 @@ class WorkLoansController < ApplicationController
   end
 
   def index
+    authorize! :read, WorkLoan
+
     @period = get_params_period
     @work_loans = WorkLoan.for_period(@period)
 
@@ -26,6 +32,8 @@ class WorkLoansController < ApplicationController
   end
 
   def destroy
+    authorize! :destroy, WorkLoan
+
     @loan = WorkLoan.find params[:id]
     @loan.destroy
     redirect_to work_loans_path

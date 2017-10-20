@@ -81,6 +81,11 @@ class AccessPolicy
       can :read, Supervisor
       can :update, Supervisor
       can :destroy, Supervisor
+
+      can :create, WorkLoan
+      can :read, WorkLoan
+      can :update, WorkLoan
+      can :destroy, WorkLoan
     end
 
     # More privileged role, in this case supervisors

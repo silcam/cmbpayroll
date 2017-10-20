@@ -80,6 +80,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, Supervisor), "admins can view Supervisors")
     assert(policy.can?(:update, Supervisor), "admins can view Supervisors")
     assert(policy.can?(:destroy, Supervisor), "admins can view Supervisors")
+
+    assert(policy.can?(:create, WorkLoan), "admins can view WorkLoan")
+    assert(policy.can?(:read, WorkLoan), "admins can view WorkLoan")
+    assert(policy.can?(:update, WorkLoan), "admins can view WorkLoan")
+    assert(policy.can?(:destroy, WorkLoan), "admins can view WorkLoan")
   end
 
   test "Policy for Supervisors " do
@@ -179,9 +184,14 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Supervisor), "supervisors can't view Supervisors")
     refute(policy.can?(:update, Supervisor), "supervisors can't view Supervisors")
     refute(policy.can?(:destroy, Supervisor), "supervisors can't view Supervisors")
+
+    refute(policy.can?(:create, WorkLoan), "supervisors can't view WorkLoan")
+    refute(policy.can?(:read, WorkLoan), "supervisors can't view WorkLoan")
+    refute(policy.can?(:update, WorkLoan), "supervisors can't view WorkLoan")
+    refute(policy.can?(:destroy, WorkLoan), "supervisors can't view WorkLoan")
   end
 
-  test "Multi-level Supervisors " do
+  test "Multi-level Supervisors " do # TODO
     # Yoda -> Han -> Chewie
     # Yoda should be able to see Chewie (I think)
     #assert(false, "Write this test")
@@ -276,6 +286,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Supervisor), "users can't view Supervisors")
     refute(policy.can?(:update, Supervisor), "users can't view Supervisors")
     refute(policy.can?(:destroy, Supervisor), "users can't view Supervisors")
+
+    refute(policy.can?(:create, WorkLoan), "users can't view WorkLoan")
+    refute(policy.can?(:read, WorkLoan), "users can't view WorkLoan")
+    refute(policy.can?(:update, WorkLoan), "users can't view WorkLoan")
+    refute(policy.can?(:destroy, WorkLoan), "users can't view WorkLoan")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -349,5 +364,10 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Supervisor), "non-roled users can't view Supervisors")
     refute(policy.can?(:update, Supervisor), "non-roled users can't view Supervisors")
     refute(policy.can?(:destroy, Supervisor), "non-roled users can't view Supervisors")
+
+    refute(policy.can?(:create, WorkLoan), "non-roled users can't view WorkLoan")
+    refute(policy.can?(:read, WorkLoan), "non-roled users can't view WorkLoan")
+    refute(policy.can?(:update, WorkLoan), "non-roled users can't view WorkLoan")
+    refute(policy.can?(:destroy, WorkLoan), "non-roled users can't view WorkLoan")
   end
 end

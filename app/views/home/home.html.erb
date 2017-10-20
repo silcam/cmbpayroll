@@ -20,7 +20,9 @@
         <li><%= link_to t(:Bonuses), bonuses_path %></li>
       <% end %>
 
-      <li><%= link_to t(:Work_loans), work_loans_path %></li>
+      <% if can? :read, WorkLoan %>
+        <li><%= link_to t(:Work_loans), work_loans_path, id: 'work-loans-link' %></li>
+      <% end %>
 
       <% if can? :read, ReportsController %>
         <li><%= link_to t(:Reports), reports_path, id: 'reports-link' %></li>

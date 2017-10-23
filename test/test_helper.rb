@@ -29,6 +29,13 @@ class ActiveSupport::TestCase
     click_button 'Log in'
   end
 
+  def log_in_admin
+    visit login_path
+    fill_in 'Username', with: 'mace'
+    fill_in 'Password', with: 'mace'
+    click_button 'Log in'
+  end
+
   def on_sep_5
     Date.stub :today, Date.new(2017, 9, 5) do
       yield

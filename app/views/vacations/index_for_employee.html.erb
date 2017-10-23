@@ -2,7 +2,9 @@
 
 <h2><%= t :Vacation_for %> <%= @employee.full_name %></h2>
 
-<%= link_to t(:Enter_vacation), new_employee_vacation_path(@employee, referred_by: request.path), class: 'btn btn-primary', style: 'margin-bottom: 10px;' %>
+<% if can? :create, Vacation %>
+  <%= link_to t(:Enter_vacation), new_employee_vacation_path(@employee, referred_by: request.path), class: 'btn btn-primary', style: 'margin-bottom: 10px;', id: 'enter-vacation-btn' %>
+<% end %>
 
 <%= render 'days_summary', employee: @employee %>
 

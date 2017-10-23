@@ -91,6 +91,11 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, WorkHour), "admins can view WorkLoan")
     assert(policy.can?(:update, WorkHour), "admins can view WorkLoan")
     assert(policy.can?(:destroy, WorkHour), "admins can view WorkLoan")
+
+    assert(policy.can?(:create, Vacation), "admins can view Vacations")
+    assert(policy.can?(:read, Vacation), "admins can read Vacations")
+    assert(policy.can?(:update, Vacation), "admins can update Vacations")
+    assert(policy.can?(:destroy, Vacation), "admins can destroy Vacations")
   end
 
   test "Policy for Supervisors " do
@@ -206,6 +211,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, han_work_hour), "supervisors can't view WorkHour for others")
     refute(policy.can?(:update, WorkHour), "supervisors can't view WorkHour")
     refute(policy.can?(:destroy, WorkHour), "supervisors can't view WorkHour")
+
+    refute(policy.can?(:create, Vacation), "supervisors can't view Vacation")
+    refute(policy.can?(:read, Vacation), "supervisors can't view Vacation")
+    refute(policy.can?(:update, Vacation), "supervisors can't view Vacation")
+    refute(policy.can?(:destroy, Vacation), "supervisors can't view Vacation")
   end
 
   test "Multi-level Supervisors " do # TODO
@@ -319,6 +329,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, han_work_hour), "users can't view WorkHour of others")
     refute(policy.can?(:update, WorkHour), "users can't view WorkHour")
     refute(policy.can?(:destroy, WorkHour), "users can't view WorkHour")
+
+    refute(policy.can?(:create, Vacation), "users can't view Vacation")
+    refute(policy.can?(:read, Vacation), "users can't view Vacation")
+    refute(policy.can?(:update, Vacation), "users can't view Vacation")
+    refute(policy.can?(:destroy, Vacation), "users can't view Vacation")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -406,5 +421,10 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, luke_work_hour), "non-roled users can't view WorkHour")
     refute(policy.can?(:update, WorkHour), "non-roled users can't view WorkHour")
     refute(policy.can?(:destroy, WorkHour), "non-roled users can't view WorkHour")
+
+    refute(policy.can?(:create, Vacation), "non-roled users can't view Vacation")
+    refute(policy.can?(:read, Vacation), "non-roled users can't view Vacation")
+    refute(policy.can?(:update, Vacation), "non-roled users can't view Vacation")
+    refute(policy.can?(:destroy, Vacation), "non-roled users can't view Vacation")
   end
 end

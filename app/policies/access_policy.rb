@@ -92,6 +92,11 @@ class AccessPolicy
       can :read, WorkHour
       can :update, WorkHour
       can :destroy, WorkHour
+
+      can :create, Vacation
+      can :read, Vacation
+      can :update, Vacation
+      can :destroy, Vacation
     end
 
     # More privileged role, in this case supervisors

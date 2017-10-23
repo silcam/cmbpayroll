@@ -12,8 +12,10 @@
   </li>
   <li>
     <label><%= t(:Vacation) %>:</label>
-    <%= link_to t(:View), employee_vacations_path(@employee) %> |
-    <%= link_to t(:Add), new_employee_vacation_path(@employee, referred_by: employee_vacations_path(@employee)), id: 'add-vacation-link' %>
+    <%= link_to t(:View), employee_vacations_path(@employee) %>
+    <% if can? :create, Vacation %>
+    | <%= link_to t(:Add), new_employee_vacation_path(@employee, referred_by: employee_vacations_path(@employee)), id: 'add-vacation-link' %>
+    <% end %>
   </li>
   <li>
     <label><%= t(:Charges) %>:</label>

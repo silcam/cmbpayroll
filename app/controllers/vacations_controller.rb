@@ -7,9 +7,13 @@ class VacationsController < ApplicationController
 
   def index
     if @employee
+      authorize! :read, @employee
+
       @vacations = @employee.vacations
       render 'index_for_employee'
     else
+      authorize! :admin, Employee
+
       @period = get_params_period
       @period_vacations = Vacation.for_period(@period)
       @upcoming_vacations = Vacation.upcoming_vacations
@@ -17,6 +21,8 @@ class VacationsController < ApplicationController
   end
 
   def new
+    authorize! :create, Vacation
+
     @vacation = Vacation.new
     if @employee
       @vacation.employee = @employee
@@ -27,6 +33,8 @@ class VacationsController < ApplicationController
   end
 
   def create
+    authorize! :create, Vacation
+
     @vacation = Vacation.new vacation_params
     unless @vacation.valid?
       render :new
@@ -39,10 +47,13 @@ class VacationsController < ApplicationController
   end
 
   def edit
+    authorize! :update, Vacation
 
   end
 
   def update
+    authorize! :update, Vacation
+
     @vacation.update_attributes vacation_params
     unless @vacation.valid?
       render :edit
@@ -55,11 +66,15 @@ class VacationsController < ApplicationController
   end
 
   def destroy
+    authorize! :destroy, Vacation
+
     @vacation.destroy
     follow_redirect vacations_path
   end
 
   def days_summary
+    authorize! :read, @employee
+
     render layout: false
   end
 

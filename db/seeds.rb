@@ -24,3 +24,10 @@ ActiveRecord::Base.transaction do
     connection.execute(statement)
   end
 end
+
+
+unless (User.find_by(username: 'admin'))
+  admin_user = User.create!(first_name: 'Admin', last_name: 'User',
+    username: 'admin', password: 'changeme',
+      password_confirmation: 'changeme', language: :en, role: 'admin')
+end

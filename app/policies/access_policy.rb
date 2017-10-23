@@ -26,6 +26,12 @@ class AccessPolicy
       can :read, AdminController # see admin pages
       can :read, ReportsController # see reports
 
+      can :create, User
+      can :read, User
+      can :update, User
+      can :destroy, User
+      can :managerole, User
+
       can :create, Employee
       can :read, Employee
       can :update, Employee
@@ -118,6 +124,16 @@ class AccessPolicy
         employee.supervisor.person.id == user.person.id
       end
 
+      # can read self
+      can :read, User do |user, cur_user|
+        user == cur_user
+      end
+
+      # can update self
+      can :update, User do |user, cur_user|
+        user == cur_user
+      end
+
       can :read, Payslip do |payslip, user|
         # can read if personal payslip
         payslip.employee.supervisor.person.id == user.person.id
@@ -152,6 +168,16 @@ class AccessPolicy
       can :read, Employee do |employee, user|
         # can read if looking at self
         employee.person.id == user.person.id
+      end
+
+      # can read self
+      can :read, User do |user, cur_user|
+        user == cur_user
+      end
+
+      # can update self
+      can :update, User do |user, cur_user|
+        user == cur_user
       end
 
       can :read, Payslip do |payslip, user|

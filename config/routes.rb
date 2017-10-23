@@ -65,7 +65,7 @@ Rails.application.routes.draw do
   get 'admin/manage_wage_show'
   post 'admin/manage_wage_show', to: 'admin#manage_wage_update'
 
-  resources :users
+  resources :users, except: [ 'show' ]
 
   # Session Controller
   get 'login', to: 'sessions#new'

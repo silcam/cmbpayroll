@@ -21,3 +21,9 @@ MaceWindu:
   username: mace
   role: admin
   password_digest: <%= BCrypt::Password.create('mace', cost: 5) %>
+
+Yoda:
+  person: Yoda
+  username: yoda
+  role: supervisor
+  password_digest: <%= BCrypt::Password.create('yoda', cost: 5) %>

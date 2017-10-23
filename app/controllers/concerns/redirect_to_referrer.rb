@@ -6,10 +6,10 @@ module RedirectToReferrer
     send :include, PrivateMethods
   end
 
-  def follow_redirect default_path, parameters={}
+  def follow_redirect(default_path, parameters={}, notice=nil)
     if session[:referred_by]
       session[:referred_by_params] = parameters unless parameters.empty?
-      redirect_to session[:referred_by]
+      redirect_to session[:referred_by], notice: notice
       delete_redirect
     else
       redirect_to default_path

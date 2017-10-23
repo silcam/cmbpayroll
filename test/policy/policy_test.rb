@@ -96,6 +96,12 @@ class PolicyTest < ActiveSupport::TestCase
     assert(policy.can?(:read, Vacation), "admins can read Vacations")
     assert(policy.can?(:update, Vacation), "admins can update Vacations")
     assert(policy.can?(:destroy, Vacation), "admins can destroy Vacations")
+
+    assert(policy.can?(:create, User), "admins can view Users")
+    assert(policy.can?(:read, User), "admins can read Users")
+    assert(policy.can?(:update, User), "admins can update Users")
+    assert(policy.can?(:destroy, User), "admins can destroy Users")
+    assert(policy.can?(:managerole, User), "admins can manage Users role")
   end
 
   test "Policy for Supervisors " do
@@ -109,12 +115,12 @@ class PolicyTest < ActiveSupport::TestCase
 
     policy = AccessPolicy.new(@quigon)
 
+    assert(policy.can?(:read, @quigon), "Quigon can't see(read) self (user)")
+    assert(policy.can?(:update, @quigon), "Quigon cannot modify self (user)")
+    refute(policy.can?(:destroy, @quigon), "Quigon cannot destroy self (user)")
+
     refute(policy.can?(:read, @chewie), "Quigon can't see(read) Chewie")
     assert(policy.can?(:read, @obiwan), "Quigon can see(read) Obiwan")
-    refute(policy.can?(:read, @quigon), "Quigon can't see(read) self")
-
-    refute(policy.can?(:update, @quigon), "Quigon cannot modify self")
-    refute(policy.can?(:destroy, @quigon), "Quigon cannot destroy self")
     assert(policy.can?(:update, @obiwan), "Quigon cannot modify direct reports")
     refute(policy.can?(:destroy, @obiwan), "Quigon cannot destroy direct reports")
     refute(policy.can?(:create, Employee), "Quigon can't create employees")
@@ -216,6 +222,16 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Vacation), "supervisors can't view Vacation")
     refute(policy.can?(:update, Vacation), "supervisors can't view Vacation")
     refute(policy.can?(:destroy, Vacation), "supervisors can't view Vacation")
+
+    refute(policy.can?(:create, User), "supervisors can view Users")
+
+    assert(policy.can?(:read, users(:Quigon)), "supervisors can read self")
+    assert(policy.can?(:update, users(:Quigon)), "supervisors can update self")
+    refute(policy.can?(:read, users(:Luke)), "supervisors can't read other users")
+    refute(policy.can?(:update, users(:Luke)), "supervisors can't update other users")
+
+    refute(policy.can?(:destroy, User), "supervisors can't destroy Users")
+    refute(policy.can?(:managerole, User), "supervisors can't manage Users role")
   end
 
   test "Multi-level Supervisors " do # TODO
@@ -334,6 +350,14 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Vacation), "users can't view Vacation")
     refute(policy.can?(:update, Vacation), "users can't view Vacation")
     refute(policy.can?(:destroy, Vacation), "users can't view Vacation")
+
+    refute(policy.can?(:create, User), "users can view Users")
+
+    assert(policy.can?(:read, users(:Luke)), "users can read self")
+    assert(policy.can?(:update, users(:Luke)), "users can update self")
+
+    refute(policy.can?(:destroy, User), "users can't destroy Users")
+    refute(policy.can?(:managerole, User), "user can't manage Users role")
   end
 
   test "Policy for Non-Privleged Users " do
@@ -426,5 +450,11 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:read, Vacation), "non-roled users can't view Vacation")
     refute(policy.can?(:update, Vacation), "non-roled users can't view Vacation")
     refute(policy.can?(:destroy, Vacation), "non-roled users can't view Vacation")
+
+    refute(policy.can?(:create, User), "non-roled users can view Users")
+    refute(policy.can?(:read, users(:Quigon)), "users can't read other users")
+    refute(policy.can?(:update, users(:Quigon)), "users can't update other users")
+    refute(policy.can?(:destroy, User), "non-roled users can destroy Users")
+    refute(policy.can?(:managerole, User), "user can't manage Users role")
   end
 end

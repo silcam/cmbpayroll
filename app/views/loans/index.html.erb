@@ -2,10 +2,6 @@
 
 <%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
 
-<% if notice %>
-<p id="notice" class="alert alert-info"><%= notice %></p>
-<% end %>
-
 <h2><%= t(:Unpaid_loans_for) %>: <%= @employee.full_name %></h2>
 
 <table class="table">

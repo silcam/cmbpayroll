@@ -30,8 +30,8 @@ class Employee < ApplicationRecord
     echelon == "g"
   end
 
-  enum employment_status: [ :full_time, :part_time ]
-  enum marital_status: [ :single, :married ]
+  enum employment_status: [ :full_time, :part_time, :temporary, :leave, :terminated_to_year_end, :inactive]
+  enum marital_status: [ :single, :married, :widowed ]
   enum days_week: [ :one, :two, :three, :four, :five, :six, :seven ], _suffix: :day
 
   enum category: [ :one, :two, :three, :four, :five, :six, :seven,

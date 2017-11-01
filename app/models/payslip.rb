@@ -92,6 +92,75 @@ class Payslip < ApplicationRecord
     end
   end
 
+  def base_pay
+    if (worked_full_month? && employee.paid_monthly?)
+      employee.wage
+    elsif (employee.paid_monthly?)
+      daily_earnings
+    else
+      hourly_earnings
+    end
+  end
+
+  def worked_full_month?
+    WorkHour.worked_full_month(employee, period)
+  end
+
+  def days_worked
+    WorkHour.days_worked(employee, period)
+  end
+
+  def hours_worked
+    WorkHour.hours_worked(employee, period)
+  end
+
+  def daily_earnings
+    days_worked = WorkHour.days_worked(employee, period)
+    days_worked * employee.daily_rate
+  end
+
+  def hourly_earnings
+    hours_worked = WorkHour.hours_worked(employee, period)
+    hours_worked * employee.hourly_rate
+  end
+
+  def overtime_earnings
+    hours = WorkHour.total_hours(employee, period)
+
+    ot, ot2, ot3 = 0, 0, 0
+
+    ot = hours[:overtime] if (hours[:overtime])
+    ot2 = hours[:overtime2] if (hours[:overtime2])
+    ot3 = hours[:overtime3] if (hours[:overtime3])
+    ot3 += endhours[:holiday] if (hours[:holiday])
+
+    ot_earnings = ot * employee.otrate
+    ot2_earnings = ot2 * employee.ot2rate
+    ot3_earnings = ot3 * employee.ot3rate
+
+    ot_earnings + ot2_earnings + ot3_earnings
+  end
+
+  def bonusbase
+    ( base_pay() + overtime_earnings() ).ceil
+  end
+
+  # TODO: BonusBase + Seniority Bonus
+  def caissebase(employee)
+    # bonusbase +              #
+    #     (SeniorityPercent *  # 0.02 * years_of_service
+    #       SeniorityBase)     # BaseWage at "A" scale (regardless of scale?)
+  end
+
+  # TODO: CaisseBase + PrimeDeCaisse + Bonuses + MiscPay 1 and 2
+  def cnpswage(employee)
+    # caisseBase +
+    #   Prime de Caisse (CaissePercent * caisseBase) +  # PrimeCaisse (%) + caisseBase
+    #   Bonus Other +     # (other bonuses, not prime caisse or prime ancienniete or prime except)
+    #   MiscPay1 +        # MP Transaction (?) - equiv??
+    #   MiscPay2          # MP Transaction #2 (?) - equiv??
+
+  end
 
   private
 

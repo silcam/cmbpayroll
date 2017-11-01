@@ -87,6 +87,154 @@ class WorkHourTest < ActiveSupport::TestCase
     assert sickday.sick
   end
 
+  test "Days and Hours Worked" do
+    dec = Period.new(2017,12)
+    @luke.days_week = "five"
+
+    luke_days_hash = WorkHour.days_hash(@luke, dec.start, dec.finish)
+    assert_equal(0, luke_days_hash.keys.size, "should not have worked in dec yet")
+
+    #   December 2017      
+    #Su Mo Tu We Th Fr Sa  
+    #                1  2  
+    # 3  4  5  6  7  8  9  
+    #10 11 12 13 14 15 16  
+    #17 18 19 20 21 22 23  
+    #24 25 26 27 28 29 30  
+    #31
+
+    hours = {
+      "2017-12-01" => 8,
+      "2017-12-04" => 8,
+      "2017-12-05" => 8,
+      "2017-12-06" => 8,
+      "2017-12-07" => 8,
+      "2017-12-08" => 8
+    }
+
+    success, errors = WorkHour.update(@luke, hours, {})
+    assert(success, "should not have produced these errors: #{errors.inspect}")
+
+    luke_days_hash = WorkHour.days_hash(@luke, dec.start, dec.finish)
+    assert_equal(6, luke_days_hash.keys.size, "should have worked 5 days")
+
+    # plus 12/25
+    assert_equal(7, WorkHour.days_worked(@luke, dec))
+    assert_equal(56, WorkHour.hours_worked(@luke, dec))
+
+    hours = {
+      "2017-12-01" => 8,
+      "2017-12-04" => 8,
+      "2017-12-05" => 8,
+      "2017-12-06" => 8,
+      "2017-12-07" => 8,
+      "2017-12-08" => 8,
+      "2017-12-11" => 8
+    }
+
+    success, errors = WorkHour.update(@luke, hours, {})
+    assert(success, "should not have produced these errors: #{errors.inspect}")
+
+    # plus 12/25
+    assert_equal(8, WorkHour.days_worked(@luke, dec))
+    assert_equal(64, WorkHour.hours_worked(@luke, dec))
+
+    holiday = Holiday.create!(name: "Dec 12", date: "2017-12-12")
+
+    cdh = WorkHour.complete_days_hash(@luke, dec.start, dec.finish)
+
+    # Holidays should count as days worked.
+    # plus 12/12 and 12/25
+    assert_equal(9, WorkHour.days_worked(@luke, dec))
+    assert_equal(72, WorkHour.hours_worked(@luke, dec))
+  end
+
+  test "Hours Worked" do
+    dec = Period.new(2017,12)
+    @luke.days_week = "five"
+
+    # 34 including Christmas
+    hours = {
+      "2017-12-01" => 4,
+      "2017-12-04" => 2,
+      "2017-12-05" => 3,
+      "2017-12-06" => 4,
+      "2017-12-07" => 5,
+      "2017-12-08" => 7,
+      "2017-12-11" => 1
+    }
+
+    success, errors = WorkHour.update(@luke, hours, {})
+    assert(success, "should not have produced these errors: #{errors.inspect}")
+
+    # plus 12/25
+    assert_equal(34, WorkHour.hours_worked(@luke, dec))
+  end
+
+  test "Worked Full Month by days" do
+    dec = Period.new(2017,12)
+    @luke.days_week = "five"
+
+    luke_days_hash = WorkHour.days_hash(@luke, dec.start, dec.finish)
+    assert_equal(0, luke_days_hash.keys.size, "should not have worked in dec yet")
+    refute(WorkHour.worked_full_month(@luke, dec))
+
+    hours = {
+      "2017-12-01" => 8,
+
+      "2017-12-04" => 8,
+      "2017-12-05" => 8,
+      "2017-12-06" => 8,
+      "2017-12-07" => 8,
+      "2017-12-08" => 8
+    }
+
+    success, errors = WorkHour.update(@luke, hours, {})
+    assert(success, "should not have produced these errors: #{errors.inspect}")
+    # plus 12/25
+    assert_equal(7, WorkHour.days_worked(@luke, dec))
+    refute(WorkHour.worked_full_month(@luke, dec))
+
+    hours = {
+      "2017-12-01" => 8,
+
+      "2017-12-04" => 8,
+      "2017-12-05" => 8,
+      "2017-12-06" => 8,
+      "2017-12-07" => 8,
+      "2017-12-08" => 8,
+
+      "2017-12-11" => 8,
+      "2017-12-12" => 8,
+      "2017-12-13" => 8,
+      "2017-12-14" => 8,
+      "2017-12-15" => 8,
+
+      "2017-12-16" => 8,
+      "2017-12-17" => 8,
+      "2017-12-18" => 8,
+      "2017-12-19" => 8,
+      "2017-12-20" => 8,
+
+      "2017-12-23" => 8,
+      "2017-12-24" => 8,
+      #"2017-12-24" => 8 #Holiday
+      "2017-12-26" => 8,
+      "2017-12-27" => 8,
+
+      "2017-12-30" => 8,
+      "2017-12-31" => 8
+    }
+    success, errors = WorkHour.update(@luke, hours, {})
+    assert(success, "should not have produced these errors: #{errors.inspect}")
+
+    # plus 12/25
+    assert_equal(23, WorkHour.days_worked(@luke, dec))
+
+    # by days
+    assert(WorkHour.worked_full_month(@luke, dec))
+  end
+
   test "Employees Lacking Work Hours" do
     chewie = employees :Chewie
     employees = WorkHour.employees_lacking_work_hours(Period.new(2017, 8))
@@ -137,6 +285,87 @@ class WorkHourTest < ActiveSupport::TestCase
     exp = {normal: 8, overtime: 4}
     day = {hours: 12}
     assert_equal exp, WorkHour.calculate_overtime( Date.new(2017, 9, 21), day)
+  end
+
+  test "Overtime Summary" do
+    jan = Period.new(2018,1)
+    @luke.days_week = "five"
+
+    generate_work_hours(@luke, jan)
+
+    # no overtime
+    exp = {normal: 184}
+    assert_equal(exp, WorkHour.total_hours(@luke, jan))
+  end
+
+  test "<8 hours (6) Overtime Summary" do
+    jan = Period.new(2018,1)
+    @luke.days_week = "five"
+
+    generate_work_hours(@luke, jan)
+
+    hours = {
+      "2018-01-01" => 10,
+      "2018-01-04" => 10,
+      "2018-01-08" => 10,
+    }
+
+    # 6 hours overtime
+    WorkHour.update(@luke, hours, {})
+    exp = {normal: 184, overtime: 6}
+    assert_equal(exp, WorkHour.total_hours(@luke, jan))
+  end
+
+  test "36 hours Overtime Summary" do
+    jan = Period.new(2018,1)
+    @luke.days_week = "five"
+
+    generate_work_hours(@luke, jan)
+
+    hours = {
+      "2018-01-01" => 12, "2018-01-04" => 12,
+      "2018-01-08" => 12, "2018-01-11" => 12,
+      "2018-01-15" => 12, "2018-01-18" => 12,
+      "2018-01-22" => 12, "2018-01-25" => 12,
+      "2018-01-29" => 12
+    }
+
+    # 36 hours ot
+    WorkHour.update(@luke, hours, {})
+    exp = {normal: 184, overtime: 8, overtime2: 8, overtime3: 20}
+    assert_equal(exp, WorkHour.total_hours(@luke, jan))
+  end
+
+  test "Sunday hours are OT3 Overtime Summary" do
+    jan = Period.new(2018,1)
+    @luke.days_week = "five"
+
+    generate_work_hours(@luke, jan)
+
+    hours = {
+      "2018-01-07" => 10 # 4 hours sunday OT
+    }
+
+    WorkHour.update(@luke, hours, {})
+    exp = {normal: 184.0, holiday: 10.0}
+    assert_equal(exp, WorkHour.total_hours(@luke, jan))
+  end
+
+  test "Holiday hours are OT3 Overtime Summary" do
+    jan = Period.new(2018,1)
+    @luke.days_week = "five"
+
+    generate_work_hours(@luke, jan)
+
+    Holiday.create!(name: "New Years", date: '2018-01-01')
+
+    hours = {
+      "2018-01-01" => 12 # hours holiday OT
+    }
+
+    WorkHour.update(@luke, hours, {})
+    exp = {normal: 176.0,  holiday: 12}
+    assert_equal(exp, WorkHour.total_hours(@luke, jan))
   end
 
   def some_valid_params

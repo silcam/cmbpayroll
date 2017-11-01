@@ -9,7 +9,7 @@
 # SEED WAGES
 connection = ActiveRecord::Base.connection
 connection.tables.each do |table|
-  connection.execute("TRUNCATE #{table}") if table == "wages"
+  connection.execute("TRUNCATE #{table}") if table == "wages" || table == "taxes"
 end
 
 # - IMPORTANT: SEED DATA ONLY
@@ -25,6 +25,15 @@ ActiveRecord::Base.transaction do
   end
 end
 
+sql = File.read('db/taxtable.sql')
+statements = sql.split(/;$/)
+statements.pop  # the last empty statement
+
+ActiveRecord::Base.transaction do
+  statements.each do |statement|
+    connection.execute(statement)
+  end
+end
 
 unless (User.find_by(username: 'admin'))
   admin_user = User.create!(first_name: 'Admin', last_name: 'User',

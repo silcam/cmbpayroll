@@ -5,7 +5,7 @@ module ApplicationHelper
   end
 
   def is_off_day?(date, holiday)
-    (not holiday.nil?) or (not is_weekday?(date))
+    (not holiday.nil?) || (not is_weekday?(date))
   end
 
   def yesterday
@@ -42,6 +42,14 @@ module ApplicationHelper
     array = collection.collect{ |member| [member.send(display), member.send(value)]}
     array += extras
     options_for_select(array, selected)
+  end
+
+  def word_to_int(word)
+    lookup = { "one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5,
+      "six" => 6, "seven" => 7, "eight" => 8, "nine" => 9, "ten" => 10,
+      "eleven" => 11, "twelve" => 12, "thirteen" => 13 }
+
+    lookup[word]
   end
 
   # def assemble_date(hash, prefix)

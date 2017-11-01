@@ -5,9 +5,8 @@ class Employee < ApplicationRecord
 
   audited allow_mass_assignment: true
 
-  # TODO: some will probably become variables
-  ADVANCE_AMOUNT = 0.5 # Half
-  INVALID_WAGE = -1
+  WEEKS_IN_YEAR = 52
+  MONTHS_IN_YEAR = 12
 
   belongs_to :supervisor
   belongs_to :department
@@ -39,7 +38,7 @@ class Employee < ApplicationRecord
   enum echelon: [ :one, :two, :three, :four, :five, :six, :seven,
                     :eight, :nine, :ten, :eleven, :twelve, :thirteen,
                     :a, :b, :c, :d, :e, :f, :g ], _prefix: :echelon
-  enum wage_scale: [ :one, :two, :three ], _prefix: :wage_scale
+  enum wage_scale: [ :a, :b, :c, :d, :e ], _prefix: :wage_scale
   enum wage_period: [ :hourly, :monthly ]
 
   def self.list_departments
@@ -59,12 +58,58 @@ class Employee < ApplicationRecord
   end
 
   def find_wage
-    wage = Wage.find_wage(category, echelon)
-    if wage.nil?
-      return INVALID_WAGE
-    else
-      return wage.basewage
+    Wage.find_wage(category, echelon, wage_scale)
+  end
+
+  def find_base_wage
+    Wage.find_wage(category, "a", wage_scale)
+  end
+
+  def paid_monthly?
+    wage_period == "monthly"
+  end
+
+  # Time in years between BeginContract and Period.end
+  def years_of_service(period)
+    # TODO: need a real general purpose date diff by year
+    # function since this is likely needed in multiple places.
+    ((period.finish - contract_start.to_datetime) / 365).to_i
+  end
+
+  def workdays_per_month(period)
+    workdays = 0
+    date = period.start
+    days_per_week = days_week_to_i
+
+    while (date <= period.finish)
+      # Not sunday, but include days up until days_week
+      # e.g. 3 days would count only M,T,W
+      if (date.wday > 0 && date.wday <= days_per_week)
+          workdays += 1
+      end
+      date += 1
     end
+
+    workdays
+  end
+
+  def daily_rate
+    hours_day * hourly_rate
+  end
+
+  def hourly_rate
+    return 0 if (hours_per_month() == 0)
+    (wage / hours_per_month()).round
+  end
+
+  # Find out average number of hours per month based on
+  # the number of hours expected to work per day
+  def hours_per_month
+    ((hours_day * days_week_to_i()) * WEEKS_IN_YEAR ).fdiv(MONTHS_IN_YEAR)
+  end
+
+  def days_week_to_i
+    word_to_int(days_week)
   end
 
   def department_name
@@ -96,7 +141,7 @@ class Employee < ApplicationRecord
 
   def advance_amount
     # TODO verify that this is the correct behavior
-    return (wage * ADVANCE_AMOUNT).round
+    return (wage * SystemVariable.value(:advance_amount)).round
   end
 
   def has_advance_charge(period)
@@ -124,6 +169,18 @@ class Employee < ApplicationRecord
 
   def payslip_for(period)
     payslips.for_period(period).first
+  end
+
+  def otrate
+    hourly_rate * SystemVariable.value(:ot1)
+  end
+
+  def ot2rate
+    hourly_rate * SystemVariable.value(:ot2)
+  end
+
+  def ot3rate
+    hourly_rate * SystemVariable.value(:ot3)
   end
 
 end

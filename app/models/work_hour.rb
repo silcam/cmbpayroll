@@ -2,8 +2,10 @@ include ApplicationHelper
 
 class WorkHour < ApplicationRecord
 
-  NUMBER_OF_HOURS_IN_A_WORKDAY = 8 # TODO make var
-  NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY = 0 # TODO make var
+  NUMBER_OF_HOURS_IN_A_WORKDAY = 8
+  NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY = 0
+  NUMBER_OF_OT1_HOURS = 8
+  NUMBER_OF_OT2_HOURS = 8
 
   belongs_to :employee
 
@@ -35,6 +37,32 @@ class WorkHour < ApplicationRecord
       days[work_hour.date] = {hours: work_hour.hours, sick: work_hour.sick}
     end
     days
+  end
+
+  def self.days_worked(employee, period)
+    hours_worked, days_worked = self.compute_hours_and_days(employee, period)
+    days_worked
+  end
+
+  def self.hours_worked(employee, period)
+    hours_worked, days_worked = self.compute_hours_and_days(employee, period)
+    hours_worked
+  end
+
+  def self.worked_full_month(employee, period)
+    if (employee.paid_monthly?)
+      # days possible vs days worked.
+      days_worked = WorkHour.days_worked(employee, period)
+      days_per_month = employee.workdays_per_month(period)
+
+      days_worked >= days_per_month
+    else
+      # hours possible vs hours worked.
+      hours_worked = WorkHour.hours_worked(employee, period)
+      hours_per_month = employee.hours_per_month()
+
+      hours_worked >= hours_per_month
+    end
   end
 
   def self.complete_days_hash(employee, start, finish)
@@ -133,7 +161,49 @@ class WorkHour < ApplicationRecord
         end
       end
     end
+
+    if (hours[:overtime] && hours[:overtime] > NUMBER_OF_OT1_HOURS)
+      hours[:overtime2] = hours[:overtime] - NUMBER_OF_OT1_HOURS
+      hours[:overtime] = NUMBER_OF_OT1_HOURS 
+    end
+    if (hours[:overtime2] && hours[:overtime2] > NUMBER_OF_OT2_HOURS)
+      hours[:overtime3] = hours[:overtime2] - NUMBER_OF_OT2_HOURS
+      hours[:overtime2] = NUMBER_OF_OT2_HOURS
+    end
+
     hours
+  end
+
+  # TODO: what to do about sick days, are those paid days?
+  # TODO: Right now this just looks per day checks that at least
+  # 8 hours were worked.  An alternative algorithm would look
+  # at a 40 hours week or some other equivalent.  I'm not sure which
+  # is better.
+  def self.compute_hours_and_days(employee, period)
+    days_worked = 0
+    hours_worked = 0
+
+    days = WorkHour.complete_days_hash(employee, period.start, period.finish)
+
+    date = period.start
+    while (date <= period.finish)
+      if (days[date])
+        if (days[date][:hours])
+          hours_worked += days[date][:hours]
+
+          if (days[date][:hours].to_i >= WorkHour.workday)
+            days_worked += 1
+          end
+        elsif (days[date][:holiday])
+          days_worked += 1
+          hours_worked += NUMBER_OF_HOURS_IN_A_WORKDAY
+        end
+      end
+
+      date += 1
+    end
+
+    return hours_worked, days_worked
   end
 end
 

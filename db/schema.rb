@@ -130,6 +130,7 @@ ActiveRecord::Schema.define(version: 20171031134503) do
     t.bigint "department_id"
     t.boolean "uniondues", default: false, null: false
     t.date "first_day"
+    t.boolean "spouse_employed", default: false, null: false
     t.integer "amical"
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
@@ -222,6 +223,22 @@ ActiveRecord::Schema.define(version: 20171031134503) do
     t.float "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "taxes", primary_key: "grosspay", id: :decimal, force: :cascade do |t|
+    t.decimal "proportional"
+    t.decimal "ccf"
+    t.decimal "crtv"
+    t.decimal "surtax1"
+    t.decimal "surtax15"
+    t.decimal "surtax2"
+    t.decimal "surtax25"
+    t.decimal "surtax3"
+    t.decimal "surtax35"
+    t.decimal "surtax4"
+    t.decimal "surtax45"
+    t.decimal "surtax5"
+    t.decimal "communal"
   end
 
   create_table "users", force: :cascade do |t|

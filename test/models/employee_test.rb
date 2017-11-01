@@ -133,6 +133,51 @@ class EmployeeTest < ActiveSupport::TestCase
     assert employee.echelon_a?
     assert employee.valid?
     assert employee.errors.empty?
+
+    # WAGE SCALE
+    assert_raise(ArgumentError) do
+      employee.wage_scale = "one"
+    end
+
+    employee.wage_scale = "a"
+
+    assert employee.wage_scale_a?
+    assert employee.valid?
+    assert employee.errors.empty?
+
+    employee.wage_scale = "e"
+
+    assert employee.wage_scale_e?
+    assert employee.valid?
+    assert employee.errors.empty?
+
+    # Wage Period
+    assert_raise(ArgumentError) do
+      employee.wage_period = "sesquicentennially"
+    end
+
+    employee.wage_period = "hourly"
+
+    assert_equal("hourly", employee.wage_period)
+    assert employee.valid?
+    assert employee.errors.empty?
+
+    employee.wage_period = "monthly"
+
+    assert_equal("monthly", employee.wage_period)
+    assert employee.valid?
+    assert employee.errors.empty?
+  end
+
+  test "Paid Monthly" do
+    employee = Employee.new some_valid_params
+    refute(employee.paid_monthly?)
+
+    employee.wage_period = "monthly"
+    assert(employee.paid_monthly?)
+
+    employee.wage_period = "hourly"
+    refute(employee.paid_monthly?)
   end
 
   test "numeric_validations" do
@@ -176,19 +221,72 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal "Skywalker, Luke", @luke.full_name_rev
   end
 
-  test "Find_wage_by_attributes" do
+  test "Find_wage_by_attributes and wage scale" do
     employee = return_valid_employee()
 
     employee.category = "three"
     employee.echelon = "six"
+    employee.wage_scale = "a"
 
     assert_equal(83755, employee.find_wage())
+    assert_equal(58280, employee.find_base_wage())
 
+    employee.category = "three"
+    employee.echelon = "six"
+    employee.wage_scale = "b"
+
+    assert_equal(45080, employee.find_wage())
+    assert_equal(33425, employee.find_base_wage())
+
+    employee.category = "three"
+    employee.echelon = "six"
+    employee.wage_scale = "c"
+
+    assert_equal(33695, employee.find_wage())
+    assert_equal(23080, employee.find_base_wage())
+
+    employee.category = "nine"
+    employee.echelon = "five"
+    employee.wage_scale = "b"
+
+    assert_equal(195565, employee.find_wage())
+    assert_equal(145555, employee.find_base_wage())
+  end
+
+  test "Daily Rate" do
+    employee = return_valid_employee()
+    employee.hours_day = 8
+    employee.days_week = "five"
+
+    employee.category = "nine"
+    employee.echelon = "five"
+    employee.wage_scale = "b"
+
+    assert_equal(195565, employee.find_wage())
+    # 173 and 1/3
+    assert_equal(Rational(520,3), employee.hours_per_month())
+    assert_equal(1128, employee.hourly_rate())
+    assert_equal(9024, employee.daily_rate())
+  end
+
+  test "Hourly Rate" do
+    employee = return_valid_employee()
+    employee.hours_day = 8
+    employee.days_week = "five"
+
+    employee.category = "nine"
+    employee.echelon = "five"
+    employee.wage_scale = "b"
+
+    assert_equal(195565, employee.find_wage())
+    # 173 and 1/3
+    assert_equal(Rational(520,3), employee.hours_per_month())
+    assert_equal(1128, employee.hourly_rate())
   end
 
   test "AMICAL" do
     employee = return_valid_employee()
-    assert_equal(nil, employee.amical)
+    assert_nil(employee.amical)
 
     employee.amical = 3000
     assert_equal(3000, employee.amical)
@@ -234,61 +332,61 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(0, employee.send(expenses_hash[:union]))
   end
 
-  test "servicetime" do
+  test "years_of_service" do
     employee1 = return_valid_employee()
 
     employee1.contract_start = Date.new(2017,1,1)
     period = Period.new(2017,03)
-    assert_equal(0, employee1.servicetime(period), "2017-01-01 -> 2017-03-31 is 0 years")
+    assert_equal(0, employee1.years_of_service(period), "2017-01-01 -> 2017-03-31 is 0 years")
 
     employee1.contract_start = Date.new(2016,1,1)
     period = Period.new(2017,03)
-    assert_equal(1, employee1.servicetime(period), "2016-01-01 -> 2017-03-31 is 1 years")
+    assert_equal(1, employee1.years_of_service(period), "2016-01-01 -> 2017-03-31 is 1 years")
 
     employee1.contract_start = Date.new(2016,1,1)
     period = Period.new(2017,03)
-    assert_equal(1, employee1.servicetime(period), "2016-01-01 -> 2017-03-31 is 1 years")
+    assert_equal(1, employee1.years_of_service(period), "2016-01-01 -> 2017-03-31 is 1 years")
 
     employee1.contract_start = Date.new(2017,1,1)
     period = Period.new(2013,03)
-    assert_equal(-3, employee1.servicetime(period), "2017-01-01 -> 2013-03-31 is -3 years")
+    assert_equal(-3, employee1.years_of_service(period), "2017-01-01 -> 2013-03-31 is -3 years")
 
     employee1.contract_start = Date.new(2016,3,31)
     period = Period.new(2017,03)
-    assert_equal(1, employee1.servicetime(period), "2016-03-31 -> 2017-03-31 is 1 year")
+    assert_equal(1, employee1.years_of_service(period), "2016-03-31 -> 2017-03-31 is 1 year")
 
     employee1.contract_start = Date.new(2016,2,1)
     period = Period.new(2017,02)
-    assert_equal(1, employee1.servicetime(period), "2016-02-01 -> 2017-02-28 is 1 year")
+    assert_equal(1, employee1.years_of_service(period), "2016-02-01 -> 2017-02-28 is 1 year")
 
     employee1.contract_start = Date.new(2015,2,28)
     period = Period.new(2016,02) # leap year tests
-    assert_equal(1, employee1.servicetime(period), "2015-02-28 -> 2016-02-29 is 1 years")
+    assert_equal(1, employee1.years_of_service(period), "2015-02-28 -> 2016-02-29 is 1 years")
 
     employee1.contract_start = Date.new(2016,2,29)
     period = Period.new(2017,02) # leap year tests (this is 365 days, thus a year)
-    assert_equal(1, employee1.servicetime(period), "2016-02-29 -> 2017-02-28 is 1 years")
+    assert_equal(1, employee1.years_of_service(period), "2016-02-29 -> 2017-02-28 is 1 years")
 
     employee1.contract_start = Date.new(2014,1,31)
     period = Period.new(2017,03)
-    assert_equal(3, employee1.servicetime(period), "2014-01-31 -> 2017-03-31 is 3 years")
+    assert_equal(3, employee1.years_of_service(period), "2014-01-31 -> 2017-03-31 is 3 years")
 
     employee1.contract_start = Date.new(2014,4,30)
     period = Period.new(2017,03)
-    assert_equal(2, employee1.servicetime(period), "2014-04-30 -> 2017-03-31 is 2 years")
+    assert_equal(2, employee1.years_of_service(period), "2014-04-30 -> 2017-03-31 is 2 years")
   end
 
   test "convert_days_week" do
     employee1 = return_valid_employee()
 
     employee1.days_week = "five"
-    assert_equal(5, employee1.convert_days_week)
+    assert_equal(5, employee1.days_week_to_i)
 
     employee1.days_week = "one"
-    assert_equal(1, employee1.convert_days_week)
+    assert_equal(1, employee1.days_week_to_i)
 
     employee1.days_week = "seven"
-    assert_equal(7, employee1.convert_days_week)
+    assert_equal(7, employee1.days_week_to_i)
   end
 
   test "hours_per_month" do

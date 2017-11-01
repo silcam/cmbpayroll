@@ -756,6 +756,322 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.loan_balance)
   end
 
+  test "BasePay" do
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.wage_period = "monthly"
+    employee.hours_day = 8
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "f"
+    employee.wage_scale = "a"
+
+    period = Period.new(2017,12)
+
+    # work some of the month
+    hours = {
+      "2017-12-01" => 8
+    }
+    WorkHour.update(employee, hours, {})
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(108580, employee.wage)
+    assert_equal(5008, employee.daily_rate)
+    # including 12/25
+    assert_equal(2, payslip.days_worked)
+    assert_equal(10016, payslip.base_pay)
+
+    # work 6 hours on 12/1
+    # switch to hourly
+    hours = {
+      "2017-12-01" => 6
+    }
+    employee.wage_period = "hourly"
+    WorkHour.update(employee, hours, {})
+
+    assert_equal(626, employee.hourly_rate)
+    assert_equal(14, payslip.hours_worked)
+    assert_equal(8764, payslip.base_pay)
+
+    # work the whole month (work hour)
+    employee.wage_period = "monthly"
+    hours = {
+      "2017-12-01" => 8
+    }
+    WorkHour.update(employee, hours, {})
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    assert(payslip.worked_full_month?, "now has worked whole month")
+    assert_equal(employee.wage, payslip.base_pay)
+  end
+
+  test "BonusBase Full Month" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "monthly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+
+    period = LastPostedPeriod.current
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(23, payslip.days_worked())
+    assert_equal(184, payslip.hours_worked())
+    assert(payslip.worked_full_month?)
+    assert(employee.paid_monthly?)
+
+    # compute bonusbase
+    assert_equal(79475, employee.wage)
+    assert_equal(employee.wage, payslip.bonusbase)
+  end
+
+  test "BonusBase Partial Month" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "monthly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+
+    jan18 = Period.new(2018,1)
+
+    # work a partial month (6 days)
+    hours = {
+      '2018-01-01' => 8,
+      '2018-01-02' => 8,
+      '2018-01-03' => 8,
+      '2018-01-04' => 8,
+      '2018-01-05' => 8,
+      '2018-01-08' => 8
+    }
+
+    WorkHour.update(employee, hours, {})
+    payslip = Payslip.process(employee, jan18)
+
+    assert_equal(6, payslip.days_worked(), "worked 6 days")
+    assert_equal(48, payslip.hours_worked(), "worked 48 hours")
+    assert(employee.paid_monthly?, "employee is paid monthly")
+    refute(payslip.worked_full_month?, "worked partial month in jan18")
+
+    # compute bonusbase
+    assert_equal(79475, employee.wage, "wage is expected")
+    assert_equal(3672, employee.daily_rate, "daily rate is computed")
+    assert_equal(22032, payslip.bonusbase, "proper bonus base for 6 days")
+  end
+
+  test "BonusBase Hourly Month" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "hourly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+
+    period = LastPostedPeriod.current
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(23, payslip.days_worked())
+    assert_equal(184, payslip.hours_worked())
+    assert(payslip.worked_full_month?)
+    refute(employee.paid_monthly?)
+
+    # compute bonusbase
+    assert_equal(79475, employee.wage)
+    assert_equal(84456, payslip.bonusbase, "I'm not sure this is really correct")
+  end
+
+  test "Overtime Rates" do
+    employee = return_valid_employee()
+
+    employee.hours_day = 8
+    employee.days_week = "five"
+    employee.category = 6
+    employee.echelon = "g"
+    employee.wage = "117215"
+    assert_equal(117215, employee.wage)
+
+    assert(811.19 < employee.otrate && employee.otrate < 811.20)
+    assert(878.8 < employee.ot2rate && employee.ot2rate < 878.81)
+    assert_equal(946.4, employee.ot3rate)
+  end
+
+  test "BonusBase Hourly Partial Month" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "hourly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+
+    jan18 = Period.new(2018,1)
+
+    # work a partial month (6 days)
+    hours = {
+      '2018-01-01' => 8,
+      '2018-01-02' => 8,
+      '2018-01-03' => 8,
+      '2018-01-04' => 8,
+      '2018-01-05' => 8,
+      '2018-01-08' => 8
+    }
+
+    WorkHour.update(employee, hours, {})
+    payslip = Payslip.process(employee, jan18)
+
+    assert_equal(48, payslip.hours_worked(), "worked 48 hours")
+    refute(employee.paid_monthly?, "employee is paid hourly")
+    refute(payslip.worked_full_month?, "worked partial month in jan18")
+
+    # compute bonusbase
+    assert_equal(79475, employee.wage, "wage is expected")
+    assert_equal(459, employee.hourly_rate, "hourly rate is computed")
+    assert_equal(22032, payslip.bonusbase, "proper bonus base for 6 days")
+  end
+
+  test "BonusBase Full Month with OT1" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "monthly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "b"
+    employee.wage_scale = "a"
+
+    jan18 = Period.new(2018,1)
+
+    generate_work_hours employee, jan18
+    # full month, except 10 hours on 1/1
+    hours = {
+      '2018-01-01' => 10,
+    }
+
+    WorkHour.update(employee, hours, {})
+    payslip = Payslip.process(employee, jan18)
+
+    assert(employee.paid_monthly?, "employee is paid monthly")
+    assert(payslip.worked_full_month?, "worked full month in jan18")
+
+    # compute bonusbase
+    assert_equal(85300, employee.wage, "wage is expected")
+    assert_equal(492, employee.hourly_rate, "hourly rate is computed")
+    assert_equal(3936, employee.daily_rate, "daily rate is computed")
+
+    # 85300 + OT hours (2 * (hourlyrate * 1.2)) or
+    assert_equal(86481, payslip.bonusbase, "proper bonus base for 2 OT1")
+  end
+
+  test "BonusBase with OT2" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "monthly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "b"
+    employee.wage_scale = "a"
+
+    jan18 = Period.new(2018,1)
+
+    generate_work_hours employee, jan18
+    # full month, except 10 hours on 1/1
+    hours = {
+      '2018-01-01' => 17,
+    }
+
+    WorkHour.update(employee, hours, {})
+    payslip = Payslip.process(employee, jan18)
+
+    exp = {:normal => 184, :overtime => 8, :overtime2 => 1}
+    hrs = WorkHour.total_hours(employee, jan18)
+    assert_equal(exp, hrs)
+
+    assert(employee.paid_monthly?, "employee is paid monthly")
+    assert(payslip.worked_full_month?, "worked full month in jan18")
+
+    # compute bonusbase
+    assert_equal(85300, employee.wage, "wage is expected")
+    assert_equal(492, employee.hourly_rate, "hourly rate is computed")
+    assert_equal(3936, employee.daily_rate, "daily rate is computed")
+
+    expected = (85300 + (8 * (employee.hourly_rate * 1.2)) +
+        (1 * (employee.hourly_rate * 1.3))).ceil
+    assert_equal(expected, payslip.bonusbase,
+        "proper bonus base for 8 OT/1 OT2")
+  end
+
+  test "BonusBase Hourly Partial Month with OT3" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "monthly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "b"
+    employee.wage_scale = "a"
+
+    jan18 = Period.new(2018,1)
+
+    generate_work_hours employee, jan18
+    # full month, except 10 hours on 1/1
+    hours = {
+      '2018-01-01' => 17,
+      '2018-01-02' => 18,
+    }
+
+    WorkHour.update(employee, hours, {})
+    payslip = Payslip.process(employee, jan18)
+
+    exp = {:normal => 184, :overtime => 8, :overtime2 => 8, :overtime3 => 3}
+    hrs = WorkHour.total_hours(employee, jan18)
+    assert_equal(exp, hrs)
+
+    assert(employee.paid_monthly?, "employee is paid monthly")
+    assert(payslip.worked_full_month?, "worked full month in jan18")
+
+    # compute bonusbase
+    assert_equal(85300, employee.wage, "wage is expected")
+    assert_equal(492, employee.hourly_rate, "hourly rate is computed")
+    assert_equal(3936, employee.daily_rate, "daily rate is computed")
+
+    expected = (85300 + (8 * (employee.hourly_rate * 1.2)) +
+        (8 * (employee.hourly_rate * 1.3)) +
+          (3 * (employee.hourly_rate * 1.4))).ceil
+    assert_equal(expected, payslip.bonusbase,
+        "proper bonus base for 8 OT/8 OT2/3 OT3")
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

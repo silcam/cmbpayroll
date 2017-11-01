@@ -83,13 +83,17 @@ class WageTest < ActiveSupport::TestCase
   end
 
   test "Can retrieve using employee enum values" do
-    wage = Wage.find_wage("one", "d")
+    wage = Wage.find_wage("one", "d", "a")
     refute_nil(wage)
-    assert_equal(42010, wage.basewage)
+    assert_equal(42010, wage)
 
-    wage = Wage.find_wage("two", "six")
+    wage = Wage.find_wage("two", "six", "a")
     refute_nil(wage)
-    assert_equal(59320, wage.basewage)
+    assert_equal(59320, wage)
+
+    wage = Wage.find_wage("two", "six", "b")
+    refute_nil(wage)
+    assert_equal(34020, wage)
   end
 
 end

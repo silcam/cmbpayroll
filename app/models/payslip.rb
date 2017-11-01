@@ -193,7 +193,7 @@ class Payslip < ApplicationRecord
     expenses_hash.each do |k,v|
       amount = employee.send(v)
 
-      if (amount > 0)
+      if (amount && amount > 0)
         deduction = Deduction.new
 
         deduction.note = k

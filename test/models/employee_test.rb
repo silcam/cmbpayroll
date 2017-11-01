@@ -188,14 +188,10 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "AMICAL" do
     employee = return_valid_employee()
-    assert_equal(0, employee.amical_amount)
+    assert_equal(nil, employee.amical)
 
-    employee.amical = true
-    assert_equal(3000, employee.amical_amount)
-
-    new_amical_value = 1234567
-    SystemVariable.create!(key: 'amical_amount', value: new_amical_value)
-    assert_equal(new_amical_value, employee.amical_amount)
+    employee.amical = 3000
+    assert_equal(3000, employee.amical)
   end
 
   test "union dues" do
@@ -214,17 +210,16 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(employee.wage * new_union_dues, employee.union_dues_amount)
   end
 
-
   test "deductable_expenses" do
     employee = return_valid_employee()
 
-    employee.amical = true
+    employee.amical = 3000
     employee.uniondues = true
 
     expenses_hash = employee.deductable_expenses()
     assert_equal(2, expenses_hash.length)
 
-    employee.amical = true
+    employee.amical = 3000
     employee.uniondues = false
 
     expenses_hash = employee.deductable_expenses()
@@ -232,11 +227,111 @@ class EmployeeTest < ActiveSupport::TestCase
 
     assert(expenses_hash[:amical])
 
-    assert_equal(:amical_amount, expenses_hash[:amical])
+    assert_equal(:amical, expenses_hash[:amical])
     assert_equal(:union_dues_amount, expenses_hash[:union])
 
     assert_equal(3000, employee.send(expenses_hash[:amical]))
     assert_equal(0, employee.send(expenses_hash[:union]))
+  end
+
+  test "servicetime" do
+    employee1 = return_valid_employee()
+
+    employee1.contract_start = Date.new(2017,1,1)
+    period = Period.new(2017,03)
+    assert_equal(0, employee1.servicetime(period), "2017-01-01 -> 2017-03-31 is 0 years")
+
+    employee1.contract_start = Date.new(2016,1,1)
+    period = Period.new(2017,03)
+    assert_equal(1, employee1.servicetime(period), "2016-01-01 -> 2017-03-31 is 1 years")
+
+    employee1.contract_start = Date.new(2016,1,1)
+    period = Period.new(2017,03)
+    assert_equal(1, employee1.servicetime(period), "2016-01-01 -> 2017-03-31 is 1 years")
+
+    employee1.contract_start = Date.new(2017,1,1)
+    period = Period.new(2013,03)
+    assert_equal(-3, employee1.servicetime(period), "2017-01-01 -> 2013-03-31 is -3 years")
+
+    employee1.contract_start = Date.new(2016,3,31)
+    period = Period.new(2017,03)
+    assert_equal(1, employee1.servicetime(period), "2016-03-31 -> 2017-03-31 is 1 year")
+
+    employee1.contract_start = Date.new(2016,2,1)
+    period = Period.new(2017,02)
+    assert_equal(1, employee1.servicetime(period), "2016-02-01 -> 2017-02-28 is 1 year")
+
+    employee1.contract_start = Date.new(2015,2,28)
+    period = Period.new(2016,02) # leap year tests
+    assert_equal(1, employee1.servicetime(period), "2015-02-28 -> 2016-02-29 is 1 years")
+
+    employee1.contract_start = Date.new(2016,2,29)
+    period = Period.new(2017,02) # leap year tests (this is 365 days, thus a year)
+    assert_equal(1, employee1.servicetime(period), "2016-02-29 -> 2017-02-28 is 1 years")
+
+    employee1.contract_start = Date.new(2014,1,31)
+    period = Period.new(2017,03)
+    assert_equal(3, employee1.servicetime(period), "2014-01-31 -> 2017-03-31 is 3 years")
+
+    employee1.contract_start = Date.new(2014,4,30)
+    period = Period.new(2017,03)
+    assert_equal(2, employee1.servicetime(period), "2014-04-30 -> 2017-03-31 is 2 years")
+  end
+
+  test "convert_days_week" do
+    employee1 = return_valid_employee()
+
+    employee1.days_week = "five"
+    assert_equal(5, employee1.convert_days_week)
+
+    employee1.days_week = "one"
+    assert_equal(1, employee1.convert_days_week)
+
+    employee1.days_week = "seven"
+    assert_equal(7, employee1.convert_days_week)
+  end
+
+  test "hours_per_month" do
+    employee1 = return_valid_employee()
+
+    employee1.hours_day = 3
+    employee1.days_week = "five"
+    assert_equal(65, employee1.hours_per_month)
+
+    employee1.hours_day = 7
+    employee1.days_week = "six"
+    assert_equal(182, employee1.hours_per_month)
+  end
+
+  test "work days per month" do
+    employee1 = return_valid_employee()
+
+    employee1.hours_day = 8
+    employee1.days_week = "five"
+
+    leapfeb16 = Period.new(2016,2)
+    feb17 = Period.new(2017,2)
+    sep17 = Period.new(2017,9)
+    dec17 = Period.new(2017,12)
+
+    assert_equal(21, employee1.workdays_per_month(leapfeb16))
+    assert_equal(20, employee1.workdays_per_month(feb17))
+    assert_equal(21, employee1.workdays_per_month(sep17))
+    assert_equal(21, employee1.workdays_per_month(dec17))
+
+    employee1.days_week = "six"
+
+    assert_equal(25, employee1.workdays_per_month(leapfeb16))
+    assert_equal(24, employee1.workdays_per_month(feb17))
+    assert_equal(26, employee1.workdays_per_month(sep17))
+    assert_equal(26, employee1.workdays_per_month(dec17))
+
+    employee1.days_week = "four"
+
+    assert_equal(17, employee1.workdays_per_month(leapfeb16))
+    assert_equal(16, employee1.workdays_per_month(feb17))
+    assert_equal(16, employee1.workdays_per_month(sep17))
+    assert_equal(16, employee1.workdays_per_month(dec17))
   end
 
   def some_valid_params(params={})

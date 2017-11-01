@@ -6,7 +6,6 @@ class SystemVariable < ApplicationRecord
     supplemental_days_period: 5, # years
     holiday_overtime: 1.4,
     sunday_overtime: 1.4,
-    amical_amount: 3000,
     union_dues: 0.01,
     dept_credit_foncier: 0.025,
     emp_cnps: 0.028,

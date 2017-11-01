@@ -127,7 +127,7 @@
       <th scope="row"><%= t(:Employment_status) %></th>
       <td><%= t(@employee.employment_status, default: "") %></td>
       <th scope="row"><%= t(:Amical) %></th>
-      <td><%= number_to_currency(@employee.amical_amount, locale: :cm) %></td>
+      <td><%= number_to_currency(@employee.amical, locale: :cm) %></td>
       <th scope="row"><%= t(:Union_dues) %>?</th>
 
       <td><%= t("employee.#{@employee.uniondues}", scope: [:activerecord ]) %> (<%= number_to_currency(@employee.union_dues_amount, locale: :cm) %>)</td>

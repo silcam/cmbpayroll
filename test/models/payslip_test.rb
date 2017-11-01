@@ -554,12 +554,10 @@ class PayslipTest < ActiveSupport::TestCase
     employee = return_valid_employee()
 
     # give amical and union
-    # (should use default system vars)
-    employee.amical = true
+    employee.amical = 3000
     employee.uniondues = true
 
     union_dues = employee.union_dues_amount
-    amical_value = SystemVariable.value(:amical_amount)
 
     # process a payslip
     payslip = Payslip.process(employee, Period.current)
@@ -570,7 +568,7 @@ class PayslipTest < ActiveSupport::TestCase
     count = 0
     payslip.deductions.each do |ded|
       if (/amical/i =~ ded.note)
-         assert_equal(amical_value, ded.amount)
+         assert_equal(3000, ded.amount)
          assert_equal(Date.today.beginning_of_month(), ded.date)
          count += 1
       end

@@ -75,14 +75,6 @@ class Employee < ApplicationRecord
     end
   end
 
-  def amical_amount
-    if (amical == true)
-      return SystemVariable.value(:amical_amount)
-    else
-      return 0
-    end
-  end
-
   def union_dues_amount
     if (uniondues == true)
       return wage() * SystemVariable.value(:union_dues)
@@ -93,7 +85,7 @@ class Employee < ApplicationRecord
 
   def deductable_expenses
       expense_hash = {
-        amical: :amical_amount,
+        amical: :amical,
         union: :union_dues_amount
       }
   end

@@ -1072,6 +1072,48 @@ class PayslipTest < ActiveSupport::TestCase
         "proper bonus base for 8 OT/8 OT2/3 OT3")
   end
 
+  test "CaisseBase includes Seniority Bonus" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "monthly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.contract_start = Date.new(2010,1,1)
+
+    period = Period.new(2018,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(23, payslip.days_worked())
+    assert_equal(184, payslip.hours_worked())
+    assert(payslip.worked_full_month?)
+    assert(employee.paid_monthly?)
+
+    # compute caissebase
+    wage = employee.wage
+    base_wage = employee.find_base_wage
+    assert_equal(8, employee.years_of_service(period))
+
+    expected_caisse = ( 8 * 0.02 * base_wage + wage ).ceil
+
+    # bonusbase (wage) + (seniority bonus (8 yrs * 0.02) * base_wage)
+    assert_equal(expected_caisse, payslip.caissebase)
+
+    # You don't get seniority bonus in the first two years
+    employee.contract_start = Date.new(2016,7,31)
+    assert_equal(1, employee.years_of_service(period))
+
+    # caissebase is now the same as bonusbase
+    assert_equal(payslip.bonusbase, payslip.caissebase)
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

@@ -17,6 +17,7 @@ class SystemVariable < ApplicationRecord
     accident: 0.0175,
     employee_fund: 0.08,
     seniority_benefit: 0.02,
+    seniority_waiting_years: 2,
     kid_age_tax: 19,
     kid_age_vac: 6,
     kid_age_nursing: 15,  # months

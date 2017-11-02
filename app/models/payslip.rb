@@ -145,11 +145,8 @@ class Payslip < ApplicationRecord
     ( base_pay() + overtime_earnings() ).ceil
   end
 
-  # TODO: BonusBase + Seniority Bonus
-  def caissebase(employee)
-    # bonusbase +              #
-    #     (SeniorityPercent *  # 0.02 * years_of_service
-    #       SeniorityBase)     # BaseWage at "A" scale (regardless of scale?)
+  def caissebase
+    ( bonusbase() + seniority_bonus() ).ceil
   end
 
   # TODO: CaisseBase + PrimeDeCaisse + Bonuses + MiscPay 1 and 2
@@ -159,10 +156,24 @@ class Payslip < ApplicationRecord
     #   Bonus Other +     # (other bonuses, not prime caisse or prime ancienniete or prime except)
     #   MiscPay1 +        # MP Transaction (?) - equiv??
     #   MiscPay2          # MP Transaction #2 (?) - equiv??
-
   end
 
   private
+
+  def employee_eligible_for_seniority_bonus?
+    employee.years_of_service(period) >=
+        SystemVariable.value(:seniority_waiting_years)
+  end
+
+  def seniority_bonus
+    if (employee_eligible_for_seniority_bonus?)
+      employee.find_base_wage() *
+          (SystemVariable.value(:seniority_benefit) *
+            employee.years_of_service(period))
+    else
+      0
+    end
+  end
 
   def self.process_payslip(employee, period, with_advance)
     # Do all the stuff that is needed to process a payslip for this user

@@ -132,7 +132,7 @@ class Payslip < ApplicationRecord
     ot = hours[:overtime] if (hours[:overtime])
     ot2 = hours[:overtime2] if (hours[:overtime2])
     ot3 = hours[:overtime3] if (hours[:overtime3])
-    ot3 += endhours[:holiday] if (hours[:holiday])
+    ot3 += hours[:holiday] if (hours[:holiday])
 
     ot_earnings = ot * employee.otrate
     ot2_earnings = ot2 * employee.ot2rate
@@ -141,24 +141,84 @@ class Payslip < ApplicationRecord
     ot_earnings + ot2_earnings + ot3_earnings
   end
 
-  def bonusbase
+  def c_bonusbase
     ( base_pay() + overtime_earnings() ).ceil
   end
 
-  def caissebase
-    ( bonusbase() + seniority_bonus() ).ceil
+  def c_caissebase
+    ( c_bonusbase() + seniority_bonus() ).ceil
   end
 
-  # TODO: CaisseBase + PrimeDeCaisse + Bonuses + MiscPay 1 and 2
-  def cnpswage(employee)
-    # caisseBase +
-    #   Prime de Caisse (CaissePercent * caisseBase) +  # PrimeCaisse (%) + caisseBase
-    #   Bonus Other +     # (other bonuses, not prime caisse or prime ancienniete or prime except)
-    #   MiscPay1 +        # MP Transaction (?) - equiv??
-    #   MiscPay2          # MP Transaction #2 (?) - equiv??
+  def c_cnpswage
+    ( c_caissebase() + bonus_total() + misc_pay() ).ceil
+  end
+
+  def c_taxable
+    ( c_cnpswage() + employee.transportation() ).ceil
+  end
+
+  def process_wages()
+    self[:wage] = employee.wage
+    self[:basewage] = employee.find_base_wage
+    self[:basepay] = base_pay()
+    self[:bonusbase] = c_bonusbase()
+    self[:caissebase] = c_caissebase()
+
+    self[:bonuspay] = process_bonuses()
+
+    self[:cnpswage] = c_cnpswage()
+    self[:taxable] = c_taxable()
+  end
+
+  def process_taxes()
+    tax = Tax.compute_taxes(employee, taxable)
+
+    self[:roundedpay] = Tax.roundpay(taxable)
+    self[:crtv] = tax.crtv
+    self[:ccf] = tax.ccf
+    self[:proportional] = tax.proportional
+    self[:cnps] = tax.cnps
+    self[:cac] = tax.cac
+    self[:cac2] = tax.cac2
+    self[:communal] = tax.communal
+  end
+
+  def bonus_total
+    earnings.where(is_bonus: true).sum(:amount)
   end
 
   private
+
+  def process_bonuses
+    base = caissebase
+    bonus_total = 0
+
+    employee.bonuses.all.each do |bonus|
+      earning = Earning.new
+      earning.description = bonus.name
+
+      if (bonus.percentage?)
+        effective_bonus = (bonus.quantity * base)
+
+        earning.amount = effective_bonus
+        earning.percentage = bonus.quantity
+        bonus_total += effective_bonus
+      else
+        bonus_total += bonus.quantity
+        earning.amount = bonus.quantity
+      end
+
+      earning.is_bonus = true
+      earnings << earning
+    end
+
+    bonus_total
+  end
+
+  def misc_pay
+    # TODO Where does misc pay come from?
+    0
+  end
 
   def employee_eligible_for_seniority_bonus?
     employee.years_of_service(period) >=
@@ -187,12 +247,9 @@ class Payslip < ApplicationRecord
                   period_month: period.month)
 
     if (payslip.nil?)
-      payslip = Payslip.new
-
-      payslip.period_year = period.year
-      payslip.period_month = period.month
-
-      payslip.payslip_date = Date.today
+      employee.save
+      payslip = employee.payslips.build(period_year: period.year,
+        period_month: period.month, payslip_date: Date.today)
     end
 
     if (with_advance)
@@ -200,8 +257,7 @@ class Payslip < ApplicationRecord
     end
 
     payslip.earnings.delete_all
-    self.process_hours(payslip, employee, period)
-    self.process_bonuses(payslip, employee)
+    self.process_earnings_and_taxes(payslip, employee, period)
 
     payslip.deductions.delete_all
     self.process_charges(payslip, employee)
@@ -210,12 +266,16 @@ class Payslip < ApplicationRecord
     self.process_vacation(payslip, employee, period)
 
     payslip.last_processed = DateTime.now
-
-    employee.payslips << payslip
+    payslip.save
 
     return payslip
   end
 
+  def self.process_earnings_and_taxes(payslip, employee, period)
+    self.process_hours(payslip, employee, period)
+    payslip.process_wages()
+    payslip.process_taxes()
+  end
 
   def self.process_hours(payslip, employee, period)
     hours = WorkHour.total_hours(employee, period)
@@ -227,25 +287,6 @@ class Payslip < ApplicationRecord
 
       if (key == :holiday)
         earning.overtime = true
-      end
-
-      payslip.earnings << earning
-    end
-  end
-
-  # TODO: does this need to know about
-  # the period and recreate bonuses at the
-  # time?  Right now this only processed
-  # bonuses for today regardless of the
-  # requested period
-  def self.process_bonuses(payslip, employee)
-    employee.bonuses.each do |emp_bonus|
-      earning = Earning.new
-      earning.description = emp_bonus.name
-      if (emp_bonus.bonus_type == "percentage")
-        earning.percentage = emp_bonus.quantity
-      else
-        earning.amount = emp_bonus.quantity
       end
 
       payslip.earnings << earning

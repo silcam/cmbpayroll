@@ -4,6 +4,8 @@ Luke:
   title: Title
   department: Admin
   hours_day: 8
+  days_week: five
+  transportation: 5000
   echelon: a
   category: five
   contract_start: 2017-01-01
@@ -15,6 +17,8 @@ Anakin:
   title: Title
   department: Admin
   hours_day: 8
+  days_week: five
+  transportation: 5000
   contract_start: 2000-01-01
   first_day: 2000-01-01
 
@@ -24,6 +28,9 @@ Chewie:
   title: Title
   department: Admin
   hours_day: 8
+  transportation: 5000
+  contract_start: 2017-01-01
+  days_week: five
   first_day: 2017-08-04
 
 Han:
@@ -32,6 +39,8 @@ Han:
   title: Title
   department: LSS
   hours_day: 8
+  days_week: five
+  transportation: 5000
   echelon: a
   category: five
   contract_start: 2017-01-01
@@ -43,6 +52,8 @@ Obiwan:
   title: Trainee
   department: LSS
   hours_day: 8
+  days_week: five
+  transportation: 5000
   echelon: a
   category: five
   contract_start: 2017-01-01
@@ -54,5 +65,7 @@ Quigon:
   title: Jedi
   department: LSS
   hours_day: 8
+  days_week: five
+  transportation: 5000
   contract_start: 2017-01-01
   first_day: 2016-12-01

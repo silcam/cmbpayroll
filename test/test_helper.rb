@@ -48,7 +48,9 @@ class ActiveSupport::TestCase
     employee.last_name = "Recipient"
     employee.title = "Title"
     employee.department = departments :Admin
-    employee.hours_day = 23
+    employee.hours_day = 8
+    employee.days_week = "five"
+    employee.transportation = 5000
     employee.supervisor = supervisors :Yoda
     employee.first_day = '2010-07-11'
     employee.contract_start = '2010-07-11'

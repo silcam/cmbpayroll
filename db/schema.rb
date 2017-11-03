@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171031134503) do
+ActiveRecord::Schema.define(version: 20171102143205) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -102,6 +102,7 @@ ActiveRecord::Schema.define(version: 20171031134503) do
     t.decimal "amount"
     t.decimal "percentage"
     t.boolean "overtime", default: false, null: false
+    t.boolean "is_bonus", default: false, null: false
     t.index ["payslip_id"], name: "index_earnings_on_payslip_id"
   end
 
@@ -193,6 +194,22 @@ ActiveRecord::Schema.define(version: 20171031134503) do
     t.integer "vacation_pay_earned"
     t.integer "vacation_pay_used"
     t.decimal "vacation_used"
+    t.integer "wage"
+    t.integer "basewage"
+    t.integer "basepay"
+    t.integer "bonuspay"
+    t.integer "bonusbase"
+    t.integer "caissebase"
+    t.integer "cnpswage"
+    t.integer "cac"
+    t.integer "cac2"
+    t.integer "ccf"
+    t.integer "crtv"
+    t.integer "communal"
+    t.integer "proportional"
+    t.integer "cnps"
+    t.integer "roundedpay"
+    t.integer "taxable"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 

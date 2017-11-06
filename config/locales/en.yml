@@ -3,6 +3,7 @@ en:
   date:
     formats:
       name: "%B %Y"
+      short: "%d %b %Y"
   time:
     formats:
       short: "%d %b %Y"
@@ -46,6 +47,8 @@ en:
   Cancel: Cancel
   Create: Create
   Update: *Modify
+  female: Female
+  male: Male
 
   # Error messages
   cant_be_in_future: can't be in the future.
@@ -95,6 +98,15 @@ en:
   Echelon: &Echelon Echelon
   Taxable_percentage: &Taxable_percentage Taxable Percentage
   Transportation: &Transportation Transportation
+  married: Married
+  single: Single
+  widowed: Widowed
+  full_time: Full Time
+  part_time: Part Time
+  temporary: Temporary
+  leave: Leave
+  terminated_to_year_end: Terminated to year end
+  inactive: Inactive
 
   # Supervisors
   Supervisors: Supervisors
@@ -258,7 +270,7 @@ en:
   Payslips_admin_description: Post Payslips and Pay Periods for Employees
   Holidays_admin_description: Add or Modify Yearly Holidays
   Charges_admin_description: Add or Modify Standard Charges.
-  Users_admin_description: Manage non-employee users of the system
+  Users_admin_description: Manage users of the system
   Departments_admin_description: Add or Modify Departments.
   Wages_admin_description: Modify standard wages for Categories and Echelons
   Variables_admin_description: Modify system variables that control how the system works.
@@ -273,6 +285,7 @@ en:
     marital_statuses:
       m: M
       s: S
+      w: W
       n: ''
     genders:
       m: M
@@ -321,6 +334,7 @@ en:
         monthly: Monthly
         married: Married
         single: Single
+        widowed: Widowed
       employee/wage_scale:
         one: 1st
         two: 2nd

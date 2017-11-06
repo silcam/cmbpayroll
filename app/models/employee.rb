@@ -41,6 +41,14 @@ class Employee < ApplicationRecord
   enum wage_scale: [ :a, :b, :c, :d, :e ], _prefix: :wage_scale
   enum wage_period: [ :hourly, :monthly ]
 
+  def gender
+    person.gender
+  end
+
+  def female?
+    person.female?
+  end
+
   def self.list_departments
     depts = Hash.new
     Employee.all.each do |emp|

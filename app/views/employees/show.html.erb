@@ -76,15 +76,15 @@
     </tr>
     <tr>
       <th scope="row"><%= t(:Contract_start) %>:</th>
-      <td><%= @employee.contract_start %></td>
+      <td><%= l(@employee.contract_start, format: :short, default: '') %></td>
       <th scope="row"><%= t(:Contract_end) %>:</th>
-      <td><%= @employee.contract_end %></td>
+      <td><%= l(@employee.contract_end, format: :short, default: '') %></td>
     </tr>
     <tr>
       <th scope="row"><%= t(:Gender) %>:</th>
-      <td><%= t(@employee&.gender&.humanize, default: "") %></td>
+      <td><%= t(@employee.gender, default: "") %></td>
       <th scope="row"><%= t(:Marital_status) %>:</th>
-      <td><%= t(@employee&.marital_status&.humanize, default: "") %></td>
+      <td><%= t_gen(@employee.marital_status, @employee.female?) %></td>
     </tr>
   </tbody>
 </table>
@@ -97,7 +97,7 @@
       <th scope="row">DIPE:</th>
       <td><%= @employee.dipe %></td>
       <th scope="row"><%= t(:Birth_date) %></th>
-      <td><%= @employee.birth_date %></td>
+      <td><%= l(@employee.birth_date, format: :short, default: '') %></td>
       <th scope="row"><%= t(:Category) %></th>
       <td><%= @employee.category %></td>
     </tr>
@@ -113,9 +113,9 @@
     </tr>
     <tr>
       <th scope="row">Last Raise Date:</th>
-      <td><%= @employee.last_raise_date %></td>
+      <td><%= l(@employee.last_raise_date, format: :short, default: '') %></td>
       <th scope="row"><%= t(:Taxable_percentage) %></th>
-      <td><%= number_to_percentage(@employee.taxable_percentage, precision: 2) %></td>
+      <td><%= number_to_percentage(@employee.taxable_percentage * 100, precision: 0) %></td>
       <th scope="row"><%= t(:Transportation) %></th>
       <td><%= number_to_currency(@employee.transportation, locale: :cm) %></td>
       <th scope="row"><%= t(:Hours_per_day) %></th>
@@ -123,9 +123,9 @@
     </tr>
     <tr>
       <th scope="row"><%= t(:Days_per_week) %></th>
-      <td><%= @employee.days_week %></td>
+      <td><%= word_to_int @employee.days_week %></td>
       <th scope="row"><%= t(:Employment_status) %></th>
-      <td><%= t(@employee.employment_status, default: "") %></td>
+      <td><%= t_gen(@employee.employment_status, @employee.female?) %></td>
       <th scope="row"><%= t(:Amical) %></th>
       <td><%= number_to_currency(@employee.amical, locale: :cm) %></td>
       <th scope="row"><%= t(:Union_dues) %>?</th>
@@ -150,7 +150,7 @@
     <% @employee.children.each do |c| %>
       <tr>
         <td><%= c.first_name %> <%= c.last_name %></td>
-        <td><%= c.birth_date %></td>
+        <td><%= l(c.birth_date, format: :short, default: '') %></td>
         <td><%= c.is_student %></td>
       </tr>
     <% end %>

@@ -3,6 +3,7 @@ fr:
   date:
     formats:
       name: "%B %Y"
+      short: "%d %b %Y"
   time:
     formats:
       short: "%d %b %Y"
@@ -46,6 +47,8 @@ fr:
   Cancel: Annuler
   Create: Créer
   Update: *Modify
+  female: Femelle
+  male: Mâle
 
   # Error messages
   cant_be_in_future: ne peut pas être au futur.
@@ -95,6 +98,19 @@ fr:
   Echelon: &Echelon Échelon
   Taxable_percentage: &Taxable_percentage Pourcentage Imposable
   Transportation: &Transportation Transportation
+  married_m: Marrié
+  married_f: Marriée
+  single: Célibataire
+  widowed_m: Veuf
+  widowed_f: Veuve
+  full_time: Plein temps
+  part_time: Mi-temps
+  temporary: Temporaire
+  leave: Congé
+  terminated_to_year_end_m: Terminé jusqu'à la fin de l'année
+  terminated_to_year_end_f: Terminée jusqu'à la fin de l'année
+  inactive_m: Inactif
+  inactive_f: Inactive
 
   # Supervisors
   Supervisors: Superviseurs
@@ -258,7 +274,7 @@ fr:
   Payslips_admin_description: Création des bullitens de paie et finalisation des mois
   Holidays_admin_description: Ajouter ou modifier les jours fériés
   Charges_admin_description: Ajouter ou modifier les notes standard des charges
-  Users_admin_description: Gestion de utilisateurs (non-employées) du système
+  Users_admin_description: Gestion de utilisateurs du système
   Departments_admin_description: Ajouter ou modifier les départements
   Wages_admin_description: Modifier les salaires bases des catégories et échelons
   Variables_admin_description: Modifier les variables qui dirigent le système
@@ -273,6 +289,7 @@ fr:
     marital_statuses:
       m: M
       s: C
+      w: V
       n: ''
     genders:
       m: M
@@ -321,6 +338,7 @@ fr:
         monthly: Mensuel
         married: Marrié(e)
         single: Célibataire
+        widowed: Veu(f/ve)
       employee/wage_scale:
         one: 1ere
         two: 2eme

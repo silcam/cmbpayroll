@@ -52,6 +52,16 @@ module ApplicationHelper
     lookup[word]
   end
 
+  def t_gen(key, feminine, options={})
+    gender = feminine ? :f : :m
+    new_key = "#{key}_#{gender}"
+    if I18n.exists? new_key, I18n.locale
+      t new_key, options
+    else
+      t key, options
+    end
+  end
+
   # def assemble_date(hash, prefix)
   #   [1, 2, 3].map{ |n| hash["#{prefix}(#{n}i)"]}.join '-'
   # end

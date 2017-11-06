@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171102143205) do
+ActiveRecord::Schema.define(version: 20171106081014) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -131,8 +131,8 @@ ActiveRecord::Schema.define(version: 20171102143205) do
     t.bigint "department_id"
     t.boolean "uniondues", default: false, null: false
     t.date "first_day"
-    t.boolean "spouse_employed", default: false, null: false
     t.integer "amical"
+    t.boolean "spouse_employed", default: false, null: false
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
     t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"
@@ -210,6 +210,17 @@ ActiveRecord::Schema.define(version: 20171102143205) do
     t.integer "cnps"
     t.integer "roundedpay"
     t.integer "taxable"
+    t.integer "category"
+    t.integer "echelon"
+    t.integer "wagescale"
+    t.float "days"
+    t.float "hours"
+    t.float "overtime_hours"
+    t.float "overtime2_hours"
+    t.float "overtime3_hours"
+    t.integer "overtime_rate"
+    t.integer "overtime2_rate"
+    t.integer "overtime3_rate"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 

@@ -16,6 +16,11 @@ class Payslip < ApplicationRecord
     where(period_year: period.year, period_month: period.month)
   }
 
+  def previous
+    period = Period.new(period_year, period_month).previous
+    Payslip.find_by employee: employee, period_year: period.year, period_month: period.month
+  end
+
   def self.current_period
     return self.from_period( Period.current)
   end
@@ -215,6 +220,29 @@ class Payslip < ApplicationRecord
     bonus_total
   end
 
+  def calculate_vacation_pay
+    # TODO : Write this
+    0
+  end
+
+  def prev_vacation_pay_balance
+    previous_slip = previous
+    previous_slip.nil? ? 0 : previous_slip.vacation_pay_balance
+  end
+
+  def calculate_vacation_pay_used
+    days_used = Vacation.days_used employee, period
+    previous_days_balance = Vacation.balance(employee, period.previous)
+    previous_pay_balance = prev_vacation_pay_balance
+    ((previous_pay_balance * days_used) / previous_days_balance).to_i
+  end
+
+  def calculate_vacation_pay_balance
+    prev_vacation_pay_balance +
+      calculate_vacation_pay -
+      calculate_vacation_pay_used
+  end
+
   def misc_pay
     # TODO Where does misc pay come from?
     0
@@ -339,7 +367,12 @@ class Payslip < ApplicationRecord
 
   def self.process_vacation(payslip, employee, period)
     payslip.vacation_earned = Vacation.days_earned(employee, period)
+    payslip.vacation_used = Vacation.days_used(employee, period)
     payslip.vacation_balance = Vacation.balance(employee, period)
+    payslip.vacation_pay_earned = payslip.calculate_vacation_pay
+    payslip.vacation_pay_used = payslip.calculate_vacation_pay_used
+    payslip.vacation_pay_balance = payslip.calculate_vacation_pay_balance
+
     last_vacation = employee.vacations.where('end_date <= ?', period.finish).last
     unless last_vacation.nil?
       payslip.last_vacation_start = last_vacation.start_date

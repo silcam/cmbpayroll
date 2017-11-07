@@ -278,6 +278,7 @@ fr:
   Payslips_admin_description: Création des bullitens de paie et finalisation des mois
   Holidays_admin_description: Ajouter ou modifier les jours fériés
   Charges_admin_description: Ajouter ou modifier les notes standard des charges
+  Supervisors_admin_description: Gestion de superviseurs
   Users_admin_description: Gestion de utilisateurs du système
   Departments_admin_description: Ajouter ou modifier les départements
   Wages_admin_description: Modifier les salaires bases des catégories et échelons

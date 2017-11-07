@@ -5,7 +5,7 @@
 <table class="table">
   <tr>
     <th><%= t :Supervisor %></th>
-    <th colspan="2"></th>
+    <th colspan="3"></th>
   </tr>
   <% @supervisors.each do |supervisor| %>
     <tr>
@@ -18,7 +18,12 @@
         <% end %>
       </td>
       <td>
-        <% if supervisor.employees.empty? %>
+        <% if can? :update, supervisor %>
+          <%= link_to t(:Edit), edit_supervisor_path(supervisor) %>
+        <% end %>
+      </td>
+      <td>
+        <% if supervisor.employees.empty? and can? :destroy, supervisor %>
           <%= link_to t(:Delete), supervisor, method: :delete %>
         <% end %>
       </td>

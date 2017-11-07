@@ -5,6 +5,7 @@ class EmployeesController < ApplicationController
       authorize! :read, Supervisor
 
       @employees = Supervisor.find(params[:supervisor]).employees
+      @employees = @employees.active unless params[:view_all]
     elsif current_user.user?
       @employees = Array.new
       @employees << Employee.find_by(person_id: current_user.person.id)

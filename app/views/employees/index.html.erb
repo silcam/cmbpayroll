@@ -7,7 +7,9 @@
 <% unless params[:view_all] %>
   <p>
     <%= t :Showing_active_employees %>
-    <%= link_to t(:View_all), employees_path(view_all: true) %>
+    <% link_prms = {view_all: true} %>
+    <% link_prms[:supervisor] = params[:supervisor] unless params[:supervisor].blank? %>
+    <%= link_to t(:View_all), employees_path(link_prms) %>
   </p>
 <% end %>
 

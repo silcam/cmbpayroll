@@ -23,6 +23,21 @@ class SupervisorsController < ApplicationController
     end
   end
 
+  def edit
+    @supervisor = Supervisor.find params[:id]
+    authorize! :update, @supervisor
+  end
+
+  def update
+    @supervisor = Supervisor.find params[:id]
+    authorize! :update, @supervisor
+    if @supervisor.update supervisor_params
+      follow_redirect supervisors_path
+    else
+      render :edit
+    end
+  end
+
   def destroy
     authorize! :destroy, Supervisor
 

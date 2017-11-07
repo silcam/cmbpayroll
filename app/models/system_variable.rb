@@ -5,6 +5,7 @@ class SystemVariable < ApplicationRecord
     advance_amount: 0.5,
     supplemental_days: 2,
     supplemental_days_period: 5, # years
+    vacation_pay_factor: 16,
     holiday_overtime: 1.4,
     sunday_overtime: 1.4,
     union_dues: 0.01,

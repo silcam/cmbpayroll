@@ -188,6 +188,13 @@ class Payslip < ApplicationRecord
     self[:communal] = tax.communal
   end
 
+  def process_vacation_pay
+    pay = calculate_vacation_pay(cnpswage, vacation_used)
+    if pay > 0
+      earnings.create(description: 'Salaire de congé', amount: pay)
+    end
+  end
+
   def bonus_total
     earnings.where(is_bonus: true).sum(:amount)
   end
@@ -220,28 +227,30 @@ class Payslip < ApplicationRecord
     bonus_total
   end
 
-  def calculate_vacation_pay
-    # TODO : Write this
-    0
+  def calculate_vacation_pay(cnpswage, vacation_used)
+    days_earned = SystemVariable.value(:vacation_days) / 12.0
+    vpay_factor = SystemVariable.value(:vacation_pay_factor)
+    per_day = (cnpswage / days_earned) / vpay_factor
+    (per_day * vacation_used).ceil
   end
 
-  def prev_vacation_pay_balance
-    previous_slip = previous
-    previous_slip.nil? ? 0 : previous_slip.vacation_pay_balance
-  end
-
-  def calculate_vacation_pay_used
-    days_used = Vacation.days_used employee, period
-    previous_days_balance = Vacation.balance(employee, period.previous)
-    previous_pay_balance = prev_vacation_pay_balance
-    ((previous_pay_balance * days_used) / previous_days_balance).to_i
-  end
-
-  def calculate_vacation_pay_balance
-    prev_vacation_pay_balance +
-      calculate_vacation_pay -
-      calculate_vacation_pay_used
-  end
+  # def prev_vacation_pay_balance
+  #   previous_slip = previous
+  #   previous_slip.nil? ? 0 : previous_slip.vacation_pay_balance
+  # end
+  #
+  # def calculate_vacation_pay_used
+  #   days_used = Vacation.days_used employee, period
+  #   previous_days_balance = Vacation.balance(employee, period.previous)
+  #   previous_pay_balance = prev_vacation_pay_balance
+  #   ((previous_pay_balance * days_used) / previous_days_balance).to_i
+  # end
+  #
+  # def calculate_vacation_pay_balance
+  #   prev_vacation_pay_balance +
+  #     calculate_vacation_pay -
+  #     calculate_vacation_pay_used
+  # end
 
   def misc_pay
     # TODO Where does misc pay come from?
@@ -284,6 +293,8 @@ class Payslip < ApplicationRecord
       self.process_advance(employee, period)
     end
 
+    self.process_vacation(payslip, employee, period)
+
     payslip.earnings.delete_all
     self.process_earnings_and_taxes(payslip, employee, period)
 
@@ -291,7 +302,6 @@ class Payslip < ApplicationRecord
     self.process_charges(payslip, employee)
     self.process_employee_deduction(payslip, employee)
     self.process_loans(payslip, employee, period)
-    self.process_vacation(payslip, employee, period)
 
     payslip.last_processed = DateTime.now
     payslip.save
@@ -301,8 +311,9 @@ class Payslip < ApplicationRecord
 
   def self.process_earnings_and_taxes(payslip, employee, period)
     self.process_hours(payslip, employee, period)
-    payslip.process_wages()
-    payslip.process_taxes()
+    payslip.process_wages
+    payslip.process_taxes
+    payslip.process_vacation_pay
   end
 
   def self.process_hours(payslip, employee, period)
@@ -369,9 +380,9 @@ class Payslip < ApplicationRecord
     payslip.vacation_earned = Vacation.days_earned(employee, period)
     payslip.vacation_used = Vacation.days_used(employee, period)
     payslip.vacation_balance = Vacation.balance(employee, period)
-    payslip.vacation_pay_earned = payslip.calculate_vacation_pay
-    payslip.vacation_pay_used = payslip.calculate_vacation_pay_used
-    payslip.vacation_pay_balance = payslip.calculate_vacation_pay_balance
+    # payslip.vacation_pay_earned = payslip.calculate_vacation_pay
+    # payslip.vacation_pay_used = payslip.calculate_vacation_pay_used
+    # payslip.vacation_pay_balance = payslip.calculate_vacation_pay_balance
 
     last_vacation = employee.vacations.where('end_date <= ?', period.finish).last
     unless last_vacation.nil?

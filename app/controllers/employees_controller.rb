@@ -9,9 +9,11 @@ class EmployeesController < ApplicationController
       @employees = Array.new
       @employees << Employee.find_by(person_id: current_user.person.id)
     elsif current_user.supervisor?
-      @employees = Supervisor.find_by(person_id: current_user.person.id).employees
+      @employees = Supervisor.find_by(person_id: current_user.person.id).employees_and_sup
+      @employees = @employees.active unless params[:view_all]
     elsif current_user.admin?
       @employees = Employee.all
+      @employees = @employees.active unless params[:view_all]
     else
       @employees = Array.new
     end

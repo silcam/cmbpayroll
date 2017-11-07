@@ -4,13 +4,19 @@
   <%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary btn-w-marge', id: 'new-employee-btn' %>
 <% end %>
 
+<% unless params[:view_all] %>
+  <p>
+    <%= t :Showing_active_employees %>
+    <%= link_to t(:View_all), employees_path(view_all: true) %>
+  </p>
+<% end %>
+
 <table class="table">
   <thead>
     <tr>
       <th><%= t :Name %></th>
       <th><%= t :Title %></th>
       <th><%= t :Department %></th>
-      <th>Actions</th>
     </tr>
   </thead>
   <tbody id="employees-data">
@@ -19,11 +25,6 @@
       <td><%= link_to employee.full_name, employee_path(employee) %></td>
       <td><%= employee.title %></td>
       <td><%= employee.department_name %></td>
-      <td>
-        <% if can? :create, Charge %>
-          <%= link_to t(:Add_charge), new_employee_charge_path(employee), class: 'add-charge-link' %>
-        <% end %>
-      </td>
     </tr>
   <% end %>
   </tbody>

@@ -49,6 +49,7 @@ en:
   Update: *Modify
   female: Female
   male: Male
+  View_all: View all
 
   # Error messages
   cant_be_in_future: can't be in the future.
@@ -80,6 +81,7 @@ en:
   Employees: Employees
   Employee: Employee
   New_employee: New Employee
+  Showing_active_employees: Showing active employees.
   Employee_information_for: Employee Information for
   Name: Name
   Department: &Department Department

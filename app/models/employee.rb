@@ -25,6 +25,8 @@ class Employee < ApplicationRecord
   validates :hours_day, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }
   validates :wage, presence: true, if: :echelon_requires_wage?
 
+  scope :active, -> { where.not(employment_status: :inactive) }
+
   def echelon_requires_wage?
     echelon == "g"
   end

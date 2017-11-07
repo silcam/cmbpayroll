@@ -49,6 +49,7 @@ fr:
   Update: *Modify
   female: Femelle
   male: Mâle
+  View_all: Voir tous
 
   # Error messages
   cant_be_in_future: ne peut pas être au futur.
@@ -80,7 +81,8 @@ fr:
   Employees: Employés
   Employee: Employé
   New_employee: Nouvel employé
-  Employee_information_for: Details de l'employee 
+  Showing_active_employees: Liste des employés actifs.
+  Employee_information_for: Details de l'employé
   Name: Nom
   Department: &Department Département
   Status: Statut

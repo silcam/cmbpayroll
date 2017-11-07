@@ -115,7 +115,7 @@
       <th scope="row">Last Raise Date:</th>
       <td><%= l(@employee.last_raise_date, format: :short, default: '') %></td>
       <th scope="row"><%= t(:Taxable_percentage) %></th>
-      <td><%= number_to_percentage(@employee.taxable_percentage * 100, precision: 0) %></td>
+      <td><%= number_to_percentage(@employee.taxable_percentage ? @employee.taxable_percentage * 100 : "", precision: 0) %></td>
       <th scope="row"><%= t(:Transportation) %></th>
       <td><%= number_to_currency(@employee.transportation, locale: :cm) %></td>
       <th scope="row"><%= t(:Hours_per_day) %></th>

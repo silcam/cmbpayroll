@@ -165,6 +165,7 @@ class Payslip < ApplicationRecord
   def process_wages()
     self[:wage] = employee.wage
     self[:basewage] = employee.find_base_wage
+    self[:transportation] = employee.transportation
     self[:basepay] = base_pay()
     self[:bonusbase] = c_bonusbase()
     self[:caissebase] = c_caissebase()

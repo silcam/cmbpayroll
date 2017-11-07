@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171106081014) do
+ActiveRecord::Schema.define(version: 20171107083656) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -221,6 +221,7 @@ ActiveRecord::Schema.define(version: 20171106081014) do
     t.integer "overtime_rate"
     t.integer "overtime2_rate"
     t.integer "overtime3_rate"
+    t.integer "transportation"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 

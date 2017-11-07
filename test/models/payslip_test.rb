@@ -1205,10 +1205,14 @@ class PayslipTest < ActiveSupport::TestCase
     assert(spot_earning.valid?, "spot is valid")
 
     # verify saved payslip attributes
-    assert_equal(exp_triple_bonus, payslip.cnpswage)
-    assert_equal(new_exp_taxable, payslip.taxable)
     assert_equal(wage, payslip.bonusbase)
     assert_equal(exp_caisse, payslip.caissebase)
+    assert_equal(exp_triple_bonus, payslip.cnpswage)
+    assert_equal(new_exp_taxable, payslip.taxable)
+
+    assert_equal(employee.transportation, payslip.transportation)
+    #assert_equal(employee.amical, payslip.amical) (?)
+    #assert_equal(employee.union_dues, payslip.union_dues) (?)
 
     assert_equal(416, payslip.communal)
     assert_equal(640, payslip.cac)

@@ -130,9 +130,11 @@ class Employee < ApplicationRecord
     end
   end
 
+  # This has `floor()` since it is going into an integer field,
+  # and comparing for tests is easier this way.
   def union_dues_amount
     if (uniondues == true)
-      return wage() * SystemVariable.value(:union_dues)
+      return ( find_base_wage() * SystemVariable.value(:union_dues) ).floor
     else
       return 0
     end

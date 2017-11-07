@@ -352,11 +352,11 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
-
   test "charges_become_deductions" do
-
     # have an employee
     employee = return_valid_employee()
+    employee.uniondues = false;
+    employee.amical = 0;
 
     # make charges
     charge1 = Charge.new
@@ -1164,6 +1164,8 @@ class PayslipTest < ActiveSupport::TestCase
     employee.echelon = "a"
     employee.wage_scale = "a"
     employee.transportation = 20000
+    employee.amical = 3000
+    employee.uniondues = false
     employee.contract_start = Date.new(2010,1,1)
 
     period = Period.new(2018,1)
@@ -1248,23 +1250,122 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(exp_triple_bonus, payslip.cnpswage)
     assert_equal(new_exp_taxable, payslip.taxable)
 
+    assert_equal(new_exp_taxable, payslip.gross_pay)
+
     assert_equal(employee.transportation, payslip.transportation)
 
     assert_equal(Employee.categories[employee.category], payslip.category)
     assert_equal(Employee.echelons[employee.echelon], payslip.echelon)
     assert_equal(Employee.wage_scales[employee.wage_scale], payslip.wagescale)
 
-    #assert_equal(employee.amical, payslip.amical) (?)
-    #assert_equal(employee.union_dues, payslip.union_dues) (?)
+    assert_equal(employee.hourly_rate, payslip.hourly_rate)
+    assert_equal(employee.daily_rate, payslip.daily_rate)
 
     assert_equal(416, payslip.communal)
     assert_equal(640, payslip.cac)
     assert_equal(0, payslip.cac2)
-    assert_equal(6487, payslip.cnps)
+    assert_equal(5647, payslip.cnps)
     assert_equal(6397, payslip.proportional)
     assert_equal(1950, payslip.crtv)
     assert_equal(1542, payslip.ccf)
     assert_equal(154250, payslip.roundedpay)
+
+    exp_total_tax = payslip.communal + payslip.cac +
+        payslip.cac2 + payslip.cnps + payslip.proportional +
+          payslip.crtv + payslip.ccf
+
+    assert_equal(exp_total_tax, payslip.total_tax)
+    assert_equal(new_exp_taxable - exp_total_tax - employee.amical, payslip.net_pay)
+  end
+
+  test "Advances count against net Pay" do
+    # config employee
+    employee = return_valid_employee()
+    employee.uniondues = false;
+    employee.amical = 0;
+    employee.contract_start = "2017-01-01" # no senior bonus
+
+    period = Period.new(2018,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+
+    # process payslip with advance
+    payslip = Payslip.process_with_advance(employee, period)
+
+    # compute caissebase
+    wage = employee.wage
+    base_wage = employee.find_base_wage
+    assert_equal(1, employee.years_of_service(period))
+
+    # bonusbase (wage) + (seniority bonus (8 yrs * 0.02) * base_wage)
+    exp_caisse = exp_cnps = wage
+    assert_equal(exp_cnps, payslip.c_cnpswage, "cnps same as caisse")
+
+    # verify taxable (adds transportation)
+    expected_taxable = exp_cnps + employee.transportation
+    assert_equal(expected_taxable, payslip.c_taxable, "taxable")
+    assert_equal(0, payslip.earnings.where(is_bonus: true).count(), "no bonuses")
+
+    # expected value
+    net_pay = expected_taxable - payslip.total_tax - employee.advance_amount()
+    assert_equal(net_pay, payslip.net_pay)
+  end
+
+  test "Loans and payments count against net Pay" do
+    Date.stub :today, Date.new(2018, 2, 5) do
+
+      # config employee
+      employee = return_valid_employee()
+      employee.uniondues = false;
+      employee.amical = 0;
+      employee.contract_start = "2017-01-01" # no senior bonus
+
+      # new Loan
+      loan = Loan.new(amount: 10000, origination: "2017-10-25",
+          term: "six_month_term")
+      employee.loans << loan
+
+      # new Loan Payment in period
+      loan.loan_payments.create(amount: 5000, date: "2018-01-15");
+
+      period = Period.new(2018,1)
+
+      # work the whole month (work hour)
+      generate_work_hours employee, period
+
+      # process payslip
+      payslip = Payslip.process(employee, period)
+
+      # Loan payment (5000) comes out of net pay
+      expected_net = (employee.wage + employee.transportation) -
+          payslip.total_tax - 5000
+      assert_equal(expected_net, payslip.net_pay)
+    end
+  end
+
+  test "Charges/Deductions against net Pay" do
+    Date.stub :today, Date.new(2018, 2, 5) do
+
+      # config employee
+      employee = return_valid_employee()
+      employee.uniondues = false;
+      employee.amical = 0;
+      employee.contract_start = "2017-01-01" # no senior bonus
+
+      employee.charges.create!(amount: 300, note: "Coke", date: "2018-01-15")
+      period = Period.new(2018,1)
+
+      # work the whole month (work hour)
+      generate_work_hours employee, period
+
+      # process payslip
+      payslip = Payslip.process(employee, period)
+
+      # 300 Franc charge
+      expected_net = (employee.wage + employee.transportation) - payslip.total_tax - 300
+      assert_equal(expected_net, payslip.net_pay)
+    end
   end
 
   private

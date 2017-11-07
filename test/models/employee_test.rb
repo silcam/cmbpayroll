@@ -286,6 +286,7 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "AMICAL" do
     employee = return_valid_employee()
+    employee.amical = nil
     assert_nil(employee.amical)
 
     employee.amical = 3000
@@ -294,18 +295,20 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "union dues" do
     employee = return_valid_employee()
+    employee.uniondues = false;
     assert_equal(0, employee.union_dues_amount)
 
-    employee.wage = 10000
     employee.category_one!
-    employee.echelon_g!
+    employee.echelon_a!
+    employee.wage_scale = "a"
 
     employee.uniondues = true
-    assert_equal(100, employee.union_dues_amount)
+    assert_equal(377, employee.union_dues_amount)
 
     new_union_dues = 0.76
     SystemVariable.create!(key: 'union_dues', value: new_union_dues)
-    assert_equal(employee.wage * new_union_dues, employee.union_dues_amount)
+    new_exp_dues = ( employee.find_base_wage * new_union_dues ).floor
+    assert_equal(new_exp_dues, employee.union_dues_amount)
   end
 
   test "deductable_expenses" do

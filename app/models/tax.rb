@@ -2,18 +2,21 @@ class Tax < ApplicationRecord
 
   self.primary_key = :grosspay
 
-  attr_accessor :gross
+  attr_accessor :taxable
+  attr_accessor :cnpswage
   attr_accessor :employee
 
-  def self.compute_taxes(employee, gross)
-    pay = roundpay(gross)
-    pay_stringified = pay.to_s
-
-    tax = Tax.find_by(grosspay: pay_stringified)
-    tax.gross = gross
+  def self.compute_taxes(employee, taxable, cnpswage)
+    tax = Tax.find_by(grosspay: roundpay(taxable))
+    tax.taxable = taxable
+    tax.cnpswage = cnpswage
     tax.employee = employee
 
     tax
+  end
+
+  def total_tax
+    cac + cac2 + communal + cnps + ccf + crtv + proportional
   end
 
   def cac
@@ -39,17 +42,11 @@ class Tax < ApplicationRecord
 
   # default ceiling is 750 000 CFA
   def cnps
-    cnpswage = cnpswage()
-
-    if (cnpswage > SystemVariable.value(:cnps_ceiling))
-      cnpswage = SystemVariable.value(:cnps_ceiling)
+    if (cnpswage() > SystemVariable.value(:cnps_ceiling))
+      self.cnpswage = SystemVariable.value(:cnps_ceiling)
     end
 
-    (cnpswage * SystemVariable.value(:emp_cnps)).round
-  end
-
-  def cnpswage
-    gross
+    (cnpswage() * SystemVariable.value(:emp_cnps)).round
   end
 
   # Round pay to the nearest 250

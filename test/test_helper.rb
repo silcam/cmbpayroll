@@ -43,17 +43,22 @@ class ActiveSupport::TestCase
   end
 
   def return_valid_employee
+    # this employee's wage is: 73565
+    #            base wage is: 58280
     employee = Employee.new
     employee.first_name = "Playslip"
     employee.last_name = "Recipient"
     employee.title = "Title"
     employee.department = departments :Admin
+    employee.wage_period = "monthly"
     employee.hours_day = 8
     employee.days_week = "five"
     employee.transportation = 5000
     employee.supervisor = supervisors :Yoda
     employee.first_day = '2010-07-11'
     employee.contract_start = '2010-07-11'
+    employee.amical = 3000
+    employee.uniondues = true
 
     employee.category_three!
     employee.echelon_d!

@@ -185,10 +185,11 @@ class Payslip < ApplicationRecord
 
     self[:cnpswage] = c_cnpswage()
     self[:taxable] = c_taxable()
+    self[:gross_pay] = taxable
   end
 
-  def process_taxes()
-    tax = Tax.compute_taxes(employee, taxable)
+  def process_taxes
+    tax = Tax.compute_taxes(employee, taxable, cnpswage)
 
     self[:roundedpay] = Tax.roundpay(taxable)
     self[:crtv] = tax.crtv
@@ -198,6 +199,14 @@ class Payslip < ApplicationRecord
     self[:cac] = tax.cac
     self[:cac2] = tax.cac2
     self[:communal] = tax.communal
+
+    self[:total_tax] = tax.total_tax
+  end
+
+  # Based on all calculations, compute net pay
+  # From gross pay and all total deductions
+  def compute_net_pay
+    self[:net_pay] = self[:gross_pay] - self[:total_tax] - total_deductions()
   end
 
   def process_vacation_pay
@@ -215,9 +224,13 @@ class Payslip < ApplicationRecord
     self[:wage] = employee.wage
     self[:basewage] = employee.find_base_wage
     self[:transportation] = employee.transportation
+
     self[:category] = Employee.categories[employee.category]
     self[:echelon] = Employee.echelons[employee.echelon]
     self[:wagescale] = Employee.wage_scales[employee.wage_scale]
+
+    self[:hourly_rate] = employee.hourly_rate
+    self[:daily_rate] = employee.daily_rate
   end
 
   private
@@ -321,8 +334,10 @@ class Payslip < ApplicationRecord
 
     payslip.deductions.delete_all
     self.process_charges(payslip, employee)
-    self.process_employee_deduction(payslip, employee)
+    self.process_employee_deductions(payslip, employee)
     self.process_loans(payslip, employee, period)
+
+    payslip.compute_net_pay
 
     payslip.last_processed = DateTime.now
     payslip.save
@@ -369,7 +384,7 @@ class Payslip < ApplicationRecord
     end
   end
 
-  def self.process_employee_deduction(payslip, employee)
+  def self.process_employee_deductions(payslip, employee)
     expenses_hash = employee.deductable_expenses()
 
     expenses_hash.each do |k,v|

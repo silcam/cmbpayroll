@@ -222,6 +222,9 @@ ActiveRecord::Schema.define(version: 20171107083656) do
     t.integer "overtime2_rate"
     t.integer "overtime3_rate"
     t.integer "transportation"
+    t.integer "total_tax"
+    t.integer "hourly_rate"
+    t.integer "daily_rate"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 

@@ -6,8 +6,8 @@ class EmployeesBonusesTest < ActiveSupport::TestCase
 
     bonus = Bonus.new
     bonus.name = "Bonus 1"
-    bonus.quantity = 20.2
     bonus.bonus_type = "percentage"
+    bonus.quantity = 0.202
 
     assert bonus.valid?
 
@@ -24,8 +24,8 @@ class EmployeesBonusesTest < ActiveSupport::TestCase
 
     bonus2 = Bonus.new
     bonus2.name = "Bonus 2"
-    bonus2.quantity = 18947
     bonus2.bonus_type = "fixed"
+    bonus2.quantity = 18947
 
     assert bonus2.valid?
 
@@ -41,8 +41,8 @@ class EmployeesBonusesTest < ActiveSupport::TestCase
 
     bonus = Bonus.new
     bonus.name = "Bonus 1"
-    bonus.quantity = 20.2
     bonus.bonus_type = "percentage"
+    bonus.quantity = 0.202
 
     assert bonus.valid?
 
@@ -58,8 +58,8 @@ class EmployeesBonusesTest < ActiveSupport::TestCase
 
     bonus2 = Bonus.new
     bonus2.name = "Bonus 2"
-    bonus2.quantity = 18947
     bonus2.bonus_type = "fixed"
+    bonus2.quantity = 18947
 
     assert bonus2.valid?
 
@@ -77,16 +77,16 @@ class EmployeesBonusesTest < ActiveSupport::TestCase
     # create 2 valid bonuses
     bonus = Bonus.new
     bonus.name = "Bonus 1"
-    bonus.quantity = 20.2
     bonus.bonus_type = "percentage"
+    bonus.quantity = 0.202
     assert bonus.valid?
     bonus.save
     assert(bonus.id)
 
     bonus2 = Bonus.new
     bonus2.name = "Bonus 2"
-    bonus2.quantity = 18947
     bonus2.bonus_type = "fixed"
+    bonus2.quantity = 18947
     assert bonus2.valid?
     bonus2.save
     assert(bonus2.id)

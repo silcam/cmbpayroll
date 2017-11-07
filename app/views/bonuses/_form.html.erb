@@ -5,15 +5,15 @@
     <%= form.label t(:Name) %>
     <%= form.text_field :name, id: :bonus_name, class: 'form-control' %>
   </div>
-  
+
   <div class="form-group">
     <%= form.label t(:Type) %>
-    <%= form.select :bonus_type, options_for_select(Bonus.bonus_types.keys.collect{ |key| [t(key), key] }), {id: :bonus_bonus_type}, class: 'form-control'  %>
+    <%= form.select :bonus_type, options_for_select(Bonus.bonus_types.keys.collect{ |key| [t(key), key] }, @bonus.bonus_type), {id: :bonus_bonus_type}, class: 'form-control'  %>
   </div>
 
   <div class="form-group">
     <%= form.label t(:Quantity), style: 'display: block;' %>
-    <%= form.text_field :quantity, id: :bonus_quantity, class: 'form-control form-control-inline' %>
+    <%= form.text_field :ext_quantity, id: :bonus_quantity, class: 'form-control form-control-inline' %>
     <span id='quantity-unit'>FCFA</span>
   </div>
 

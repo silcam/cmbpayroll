@@ -81,7 +81,7 @@ en:
   Employee: Employee
   New_employee: New Employee
   Employee_information_for: Employee Information for
-  Name: *Last_name
+  Name: Name
   Department: &Department Department
   Status: Status
   Title: &Title Title
@@ -220,6 +220,8 @@ en:
   percentage: Percentage
   fixed: Fixed
   No_bonuses: No Bonuses
+  Must_be_between_zero_and_one_hundred: 'must be between 0 and 100'
+  Must_be_a_number: must be a number
 
   # Reports
   Reports: Reports
@@ -340,7 +342,7 @@ en:
         two: 2nd
         three: 3rd
       bonus:
-        name: *Last_name
+        name: Name
         quantity: Quantity
         bonus_type: *Type
         comment: Comment

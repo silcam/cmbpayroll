@@ -8,31 +8,46 @@ class Bonus < ApplicationRecord
   validate :appropriate_quantities_per_type
 
   def appropriate_quantities_per_type
-    if (quantity.nil? || !quantity.is_a?(Numeric))
-      errors.add(:quantity, "must be a number")
+    if (quantity.nil? || !quantity.is_a?(Numeric) ||
+        !ext_quantity.is_a?(Numeric))
+      errors.add(:quantity, I18n.t(:Must_be_a_number))
     elsif (percentage?)
-      if (quantity > 100.0 || quantity <= 0.0)
-        errors.add(:quantity, "invalid percentage quantity")
+      if (quantity <= 0.0 || quantity > 1.0)
+        errors.add(:quantity, I18n.t(:Must_be_between_zero_and_one_hundred))
       end
     elsif (fixed?)
       if (quantity <= 0 || quantity % 1 != 0)
-        errors.add(:quantity, "invalid fixed quantity")
+        errors.add(:quantity, I18n.t(:Must_be_whole_number))
       end
     end
   end
 
   enum bonus_type: [ :percentage, :fixed ]
 
-  # TODO: still probably not perfect.
-  def display_quantity
+  def ext_quantity
     if (bonus_type == "percentage")
-       return number_to_percentage(quantity, precision: 4)
+      quantity * 100.0
     else
-       return number_to_currency(quantity, locale: :cm)
+      quantity.to_i
     end
   end
 
-  #
+  def ext_quantity=(qty)
+    if (bonus_type == "percentage")
+      self.quantity = qty.to_f / 100.0
+    else
+      self.quantity = qty.to_i
+    end
+  end
+
+  def display_quantity
+    if (bonus_type == "percentage")
+       number_to_percentage(quantity * 100, precision: 5, strip_insignificant_zeros: true)
+    else
+       number_to_currency(quantity, locale: :cm)
+    end
+  end
+
   # Should receive a hash of the form
   #     { "222" => 1 }
   # Where checked bonuses are in the hash

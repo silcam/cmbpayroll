@@ -81,7 +81,7 @@ fr:
   Employee: Employé
   New_employee: Nouvel employé
   Employee_information_for: Details de l'employee 
-  Name: *Last_name
+  Name: Nom
   Department: &Department Département
   Status: Statut
   Title: &Title Titre
@@ -224,6 +224,8 @@ fr:
   percentage: Pourcentage
   fixed: Fixé
   No_bonuses: Aucun Primes
+  Must_be_between_zero_and_one_hundred: 'doit être entre 0 et 100'
+  Must_be_a_number: doit être un numéro
 
   # Reports
   Reports: Rapports
@@ -344,7 +346,7 @@ fr:
         two: 2eme
         three: 3eme
       bonus:
-        name: *Last_name
+        name: Nom
         quantity: Somme
         bonus_type: *Type
         comment: Remarque

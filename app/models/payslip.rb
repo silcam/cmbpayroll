@@ -121,11 +121,18 @@ class Payslip < ApplicationRecord
 
   def daily_earnings
     days_worked = WorkHour.days_worked(employee, period)
+
+    self[:days] = days_worked
+
     days_worked * employee.daily_rate
+
   end
 
   def hourly_earnings
     hours_worked = WorkHour.hours_worked(employee, period)
+
+    self[:hours] = hours_worked
+
     hours_worked * employee.hourly_rate
   end
 
@@ -142,6 +149,13 @@ class Payslip < ApplicationRecord
     ot_earnings = ot * employee.otrate
     ot2_earnings = ot2 * employee.ot2rate
     ot3_earnings = ot3 * employee.ot3rate
+
+    self[:overtime_hours] = ot
+    self[:overtime2_hours] = ot2
+    self[:overtime3_hours] = ot3
+    self[:overtime_rate] = employee.otrate
+    self[:overtime2_rate] = employee.ot2rate
+    self[:overtime3_rate] = employee.ot3rate
 
     ot_earnings + ot2_earnings + ot3_earnings
   end
@@ -163,9 +177,6 @@ class Payslip < ApplicationRecord
   end
 
   def process_wages()
-    self[:wage] = employee.wage
-    self[:basewage] = employee.find_base_wage
-    self[:transportation] = employee.transportation
     self[:basepay] = base_pay()
     self[:bonusbase] = c_bonusbase()
     self[:caissebase] = c_caissebase()
@@ -198,6 +209,15 @@ class Payslip < ApplicationRecord
 
   def bonus_total
     earnings.where(is_bonus: true).sum(:amount)
+  end
+
+  def store_employee_attributes
+    self[:wage] = employee.wage
+    self[:basewage] = employee.find_base_wage
+    self[:transportation] = employee.transportation
+    self[:category] = Employee.categories[employee.category]
+    self[:echelon] = Employee.echelons[employee.echelon]
+    self[:wagescale] = Employee.wage_scales[employee.wage_scale]
   end
 
   private
@@ -312,6 +332,7 @@ class Payslip < ApplicationRecord
 
   def self.process_earnings_and_taxes(payslip, employee, period)
     self.process_hours(payslip, employee, period)
+    payslip.store_employee_attributes
     payslip.process_wages
     payslip.process_taxes
     payslip.process_vacation_pay
@@ -407,4 +428,5 @@ class Payslip < ApplicationRecord
 
     payslip.loan_balance = Loan.total_balance(employee)
   end
+
 end

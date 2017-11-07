@@ -862,6 +862,9 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update(employee, hours, {})
     payslip = Payslip.process(employee, jan18)
 
+    assert_equal(6, payslip.days)
+    assert_nil(payslip.hours)
+
     assert_equal(6, payslip.days_worked(), "worked 6 days")
     assert_equal(48, payslip.hours_worked(), "worked 48 hours")
     assert(employee.paid_monthly?, "employee is paid monthly")
@@ -893,6 +896,10 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert_equal(23, payslip.days_worked())
     assert_equal(184, payslip.hours_worked())
+
+    assert_equal(184, payslip.hours)
+    assert_nil(payslip.days)
+
     assert(payslip.worked_full_month?)
     refute(employee.paid_monthly?)
 
@@ -943,7 +950,9 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update(employee, hours, {})
     payslip = Payslip.process(employee, jan18)
 
+    assert_equal(48, payslip.hours)
     assert_equal(48, payslip.hours_worked(), "worked 48 hours")
+
     refute(employee.paid_monthly?, "employee is paid hourly")
     refute(payslip.worked_full_month?, "worked partial month in jan18")
 
@@ -978,6 +987,13 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert(employee.paid_monthly?, "employee is paid monthly")
     assert(payslip.worked_full_month?, "worked full month in jan18")
+
+    assert_equal(2, payslip.overtime_hours)
+    assert_equal(0, payslip.overtime2_hours)
+    assert_equal(0, payslip.overtime3_hours)
+    assert_equal(590, payslip.overtime_rate)
+    assert_equal(639, payslip.overtime2_rate)
+    assert_equal(688, payslip.overtime3_rate)
 
     # compute bonusbase
     assert_equal(85300, employee.wage, "wage is expected")
@@ -1017,6 +1033,17 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert(employee.paid_monthly?, "employee is paid monthly")
     assert(payslip.worked_full_month?, "worked full month in jan18")
+
+    assert_equal(8, payslip.overtime_hours)
+    assert_equal(1, payslip.overtime2_hours)
+    assert_equal(0, payslip.overtime3_hours)
+
+    assert_equal(590, payslip.overtime_rate)
+    assert_equal(639, payslip.overtime2_rate)
+    assert_equal(688, payslip.overtime3_rate)
+
+    assert_nil(payslip.days)
+    assert_nil(payslip.hours)
 
     # compute bonusbase
     assert_equal(85300, employee.wage, "wage is expected")
@@ -1059,6 +1086,17 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert(employee.paid_monthly?, "employee is paid monthly")
     assert(payslip.worked_full_month?, "worked full month in jan18")
+
+    assert_nil(payslip.days)
+    assert_nil(payslip.hours)
+
+    assert_equal(8, payslip.overtime_hours)
+    assert_equal(8, payslip.overtime2_hours)
+    assert_equal(3, payslip.overtime3_hours)
+
+    assert_equal(590, payslip.overtime_rate)
+    assert_equal(639, payslip.overtime2_rate)
+    assert_equal(688, payslip.overtime3_rate)
 
     # compute bonusbase
     assert_equal(85300, employee.wage, "wage is expected")
@@ -1211,6 +1249,11 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(new_exp_taxable, payslip.taxable)
 
     assert_equal(employee.transportation, payslip.transportation)
+
+    assert_equal(Employee.categories[employee.category], payslip.category)
+    assert_equal(Employee.echelons[employee.echelon], payslip.echelon)
+    assert_equal(Employee.wage_scales[employee.wage_scale], payslip.wagescale)
+
     #assert_equal(employee.amical, payslip.amical) (?)
     #assert_equal(employee.union_dues, payslip.union_dues) (?)
 

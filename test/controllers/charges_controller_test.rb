@@ -88,13 +88,6 @@ class ChargesControllerTest < ActionDispatch::IntegrationTest
     assert_admin_permission(charge_url(luke_charge), "delete") # delete charge
   end
 
-  test "Admin: can see add charge link on index" do
-    login_admin(:MaceWindu)
-    get employees_url()
-
-    assert_select "a.add-charge-link"
-  end
-
   test "Admin: can see add charge link on employee#show" do
     login_admin(:MaceWindu)
     get employee_url(employees(:Obiwan))

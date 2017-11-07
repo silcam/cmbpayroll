@@ -92,12 +92,12 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
   # should see direct reports
   test "SUPERVISOR: GET employee#index" do
     login_supervisor(:Quigon)
-    get employees_url
+    get employees_url(view_all: true)
 
     assert_response :success
     assert_select "tbody#employees-data tr td a" do |element|
-      assert_equal("Obiwan Kenobi", element.children.first.content, "should only be able to see report")
-      assert_equal(1, element.children.size, "should only be able to see report")
+      assert_equal("Obiwan Kenobi", element.children.last.content, "should only be able to see report")
+      assert_equal(2, element.children.size, "should only be able to see report")
     end
 
     assert_select "#new-employee-btn", false
@@ -192,13 +192,12 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
   # should see all
   test "ADMIN: GET employee#index" do
     login_admin(:MaceWindu)
-    get employees_url
+    get employees_url(view_all: true)
 
     assert_response :success
     assert_select "tbody#employees-data tr td a" do |element|
-      # time 2 because 2 links per record.
       no_employees = Employee.all.size
-      assert_equal(no_employees * 2, element.children.size, "should only be able to see report")
+      assert_equal(no_employees, element.children.size, "should only be able to see report")
     end
 
     assert_select "#new-employee-btn"

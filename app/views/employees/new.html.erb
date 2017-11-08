@@ -1,11 +1,18 @@
-<% provide(:title, "Create a New Employee") %>
+<% provide(:title, t(:New_employee)) %>
 
-<%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary' %>
+<p>
+  <%= link_to "<<#{t(:Employees)}", employees_path %>
+</p>
 
-<br />
-<br />
-<br />
+<%= render 'shared/error_messages', errors: @employee.errors %>
 
-<%= render 'employee_form' %>
+<%= form_for @employee, url: employees_path, method: :post, html: {class: 'auto-width'} do |form| %>
+  <%= hidden_field_tag :page, @page %>
 
+  <%= render "#{@page}_form", form: form %>
 
+  <% btn_text = (@page == :misc) ? t(:Finish) : t(:Next) %>
+  <div class="form-group">
+    <%= form.submit btn_text, class: 'btn btn-primary' %>
+  </div>
+<% end %>

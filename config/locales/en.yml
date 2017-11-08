@@ -23,6 +23,8 @@ en:
   Enter: Enter
   No_change: No Change
   Edit: Edit
+  Next: Next
+  Finish: Finish
   Save: Save
   Delete: &Delete Delete
   Display: Display
@@ -70,6 +72,8 @@ en:
   End_date: End Date
   Hours_per_day: &Hours_per_day Hours per day
   Days_per_week: Days per week
+  hourly: Hourly
+  monthly: Monthly
 
   # People
   First_name: &First_name First Name
@@ -109,6 +113,11 @@ en:
   leave: Leave
   terminated_to_year_end: Terminated to year end
   inactive: Inactive
+  First_day: First day of work
+  Personal_info: Personal Info
+  Basic_employee_info: Basic Employee Info
+  Wage_info: Wage Info
+  Other_info: Other Info
 
   # Supervisors
   Supervisors: Supervisors

@@ -1,0 +1,43 @@
+<h2>
+  <%= @employee.full_name %>
+  <small><%= t(:Wage_info) %></small>
+</h2>
+
+    <%= hidden_field_tag :id, @employee.id %>
+
+    <div class="form-group">
+      <%= form.label :category %>
+      <%= form.select :category,
+                      Employee.categories.keys.collect{ |k| [t(k), k] },
+                      {},
+                      class: 'form-control' %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :echelon %>
+      <%= form.select :echelon,
+                      Employee.echelons.keys.collect{ |k| [t(k), k]},
+                      {},
+                      class: 'form-control' %>
+    </div>
+    
+    <div class="form-group" style="display: none;">
+      <%= form.label :wage %>
+      <%= form.text_field :wage, class: 'form-control' %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :wage_scale %>
+      <%= form.select :wage_scale,
+                      Employee.wage_scales.keys.collect{ |k| [t(k), k] },
+                      {},
+                      class: 'form-control' %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :wage_period %>
+      <%= form.select :wage_period,
+                      Employee.wage_periods.keys.collect{ |k| [t(k), k]},
+                      {},
+                      class: 'form-control' %>
+    </div>

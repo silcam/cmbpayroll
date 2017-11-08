@@ -23,6 +23,8 @@ fr:
   Enter: Saisir
   No_change: Aucun changement
   Edit: Éditer
+  Next: Prochain
+  Finish: Compléter
   Save: Enregistrer
   Delete: &Delete Supprimer
   Display: Montrer
@@ -70,6 +72,8 @@ fr:
   End_date: Date de fin
   Hours_per_day: &Hours_per_day Heures par jour
   Days_per_week: Jours par semaine
+  hourly: Taux Horaire
+  monthly: Mensuel
 
   # People
   First_name: &First_name Prénom
@@ -113,6 +117,11 @@ fr:
   terminated_to_year_end_f: Terminée jusqu'à la fin de l'année
   inactive_m: Inactif
   inactive_f: Inactive
+  First_day: Premier jour de travail
+  Personal_info: Infos personelles
+  Basic_employee_info: Infos d'employé
+  Wage_info: Infos de paie
+  Other_info: Autres infos
 
   # Supervisors
   Supervisors: Superviseurs

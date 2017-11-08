@@ -1,0 +1,79 @@
+<h2>
+  <%= @employee.full_name %>
+  <small><%= t(:Basic_employee_info) %></small>
+</h2>
+
+    <div class="form-group">
+      <%= form.label :title %>
+      <%= form.text_field :title, class: 'form-control' %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :department %>
+      <%= form.collection_select(:department_id, Department.all, :id, :name, {prompt: true}, class: 'form-control') %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :supervisor_id %>
+      <%= form.select :supervisor_id,
+                   options_for_select_plus(Supervisor.all,
+                                           :id,
+                                           :full_name_rev,
+                                           @employee.supervisor.try(:id),
+                                           [t(:Add_new_supervisor)]),
+                   {},
+                   class: 'form-control' %>
+    </div>
+
+    <div id="new-sup-form" class="tabbed" style="display: none;">
+      <%= form.fields_for :supervisor do |sup_form| %>
+          <%= render 'supervisors/form', form: sup_form %>
+      <% end %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :employment_status %>
+      <%= form.select :employment_status,
+                      Employee.employment_statuses.keys.collect{ |k| [t(k), k] },
+                      {},
+                      class: 'form-control' %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :first_day, t(:First_day) %><br />
+      <%= date_select( :employee, :first_day, {prompt: true, start_year: 1970}, class: 'form-control form-control-inline' ) %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :contract_start %><br />
+      <%= date_select( :employee, :contract_start, {prompt: true, start_year: 1970}, class: 'form-control form-control-inline' ) %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :contract_end %><br />
+      <%= date_select( :employee, :contract_end, {prompt: true, start_year: 1970}, class: 'form-control form-control-inline' ) %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :cnps, { class: "text-uppercase" } %>
+      <%= form.text_field :cnps, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <%= form.label :dipe, { class: "text-uppercase" } %>
+      <%= form.text_field :dipe, class: 'form-control' %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :days_week, t(:Days_per_week) %>
+      <% @employee.days_week = :five if @employee.days_week.nil? %>
+      <%= form.select :days_week,
+                      Employee.days_weeks.keys.collect{ |k| [t(k), k] },
+                      {},
+                      class: 'form-control' %>
+    </div>
+    
+    <div class="form-group">
+      <%= form.label :hours_day %>
+      <% @employee.hours_day = 8 if @employee.hours_day.nil? %>
+      <%= form.text_field :hours_day, size: 2, class: 'form-control' %>
+    </div>

@@ -8,14 +8,19 @@
 <% if (@payslip && !@payslip.errors.empty?) %>
 <h4>Errors Processing Payslip:</h4>
   <ul>
-  <% @payslip.errors.each do |err| %>
-    <li><%= err %></li>
+  <% @payslip.errors.messages.each do |err| %>
+    <li class="bg-danger"><%= err %></li>
   <% end %>
+
   <% @payslip.deductions.each do |err| %>
-    <li><%= err.errors.inspect %></li>
+    <% if err.errors.size > 0 %>
+    <li class="bg-danger"><%= err.errors.inspect %></li>
+    <% end %>
   <% end %>
   <% @payslip.earnings.each do |err| %>
-    <li><%= err.errors.inspect %></li>
+    <% if err.errors.size > 0 %>
+    <li class="bg-danger"><%= err.errors.inspect %></li>
+    <% end %>
   <% end %>
   </ul>
 <% end %>

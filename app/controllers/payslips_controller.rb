@@ -6,6 +6,9 @@ class PayslipsController < ApplicationController
     if (@employee)
       authorize! :read, @employee
 
+      @employee_payslips = @employee.payslips.
+          order(period_year: :desc, period_month: :desc)
+
       # show history for single employee
       render "employee_history"
     else

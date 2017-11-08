@@ -8,6 +8,11 @@ class Tax < ApplicationRecord
 
   def self.compute_taxes(employee, taxable, cnpswage)
     tax = Tax.find_by(grosspay: roundpay(taxable))
+
+    if (tax.nil?)
+      raise ArgumentError.new("Unable to Find Tax Information for employee: #{employee.full_name} with wage: #{taxable}")
+    end
+
     tax.taxable = taxable
     tax.cnpswage = cnpswage
     tax.employee = employee

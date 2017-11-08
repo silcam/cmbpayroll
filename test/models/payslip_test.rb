@@ -1368,6 +1368,32 @@ class PayslipTest < ActiveSupport::TestCase
     end
   end
 
+  test "There is an error when tax information cannot be found" do
+    # config employee
+    employee = return_valid_employee()
+    employee.uniondues = false;
+    employee.amical = 0;
+
+    employee.category = "nine"
+    employee.echelon = "g"
+    employee.wage = 5112530 # 5 million + (this is not in the tax table)
+
+    employee.contract_start = "2017-01-01" # no senior bonus
+
+    # work the whole month (work hour)
+    period = Period.new(2018,1)
+    generate_work_hours employee, period
+
+    payslip = nil
+    assert_nothing_raised do
+      # this should work without Exception
+      payslip = Payslip.process(employee, period)
+    end
+
+    assert_equal(1, payslip.errors[:base].size, "should have an error")
+    assert_equal(1, payslip.errors.size, "should have an error")
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

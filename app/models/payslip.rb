@@ -11,7 +11,6 @@ class Payslip < ApplicationRecord
             :payslip_date,
                presence: {message: I18n.t(:Not_blank)}
 
-
   scope :for_period, ->(period) {
     where(period_year: period.year, period_month: period.month)
   }
@@ -311,7 +310,6 @@ class Payslip < ApplicationRecord
     # TODO: more validation
     # TODO: Are there rules that the period must be
     #         the current period? (or the previous period)?
-
     payslip = Payslip.find_by(
                   employee_id: employee.id,
                   period_year: period.year,
@@ -323,24 +321,30 @@ class Payslip < ApplicationRecord
         period_month: period.month, payslip_date: Date.today)
     end
 
-    if (with_advance)
-      self.process_advance(employee, period)
+    begin
+
+      if (with_advance)
+        self.process_advance(employee, period)
+      end
+
+      self.process_vacation(payslip, employee, period)
+
+      payslip.earnings.delete_all
+      self.process_earnings_and_taxes(payslip, employee, period)
+
+      payslip.deductions.delete_all
+      self.process_charges(payslip, employee)
+      self.process_employee_deductions(payslip, employee)
+      self.process_loans(payslip, employee, period)
+
+      payslip.compute_net_pay
+
+      payslip.last_processed = DateTime.now
+      payslip.save
+
+    rescue Exception => e
+      payslip.errors[:base] << e.message
     end
-
-    self.process_vacation(payslip, employee, period)
-
-    payslip.earnings.delete_all
-    self.process_earnings_and_taxes(payslip, employee, period)
-
-    payslip.deductions.delete_all
-    self.process_charges(payslip, employee)
-    self.process_employee_deductions(payslip, employee)
-    self.process_loans(payslip, employee, period)
-
-    payslip.compute_net_pay
-
-    payslip.last_processed = DateTime.now
-    payslip.save
 
     return payslip
   end

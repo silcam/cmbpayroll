@@ -21,14 +21,18 @@
     Processed Payslip ID #<%= slip.id %> for <%= slip.employee.full_name %> (errors? <%= !slip.errors.empty? %>)
     <% if (!slip.errors.empty?) %>
     <ul>
-      <% slip.errors.each do |err| %>
-        <li><%= err %></li>
+      <% slip.errors.messages.each do |err| %>
+        <li class="bg-danger"><b><%= err %></b></li>
       <% end %>
-      <% slip.deductions.each do |err| %>
-        <li><%= err.errors.inspect %></li>
+      <% slip.deductions.each do |ded| %>
+        <% if ded.errors.messages.size > 0 %>
+          <li><%= ded.errors.inspect %></li>
+        <% end %>
       <% end %>
-      <% slip.earnings.each do |err| %>
-        <li><%= err.errors.inspect %></li>
+      <% slip.earnings.each do |ern| %>
+        <% if ern.errors.messages.size > 0 %>
+          <li><%= ern.errors.inspect %></li>
+        <% end %>
       <% end %>
     </ul>
     <% end %>

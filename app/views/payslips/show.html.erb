@@ -1,5 +1,13 @@
 <% employee = Employee.find(@payslip.employee.id) %>
 
+<% if @payslip.errors.size > 0 %>
+  <p class="bg-danger">
+    <% @payslip.errors.messages.each do |err| %>
+      <li class="bg-danger"><b><%= err %></b></li>
+    <% end %>
+  </p>
+<% end %>
+
 <div class="row">
 
   <div class="col-md-6">

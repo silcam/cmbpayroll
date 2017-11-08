@@ -27,7 +27,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 
 <h3>Wages</h3>
 
-<table class="table">
+<table class="table table-striped payslip">
   <colgroup>
     <col class="col-xs-6"></col>
     <col class="col-xs-6"></col>
@@ -52,7 +52,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 
 <h3>Earnings:</h3>
 
-<table class="table">
+<table class="table table-striped payslip">
   <colgroup>
     <col class="col-xs-6"></col>
     <col class="col-xs-6"></col>
@@ -148,17 +148,18 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 
 <h4>Charges</h4>
 
-<table class="table">
+<table class="table table-striped payslip">
   <colgroup>
     <col class="col-xs-6"></col>
     <col class="col-xs-6"></col>
   </colgroup>
-<tr style="width:25%">
 <% @payslip.deductions.all.each do |record| %>
-  <td class="text-uppercase"><%= t(record.note, default: record.note) %> (<%= record.date.strftime("%b-%d") %>):</td>
-  <td><%= number_to_currency(record.amount, locale: :cm) %></td>
+  <tr>
+    <td class="text-uppercase"><%= t(record.note, default: record.note) %> (<%= record.date.strftime("%b-%d") %>):</td>
+    <td><%= number_to_currency(record.amount, locale: :cm) %></td>
+  </tr>
 <% end %>
-</tr><tr>
+<tr>
   <td><b>Total Deductions:</b></td>
   <td><b><%= number_to_currency(@payslip.total_deductions(), locale: :cm) %></b></td>
 </tr>
@@ -167,7 +168,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 <h4>Taxes:</h4>
 
 <p>
-<table class="table">
+<table class="table table-striped payslip">
   <colgroup>
     <col class="col-xs-6"></col>
     <col class="col-xs-6"></col>
@@ -206,7 +207,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 
 <h3>Loans:</h3>
 
-<table class="table">
+<table class="table table-striped payslip">
   <colgroup>
     <col class="col-xs-6"></col>
     <col class="col-xs-6"></col>
@@ -220,7 +221,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 
 <h3>Vacation:</h3>
 
-<table class="table">
+<table class="table table-striped payslip">
   <colgroup>
     <col class="col-xs-6"></col>
     <col class="col-xs-6"></col>

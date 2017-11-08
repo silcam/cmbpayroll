@@ -131,11 +131,15 @@ table.no-border{
 }
 
 
-//Payroll
+//Payslips
 
 .thicker {
   background-color: #000000;
   margin-top: 4px;
   margin-bottom: 4px;
   height: 1px
+}
+
+table.payslip tr td:nth-child(2) {
+  text-align: right
 }

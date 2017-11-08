@@ -1254,6 +1254,11 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert_equal(employee.transportation, payslip.transportation)
 
+    assert_equal(payslip.seniority_bonus, payslip.seniority_bonus_amount)
+    assert_equal(employee.years_of_service(payslip.period), payslip.years_of_service)
+    assert_equal(SystemVariable.value(:seniority_benefit), payslip.seniority_benefit)
+
+
     assert_equal(Employee.categories[employee.category], payslip.category)
     assert_equal(Employee.echelons[employee.echelon], payslip.echelon)
     assert_equal(Employee.wage_scales[employee.wage_scale], payslip.wagescale)

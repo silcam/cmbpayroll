@@ -8,305 +8,241 @@
   </p>
 <% end %>
 
-<div class="row">
+<h1 class="text-uppercase"><%= t(:Payslip) %> <%= @payslip.id %></h1>
 
-  <div class="col-md-6">
-    <!-- left side -->
-
-    <div class="row">
-      <div class="col-sm-12">
-        <h1 class="text-uppercase"><%= t(:Payslip) %></h1>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-12">
-        <hr class="thicker" />
-        <hr class="thicker" />
-        <br />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-6">
-        Raison sociale
-      </div>
-      <div class="col-sm-6">
-        SIL<br />
-        BP 1299, Yaoundé
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-6">
-        No. d'immatriculation
-      </div>
-      <div class="col-sm-6">
-        XXXXXXXXXXXXX
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-6">
-        Nom du travailleur
-      </div>
-      <div class="col-sm-6">
-        <%= @payslip.employee.full_name %>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-6">
-        Matricule No.
-      </div>
-      <div class="col-sm-6">
-        XXXXXXXXXXXXX
-      </div>
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-6">
-        Catégorie professionnelle
-      </div>
-      <div class="col-sm-3">
-        CAT: <%= @payslip.employee.category %>
-      </div>
-      <div class="col-sm-3">
-        ECH: <%= @payslip.employee.echelon %>
-      </div>
-
-    </div> <!-- /row -->
-
-    <div class="row">
-
-      <div class="col-sm-6">
-        Taux de rémunération (mensuel)
-      </div>
-      <div class="col-sm-3">
-        <%= number_to_currency(@payslip.employee.wage, locale: :cm) %>
-      </div>
-      <div class="col-sm-3">
-        <%= number_to_currency(@payslip.employee.wage, locale: :cm) %>
-      </div>
-
-    </div> <!-- /row -->
-
-    <div class="row">
-
-      <div class="col-sm-6">
-        Taux de rémunération (mensuel)
-      </div>
-      <div class="col-sm-3">
-        <%= number_to_currency(@payslip.employee.wage, locale: :cm) %>
-      </div>
-      <div class="col-sm-3">
-        <%= number_to_currency(@payslip.employee.wage, locale: :cm) %>
-      </div>
-
-    </div> <!-- /row -->
-
-  </div> <!-- /left_side -->
-  <div class="col-md-6">
-    <!-- right side -->
-
-    <div class="row">
-
-      <div class="col-sm-12">
-        <h3 class="text-center">DEDUCTIONS DU SALAIRE</h3>
-        <p class="text-center"><%= @payslip.payslip_date %></p>
-      </div>
-
-    </div>
-    <div class="row">
-
-      <div class="col-sm-6">
-        Nom
-      </div>
-      <div class="col-sm-6">
-        <%= @payslip.employee.full_name %>
-      </div>
-
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-6">
-        Salaire net (arrondi)
-      </div>
-      <div class="col-sm-6">
-        94245
-      </div>
-
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-6">
-        Paiement pret:
-      </div>
-      <div class="col-sm-6">
-        XXXXXXX
-      </div>
-
-    </div>
-
-
-<% @payslip.deductions.all.each do |record| %>
-
-    <div class="row">
-
-      <div class="col-sm-6">
-        <span class="text-uppercase"><%= t(record.note, default: record.note) %> (<%= record.date.strftime("%b-%d") %>)</span>
-      </div>
-      <div class="col-sm-2 text-right">
-        <%= number_to_currency(record.amount, locale: :cm) %>
-      </div>
-      <div class="col-sm-4"></div>
-
-    </div>
-
-<% end %>
-
-    <div class="row">
-
-      <div class="col-sm-6">
-        MONTANT DES DEDUCTIONS
-      </div>
-      <div class="col-sm-2 text-right" style="border-top:1px solid black">
-        <%= number_to_currency(@payslip.total_deductions(), locale: :cm) %>
-      </div>
-      <div class="col-sm-2 text-center">
-        &ndash; &ndash;
-      </div>
-      <div class="col-sm-2 text-right" style="border-top:1px solid black">
-        0
-      </div>
-
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-10">
-        CFA (payés)
-      </div>
-      <div class="col-sm-2 text-right" style="border-bottom:1px solid black">
-        94235
-      </div>
-
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-1">
-      </div>
-      <div class="col-sm-11">
-        <h3>CONGE ACCUMULE</h3>
-      </div>
-
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-4">
-      </div>
-      <div class="col-sm-1" style="border-bottom:1px solid black">
-        Jours
-      </div>
-
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-4">
-        Ce mois-ci
-      </div>
-      <div class="col-sm-1">
-        <%= number_to_human(@payslip.vacation_earned, precision: 2) %>
-      </div>
-
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-4">
-        Jusqu'aujourd'hui
-      </div>
-      <div class="col-sm-1">
-        <%= number_to_human(@payslip.vacation_balance, precision: 2) %>
-      </div>
-
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-4">
-        Dernier congé
-      </div>
-      <div class="col-sm-1">
-        <%= std_datestring(@payslip.last_vacation_start) %>
-        -
-        <%= std_datestring(@payslip.last_vacation_end) %>
-      </div>
-
-    </div>
-
-    <div class="row">
-      <div class="col-sm-12">&nbsp;</div>
-    </div>
-
-    <div class="row">
-
-      <div class="col-sm-7 text-uppercase" style="border-bottom:1px solid black">
-        <%= @payslip.employee.full_name %>
-      </div>
-      <div class="col-sm-5">
-        Divers:
-      </div>
-
-    </div>
-
-  </div> <!-- /right_side -->
-</div>
-
-<br /><br />
+<hr class="thicker" />
+<hr class="thicker" />
 
 <p>
-Last Processed Date: <%= @payslip.last_processed %><br />
+Payslip for period: <%= @payslip.period %><br />
+Payslip Date: <%= @payslip.payslip_date %><br />
 </p>
 
-<h4>Earnings:</h4>
+<p>
+<b>Raison sociale:</b> SIL BP 1299, Yaoundé<br />
+<b>No. d'immatriculation:</b> XXXXXXXXXXXXX<br />
+<b>Nom du travailleur:</b> <%= @payslip.employee.full_name %><br />
+<b>Matricule No.:</b> XXXXXXXXXXXXX<br />
+</p>
 
-<ul>
-<% @payslip.earnings.all.each do |record| %>
-  <li>
-    <% if (!record.percentage.nil?) %>
-      <%= record.percentage %>% of <%= @payslip.employee.wage %> FCFA<br />
-    <% elsif (!record.amount.nil?) %>
-      <%= record.amount %> FCFA<br />
+<h3>Wages</h3>
+
+<table class="table">
+  <colgroup>
+    <col class="col-xs-6"></col>
+    <col class="col-xs-6"></col>
+  </colgroup>
+<tr>
+  <td>Category:</td>
+  <td><%= @payslip.category %> (<%= @payslip.employee.category %>)</td>
+</tr><tr>
+  <td>Echelon:</td>
+  <td><%= @payslip.echelon %> (<%= @payslip.employee.echelon %>)</td>
+</tr><tr>
+  <td>Wage Scale:</td>
+  <td><%= @payslip.wagescale %> (<%= @payslip.employee.wage_scale %>)</td>
+</tr><tr>
+  <td>Wage:</td>
+  <td><%= number_to_currency(@payslip.wage, locale: :cm) %></td>
+</tr><tr>
+  <td>Base Wage:</td>
+  <td><%= number_to_currency(@payslip.basewage, locale: :cm) %></td>
+</tr>
+</table>
+
+<h3>Earnings:</h3>
+
+<table class="table">
+  <colgroup>
+    <col class="col-xs-6"></col>
+    <col class="col-xs-6"></col>
+  </colgroup>
+<% if @payslip.days %>
+<tr>
+  <td>Days Worked:</b></td>
+  <td><%= @payslip.days %></td>
+</tr>
+<% end %>
+<% if @payslip.hours %>
+<tr>
+  <td>Hours Worked:</b></td>
+  <td><%= @payslip.hours %></td>
+</tr>
+<% end %>
+<% if !@payslip.days && !@payslip.hours %>
+<tr>
+  <td>Worked Full Month?:</b></td>
+  <td>Yes</td>
+</tr>
+<% end %>
+<tr>
+  <td>Overtime Hours Worked (&lt; 8 hours):</b></td>
+  <td><%= @payslip.overtime_hours %> hours @ <%= number_to_currency(@payslip.overtime_rate, locale: :cm) %></td>
+</tr>
+<tr>
+  <td>Overtime Hours Worked (8 - 16 hours):</b></td>
+  <td><%= @payslip.overtime2_hours %> hours @ <%= number_to_currency(@payslip.overtime2_rate, locale: :cm) %></td>
+</tr>
+<tr>
+  <td>Overtime Hours Worked (16+ hours):</b></td>
+  <td><%= @payslip.overtime3_hours %> hours @ <%= number_to_currency(@payslip.overtime3_rate, locale: :cm) %></td>
+</tr>
+<% @payslip.earnings.where(is_bonus: false).each do |record| %>
+  <tr>
+    <td>Hours Earnings</td>
+    <td><%= record.hours %> hours @ <%= record.rate %> CFA
+    <% if record.overtime? %>
+      (Overtime Hours)
     <% else %>
-      <%= record.hours %> hours @ <%= record.rate %> CFA (Overtime? <%= record.overtime? %>)<br />
+      (Normal Hours)
     <% end %>
-  </li>
+  </tr>
 <% end %>
-</ul>
+<tr>
+  <td><b>Monthly Earnings (Bonus Base):</b></td>
+  <td><b><%= number_to_currency(@payslip.bonusbase, locale: :cm) %></b></td>
+</tr>
+<tr>
+  <td>Seniority Bonus: (<%= @payslip.years_of_service %> years * <%= number_to_percentage(@payslip.seniority_benefit ? @payslip.seniority_benefit * 100 : 0) %>)</b></td>
+  <td>+ <%= number_to_currency(@payslip.seniority_bonus_amount, locale: :cm) %></td>
+</tr>
+<tr>
+  <td><b>Caisse Base</b></td>
+  <td><b>= <%= number_to_currency(@payslip.caissebase, locale: :cm) %></b></td>
+</tr>
+<% @payslip.earnings.where(is_bonus: true).each do |record| %>
+  <tr>
+    <% if (!record.percentage.nil?) %>
+      <td>Bonus (<%= record.description %> <%= number_to_percentage(record.percentage * 100) %>)</td>
+      <td><%= number_to_currency(record.amount, locale: :cm) %></td>
+    <% elsif (!record.amount.nil?) %>
+      <td>Bonus (<%= record.description %>): <%= record.amount %> FCFA</td>
+      <td><%= number_to_currency(record.amount, locale: :cm) %></td>
+    <% end %>
+  </tr>
+<% end %>
+</tr>
+<tr>
+  <td>Total Bonuses:</td>
+  <td>+ <%= number_to_currency(@payslip.bonuspay, locale: :cm) %></td>
+</tr>
+<tr>
+  <td><b>CNPS Wage:</b></td>
+  <td><b>= <%= number_to_currency(@payslip.cnpswage, locale: :cm) %></b></td>
+</tr>
+<tr>
+  <td>Transportation:</b></td>
+  <td>+ <%= number_to_currency(@payslip.transportation, locale: :cm) %></td>
+</tr>
+<tr>
+  <td><b>Taxable Wage:</b></td>
+  <td><b>= <%= number_to_currency(@payslip.taxable, locale: :cm) %></b></td>
+</tr>
+</table>
 
-<h4>Deductions:</h4>
+<p class="bg-info" style="padding:20px">
+<b>GROSS PAY: <%= number_to_currency(@payslip.gross_pay, locale: :cm) %></b>
+</p>
 
-<ul>
+<h3>Deductions</h3>
+
+<h4>Charges</h4>
+
+<table class="table">
+  <colgroup>
+    <col class="col-xs-6"></col>
+    <col class="col-xs-6"></col>
+  </colgroup>
+<tr style="width:25%">
 <% @payslip.deductions.all.each do |record| %>
-  <li><%= record.note %>, <%= record.amount %> FCFA on <%= record.date %></li>
+  <td class="text-uppercase"><%= t(record.note, default: record.note) %> (<%= record.date.strftime("%b-%d") %>):</td>
+  <td><%= number_to_currency(record.amount, locale: :cm) %></td>
 <% end %>
-</ul>
+</tr><tr>
+  <td><b>Total Deductions:</b></td>
+  <td><b><%= number_to_currency(@payslip.total_deductions(), locale: :cm) %></b></td>
+</tr>
+</table>
 
-<h4>Loans:</h4>
+<h4>Taxes:</h4>
 
+<p>
+<table class="table">
+  <colgroup>
+    <col class="col-xs-6"></col>
+    <col class="col-xs-6"></col>
+  </colgroup>
+<tr>
+<td>CRTV Tax:</td>
+<td><%= number_to_currency(@payslip.crtv, locale: :cm) %></td>
+</tr><tr>
+<td>CCF Tax:</td>
+<td><%= number_to_currency(@payslip.ccf, locale: :cm) %></td>
+</tr><tr>
+<td>Proportional Tax:</td>
+<td><%= number_to_currency(@payslip.proportional, locale: :cm) %></td>
+</tr><tr>
+<td>CNPS Tax:</td>
+<td><%= number_to_currency(@payslip.cnps, locale: :cm) %></td>
+</tr><tr>
+<td>CAC Tax:</td>
+<td><%= number_to_currency(@payslip.cac, locale: :cm) %></td>
+</tr><tr>
+<td>CAC #2 Tax:</td>
+<td><%= number_to_currency(@payslip.cac2, locale: :cm) %></td>
+</tr><tr>
+<td>Communal Tax:</td>
+<td><%= number_to_currency(@payslip.communal, locale: :cm) %></td>
+</tr><tr>
+<td><b>Total Taxes:<b></td>
+<td><b><%= number_to_currency(@payslip.total_tax, locale: :cm) %></b></td>
+</tr>
+</table>
+</p>
 
-Loan Balance: <%= @payslip.loan_balance %>
+<p class="bg-info" style="padding:20px">
+<b>NET PAY: <%= number_to_currency(@payslip.net_pay, locale: :cm) %></b>
+</p>
 
+<h3>Loans:</h3>
 
-<h4>Totals:</h4>
+<table class="table">
+  <colgroup>
+    <col class="col-xs-6"></col>
+    <col class="col-xs-6"></col>
+  </colgroup>
+<tr>
+  <td>Loan Balance:</td>
+  <td><%= number_to_currency(@payslip.loan_balance, locale: :cm) %></td>
+</tr>
+</table>
+</p>
 
-<p>TBD</p>
+<h3>Vacation:</h3>
+
+<table class="table">
+  <colgroup>
+    <col class="col-xs-6"></col>
+    <col class="col-xs-6"></col>
+  </colgroup>
+<tr>
+  <td>Ce mois-ci:</td>
+  <td><%= number_to_human(@payslip.vacation_earned, precision: 2) %> days</td>
+</tr><tr>
+  <td>Jusqu'aujourd'hui:</td>
+  <td><%= number_to_human(@payslip.vacation_balance, precision: 2) %> days</td>
+</tr><tr>
+  <td>Dernier congé:</td>
+<% if !@payslip.last_vacation_start %>
+  <td>None</td>
+<% else %>
+  <td><%= std_datestring(@payslip.last_vacation_start) %> - <%= std_datestring(@payslip.last_vacation_end) %></td>
+<% end %>
+</tr>
+</table>
+</p>
+
+<p><em>Last Processed Date: <%= @payslip.last_processed %></em></p>
+
 
 </p>

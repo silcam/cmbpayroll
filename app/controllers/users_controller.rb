@@ -36,7 +36,8 @@ class UsersController < ApplicationController
     end
 
     if @user.update user_params
-      follow_redirect users_path, {}, "Your changes were saved."
+      redirect = can?(:read, User) ? users_path : root_path
+      follow_redirect redirect, {}
     else
       render :edit
     end

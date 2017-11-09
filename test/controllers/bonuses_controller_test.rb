@@ -28,7 +28,7 @@ class BonusesControllerTest < ActionDispatch::IntegrationTest
   test "USER: check assign bonus link is missing for self" do
     login(:Luke, "user")
     get employee_url(employees(:Luke))
-    assert_select "a#assign-bonuses-link", false
+    assert_select "a[href=?]", list_possible_employee_bonuses_path(employees(:Luke)), false
   end
 
   test "USER: check unassign bonus button/display is missing" do
@@ -73,7 +73,7 @@ class BonusesControllerTest < ActionDispatch::IntegrationTest
   test "SUPERVISOR: check assign bonus link is missing for report" do
     login_supervisor(:Quigon)
     get employee_url(employees(:Obiwan))
-    assert_select "a#assign-bonuses-link", false
+    assert_select "a[href=?]", list_possible_employee_bonuses_path(employees(:Obiwan)), false
   end
 
   test "SUPERVISOR: check unassign bonus button/display is missing" do
@@ -119,7 +119,7 @@ class BonusesControllerTest < ActionDispatch::IntegrationTest
   test "Admin: check assign bonus link is missing for report" do
     login_admin(:MaceWindu)
     get employee_url(employees(:Han))
-    assert_select "a#assign-bonuses-link", "Assign"
+    assert_select "a[href=?]", list_possible_employee_bonuses_path(employees(:Han)), true
   end
 
   test "Admin: check unassign bonus button/display is missing" do

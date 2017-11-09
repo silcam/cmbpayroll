@@ -40,7 +40,9 @@
 
 <h3>
   <%= t :Personal %>
-  <%= link_to t(:Edit), edit_employee_path(@employee, page: :personal), class: 'btn btn-warning btn-sm' %>
+  <% if can? :update, @employee %>
+    <%= link_to t(:Edit), edit_employee_path(@employee, page: :personal), class: 'btn btn-warning btn-sm' %>
+  <% end %>
 </h3>
 <table class="table table-striped">
   <tbody>
@@ -61,7 +63,9 @@
 
 <h3>
   <%= t :Employee %>
-  <%= link_to t(:Edit), edit_employee_path(@employee, page: :basic_employee), class: 'btn btn-warning btn-sm' %>
+  <% if can? :update, @employee %>
+    <%= link_to t(:Edit), edit_employee_path(@employee, page: :basic_employee), class: 'btn btn-warning btn-sm' %>
+  <% end %>
 </h3>
 
 <table class="table table-striped">
@@ -103,8 +107,10 @@
 
 <h3>
   <%= t :Wage_info %>
-  <%= link_to t(:Correct), edit_employee_path(@employee, page: :wage), class: 'btn btn-warning btn-sm' %>
-  <%= link_to t(:New_raise), new_employee_raise_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% if can? :update, @employee %>
+    <%= link_to t(:Correct), edit_employee_path(@employee, page: :wage), class: 'btn btn-warning btn-sm' %>
+    <%= link_to t(:New_raise), new_employee_raise_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% end %>
 </h3>
 
 <table class="table table-striped">
@@ -134,7 +140,9 @@
 
 <h3>
   <%= t :Miscellaneous %>
-  <%= link_to t(:Edit), edit_employee_path(@employee, page: :misc), class: 'btn btn-warning btn-sm' %>
+  <% if can? :update, @employee %>
+    <%= link_to t(:Edit), edit_employee_path(@employee, page: :misc), class: 'btn btn-warning btn-sm' %>
+  <% end %>
 </h3>
 <table class="table table-striped">
   <tbody>
@@ -159,7 +167,9 @@
 
 <h3>
   <%= t :Children %>
-  <%= link_to t(:Add), new_employee_child_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% if can? :create, Child %>
+    <%= link_to t(:Add), new_employee_child_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% end %>
 </h3>
 
 <% if (@employee.children.empty?) %>
@@ -172,12 +182,18 @@
       <th><%= t(:Child_first_name) %></th>
       <th><%= t(:Child_birth_date) %></th>
       <th><%= t(:Child_student) %></th>
+      <% if can? :update, @employee.children.first %>
+        <th></th>
+      <% end %>
     </tr>
     <% @employee.children.each do |c| %>
       <tr>
         <td><%= c.first_name %> <%= c.last_name %></td>
         <td><%= l(c.birth_date, format: :short, default: '') %></td>
         <td><%= c.is_student %></td>
+        <% if can? :update, c %>
+          <td><%= link_to t(:Edit), edit_child_path(c) %></td>
+        <% end %>
       </tr>
     <% end %>
   </table>
@@ -185,7 +201,9 @@
 
 <h3>
   <%= t :Bonuses %>
-  <%= link_to t(:Add), list_possible_employee_bonuses_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% if can? :update, Bonus %>
+    <%= link_to t(:Add), list_possible_employee_bonuses_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% end %>
 </h3>
 
 <% if (@employee.bonuses.empty?) %>

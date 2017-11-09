@@ -28,7 +28,8 @@ class ChildrenControllerTest < ActionDispatch::IntegrationTest
     login(:Luke, "user")
     get employee_url(employees(:Luke))
 
-    assert_select "a#add-child-link", false
+    assert_select "a[href=?]", new_employee_child_path(employees(:Luke)), false
+    assert_select "a[href=?]", edit_child_path(children(:LukeJr)), false
   end
 
   test "USER: can't see links on child#index" do
@@ -60,18 +61,19 @@ class ChildrenControllerTest < ActionDispatch::IntegrationTest
 
   test "Supervisor: can't see add child links on employee#show" do
     login_supervisor(:Quigon)
+    get employee_url(employees(:Obiwan))
+
+    assert_select "a[href=?]", new_employee_child_path(employees(:Obiwan)), false
+    assert_select "a[href=?]", edit_child_path(children(:LilObi)), false
+  end
+
+  test "Supervisor: can't see links on child#index" do
+    login_supervisor(:Quigon)
     get employee_children_url(employees(:Obiwan))
 
     assert_select "a#add-child-link", false
     assert_select "a#edit-child-link", false
     assert_select "a#delete-child-link", false
-  end
-
-  test "Supervisor: can't see links on child#index" do
-    login_supervisor(:Quigon)
-    get employee_url(employees(:Obiwan))
-
-    assert_select "a#add-child-link", false
   end
 
   #### Admin ####
@@ -92,11 +94,12 @@ class ChildrenControllerTest < ActionDispatch::IntegrationTest
     assert_admin_permission(child_url(lilobi), "delete") # destroy
   end
 
-  test "Admin: can see add child links on employee#show" do
+  test "Admin: can see add/edit child links on employee#show" do
     login_admin(:MaceWindu)
     get employee_url(employees(:Han))
 
-    assert_select "a#add-child-link"
+    assert_select "a[href=?]", new_employee_child_path(employees(:Han)), true
+    assert_select "a[href=?]", edit_child_path(children(:Kylo)), true
   end
 
   test "Admin: can see add child links on child#index" do

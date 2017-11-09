@@ -41,8 +41,12 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
     get employee_url(employees(:Luke))
     assert_response :success
 
-    # add/dete buttons
-    assert_select "#edit-employee-btn", false
+    # add/delete buttons
+    assert_select "a[href=?]", edit_employee_path(employees(:Luke), page: :personal), false
+    assert_select "a[href=?]", edit_employee_path(employees(:Luke), page: :basic_employee), false
+    assert_select "a[href=?]", edit_employee_path(employees(:Luke), page: :wage), false
+    assert_select "a[href=?]", new_employee_raise_path(employees(:Luke)), false
+    assert_select "a[href=?]", edit_employee_path(employees(:Luke), page: :misc), false
     assert_select "#delete-employee-btn", false
 
     # various administration links
@@ -74,9 +78,8 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
     login_supervisor(:Quigon)
     get employee_url(employees(:Quigon))
 
-    assert_permissions_error
-    #assert_response :success
-    #assert_select "h2", "Employee Information for #{employees(:Quigon).full_name}"
+    assert_response :success
+    assert_select "h2", "Employee Information for #{employees(:Quigon).full_name}"
   end
 
   test "SUPERVISOR: GET employee#show for direct report" do
@@ -96,8 +99,8 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "tbody#employees-data tr td a" do |element|
-      assert_equal("Obiwan Kenobi", element.children.last.content, "should only be able to see report")
-      assert_equal(2, element.children.size, "should only be able to see report")
+      assert_equal("Obiwan Kenobi", element.children.last.content, "should be able to see report")
+      assert_equal(2, element.children.size, "should be able to see report and self")
     end
 
     assert_select "#new-employee-btn", false
@@ -125,11 +128,10 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
     login_supervisor(:Quigon)
 
     verify_is_supervisor(:Quigon, :Obiwan)
-    get edit_employee_url(employees(:Obiwan))
+    get edit_employee_url(employees(:Obiwan), page: :personal)
 
     assert_response :success
     assert_select "input#employee_first_name[value=#{employees(:Obiwan).first_name}]"
-    assert_select "#new-employee-btn", false, "new employee button on edit page should not appear"
   end
 
 
@@ -144,14 +146,18 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
   end
 
 
-  test "SUPERVISOR: edit and delete employee buttons are missing on employee#show REPORT" do
+  test "SUPERVISOR: edit and delete employee buttons on employee#show REPORT" do
     login_supervisor(:Quigon)
     get employee_url(employees(:Obiwan))
 
     assert_response :success
 
     # add/dete buttons
-    assert_select "#edit-employee-btn"
+    assert_select "a[href=?]", edit_employee_path(employees(:Obiwan), page: :personal), true
+    assert_select "a[href=?]", edit_employee_path(employees(:Obiwan), page: :basic_employee), true
+    assert_select "a[href=?]", edit_employee_path(employees(:Obiwan), page: :wage), true
+    assert_select "a[href=?]", new_employee_raise_path(employees(:Obiwan)), true
+    assert_select "a[href=?]", edit_employee_path(employees(:Obiwan), page: :misc), true
     assert_select "#delete-employee-btn", false
 
     # various administration links
@@ -175,10 +181,10 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
 
   test "ADMIN: POST employee#create" do
     login_admin(:MaceWindu)
-    post "/employees", params: { employee: { supervisor_id: people(:Yoda).id, title: "Test Employee", first_name: "Test", last_name: "Employee" }}
+    post "/employees", params: { page: "personal", employee: { first_name: "Test", last_name: "Employee" }}
 
     assert_response :success
-    assert_select "input#employee_first_name"
+    assert_select "input#employee_title" # Should be on page 2 of the new employee form
   end
 
   test "ADMIN: GET employee#show" do
@@ -205,7 +211,7 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
 
   test "ADMIN: view edit page" do
     login_admin(:MaceWindu)
-    get edit_employee_url(employees(:Han))
+    get edit_employee_url(employees(:Han), page: :personal)
 
     assert_response :success
     assert_select "input#employee_first_name[value=#{employees(:Han).first_name}]"
@@ -234,15 +240,17 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     # add/dete buttons
-    assert_select "#edit-employee-btn"
-    assert_select "#delete-employee-btn"
+    assert_select "a[href=?]", edit_employee_path(employees(:Luke), page: :personal), true
+    assert_select "a[href=?]", edit_employee_path(employees(:Luke), page: :basic_employee), true
+    assert_select "a[href=?]", edit_employee_path(employees(:Luke), page: :wage), true
+    assert_select "a[href=?]", new_employee_raise_path(employees(:Luke)), true
+    assert_select "a[href=?]", edit_employee_path(employees(:Luke), page: :misc), true
+    assert_select "#delete-employee-btn", true
 
     # various administration links
-    assert_select "#add-child-link"
     assert_select "#add-vacation-link"
     assert_select "#add-charge-link"
     assert_select "#add-hours-link"
     assert_select "#add-loan-link"
-    assert_select "#assign-bonuses-link"
   end
 end

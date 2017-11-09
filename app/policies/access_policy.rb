@@ -114,8 +114,9 @@ class AccessPolicy
 
       # TODO, multi-level supervisors
       can :read, Employee do |employee, user|
-        # can read if this user is the employee's supervisor
-        employee.supervisor.person.id == user.person.id
+        # can read if this user is the employee's supervisor or if self
+        employee.supervisor.person.id == user.person.id or
+            employee.person.id == user.person.id
       end
 
       # TODO, multi-level supervisors

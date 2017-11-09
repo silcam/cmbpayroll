@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171108110709) do
+ActiveRecord::Schema.define(version: 20171108151758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,7 +119,7 @@ ActiveRecord::Schema.define(version: 20171108110709) do
     t.integer "wage_scale"
     t.integer "wage_period"
     t.datetime "last_raise_date"
-    t.float "taxable_percentage"
+    t.float "taxable_percentage", default: 1.0
     t.integer "transportation"
     t.integer "employment_status"
     t.integer "marital_status"
@@ -131,8 +131,8 @@ ActiveRecord::Schema.define(version: 20171108110709) do
     t.bigint "department_id"
     t.boolean "uniondues", default: false, null: false
     t.date "first_day"
-    t.boolean "spouse_employed", default: false, null: false
     t.integer "amical"
+    t.boolean "spouse_employed", default: false, null: false
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
     t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"
@@ -238,6 +238,19 @@ ActiveRecord::Schema.define(version: 20171108110709) do
     t.date "birth_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "raises", force: :cascade do |t|
+    t.bigint "employee_id"
+    t.date "date"
+    t.integer "category"
+    t.integer "echelon"
+    t.integer "wage_scale"
+    t.integer "wage_period"
+    t.integer "wage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_raises_on_employee_id"
   end
 
   create_table "standard_charge_notes", force: :cascade do |t|

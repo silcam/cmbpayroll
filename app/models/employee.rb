@@ -18,6 +18,7 @@ class Employee < ApplicationRecord
   has_many :vacations
   has_many :payslips
   has_many :loans
+  has_many :raises
 
   has_and_belongs_to_many :bonuses
 
@@ -57,6 +58,10 @@ class Employee < ApplicationRecord
       depts[emp.department] = 1
     end
     return depts.keys
+  end
+
+  def last_raise
+    raises.order(date: :desc).first
   end
 
   def wage

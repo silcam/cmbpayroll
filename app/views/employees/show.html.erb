@@ -4,13 +4,6 @@
 
 <ul class="list-inline" style="margin-top: 15px;">
   <li>
-    <label><%= t(:Children) %>:</label>
-    <%= link_to t(:View), employee_children_path(@employee) %>
-    <% if can? :create, Child %>
-     | <%= link_to t(:Add), new_employee_child_path(@employee), id: 'add-child-link' %>
-    <% end %>
-  </li>
-  <li>
     <label><%= t(:Vacation) %>:</label>
     <%= link_to t(:View), employee_vacations_path(@employee) %>
     <% if can? :create, Vacation %>
@@ -37,14 +30,6 @@
       | <%= link_to t(:Add), new_employee_loan_path(@employee, referred_by: request.path), id: 'add-loan-link' %>
     <% end %>
   </li>
-
-  <% if can? :update, Bonus %>
-  <li>
-    <label><%= t(:Bonuses) %>:</label>
-    <%= link_to t(:Assign), list_possible_employee_bonuses_path(@employee), id: 'assign-bonuses-link' %>
-  </li>
-  <% end %>
-
   <li>
     <label><%= t(:Payslips) %>:</label>
     <%= link_to t(:View), employee_payslips_path(@employee) %>
@@ -53,7 +38,12 @@
 
 <h2><%= t(:Employee_information_for) %> <%= @employee.full_name %></h2>
 
-
+<h3>
+  <%= t :Personal %>
+  <% if can? :update, @employee %>
+    <%= link_to t(:Edit), edit_employee_path(@employee, page: :personal), class: 'btn btn-warning btn-sm' %>
+  <% end %>
+</h3>
 <table class="table table-striped">
   <tbody>
     <tr>
@@ -63,78 +53,124 @@
       <td><%= @employee.last_name %></td>
     </tr>
     <tr>
+      <th scope="row"><%= t(:Gender) %>:</th>
+      <td><%= t(@employee.gender, default: "") %></td>
+      <th scope="row"><%= t(:Birth_date) %></th>
+      <td><%= l(@employee.birth_date, format: :short, default: '') %></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>
+  <%= t :Employee %>
+  <% if can? :update, @employee %>
+    <%= link_to t(:Edit), edit_employee_path(@employee, page: :basic_employee), class: 'btn btn-warning btn-sm' %>
+  <% end %>
+</h3>
+
+<table class="table table-striped">
+  <tbody>
+    <tr>
       <th scope="row"><%= t(:Title) %>:</th>
       <td><%= @employee.title %></td>
       <th scope="row"><%= t(:Department) %>:</th>
       <td><%= @employee.department_name %></td>
-    </tr>
-    <tr>
       <th scope="row"><%= t(:Supervisor) %>:</th>
       <td><%= @employee.supervisor.try(:full_name) %></td>
-      <th scope="row"></th>
-      <td></td>
     </tr>
     <tr>
+      <th scope="row"><%= t(:First_day) %>:</th>
+      <td><%= l(@employee.first_day, format: :short, default: '') %></td>
       <th scope="row"><%= t(:Contract_start) %>:</th>
       <td><%= l(@employee.contract_start, format: :short, default: '') %></td>
       <th scope="row"><%= t(:Contract_end) %>:</th>
       <td><%= l(@employee.contract_end, format: :short, default: '') %></td>
     </tr>
     <tr>
-      <th scope="row"><%= t(:Gender) %>:</th>
-      <td><%= t(@employee.gender, default: "") %></td>
-      <th scope="row"><%= t(:Marital_status) %>:</th>
-      <td><%= t_gen(@employee.marital_status, @employee.female?) %></td>
+      <th scope="row"><%= t(:Employment_status) %></th>
+      <td><%= t_gen(@employee.employment_status, @employee.female?) %></td>
+      <th scope="row"><%= t(:Days_per_week) %></th>
+      <td><%= word_to_int @employee.days_week %></td>
+      <th scope="row"><%= t(:Hours_per_day) %></th>
+      <td><%= @employee.hours_day %></td>
     </tr>
-  </tbody>
-</table>
-
-<table class="table table-striped">
-  <tbody>
     <tr>
       <th scope="row">CNPS:</th>
       <td><%= @employee.cnps %></td>
       <th scope="row">DIPE:</th>
       <td><%= @employee.dipe %></td>
-      <th scope="row"><%= t(:Birth_date) %></th>
-      <td><%= l(@employee.birth_date, format: :short, default: '') %></td>
-      <th scope="row"><%= t(:Category) %></th>
-      <td><%= @employee.category %></td>
+      <th scope="row"></th>
+      <td></td>
     </tr>
-    <tr>
-      <th scope="row">Echelon:</th>
-      <td><%= @employee.echelon %></td>
-      <th scope="row"><%= t(:Wage) %></th>
-      <td><%= number_to_currency(@employee.wage, locale: :cm) %></td>
-      <th scope="row"><%= t(:Wage_scale) %></th>
-      <td><%= t("wage_scale.#{@employee.wage_scale}", default: "") %></td>
-      <th scope="row"><%= t(:Wage_period) %></th>
-      <td><%= t(@employee.wage_period, default: "") %></td>
-    </tr>
-    <tr>
-      <th scope="row">Last Raise Date:</th>
-      <td><%= l(@employee.last_raise_date, format: :short, default: '') %></td>
-      <th scope="row"><%= t(:Taxable_percentage) %></th>
-      <td><%= number_to_percentage(@employee.taxable_percentage ? @employee.taxable_percentage * 100 : "", precision: 0) %></td>
-      <th scope="row"><%= t(:Transportation) %></th>
-      <td><%= number_to_currency(@employee.transportation, locale: :cm) %></td>
-      <th scope="row"><%= t(:Hours_per_day) %></th>
-      <td><%= @employee.hours_day %></td>
-    </tr>
-    <tr>
-      <th scope="row"><%= t(:Days_per_week) %></th>
-      <td><%= word_to_int @employee.days_week %></td>
-      <th scope="row"><%= t(:Employment_status) %></th>
-      <td><%= t_gen(@employee.employment_status, @employee.female?) %></td>
-      <th scope="row"><%= t(:Amical) %></th>
-      <td><%= number_to_currency(@employee.amical, locale: :cm) %></td>
-      <th scope="row"><%= t(:Union_dues) %>?</th>
-
-      <td><%= t("employee.#{@employee.uniondues}", scope: [:activerecord ]) %> (<%= number_to_currency(@employee.union_dues_amount, locale: :cm) %>)</td>
-    </tr>
-    <tr>
   </tbody>
 </table>
+
+<h3>
+  <%= t :Wage_info %>
+  <% if can? :update, @employee %>
+    <%= link_to t(:Correct), edit_employee_path(@employee, page: :wage), class: 'btn btn-warning btn-sm' %>
+    <%= link_to t(:New_raise), new_employee_raise_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% end %>
+</h3>
+
+<table class="table table-striped">
+  <tbody>
+    <tr>
+      <th scope="row"><%= t(:Category) %></th>
+      <td><%= word_to_int @employee.category %></td>
+      <th scope="row">Echelon:</th>
+      <td>
+        <%= word_to_int(@employee.echelon).nil? ?
+                @employee.echelon.to_s.upcase :
+                word_to_int(@employee.echelon) %>
+      </td>
+      <th scope="row"><%= t(:Wage_scale) %></th>
+      <td><%= @employee.wage_scale.to_s.upcase %></td>
+    </tr>
+    <tr>
+      <th scope="row"><%= t(:Wage) %></th>
+      <td><%= number_to_currency(@employee.wage, locale: :cm) %></td>
+      <th scope="row"><%= t(:Wage_period) %></th>
+      <td><%= t(@employee.wage_period, default: "") %></td>
+      <th scope="row">Last Raise Date:</th>
+      <td><%= l(@employee.last_raise.try(:date), format: :short, default: '') %></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>
+  <%= t :Miscellaneous %>
+  <% if can? :update, @employee %>
+    <%= link_to t(:Edit), edit_employee_path(@employee, page: :misc), class: 'btn btn-warning btn-sm' %>
+  <% end %>
+</h3>
+<table class="table table-striped">
+  <tbody>
+    <tr>
+      <th scope="row"><%= t(:Marital_status) %>:</th>
+      <td><%= t_gen(@employee.marital_status, @employee.female?) %></td>
+      <th scope="row"><%= t(:Transportation) %></th>
+      <td><%= number_to_currency(@employee.transportation, locale: :cm) %></td>
+    </tr>
+    <tr>
+      <th scope="row"><%= t(:Amical) %></th>
+      <td><%= number_to_currency(@employee.amical, locale: :cm) %></td>
+      <th scope="row"><%= t(:Union_dues) %></th>
+      <td>
+        <%= @employee.uniondues ?
+              number_to_currency(@employee.union_dues_amount, locale: :cm) :
+              t(:No)  %>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>
+  <%= t :Children %>
+  <% if can? :create, Child %>
+    <%= link_to t(:Add), new_employee_child_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% end %>
+</h3>
 
 <% if (@employee.children.empty?) %>
   <p>
@@ -146,16 +182,29 @@
       <th><%= t(:Child_first_name) %></th>
       <th><%= t(:Child_birth_date) %></th>
       <th><%= t(:Child_student) %></th>
+      <% if can? :update, @employee.children.first %>
+        <th></th>
+      <% end %>
     </tr>
     <% @employee.children.each do |c| %>
       <tr>
         <td><%= c.first_name %> <%= c.last_name %></td>
         <td><%= l(c.birth_date, format: :short, default: '') %></td>
         <td><%= c.is_student %></td>
+        <% if can? :update, c %>
+          <td><%= link_to t(:Edit), edit_child_path(c) %></td>
+        <% end %>
       </tr>
     <% end %>
   </table>
 <% end %>
+
+<h3>
+  <%= t :Bonuses %>
+  <% if can? :update, Bonus %>
+    <%= link_to t(:Add), list_possible_employee_bonuses_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <% end %>
+</h3>
 
 <% if (@employee.bonuses.empty?) %>
   <p id="no-bonuses">
@@ -185,14 +234,9 @@
   </table>
 <% end %>
 
-<% if can? :update, @employee %>
-  <%= link_to t(:Edit), {controller: "employees", action: "edit", id: @employee}, class: 'btn btn-primary', id: 'edit-employee-btn' %> &nbsp;
-<% end %>
+<p>
+  <% if can? :destroy, @employee %>
+    <%= link_to "#{t(:Delete)} #{@employee.full_name}", employee_path(@employee), method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'btn btn-danger', id: 'delete-employee-btn' %>
+  <% end %>
+</p>
 
-<% if can? :destroy, @employee %>
-  <%= link_to t(:Delete), employee_path(@employee), method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'btn btn-danger', id: 'delete-employee-btn' %>
-<% end %>
-
-<br />
-<br />
-<br />

@@ -204,7 +204,7 @@ module ControllerTestHelper
   end
 
   def refute_permissions_error
-    if (@response.status >= 300 && @response.status < 400)
+    while (@response.status >= 300 && @response.status < 400)
       follow_redirect!
     end
 

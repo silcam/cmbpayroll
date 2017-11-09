@@ -10,13 +10,15 @@ class PayrollAudit
       item_hash[:title] = "#{item.auditable_type} #{item.action}"
 
       if (item.auditable_type == "Employee")
-        person = Employee.find(item.auditable_id)
-        if (item.action == "create")
-          item_hash[:text] = "#{person.full_name} was created."
-        elsif (item.action == "update")
-          item_hash[:text] = "#{person.full_name} was edited.  Fields modified: #{item.audited_changes.keys}"
-        elsif (item.action == "delete")
-          item_hash[:text] = "#{person.full_name} was deleted."
+        person = Employee.find_by(id: item.auditable_id)
+        unless person.nil?
+          if (item.action == "create")
+            item_hash[:text] = "#{person.full_name} was created."
+          elsif (item.action == "update")
+            item_hash[:text] = "#{person.full_name} was edited.  Fields modified: #{item.audited_changes.keys}"
+          elsif (item.action == "delete")
+            item_hash[:text] = "#{person.full_name} was deleted."
+          end
         end
       end
 

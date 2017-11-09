@@ -24,16 +24,62 @@ class EmployeesController < ApplicationController
     authorize! :create, Employee
 
     @employee = Employee.new
+    @page = :personal
   end
 
   def create
     authorize! :create, Employee
 
+    case params[:page].to_sym
+      when :personal
+        setup_employee_person
+      when :basic_employee
+        create_employee
+      when :wage, :misc
+        update_employee
+      else
+        raise 'Invalid Page!'
+    end
+  end
+
+  def setup_employee_person
     @employee = Employee.new(employee_params)
-    if @employee.save
-      redirect_to employees_path
+    if @employee.person.valid?
+      session[:person] = @employee.person
+      @page = :basic_employee
+      render 'new'
     else
-      render :new
+      @page = :personal
+      render 'new'
+    end
+  end
+
+  def create_employee
+    @employee = Employee.new(employee_params)
+    @employee.person = Person.new(session[:person])
+    if @employee.valid?
+      @employee.save
+      session.delete :person
+      @page = :wage
+      render 'new'
+    else
+      @page = :basic_employee
+      render 'new'
+    end
+  end
+
+  def update_employee
+    @employee = Employee.find params[:id]
+    if @employee.update employee_params
+      if params[:page].to_sym == :wage
+        @page = :misc
+        render 'new'
+      else
+        redirect_to employee_path(@employee)
+      end
+    else
+      @page = params[:page]
+      render 'new'
     end
   end
 
@@ -45,6 +91,7 @@ class EmployeesController < ApplicationController
 
   def edit
     @employee = Employee.find(params[:id])
+    @page = params[:page]
 
     authorize! :update, @employee
   end
@@ -55,8 +102,9 @@ class EmployeesController < ApplicationController
     authorize! :update, @employee
 
     if @employee.update employee_params
-      redirect_to employees_path
+      redirect_to employee_path(@employee)
     else
+      @page = params[:page]
       render :edit
     end
   end
@@ -64,7 +112,7 @@ class EmployeesController < ApplicationController
   def destroy
     @employee = Employee.find(params[:id])
 
-    authorize! :delete, @employee
+    authorize! :destroy, @employee
 
     @employee.destroy
     redirect_to employees_path
@@ -99,12 +147,14 @@ class EmployeesController < ApplicationController
         :wage,
         :amical,
         :uniondues]
-    if params[:employee][:supervisor_id].to_i >= 1  # A valid id
-      permitted << :supervisor_id
-    else
-      @supervisor = build_supervisor params[:employee][:supervisor]
-      params[:employee][:supervisor_id] = @supervisor.id
-      permitted << :supervisor_id
+    unless params[:employee][:supervisor].nil?
+      if params[:employee][:supervisor_id].to_i >= 1  # A valid id
+        permitted << :supervisor_id
+      else
+        @supervisor = build_supervisor params[:employee][:supervisor]
+        params[:employee][:supervisor_id] = @supervisor.id
+        permitted << :supervisor_id
+      end
     end
     params.require(:employee).permit(permitted)
   end

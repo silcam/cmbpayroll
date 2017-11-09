@@ -12,6 +12,7 @@ module BelongsToPerson
                       :last_name=,
                       :full_name,
                       :full_name_rev,
+                      :first_first_name,
                       :birth_date,
                       :birth_date=,
                       :gender,

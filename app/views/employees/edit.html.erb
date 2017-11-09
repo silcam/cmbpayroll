@@ -1,13 +1,17 @@
-<% provide(:title, "Edit an Employee") %>
+<% provide(:title, @employee.full_name) %>
 
-<% if can? :create, Employee %>
-  <%= link_to t(:New_employee), new_employee_path, class: 'btn btn-primary', id: "new-employee-btn" %>
+<p>
+  <%= link_to "<<#{@employee.full_name}", employee_path(@employee) %>
+</p>
+
+<%= render 'shared/error_messages', errors: @employee.errors %>
+
+<%= form_for @employee, url: employee_path, method: :patch, html: {class: 'auto-width'} do |form| %>
+    <%= hidden_field_tag :page, @page %>
+
+    <%= render "#{@page}_form", form: form %>
+
+    <div class="form-group">
+      <%= form.submit t(:Save), class: 'btn btn-primary' %>
+    </div>
 <% end %>
-
-<br />
-<br />
-<br />
-
-<%= render 'employee_form' %>
-
-

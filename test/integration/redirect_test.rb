@@ -16,7 +16,7 @@ class RedirectTest < Capybara::Rails::TestCase
     log_in_admin
     visit edit_user_path(@luke.user)
     click_on 'Change Language'
-    assert_current_path edit_user_path(@luke.user)
+    assert_current_path users_path
   end
 
   test "Does not use expired redirects" do

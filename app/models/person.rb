@@ -22,6 +22,10 @@ class Person < ApplicationRecord
     "#{last_name}, #{first_name}"
   end
 
+  def first_first_name
+    first_name.split(' ').first
+  end
+
   def self.non_supervisors
     Person.left_outer_joins(:supervisor)
         .left_outer_joins(:child)

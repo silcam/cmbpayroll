@@ -59,6 +59,27 @@ class EmployeeTest < ActiveSupport::TestCase
     assert(employee.valid?, "echelon g and wage is AOK")
   end
 
+  test "active" do
+    employee = return_valid_employee()
+
+    employee.employment_status = "full_time"
+    assert(employee.is_currently_paid?, "full time is currently_paid")
+
+    employee.employment_status = "part_time"
+    assert(employee.is_currently_paid?, "part time is currently_paid")
+
+    employee.employment_status = "temporary"
+    assert(employee.is_currently_paid?, "temporary is currently_paid")
+
+    employee.employment_status = "leave"
+    refute(employee.is_currently_paid?, "leave is not currently_paid")
+
+    employee.employment_status = "terminated_to_year_end"
+    refute(employee.is_currently_paid?, "TTYE is not currently_paid")
+
+    employee.employment_status = "inactive"
+    refute(employee.is_currently_paid?, "inactive is not currently_paid")
+  end
 
   test "enum_validations" do
     employee = Employee.new(some_valid_params(employment_status: :full_time,
@@ -337,6 +358,13 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "years_of_service" do
     employee1 = return_valid_employee()
+
+    employee1.contract_start = nil
+    period = Period.new(2017,03)
+    assert_equal(0, employee1.years_of_service(period), "no contract start is 0 years")
+
+    employee1.contract_start = Date.new(2017,1,1)
+    assert_equal(0, employee1.years_of_service(nil), "no period is 0 years")
 
     employee1.contract_start = Date.new(2017,1,1)
     period = Period.new(2017,03)

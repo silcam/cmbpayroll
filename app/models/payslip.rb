@@ -42,9 +42,9 @@ class Payslip < ApplicationRecord
   def self.process_all(period)
     payslips = Array.new
 
-    Employee.all.each do |emp|
+    Employee.currently_paid.each do |emp|
       tmp_payslip = Payslip.process(emp, period)
-      payslips.push(tmp_payslip)
+      payslips.push(tmp_payslip) unless tmp_payslip.nil?
     end
 
     return payslips
@@ -172,7 +172,9 @@ class Payslip < ApplicationRecord
   end
 
   def c_taxable
-    ( c_cnpswage() + employee.transportation() ).ceil
+    transportation = employee.transportation() ?
+        employee.transportation : 0
+    ( c_cnpswage() + transportation ).ceil
   end
 
   def process_wages()
@@ -316,6 +318,10 @@ class Payslip < ApplicationRecord
     # TODO: more validation
     # TODO: Are there rules that the period must be
     #         the current period? (or the previous period)?
+
+    # Is this correct behavior, or throw exception?
+    return nil unless employee.is_currently_paid?
+
     payslip = Payslip.find_by(
                   employee_id: employee.id,
                   period_year: period.year,
@@ -350,6 +356,7 @@ class Payslip < ApplicationRecord
 
     rescue Exception => e
       Rails.logger.error("Error processing payslip #{payslip.id} : #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
       payslip.errors[:base] << e.message
     end
 

@@ -14,8 +14,7 @@ class PayslipsController < ApplicationController
     else
       authorize! :update, Payslip
 
-      # show other stuff
-      @employees = Employee.all
+      @employees = Employee.currently_paid
     end
   end
 

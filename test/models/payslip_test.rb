@@ -409,9 +409,7 @@ class PayslipTest < ActiveSupport::TestCase
 
   end
 
-
   test "process_all_payslips_for_period" do
-
     employee_count = Employee.all.size
     period = Period.new(2017, 8)
 
@@ -421,6 +419,7 @@ class PayslipTest < ActiveSupport::TestCase
     employee1.last_name = "One"
     employee1.category_one!
     employee1.echelon_d!
+    employee1.employment_status = "full_time"
     employee1.save
     generate_work_hours employee1, period
     assert(employee1.valid?, "employee 1 should be valid")
@@ -431,36 +430,51 @@ class PayslipTest < ActiveSupport::TestCase
     employee2.last_name = "Two"
     employee2.category_one!
     employee2.echelon_f!
+    employee2.employment_status = "full_time"
     employee2.save
     generate_work_hours employee2, period
     assert(employee2.valid?, "employee 2 should be valid")
     assert_equal(0, employee2.payslips.size, "should have no payslips initially")
 
-    # made two employees
-    assert_equal(2, Employee.all.size - employee_count)
+    employee3 = return_valid_employee()
+    employee3.first_name = "EMPNumber"
+    employee3.last_name = "Three"
+    employee3.category_one!
+    employee3.echelon_f!
+    employee3.employment_status = "leave"
+    employee3.save
+    generate_work_hours employee3, period
+    assert(employee3.valid?, "employee 3 should be valid")
+    assert_equal(0, employee3.payslips.size, "should have no payslips initially")
+
+    # made three employees
+    assert_equal(3, Employee.all.size - employee_count)
 
     # each employee doesn't have a payslip
     assert_equal(0, employee1.payslips.size)
     assert_equal(0, employee2.payslips.size)
+    assert_equal(0, employee3.payslips.size)
 
     # process all payslips
     payslips = Payslip.process_all(period)
 
-    # processed one for each employee
-    assert_equal(employee_count + 2, payslips.size)
+    # processed one for 2 employees (except 1 on leave)
+    assert_equal(employee_count + 2, payslips.size,
+        "should have processed correct number of payslips")
 
     # let's checkout each object
     val = true
     count = 0
     payslips.each do |record|
       next unless (record.employee.full_name == employee1.full_name ||
-                   record.employee.full_name == employee2.full_name)
+                   record.employee.full_name == employee2.full_name ||
+                   record.employee.full_name == employee3.full_name)
       count += 1
       unless (record.valid?)
         val = false
       end
     end
-    assert_equal(2, count, "found one payslip for each employee")
+    assert_equal(2, count, "found one payslip for each employee (not emp3)")
     assert(val, "one of the payslips isn't valid")
 
     payslips.each do |ps|
@@ -469,7 +483,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     Employee.all.each do |record|
       next unless (record.full_name == employee1.full_name ||
-                   record.full_name == employee2.full_name)
+                   record.full_name == employee2.full_name ||
+                   record.full_name == employee3.full_name)
       Rails.logger.debug("oooooX for #{record.full_name}:")
       Rails.logger.debug("     V: #{record.payslips.size}")
       unless (record.valid?)
@@ -479,11 +494,12 @@ class PayslipTest < ActiveSupport::TestCase
 
     employee1.reload
     employee2.reload
+    employee3.reload
 
     # make sure each employee received a payslip
     assert_equal(1, employee1.payslips.size, "employee 1 should now have 1 payslip")
     assert_equal(1, employee2.payslips.size, "employee 2 should now have 1 payslip")
-
+    assert_equal(0, employee3.payslips.size, "employee 3 should not have 1 payslip")
   end
 
   test "can_create_payslip_advance" do
@@ -722,6 +738,17 @@ class PayslipTest < ActiveSupport::TestCase
 
     # check loan balance
     assert_equal((loan.amount + loan_other.amount) - (pay.amount + pay_other.amount), payslip.loan_balance)
+  end
+
+  test "payslips cannot be run non F,P,or T employees" do
+    employee = return_valid_employee()
+    employee.employment_status = "leave"
+
+    jan = Period.new(2018,1)
+    generate_work_hours employee, Period.new(2018, 1)
+
+    nil_payslip = Payslip.process(employee, jan)
+    assert_nil(nil_payslip, "should not process anything for a leave employee")
   end
 
   test "payslip with paid loan" do

@@ -10,27 +10,29 @@
     </div>
   <% end %>
 
-  <div class="field">
+  <div class="form-group">
     <%= form.label t(:First_name) %>
-    <%= form.text_field :first_name, id: :child_first_name %>
+    <%= form.text_field :first_name, class: 'form-control' %>
   </div>
 
-  <div class="field">
+  <div class="form-group">
     <%= form.label t(:Last_name) %>
-    <%= form.text_field :last_name, id: :child_last_name %>
+    <%= form.text_field :last_name, class: 'form-control' %>
   </div>
 
-  <div class="field">
-    <%= form.label t(:Birth_date) %>
-    <%= form.date_select :birth_date, id: :child_birth_date %>
+  <div class="form-group">
+    <%= form.label t(:Birth_date) %><br />
+    <%= form.date_select :birth_date, {}, class: 'form-control form-control-inline' %>
   </div>
 
-  <div class="field">
-    <%= form.label t(:Is_student) %>
-    <%= form.check_box :is_student, id: :child_is_student %>
+  <div class="checkbox">
+    <label>
+      <%= form.check_box :is_student, id: :child_is_student %>
+      <b><%= t(:Is_student) %></b>
+    </label>
   </div>
 
-  <div class="actions">
-    <%= form.submit %>
+  <div class="form-group">
+    <%= form.submit t(:Save), class: 'btn btn-primary' %>
   </div>
 

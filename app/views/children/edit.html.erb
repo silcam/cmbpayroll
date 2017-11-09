@@ -1,7 +1,10 @@
-<h1>Editing Child</h1>
+<%= link_to "<<#{@child.parent.full_name}", employee_path(@child.parent.employee) %>
 
-<%= form_for @child do |form| %>
+<h1><%= @child.full_name %></h1>
+
+<%= form_for @child, html: {class: 'auto-width'} do |form| %>
     <%= render 'form', form: form %>
+
 <% end %>
 
-<%= link_to t(:Back), employee_children_path(@employee) %>
+<%= button_to "#{t(:Delete)} #{@child.full_name}", child_path(@child), method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'btn btn-danger' %>

@@ -5,7 +5,7 @@
   <small><%= t :New_child %></small>
 </h2>
 
-<%= form_for [@employee, @child] do |form| %>
+<%= form_for [@employee, @child], html: {class: 'auto-width'} do |form| %>
   <%= render 'form', form: form %>
 <% end %>
 

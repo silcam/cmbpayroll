@@ -29,7 +29,7 @@ class ChildrenController < ApplicationController
     @child = Child.new_with_person({parent: @employee.person}.merge(child_params))
 
     if @child.save
-      redirect_to employee_children_url(@employee)
+      redirect_to employee_url(@employee)
     else
       render :new
     end
@@ -39,7 +39,7 @@ class ChildrenController < ApplicationController
     authorize! :update, Child
 
     if @child.update(child_params)
-      redirect_to employee_children_url(@employee)
+      redirect_to employee_url(@employee)
     else
       render :edit
     end
@@ -49,7 +49,7 @@ class ChildrenController < ApplicationController
     authorize! :destroy, Child
 
     @child.destroy
-    redirect_to employee_children_url(@employee)
+    redirect_to employee_url(@employee)
   end
 
   private

@@ -190,7 +190,7 @@
       <tr>
         <td><%= c.first_name %> <%= c.last_name %></td>
         <td><%= l(c.birth_date, format: :short, default: '') %></td>
-        <td><%= c.is_student %></td>
+        <td><%= c.is_student ? t(:Yes) : t(:No) %></td>
         <% if can? :update, c %>
           <td><%= link_to t(:Edit), edit_child_path(c) %></td>
         <% end %>

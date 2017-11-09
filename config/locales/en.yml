@@ -53,6 +53,7 @@ en:
   female: Female
   male: Male
   View_all: View all
+  No_results_found: No employees found matching '%{query}'
 
   # Error messages
   cant_be_in_future: can't be in the future.
@@ -114,18 +115,12 @@ en:
   leave: Leave
   terminated_to_year_end: Terminated to year end
   inactive: Inactive
-  one: One
-  two: Two
-  three: Three
-  four: Four
-  five: Five
-  six: Six
-  seven: Seven
   First_day: First day of work
   Personal_info: Personal Info
   Basic_employee_info: Basic Employee Info
   Wage_info: Wage Info
   Other_info: Other Info
+  Find_employee: Find employee
 
   # Supervisors
   Supervisors: Supervisors

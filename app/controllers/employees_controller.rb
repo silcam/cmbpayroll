@@ -118,6 +118,25 @@ class EmployeesController < ApplicationController
     redirect_to employees_path
   end
 
+  def search
+    if params[:q].blank?
+      redirect_to root_path
+    else
+      found_employees = Employee.search params[:q]
+      @employees = found_employees.select{ |e| can? :read, e }
+
+      if @employees.empty?
+        @query = params[:q]
+
+      elsif @employees.count == 1
+        redirect_to employee_path @employees.first
+
+      else
+        render 'index'
+      end
+    end
+  end
+
   private
 
   def employee_params

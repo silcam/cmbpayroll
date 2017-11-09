@@ -1,4 +1,0 @@
-<%= form_tag('/search', method: :get, class: 'form-inline', id: 'search-form') do %>
-    <%= text_field_tag :q, @query, placeholder: "#{t(:Search)}...", class: 'form-control input-lg', autofocus: true %>
-    <%= submit_tag t(:Search), class: 'form-control input-lg' %>
-<% end %>

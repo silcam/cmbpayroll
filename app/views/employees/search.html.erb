@@ -1,0 +1,7 @@
+<%= render 'search_form' %>
+
+<% if @employees.empty? %>
+  <h3>
+    <%= t(:No_results_found, query: @query) %>
+  </h3>
+<% end %>

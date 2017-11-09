@@ -200,4 +200,7 @@ class Employee < ApplicationRecord
     hourly_rate * SystemVariable.value(:ot3)
   end
 
+  def self.search(query)
+    joins(:person).where("people.first_name || ' ' || people.last_name ILIKE ?", "%#{query}%")
+  end
 end

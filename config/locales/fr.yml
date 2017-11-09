@@ -53,6 +53,7 @@ fr:
   female: Femelle
   male: Mâle
   View_all: Voir tous
+  No_results_found: Aucun employé trouvé par «%{query}»
 
   # Error messages
   cant_be_in_future: ne peut pas être au futur.
@@ -123,6 +124,7 @@ fr:
   Basic_employee_info: Infos d'employé
   Wage_info: Infos de paie
   Other_info: Autres infos
+  Find_employee: Rechercher un employé
 
   # Supervisors
   Supervisors: Superviseurs

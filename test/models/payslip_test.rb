@@ -1,4 +1,5 @@
 require "test_helper"
+require "logger"
 
 class PayslipTest < ActiveSupport::TestCase
 
@@ -753,6 +754,28 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.loan_balance)
   end
 
+
+  test "Sick Time is still paid" do
+    employee = return_valid_employee()
+    period = Period.new(2018,1)
+
+    generate_work_hours employee, period
+
+    hours = {
+      "2018-01-02" => 0.0
+    }
+    sickhours = {
+      "2018-01-02" => true
+    }
+
+    WorkHour.update(employee, hours, sickhours)
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(23, employee.workdays_per_month(period))
+    assert_equal(23, WorkHour.days_worked(employee, period))
+    assert(payslip.worked_full_month?, "Despite one sick day, worked whole month")
+  end
+
   test "BasePay" do
     employee = return_valid_employee()
 
@@ -1389,11 +1412,19 @@ class PayslipTest < ActiveSupport::TestCase
     period = Period.new(2018,1)
     generate_work_hours employee, period
 
+    # This is expected to throw an exception --  so I raise
+    # the log level so I don't have to see it get output during
+    # the test run and I have a nice, clean green line.
+    old_level = Rails.logger.level
+    Rails.logger.level = Logger::FATAL
+
     payslip = nil
     assert_nothing_raised do
       # this should work without Exception
       payslip = Payslip.process(employee, period)
     end
+
+    Rails.logger.level = old_level
 
     assert_equal(1, payslip.errors[:base].size, "should have an error")
     assert_equal(1, payslip.errors.size, "should have an error")

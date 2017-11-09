@@ -60,7 +60,7 @@ class PayslipsController < ApplicationController
       @payslip = Payslip.process(@employee, @period)
     end
 
-    unless (@payslip.valid?)
+    if (@payslip.errors.size > 0)
       render 'process_employee'
     else
       redirect_to payslip_url(@payslip)

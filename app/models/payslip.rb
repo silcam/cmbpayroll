@@ -349,6 +349,7 @@ class Payslip < ApplicationRecord
       payslip.save
 
     rescue Exception => e
+      Rails.logger.error("Error processing payslip #{payslip.id} : #{e.message}")
       payslip.errors[:base] << e.message
     end
 

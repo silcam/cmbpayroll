@@ -174,7 +174,6 @@ class WorkHour < ApplicationRecord
     hours
   end
 
-  # TODO: what to do about sick days, are those paid days?
   # TODO: Right now this just looks per day checks that at least
   # 8 hours were worked.  An alternative algorithm would look
   # at a 40 hours week or some other equivalent.  I'm not sure which
@@ -188,7 +187,10 @@ class WorkHour < ApplicationRecord
     date = period.start
     while (date <= period.finish)
       if (days[date])
-        if (days[date][:hours])
+        if (days[date][:sick] == true)
+          days_worked += 1
+          hours_worked += NUMBER_OF_HOURS_IN_A_WORKDAY
+        elsif (days[date][:hours])
           hours_worked += days[date][:hours]
 
           if (days[date][:hours].to_i >= WorkHour.workday)

@@ -1,6 +1,10 @@
 <h2>
   <%= @employee.full_name %>
-  <small><%= t(:Wage_info) %></small>
+  <small>
+    <%= request.path.include?('promotion') ?
+            t(:Promotion) :
+            t(:Wage_info) %>
+  </small>
 </h2>
 
     <%= hidden_field_tag :id, @employee.id %>
@@ -18,12 +22,13 @@
       <%= form.select :echelon,
                       Employee.echelons.keys.collect{ |k| [t(k), k]},
                       {},
-                      class: 'form-control' %>
+                      class: 'form-control',
+                      data: {'echelon'=>'1'} %>
     </div>
     
     <div class="form-group" style="display: none;">
       <%= form.label :wage %>
-      <%= form.text_field :wage, class: 'form-control' %>
+      <%= form.text_field :wage, class: 'form-control', data: {'wage'=>'1'} %>
     </div>
     
     <div class="form-group">

@@ -1,0 +1,16 @@
+<% provide(:title, t(:Promotion)) %>
+
+<p>
+  <%= link_to "<<#{@employee.full_name}", employee_path(@employee) %>
+</p>
+
+<%= render 'shared/error_messages', errors: @promotion.errors %>
+
+<%= form_for @promotion, url: employee_promotions_path(@employee), html: {class: 'auto-width'} do |form| %>
+
+    <%= render 'employees/wage_form', form: form %>
+
+    <div class="form-group">
+      <%= form.submit t(:Save), class: 'btn btn-primary' %>
+    </div>
+<% end %>

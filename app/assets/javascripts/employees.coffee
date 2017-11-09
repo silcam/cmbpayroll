@@ -1,6 +1,6 @@
 show_hide_wage = () ->
-  wage_box = $('input#employee_wage')
-  if $('select#employee_echelon').val() == 'g'
+  wage_box = $('input[data-wage]')
+  if $('select[data-echelon]').val() == 'g'
     wage_box.prop('disabled', false)
     wage_box.closest('div').show('fast')
   else
@@ -14,4 +14,4 @@ $(document).on "turbolinks:load", ->
                                 $('div#name-fields'))
 
   show_hide_wage()
-  $('select#employee_echelon').change -> show_hide_wage()
+  $('select[data-echelon]').change -> show_hide_wage()

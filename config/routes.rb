@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   shallow do
     resources :employees do
       resources :children, except: [:show]
+      resources :promotions
       resources :loans, except: [:show] do
         resources :loan_payments, except: [:show, :index]
       end

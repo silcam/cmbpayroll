@@ -104,7 +104,7 @@
 <h3>
   <%= t :Wage_info %>
   <%= link_to :Correct, edit_employee_path(@employee, page: :wage), class: 'btn btn-warning btn-sm' %>
-  <%= link_to :Promote, 'new_employee_promotion_path', class: 'btn btn-primary btn-sm' %>
+  <%= link_to :Promote, new_employee_promotion_path(@employee), class: 'btn btn-primary btn-sm' %>
 </h3>
 
 <table class="table table-striped">
@@ -127,7 +127,7 @@
       <th scope="row"><%= t(:Wage_period) %></th>
       <td><%= t(@employee.wage_period, default: "") %></td>
       <th scope="row">Last Raise Date:</th>
-      <td><%= l(@employee.last_raise_date, format: :short, default: '') %></td>
+      <td><%= l(@employee.last_raise.try(:date), format: :short, default: '') %></td>
     </tr>
   </tbody>
 </table>

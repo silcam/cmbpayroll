@@ -1,4 +1,4 @@
-class Promotion < ApplicationRecord
+class Raise < ApplicationRecord
   belongs_to :employee
 
   # TODO : How can we avoid reduplicating this code ?
@@ -11,16 +11,16 @@ class Promotion < ApplicationRecord
   enum wage_period: [ :hourly, :monthly ]
 
   def self.new_for(employee)
-    promotion = employee.promotions.new
+    raise = employee.raises.new
     [:category, :echelon, :wage_scale, :wage_period, :wage].each do |param|
-      promotion.send("#{param}=", employee.send(param))
+      raise.send("#{param}=", employee.send(param))
     end
-    promotion
+    raise
   end
 
   def self.new(params={})
-    promotion = super(params)
-    promotion.date = Date.today
-    promotion
+    raise = super(params)
+    raise.date = Date.today
+    raise
   end
 end

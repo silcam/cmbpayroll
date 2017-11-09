@@ -103,8 +103,8 @@
 
 <h3>
   <%= t :Wage_info %>
-  <%= link_to :Correct, edit_employee_path(@employee, page: :wage), class: 'btn btn-warning btn-sm' %>
-  <%= link_to :Promote, new_employee_promotion_path(@employee), class: 'btn btn-primary btn-sm' %>
+  <%= link_to t(:Correct), edit_employee_path(@employee, page: :wage), class: 'btn btn-warning btn-sm' %>
+  <%= link_to t(:New_raise), new_employee_raise_path(@employee), class: 'btn btn-primary btn-sm' %>
 </h3>
 
 <table class="table table-striped">

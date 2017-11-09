@@ -20,6 +20,7 @@ fr:
   Search: Rechercher
   View: Voir
   Modify: &Modify Modifier
+  Correct: Corriger
   Enter: Saisir
   No_change: Aucun changement
   Edit: Éditer
@@ -237,6 +238,11 @@ fr:
   No_bonuses: Aucun Primes
   Must_be_between_zero_and_one_hundred: 'doit être entre 0 et 100'
   Must_be_a_number: doit être un numéro
+
+  # Raises
+  New_raise: Nouvelle augmentation
+  Raise: Augmentation
+
 
   # Reports
   Reports: Rapports

@@ -20,6 +20,7 @@ en:
   Search: Search
   View: View
   Modify: &Modify Modify
+  Correct: Correct
   Enter: Enter
   No_change: No Change
   Edit: Edit
@@ -113,6 +114,13 @@ en:
   leave: Leave
   terminated_to_year_end: Terminated to year end
   inactive: Inactive
+  one: One
+  two: Two
+  three: Three
+  four: Four
+  five: Five
+  six: Six
+  seven: Seven
   First_day: First day of work
   Personal_info: Personal Info
   Basic_employee_info: Basic Employee Info
@@ -233,6 +241,10 @@ en:
   No_bonuses: No Bonuses
   Must_be_between_zero_and_one_hundred: 'must be between 0 and 100'
   Must_be_a_number: must be a number
+
+  # Raises
+  New_raise: New Raise
+  Raise: Raise
 
   # Reports
   Reports: Reports

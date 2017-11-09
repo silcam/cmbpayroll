@@ -237,7 +237,7 @@ ActiveRecord::Schema.define(version: 20171108151758) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "promotions", force: :cascade do |t|
+  create_table "raises", force: :cascade do |t|
     t.bigint "employee_id"
     t.date "date"
     t.integer "category"
@@ -247,7 +247,7 @@ ActiveRecord::Schema.define(version: 20171108151758) do
     t.integer "wage"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["employee_id"], name: "index_promotions_on_employee_id"
+    t.index ["employee_id"], name: "index_raises_on_employee_id"
   end
 
   create_table "standard_charge_notes", force: :cascade do |t|

@@ -1,6 +1,6 @@
-class CreatePromotions < ActiveRecord::Migration[5.1]
+class CreateRaises < ActiveRecord::Migration[5.1]
   def change
-    create_table :promotions do |t|
+    create_table :raises do |t|
       t.references :employee
       t.date :date
       t.integer :category

@@ -18,7 +18,7 @@ class Employee < ApplicationRecord
   has_many :vacations
   has_many :payslips
   has_many :loans
-  has_many :promotions
+  has_many :raises
 
   has_and_belongs_to_many :bonuses
 
@@ -61,7 +61,7 @@ class Employee < ApplicationRecord
   end
 
   def last_raise
-    promotions.order(date: :desc).first
+    raises.order(date: :desc).first
   end
 
   def wage

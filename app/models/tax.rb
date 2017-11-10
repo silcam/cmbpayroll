@@ -10,7 +10,8 @@ class Tax < ApplicationRecord
     tax = Tax.find_by(grosspay: roundpay(taxable))
 
     if (tax.nil?)
-      raise ArgumentError.new("Unable to Find Tax Information for employee: #{employee.full_name} with wage: #{taxable}")
+      tax = Tax.new()
+      tax.grosspay = roundpay(taxable)
     end
 
     tax.taxable = taxable
@@ -20,8 +21,28 @@ class Tax < ApplicationRecord
     tax
   end
 
-  def total_tax
-    cac + cac2 + communal + cnps + ccf + crtv + proportional
+  def ccf
+    if self[:ccf].nil?
+      ( grosspay * SystemVariable.value(:ccf_rate) ).round
+    else
+      self[:ccf]
+    end
+  end
+
+  def crtv
+    if self[:crtv].nil?
+      ( grosspay * SystemVariable.value(:crtv_rate) ).round
+    else
+      self[:crtv]
+    end
+  end
+
+  def proportional
+    if self[:proportional].nil?
+      ( grosspay * SystemVariable.value(:proportional_rate) ).round
+    else
+      self[:proportional]
+    end
   end
 
   def cac
@@ -36,9 +57,17 @@ class Tax < ApplicationRecord
   def communal
     communal_tax = self[:communal]
 
+    if self[:communal].nil?
+      if (grosspay > SystemVariable.value(:communal_cutoff) )
+        communal_tax = SystemVariable.value(:communal_high)
+      else
+        communal_tax = SystemVariable.value(:communal_low)
+      end
+    end
+
     # If both spouses are employed, only take taxes from
     # the male spouse.
-    if (employee.person.female? && employee.spouse_employed)
+    if (employee.female? && employee.spouse_employed)
       communal_tax = 0
     end
 
@@ -48,10 +77,15 @@ class Tax < ApplicationRecord
   # default ceiling is 750 000 CFA
   def cnps
     if (cnpswage() > SystemVariable.value(:cnps_ceiling))
-      self.cnpswage = SystemVariable.value(:cnps_ceiling)
+      ( SystemVariable.value(:cnps_ceiling) *
+          SystemVariable.value(:emp_cnps) ).round
+    else
+      ( cnpswage() * SystemVariable.value(:emp_cnps) ).round
     end
+  end
 
-    (cnpswage() * SystemVariable.value(:emp_cnps)).round
+  def total_tax
+    cac + cac2 + communal + cnps + ccf + crtv + proportional
   end
 
   # Round pay to the nearest 250
@@ -61,8 +95,4 @@ class Tax < ApplicationRecord
     grosspay / 250 * 250
   end
 
-  private
-
-  def initialize
-  end
 end

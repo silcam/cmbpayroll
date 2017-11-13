@@ -2,6 +2,7 @@
 
 <% if @payslip.errors.size > 0 %>
   <p class="bg-danger">
+    <% @payslip.errors[:base] %>
     <% @payslip.errors.messages.each do |err| %>
       <li class="bg-danger"><b><%= err %></b></li>
     <% end %>

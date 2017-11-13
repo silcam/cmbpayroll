@@ -27,6 +27,13 @@ class Employee < ApplicationRecord
   validates :wage, presence: true, if: :echelon_requires_wage?
 
   scope :active, -> { where.not(employment_status: :inactive) }
+  scope :currently_paid, -> {
+    statuses = []
+    statuses << Employee.employment_statuses['full_time']
+    statuses << Employee.employment_statuses['part_time']
+    statuses << Employee.employment_statuses['temporary']
+    where("employment_status IN (?)", statuses)
+  }
 
   def echelon_requires_wage?
     echelon == "g"
@@ -50,6 +57,12 @@ class Employee < ApplicationRecord
 
   def female?
     person.female?
+  end
+
+  def is_currently_paid?
+    employment_status == "full_time" ||
+        employment_status == "part_time" ||
+          employment_status == "temporary"
   end
 
   def self.list_departments
@@ -88,6 +101,8 @@ class Employee < ApplicationRecord
   def years_of_service(period)
     # TODO: need a real general purpose date diff by year
     # function since this is likely needed in multiple places.
+    return 0 if contract_start.nil?
+    return 0 if period.nil?
     ((period.finish - contract_start.to_datetime) / 365).to_i
   end
 

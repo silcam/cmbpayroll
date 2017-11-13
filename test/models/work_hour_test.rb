@@ -87,6 +87,27 @@ class WorkHourTest < ActiveSupport::TestCase
     assert sickday.sick
   end
 
+  test "Days and Hours Worked with Sick" do
+    jan = Period.new(2018,1)
+    @luke.days_week = "five"
+
+    luke_days_hash = WorkHour.days_hash(@luke, jan.start, jan.finish)
+    assert_equal(0, luke_days_hash.keys.size, "should not have worked in jan yet")
+
+    sickhours = { "2018-01-02" => 8 }
+
+    WorkHour.update(@luke, {}, sickhours)
+    luke_days_hash = WorkHour.days_hash(@luke, jan.start, jan.finish)
+    assert_equal(1, luke_days_hash.keys.size, "1 day worked")
+
+    assert(luke_days_hash[Date.new(2018,1,2)][:hours], "02 Jan should be 0 hours")
+    assert(luke_days_hash[Date.new(2018,1,2)][:sick], "02 Jan should be sick time")
+
+    hours_worked, days_worked = WorkHour.compute_hours_and_days(@luke, jan)
+    assert_equal(1, days_worked, "sick time is a day")
+    assert_equal(8, hours_worked, "sick time is 8 hours")
+  end
+
   test "Days and Hours Worked" do
     dec = Period.new(2017,12)
     @luke.days_week = "five"

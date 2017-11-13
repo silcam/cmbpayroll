@@ -24,7 +24,6 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(123345, tax.cnpswage(), "cnps wage")
     assert_equal(5180, tax.cnps(), "cnps tax")
     assert_equal(0, tax.cac2(), "cac2")
-
   end
 
   test "Test Payslip 72474" do
@@ -112,6 +111,27 @@ class TaxTest < ActiveSupport::TestCase
     SystemVariable.create!(key: :cnps_ceiling, value: 800000)
     tax = Tax.compute_taxes(employee, 943500, 923500)
     assert_equal(33600, tax.cnps())
+  end
+
+  test "Can Figure out Taxes if missing in table" do
+    employee = return_valid_employee()
+    employee.category = "seven"
+    employee.echelon = "a"
+
+    # this isn't in the table
+    tax = Tax.compute_taxes(employee, 5234345, 5234345)
+
+    # but these still work
+    assert_equal(5234250, tax.grosspay, "rounding is correct")
+    assert_equal(52343, tax.ccf(), "ccf")
+    assert_equal(65428, tax.crtv(), "crtv")
+    assert_equal(251244, tax.proportional(), "prportional tax")
+    assert_equal(25124, tax.cac(), "cac")
+    assert_equal(5234345, tax.cnpswage(), "cnps wage")
+    assert_equal(31500, tax.cnps(), "cnps tax") # ceiling
+    assert_equal(0, tax.cac2(), "cac2")
+    assert_equal(250, tax.communal(), "communal tax")
+    assert_equal(425889, tax.total_tax(), "total_tax")
   end
 
   test "round down logic" do

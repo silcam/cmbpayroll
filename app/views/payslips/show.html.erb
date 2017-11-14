@@ -26,7 +26,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 <b>Matricule No.:</b> XXXXXXXXXXXXX<br />
 </p>
 
-<h3>Wages</h3>
+<h3>Wages Summary</h3>
 
 <table class="table table-striped payslip">
   <colgroup>
@@ -35,13 +35,13 @@ Payslip Date: <%= @payslip.payslip_date %><br />
   </colgroup>
 <tr>
   <td>Category:</td>
-  <td><%= @payslip.category %> (<%= @payslip.employee.category %>)</td>
+  <td><%= Employee.categories.invert[@payslip.category]&.humanize %></td>
 </tr><tr>
   <td>Echelon:</td>
-  <td><%= @payslip.echelon %> (<%= @payslip.employee.echelon %>)</td>
+  <td><%= Employee.echelons.invert[@payslip.echelon]&.humanize %></td>
 </tr><tr>
   <td>Wage Scale:</td>
-  <td><%= @payslip.wagescale %> (<%= @payslip.employee.wage_scale %>)</td>
+  <td><%= Employee.wage_scales.invert[@payslip.wagescale]&.humanize %></td>
 </tr><tr>
   <td>Wage:</td>
   <td><%= number_to_currency(@payslip.wage, locale: :cm) %></td>
@@ -51,31 +51,50 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 </tr>
 </table>
 
-<h3>Earnings:</h3>
+<h3>Work Summary:</h3>
 
 <table class="table table-striped payslip">
   <colgroup>
     <col class="col-xs-6"></col>
     <col class="col-xs-6"></col>
   </colgroup>
-<% if @payslip.days %>
+
+<%
+  hours_worked, days_worked = WorkHour.compute_hours_and_days(employee, @payslip.period)
+%>
 <tr>
-  <td>Days Worked:</b></td>
+  <td>Days Employee Worked:</b></td>
   <td><%= @payslip.days %></td>
 </tr>
-<% end %>
-<% if @payslip.hours %>
 <tr>
-  <td>Hours Worked:</b></td>
+  <td>Total Workdays Per Month</td>
+  <td><%= employee.workdays_per_month(@payslip.period) %></td>
+</tr>
+<tr>
+  <td>Hours Employee Worked:</b></td>
   <td><%= @payslip.hours %></td>
 </tr>
-<% end %>
-<% if !@payslip.days && !@payslip.hours %>
 <tr>
-  <td>Worked Full Month?:</b></td>
-  <td>Yes</td>
+  <td>Employee Worked Full Month?</td>
+  <td><%= @payslip.worked_full_month?.to_s.humanize %></td>
 </tr>
-<% end %>
+<tr>
+  <td>Employee Paid Monthly?</td>
+  <td><%= employee.paid_monthly?.to_s.humanize %></td>
+</tr>
+<tr>
+  <td>Hourly Rate?</td>
+  <td><%= number_to_currency(@payslip.hourly_rate, locale: :cm) %></td>
+</tr>
+<tr>
+  <td>Daily Rate?</td>
+  <td><%= number_to_currency(@payslip.daily_rate, locale: :cm) %></td>
+</tr>
+</table>
+
+<h3>Earnings:</h3>
+
+<table class="table table-striped payslip">
 <tr>
   <td>Overtime Hours Worked (&lt; 8 hours):</b></td>
   <td><%= @payslip.overtime_hours %> hours @ <%= number_to_currency(@payslip.overtime_rate, locale: :cm) %></td>
@@ -90,13 +109,19 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 </tr>
 <% @payslip.earnings.where(is_bonus: false).each do |record| %>
   <tr>
-    <td>Hours Earnings</td>
-    <td><%= record.hours %> hours @ <%= record.rate %> CFA
-    <% if record.overtime? %>
-      (Overtime Hours)
-    <% else %>
-      (Normal Hours)
-    <% end %>
+    <td>Earnings
+      <% if record.hours %>
+        <%= record.hours %> hours @ <%= record.rate %> CFA
+        <% if record.overtime? %>
+          (Overtime Hours)
+        <% else %>
+          (Normal Hours)
+        <% end %>
+      <% else %>
+        (<%= record.description %>)
+      <% end %>
+    </td>
+    <td><%= number_to_currency(record.amount, locale: :cm) %></td>
   </tr>
 <% end %>
 <tr>

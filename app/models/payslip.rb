@@ -97,12 +97,34 @@ class Payslip < ApplicationRecord
   end
 
   def base_pay
+    # If we have a bonus base, we've already run
+    if (self[:bonusbase])
+      return self[:basepay]
+    end
+
+    days_worked = WorkHour.days_worked(employee, period)
+    hours_worked = WorkHour.hours_worked(employee, period)
+
+    earning = Earning.new
+
     if (worked_full_month? && employee.paid_monthly?)
-      employee.wage
-    elsif (employee.paid_monthly?)
-      daily_earnings
+      earning.description = "Monthly Wages"
+      earning.amount = employee.wage
+    elsif (employee.paid_monthly? && days_worked > 0)
+      earning.description = "Daily earnings for #{days_worked} days"
+      earning.rate = employee.daily_rate
+      earning.amount = daily_earnings
+    elsif (!employee.paid_monthly? && hours_worked > 0)
+      earning.description = "Hourly earnings for #{hours_worked} hours"
+      earning.rate = employee.hourly_rate
+      earning.amount = hourly_earnings
+    end
+
+    if (earning.amount && earning.amount > 0)
+      earnings << earning
+      self[:basepay] = earning.amount
     else
-      hourly_earnings
+      self[:basepay] = 0
     end
   end
 
@@ -136,6 +158,11 @@ class Payslip < ApplicationRecord
   end
 
   def overtime_earnings
+    # If we have a bonusbase, we've already run this.
+    if (self[:bonusbase])
+      return self[:overtime_earnings]
+    end
+
     hours = WorkHour.total_hours(employee, period)
 
     ot, ot2, ot3 = 0, 0, 0
@@ -149,6 +176,7 @@ class Payslip < ApplicationRecord
     ot2_earnings = ot2 * employee.ot2rate
     ot3_earnings = ot3 * employee.ot3rate
 
+    # TODO: remove these columns
     self[:overtime_hours] = ot
     self[:overtime2_hours] = ot2
     self[:overtime3_hours] = ot3
@@ -156,37 +184,39 @@ class Payslip < ApplicationRecord
     self[:overtime2_rate] = employee.ot2rate
     self[:overtime3_rate] = employee.ot3rate
 
-    ot_earnings + ot2_earnings + ot3_earnings
+    otearn = Earning.new(amount: ot_earnings, description: "OT hours",
+        hours: ot, rate: employee.otrate, overtime: true);
+    ot2earn = Earning.new(amount: ot2_earnings, description: "OT2 hours",
+        hours: ot2, rate: employee.ot2rate, overtime: true);
+    ot3earn = Earning.new(amount: ot3_earnings, description: "OT3 hours",
+        hours: ot3, rate: employee.ot3rate, overtime: true);
+
+    earnings << otearn
+    earnings << ot2earn
+    earnings << ot3earn
+
+    self[:overtime_earnings] = ot_earnings + ot2_earnings + ot3_earnings
   end
 
-  def c_bonusbase
-    ( base_pay() + overtime_earnings() ).ceil
+  def compute_bonusbase
+    self[:bonusbase] = ( base_pay + overtime_earnings ).ceil
   end
 
-  def c_caissebase
-    ( c_bonusbase() + seniority_bonus() ).ceil
+  def compute_caissebase
+    self[:caissebase] = ( compute_bonusbase + seniority_bonus ).ceil
   end
 
-  def c_cnpswage
-    ( c_caissebase() + bonus_total() + misc_pay() ).ceil
+  def compute_cnpswage
+    self[:cnpswage] = ( compute_caissebase + process_bonuses + misc_pay ).ceil
   end
 
-  def c_taxable
-    transportation = employee.transportation() ?
+  def process_taxable_wage()
+    transportation = employee.transportation ?
         employee.transportation : 0
-    ( c_cnpswage() + transportation ).ceil
-  end
 
-  def process_wages()
-    self[:basepay] = base_pay()
-    self[:bonusbase] = c_bonusbase()
-    self[:caissebase] = c_caissebase()
+    self[:taxable] = ( compute_cnpswage + transportation ).ceil
 
-    self[:bonuspay] = process_bonuses()
-
-    self[:cnpswage] = c_cnpswage()
-    self[:taxable] = c_taxable()
-    self[:gross_pay] = taxable
+    self[:gross_pay] = self[:taxable]
   end
 
   def process_taxes
@@ -204,8 +234,7 @@ class Payslip < ApplicationRecord
     self[:total_tax] = tax.total_tax
   end
 
-  # Based on all calculations, compute net pay
-  # From gross pay and all total deductions
+  # After all calculations, compute net pay from gross pay less all deductions
   def compute_net_pay
     self[:net_pay] = self[:gross_pay] - self[:total_tax] - total_deductions()
   end
@@ -213,12 +242,17 @@ class Payslip < ApplicationRecord
   def process_vacation_pay
     pay = calculate_vacation_pay(cnpswage, vacation_used)
     if pay > 0
+
+      # TODO: is this right?
+      #self[:taxable] += pay
+      #self[:gross_pay] += pay
+
       earnings.create(description: 'Salaire de congé', amount: pay)
     end
   end
 
   def bonus_total
-    earnings.where(is_bonus: true).sum(:amount)
+    earnings.where(is_bonus: true).sum(:amount).floor
   end
 
   def store_employee_attributes
@@ -232,6 +266,30 @@ class Payslip < ApplicationRecord
 
     self[:hourly_rate] = employee.hourly_rate
     self[:daily_rate] = employee.daily_rate
+  end
+
+  # Clear values and prepare for the payslip to be
+  # reprocessed.
+  def reset_payslip
+    self[:wage] = nil
+    self[:basewage] = nil
+    self[:transportation] = nil
+
+    self[:category] = nil
+    self[:echelon] = nil
+    self[:wagescale] = nil
+
+    self[:hourly_rate] = nil
+    self[:daily_rate] = nil
+
+    self[:basepay] = nil
+    self[:bonusbase] = nil
+    self[:caissebase] = nil
+    self[:cnpswage] = nil
+    self[:taxable] = nil
+
+    earnings.delete_all
+    deductions.delete_all
   end
 
   def seniority_bonus
@@ -252,7 +310,61 @@ class Payslip < ApplicationRecord
 
   private
 
+  def self.process_payslip(employee, period, with_advance)
+    # Do all the stuff that is needed to process a payslip for this user
+    # TODO: more validation
+    # TODO: Are there rules that the period must be
+    #         the current period? (or the previous period)?
+
+    # Is this correct behavior, or throw exception?
+    return nil unless employee.is_currently_paid?
+
+    payslip = Payslip.find_by(
+                  employee_id: employee.id,
+                  period_year: period.year,
+                  period_month: period.month)
+
+    if (payslip.nil?)
+      employee.save
+      payslip = employee.payslips.build(period_year: period.year,
+        period_month: period.month, payslip_date: Date.today)
+    end
+
+    begin
+
+      if (with_advance)
+        self.process_advance(employee, period)
+      end
+
+      payslip.reset_payslip
+
+      self.process_vacation(payslip, employee, period)
+      self.process_earnings_and_taxes(payslip, employee, period)
+
+      self.process_charges(payslip, employee)
+      self.process_employee_deductions(payslip, employee)
+      self.process_loans(payslip, employee, period)
+
+      payslip.compute_net_pay
+
+      payslip.last_processed = DateTime.now
+      payslip.save
+
+    rescue Exception => e
+      Rails.logger.error("Error processing payslip #{payslip.id} : #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      payslip.errors[:base] << e.message
+    end
+
+    return payslip
+  end
+
   def process_bonuses
+    # If we have a CNPS wage, we've already done this.
+    if (self[:cnpswage])
+      return self[:bonuspay]
+    end
+
     base = caissebase
     bonus_total = 0
 
@@ -261,21 +373,17 @@ class Payslip < ApplicationRecord
       earning.description = bonus.name
 
       if (bonus.percentage?)
-        effective_bonus = (bonus.quantity * base)
-
-        earning.amount = effective_bonus
         earning.percentage = bonus.quantity
-        bonus_total += effective_bonus
-      else
-        bonus_total += bonus.quantity
-        earning.amount = bonus.quantity
       end
 
+      earning.amount = bonus.effective_bonus(base).floor
       earning.is_bonus = true
       earnings << earning
+
+      bonus_total += earning.amount
     end
 
-    bonus_total
+    self[:bonuspay] = bonus_total
   end
 
   def calculate_vacation_pay(cnpswage, vacation_used)
@@ -313,78 +421,11 @@ class Payslip < ApplicationRecord
         SystemVariable.value(:seniority_waiting_years)
   end
 
-  def self.process_payslip(employee, period, with_advance)
-    # Do all the stuff that is needed to process a payslip for this user
-    # TODO: more validation
-    # TODO: Are there rules that the period must be
-    #         the current period? (or the previous period)?
-
-    # Is this correct behavior, or throw exception?
-    return nil unless employee.is_currently_paid?
-
-    payslip = Payslip.find_by(
-                  employee_id: employee.id,
-                  period_year: period.year,
-                  period_month: period.month)
-
-    if (payslip.nil?)
-      employee.save
-      payslip = employee.payslips.build(period_year: period.year,
-        period_month: period.month, payslip_date: Date.today)
-    end
-
-    begin
-
-      if (with_advance)
-        self.process_advance(employee, period)
-      end
-
-      self.process_vacation(payslip, employee, period)
-
-      payslip.earnings.delete_all
-      self.process_earnings_and_taxes(payslip, employee, period)
-
-      payslip.deductions.delete_all
-      self.process_charges(payslip, employee)
-      self.process_employee_deductions(payslip, employee)
-      self.process_loans(payslip, employee, period)
-
-      payslip.compute_net_pay
-
-      payslip.last_processed = DateTime.now
-      payslip.save
-
-    rescue Exception => e
-      Rails.logger.error("Error processing payslip #{payslip.id} : #{e.message}")
-      Rails.logger.error(e.backtrace.join("\n"))
-      payslip.errors[:base] << e.message
-    end
-
-    return payslip
-  end
-
   def self.process_earnings_and_taxes(payslip, employee, period)
-    self.process_hours(payslip, employee, period)
     payslip.store_employee_attributes
-    payslip.process_wages
-    payslip.process_taxes
+    payslip.process_taxable_wage
     payslip.process_vacation_pay
-  end
-
-  def self.process_hours(payslip, employee, period)
-    hours = WorkHour.total_hours(employee, period)
-
-    hours.each do |key, value|
-      earning = Earning.new
-      earning.rate = employee.wage
-      earning.hours = value
-
-      if (key == :holiday)
-        earning.overtime = true
-      end
-
-      payslip.earnings << earning
-    end
+    payslip.process_taxes
   end
 
   def self.process_charges(payslip, employee)

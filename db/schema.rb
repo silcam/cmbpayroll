@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171108151758) do
+ActiveRecord::Schema.define(version: 20171114102321) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 20171108151758) do
     t.string "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "maximum"
   end
 
   create_table "bonuses_employees", id: false, force: :cascade do |t|
@@ -228,6 +229,7 @@ ActiveRecord::Schema.define(version: 20171108151758) do
     t.integer "seniority_bonus_amount"
     t.integer "years_of_service"
     t.decimal "seniority_benefit"
+    t.decimal "overtime_earnings"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 

@@ -23,12 +23,11 @@ class BonusTest < ActiveSupport::TestCase
       bonus.bonus_type = "percentage"
     end
 
+    bonus.valid?
     assert bonus.valid?, "bonus is valid"
   end
 
-
   def test_amount_must_be_number
-
     bonus.name = "Test Bonus"
 
     assert_raise(ActiveRecord::RecordInvalid) do
@@ -76,6 +75,49 @@ class BonusTest < ActiveSupport::TestCase
     bonus.quantity = "100.5"
     refute bonus.valid?, "cannot have fractional CFA"
 
+    bonus.name = "Test Bonus"
+    bonus.bonus_type = "fixed"
+    bonus.quantity = "100"
+    assert bonus.valid?, "OK"
+    bonus.maximum = "20000"
+    refute bonus.valid?, "cannot have maximum with fixed CFA"
+
+    bonus = Bonus.new
+
+    bonus.name = "Test Bonus"
+    bonus.bonus_type = "percentage"
+    bonus.ext_quantity = 30
+    bonus.valid?
+    assert bonus.valid?, "OK"
+    bonus.maximum = 20000
+    assert bonus.valid?, "can have maximum with percentage bonus"
+
+    bonus.maximum = "AAA"
+    refute bonus.valid?, "can't be a string"
+
+    bonus.maximum = 200.123
+    refute bonus.valid?, "must be an integer"
+
+    bonus.maximum = 200
+    assert bonus.valid?, "OK"
+  end
+
+  test "computes effective bonus" do
+
+    bonus = Bonus.new
+    bonus.name = "Test Bonus"
+    bonus.bonus_type = "percentage"
+    bonus.ext_quantity = 30
+
+    assert_equal(45000, bonus.effective_bonus(150000))
+    bonus.maximum = "20000"
+    assert_equal(20000, bonus.effective_bonus(150000))
+
+    bonus = Bonus.new
+    bonus.name = "Test Bonus"
+    bonus.bonus_type = "fixed"
+    bonus.ext_quantity = 50000
+    assert_equal(50000, bonus.effective_bonus(150000))
   end
 
   def test_ext_quantity

@@ -22,6 +22,7 @@
         <td><%= bonus.name %></td>
         <td><%= bonus.display_quantity %></td>
         <td><%= bonus.comment %></td>
+        <td><%= bonus.maximum %></td>
         <% unless @employee %>
           <td><%= link_to t(:Edit), edit_bonus_path(bonus) %></td>
           <td><%= link_to t(:Delete), bonus, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>

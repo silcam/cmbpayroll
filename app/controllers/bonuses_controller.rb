@@ -91,6 +91,6 @@ class BonusesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def bonus_params
-      params.require(:bonus).permit(:name, :quantity, :bonus_type, :comment, :ext_quantity)
+      params.require(:bonus).permit(:name, :quantity, :bonus_type, :maximum, :comment, :ext_quantity)
     end
 end

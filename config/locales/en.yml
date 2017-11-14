@@ -240,6 +240,7 @@ en:
   No_bonuses: No Bonuses
   Must_be_between_zero_and_one_hundred: 'must be between 0 and 100'
   Must_be_a_number: must be a number
+  Maximum: Maximum
 
   # Raises
   New_raise: New Raise

@@ -463,6 +463,36 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(16, employee1.workdays_per_month(dec17))
   end
 
+  test "number of children under 6 and 19" do
+    employee = return_valid_employee()
+
+    assert_equal(0, employee.children.size)
+    assert_equal(0, employee.children_under_6)
+    assert_equal(0, employee.children_under_19)
+
+    child = Child.new
+    child.first_name = "Older"
+    child.last_name = "Child"
+    child.birth_date = "2000-01-01"
+    child.is_student = true
+    employee.person.children << child
+
+    assert_equal(1, employee.person.children.size)
+    assert_equal(0, employee.children_under_6)
+    assert_equal(1, employee.children_under_19)
+
+    child = Child.new
+    child.first_name = "Younger"
+    child.last_name = "Child"
+    child.birth_date = "2015-01-01"
+    child.is_student = false
+    employee.person.children << child
+
+    assert_equal(2, employee.person.children.size)
+    assert_equal(1, employee.children_under_6)
+    assert_equal(2, employee.children_under_19)
+  end
+
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',

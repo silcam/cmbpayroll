@@ -215,6 +215,14 @@ class Employee < ApplicationRecord
     hourly_rate * SystemVariable.value(:ot3)
   end
 
+  def children_under_6
+    person.children.under_6.count()
+  end
+
+  def children_under_19
+    person.children.under_19.count()
+  end
+
   def self.search(query)
     joins(:person).where("people.first_name || ' ' || people.last_name ILIKE ?", "%#{query}%")
   end

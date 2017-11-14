@@ -60,6 +60,10 @@ en:
   cant_be_during_posted_period: is in a period that is already posted.
   cant_change_during_posted_period: is in a period that is already posted.
 
+  # Alerts
+  never_had_raise: "%{name} started %{date} and has never had a raise."
+  no_raise_since: "%{name} has not received a raise since %{date}."
+
   # Time and Date
   Date: Date
   Hours: Hours

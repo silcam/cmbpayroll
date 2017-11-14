@@ -1,0 +1,14 @@
+<% if current_user.admin? and not @alerts.empty? %>
+  <h2><%= t :Alerts %></h2>
+  <hr>
+  <ul class="list-unstyled feed">
+    <% @alerts.each do |alert| %>
+      <li>
+        <p>
+          <%= alert.text %>
+          <%= link_to t(:View), alert.object unless alert.object.nil? %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

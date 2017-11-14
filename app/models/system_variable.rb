@@ -31,7 +31,8 @@ class SystemVariable < ApplicationRecord
     proportional_rate: 0.048,
     communal_cutoff: 100000,
     communal_low: 166,
-    communal_high: 250
+    communal_high: 250,
+    raise_interval: 4
   }
 
   def self.value(key)

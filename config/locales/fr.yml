@@ -60,6 +60,10 @@ fr:
   cant_be_during_posted_period: est en un mois déjà finalisé.
   cant_change_during_posted_period: est en un mois déjà finalisé.
 
+  # Alerts
+  never_had_raise: "%{name} a commencé le %{date} et n'a jamais reçu une augmentation."
+  no_raise_since: "%{name} n'a pas reçu une augmentation depuis le %{date}."
+
   #Time and Date
   Date: Date
   Hours: Heures

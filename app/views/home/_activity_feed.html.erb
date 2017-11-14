@@ -1,3 +1,4 @@
+<% if current_user.admin? %>
     <h2><%= t :Activity_feed %></h2>
     <hr>
     <ul class="list-unstyled feed">
@@ -13,3 +14,4 @@
         <%= link_to t(:More_history), '#' %>
       </li>
     </ul>
+<% end %>

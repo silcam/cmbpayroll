@@ -11,10 +11,10 @@
     <%= form_tag("/payslips/process", method: "post") do %>
 
     <p>
-      Process a payslip for: <%= collection_select(:employee, :id, @employees, :id, :full_name, {:prompt => "Select an employee..."}) %>
+      Process a payslip for: <%= collection_select(:employee, :id, @employees, :id, :full_name, {prompt: "Select an employee..."}, class: 'form-control') %>
     </p>
 
-    <%= submit_tag("Submit") %>
+    <%= submit_tag("Submit", class: 'btn btn-primary') %>
     <% end %>
 
     <hr />
@@ -25,7 +25,7 @@
       Process all payslips for the current period (<%= current_period %>)<br />
     </p>
 
-    <%= submit_tag("Submit") %>
+    <%= submit_tag("Submit", class: 'btn btn-primary') %>
     <% end %>
 
     <hr />
@@ -37,7 +37,7 @@
       No further changes to this period will be permitted.
     </p>
 
-    <%= submit_tag("Submit") %>
+    <%= submit_tag("Submit", class: 'btn btn-primary') %>
     <% end %>
 
     <hr />
@@ -48,7 +48,7 @@
         <span class="alert-danger">Use with care.</span>
       </p>
 
-      <%= submit_tag("Submit") %>
+      <%= submit_tag("Submit", class: 'btn btn-warning') %>
     <% end %>
 
     <hr />
@@ -57,10 +57,11 @@
     <input type="hidden" name="advance" value="true" />
 
     <p>
-      Process a <em><b>MID-MONTH ADVANCE</b></em> payslip for: <%= collection_select(:employee, :id, @employees, :id, :full_name, {:prompt => "Select an employee..."}) %>
+      Process a <em><b>MID-MONTH ADVANCE</b></em> payslip for:
+      <%= collection_select(:employee, :id, @employees, :id, :full_name, {prompt: "Select an employee..."}, class: 'form-control') %>
     </p>
 
-    <%= submit_tag("Submit") %>
+    <%= submit_tag("Submit", class: 'btn btn-primary') %>
     <% end %>
 
 

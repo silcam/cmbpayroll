@@ -250,7 +250,6 @@ fr:
   New_raise: Nouvelle augmentation
   Raise: Augmentation
 
-
   # Reports
   Reports: Rapports
   Report: Rapport
@@ -309,6 +308,8 @@ fr:
   reports:
     Employee_report: Le Rapport des Employés
     Employee_report_by_dept: Le Rapport des Employés par Département
+    Cnps_report: Le Rapport CNPS
+    Employee_deduction_report: Le Rapport des prélèvements des employées
     Download_report_as: Télécharger le rapport comme
     Report_for_period: Le rapport pour la période
     Select_a_report: Choisissez un rapport

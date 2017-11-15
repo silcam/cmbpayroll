@@ -15,6 +15,18 @@ class ReportsController < ApplicationController
           name: "Employee Report - By Department",
           instance: Proc.new{|p| EmployeeByDepartmentReport.new()}
     },
+    'cnps' => {
+          name: "CNPS Report",
+          instance: Proc.new{|p| CnpsReport.new()}
+    },
+    'employee_vacation' => {
+          name: "Employee Vacation Report",
+          instance: Proc.new{|p| EmployeeVacationReport.new()}
+    },
+    'employee_deduction' => {
+          name: "Employee Deduction Report",
+          instance: Proc.new{|p| EmployeeDeductionReport.new()}
+    },
     'dept_charges' => {
           name: "Department Charges Report",
           instance: Proc.new{|p| EmployeeReport.new()}

@@ -6,8 +6,11 @@ class PayslipCorrection < ApplicationRecord
   validates :vacation_days, numericality: true
 
   def self.current
-    current_period = LastPostedPeriod.current
-    where(applied_year: current_period.year, applied_month: current_period.month)
+    for_period(LastPostedPeriod.current)
+  end
+
+  def self.for_period(period)
+    where(applied_year: period.year, applied_month: period.month)
   end
 
   def cfa_credit

@@ -165,6 +165,21 @@ en:
   post_success_message: Pay period successfully posted.
   post_failure_message: Errors prevented this pay period from being posted.
 
+  # Payslip Corrections
+  Payslip_corrections: Payslip Corrections
+  Payslip_correction: Payslip Correction
+  Corrected_payslip: Corrected Payslip
+  CFA_credit: CFA Credit
+  CFA_debit: CFA Debit
+  Vacation_days_credit: Vacation Days Credit
+  Vacation_days_debit: Vacation Days Debit
+  Add_correction: Add Correction
+  CFA_correction: CFA Correction
+  Vacation_days_correction: Vacation Days Correction
+  Credit: Credit
+  Debit: Debit
+  Delete_payslip_correction: Delete Payslip Correction
+
   # WorkHours
   Enter_hours: Enter Hours
   Enter_hours_overtime: Enter Hours / Overtime
@@ -293,6 +308,7 @@ en:
 
   # Admin Index
   Payslips_admin_description: Post Payslips and Pay Periods for Employees
+  Payslip_corrections_description: Correct posted payslips
   Holidays_admin_description: Add or Modify Yearly Holidays
   Charges_admin_description: Add or Modify Standard Charges
   Supervisors_admin_description: Manage supervisors

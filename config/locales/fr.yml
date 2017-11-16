@@ -169,6 +169,21 @@ fr:
   post_success_message: Mois finalisé.
   post_failure_message: Des erreurs ont bloqué la finalisation de ce mois.
 
+  # Payslip Corrections
+  Payslip_corrections: Corrections de paie
+  Payslip_correction: Correction de paie
+  Corrected_payslip: Bulletin de paie corrigé
+  CFA_credit: Crédit CFA
+  CFA_debit: Débit CFA
+  Vacation_days_credit: Crédit jours congés
+  Vacation_days_debit: Débit jours congés
+  Add_correction: Corriger un bulletin de paie
+  CFA_correction: Correction en CFA
+  Vacation_days_correction: Correction en jours congés
+  Credit: Crédit
+  Debit: Débit
+  Delete_payslip_correction: Supprimer correction
+
   # WorkHours
   Enter_hours: Saisir heures
   Enter_hours_overtime: Saisir heures (supplémentaires)
@@ -298,6 +313,7 @@ fr:
 
   # Admin Index
   Payslips_admin_description: Création des bullitens de paie et finalisation des mois
+  Payslip_corrections_description: Faire les corrections pour des bullitens de paie déjà finalisés
   Holidays_admin_description: Ajouter ou modifier les jours fériés
   Charges_admin_description: Ajouter ou modifier les notes standard des charges
   Supervisors_admin_description: Gestion de superviseurs

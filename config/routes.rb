@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :bonuses
   resources :work_loans, only: [ :index, :new, :create, :destroy ]
   resources :departments
+  resources :payslip_corrections
   resources :holidays, except: [:show, :new] do
     collection do
       post 'generate/:year', to: 'holidays#generate', as: :generate

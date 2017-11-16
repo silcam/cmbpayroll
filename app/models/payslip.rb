@@ -15,6 +15,12 @@ class Payslip < ApplicationRecord
     where(period_year: period.year, period_month: period.month)
   }
 
+  scope :posted, -> {
+    period = LastPostedPeriod.current
+    where("period_year < :year OR (period_year = :year AND period_month < :month)", {year: period.year, month: period.month})
+    .order(period_year: :desc, period_month: :desc)
+  }
+
   def previous
     period = Period.new(period_year, period_month).previous
     Payslip.find_by employee: employee, period_year: period.year, period_month: period.month

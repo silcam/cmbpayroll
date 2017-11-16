@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171114102321) do
+ActiveRecord::Schema.define(version: 20171115135807) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -174,6 +174,18 @@ ActiveRecord::Schema.define(version: 20171114102321) do
     t.datetime "updated_at", null: false
     t.bigint "employee_id"
     t.index ["employee_id"], name: "index_loans_on_employee_id"
+  end
+
+  create_table "payslip_corrections", force: :cascade do |t|
+    t.bigint "payslip_id"
+    t.integer "applied_year"
+    t.integer "applied_month"
+    t.integer "cfa", default: 0
+    t.float "vacation_days", default: 0.0
+    t.string "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["payslip_id"], name: "index_payslip_corrections_on_payslip_id"
   end
 
   create_table "payslips", force: :cascade do |t|

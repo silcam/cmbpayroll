@@ -7,6 +7,9 @@ class User < ApplicationRecord
 
   enum language: [:en, :fr]
 
-  enum role: { user: 0, supervisor: 1, admin: 2 }
+  enum role: { user: 0, admin: 2 }
 
+  def supervisor?
+    not person.supervisor.nil?
+  end
 end

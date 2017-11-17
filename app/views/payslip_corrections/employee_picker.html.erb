@@ -1,0 +1,14 @@
+<h2><%= t :Payslip_correction %></h2>
+
+<form action="/payslip_corrections/new" method="get" class="auto-width">
+
+  <div class="form-group">
+    <label><%= t :Employee %></label>
+    <%= collection_select :payslip, :employee_id, Employee.active, :id, :full_name, {}, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= submit_tag t(:Next), class: 'btn btn-primary' %>
+  </div>
+
+</form>

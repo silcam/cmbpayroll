@@ -19,6 +19,7 @@ class Employee < ApplicationRecord
   has_many :payslips
   has_many :loans
   has_many :raises
+  has_many :payslip_corrections, through: :payslips
 
   has_and_belongs_to_many :bonuses
 

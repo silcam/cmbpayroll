@@ -1,0 +1,32 @@
+<h2><%= t :Payslip_corrections %></h2>
+
+<p>
+  <%= link_to t(:Add_correction), new_payslip_correction_path, class: 'btn btn-primary' %>
+</p>
+
+<% unless @corrections.empty? %>
+  <table class="table">
+    <tr>
+      <th><%= t :Employee %></th>
+      <th><%= t :Corrected_payslip %></th>
+      <th><%= t :CFA_credit %></th>
+      <th><%= t :CFA_debit %></th>
+      <th><%= t :Vacation_days_credit %></th>
+      <th><%= t :Vacation_days_debit %></th>
+      <th><%= t :Note %></th>
+      <th></th>
+    </tr>
+    <% @corrections.each do |correction| %>
+      <tr>
+        <td><%= correction.employee.full_name %></td>
+        <td><%= link_to correction.payslip.period.short_name, correction.payslip %></td>
+        <td><%= correction.cfa_credit %></td>
+        <td><%= correction.cfa_debit %></td>
+        <td><%= correction.vacation_days_credit %></td>
+        <td><%= correction.vacation_days_debit %></td>
+        <td><%= correction.note %></td>
+        <td><%= link_to t(:Edit), edit_payslip_correction_path(correction) %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

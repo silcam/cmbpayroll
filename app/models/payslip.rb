@@ -2,17 +2,23 @@ class Payslip < ApplicationRecord
 
   has_many :earnings
   has_many :deductions
+  has_many :payslip_corrections
 
   belongs_to :employee
 
   validate :has_earnings?
   validates :period_year,
             :period_month,
-            :payslip_date,
                presence: {message: I18n.t(:Not_blank)}
 
   scope :for_period, ->(period) {
     where(period_year: period.year, period_month: period.month)
+  }
+
+  scope :posted, -> {
+    period = LastPostedPeriod.current
+    where("period_year < :year OR (period_year = :year AND period_month < :month)", {year: period.year, month: period.month})
+    .order(period_year: :desc, period_month: :desc)
   }
 
   def previous
@@ -344,6 +350,7 @@ class Payslip < ApplicationRecord
       self.process_charges(payslip, employee)
       self.process_employee_deductions(payslip, employee)
       self.process_loans(payslip, employee, period)
+      self.process_payslip_corrections(payslip, employee, period)
 
       payslip.compute_net_pay
 
@@ -503,4 +510,18 @@ class Payslip < ApplicationRecord
     payslip.loan_balance = Loan.total_balance(employee)
   end
 
+  def self.process_payslip_corrections(payslip, employee, period)
+    corrections = employee.payslip_corrections.for_period(period)
+    corrections.each do |correction|
+      if correction.cfa_credit
+        payslip.earnings << Earning.new(amount: correction.cfa_credit, description: "Correction pour le bulletin de #{correction.payslip.period} : #{correction.note}")
+      elsif correction.cfa_debit
+        payslip.deductions << Deduction.new(amount: correction.cfa_debit, date: period.finish, note: "Correction pour le bulletin de #{correction.payslip.period} : #{correction.note}")
+      end
+
+      unless correction.vacation_days == 0
+        payslip.vacation_balance += correction.vacation_days
+      end
+    end
+  end
 end

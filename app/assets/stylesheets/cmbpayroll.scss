@@ -63,6 +63,10 @@ div.error-explanation {
   }
 }
 
+div.field_with_errors {
+  display: inline-block;
+}
+
 form#search-form {
   padding-top: 20px;
   input[type=text] {

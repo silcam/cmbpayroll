@@ -1,0 +1,44 @@
+<h2>
+  <%= t :Payslip_correction %>
+  <small><%= @employee.full_name %></small>
+</h2>
+
+<%= render 'shared/error_messages', errors: @correction.errors %>
+
+<%= form_for @correction, html: {class: 'auto-width'} do |form| %>
+
+  <%= hidden_field_tag 'payslip_correction[employee_id]', @employee.id %>
+
+  <div class="form-group">
+    <label><%= t :Period %></label>
+    <%= form.collection_select :payslip_id, @employee.payslips.posted, :id, :period, {}, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <label><%= t :CFA_correction %></label><br />
+    <% selected = (@correction.cfa.nil? or @correction.cfa>=0) ? 'Credit' : 'Debit' %>
+    <% @correction.cfa = @correction.cfa.abs %>
+    <%= select_tag 'payslip_correction[cfa_credit]', options_for_select([:Credit, :Debit].collect{ |k| [t(k), k] }, selected), class: 'form-control form-control-inline' %>
+    <%= form.text_field :cfa, size: '6', class: 'form-control form-control-inline' %>
+    CFA
+  </div>
+
+  <div class="form-group">
+    <label><%= t :Vacation_days_correction %></label><br />
+    <% selected = (@correction.vacation_days.nil? or @correction.vacation_days>=0) ? 'Credit' : 'Debit' %>
+    <% @correction.vacation_days = @correction.vacation_days.abs %>
+    <%= select_tag 'payslip_correction[vacation_days_credit]', options_for_select([:Credit, :Debit].collect{ |k| [t(k), k] }, selected), class: 'form-control form-control-inline' %>
+    <%= form.text_field :vacation_days, size: '6', class: 'form-control form-control-inline' %>
+    <%= t :Days %>
+  </div>
+
+  <div class="form-group">
+    <label><%= t :Note %></label>
+    <%= form.text_field :note, size: 36, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.submit t(:Save), class: 'btn btn-primary' %>
+  </div>
+
+<% end %>

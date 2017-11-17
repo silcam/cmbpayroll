@@ -59,21 +59,21 @@ class PayslipTest < ActiveSupport::TestCase
     assert(payslip.valid?)
   end
 
-  test "is not valid without payslip date" do
-    employee = return_valid_employee()
-
-    payslip = employee.payslips.create()
-
-    #payslip.payslip_date = "2017-07-31"
-    payslip.period_year = Period.current.year
-    payslip.period_month = Period.current.month
-
-    create_earnings(payslip)
-
-    refute(payslip.valid?)
-    payslip.payslip_date = "2017-07-31"
-    assert(payslip.valid?)
-  end
+  # test "is not valid without payslip date" do
+  #   employee = return_valid_employee()
+  #
+  #   payslip = employee.payslips.create()
+  #
+  #   #payslip.payslip_date = "2017-07-31"
+  #   payslip.period_year = Period.current.year
+  #   payslip.period_month = Period.current.month
+  #
+  #   create_earnings(payslip)
+  #
+  #   refute(payslip.valid?)
+  #   payslip.payslip_date = "2017-07-31"
+  #   assert(payslip.valid?)
+  # end
 
   test "is not valid without period start" do
     employee = return_valid_employee()

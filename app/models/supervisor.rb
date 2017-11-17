@@ -3,10 +3,19 @@ class Supervisor < ApplicationRecord
 
   has_many :employees, dependent: :restrict_with_exception
 
-  def employees_and_sup
-    sup_emp = Employee.find_by(person_id: person.id)
-    sup_emp.nil? ?
-        employees :
-        Employee.where("supervisor_id=? OR person_id=?", id, person.id)
+  def all_employees_and_me
+    all = all_employees
+    all.insert 0, person.employee unless person.employee.nil?
+    all
+  end
+
+  def all_employees
+    all = employees
+    employees.each do |employee|
+      if employee.person.supervisor
+        all += employee.person.supervisor.all_employees
+      end
+    end
+    all.sort{ |a,b| a.full_name_rev <=> b.full_name_rev }
   end
 end

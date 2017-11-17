@@ -112,52 +112,45 @@ class AccessPolicy
     role :supervisor, proc { |user| user.supervisor?} do
       # permissions go here
 
-      # TODO, multi-level supervisors
       can :read, Employee do |employee, user|
         # can read if this user is the employee's supervisor or if self
-        employee.supervisor.person.id == user.person.id or
+        employee.supervised_by?(user.person.try(:supervisor)) or
             employee.person.id == user.person.id
       end
 
-      # TODO, multi-level supervisors
       can :update, Employee do |employee, user|
         # can update if user is employee's supervisor
-        employee.supervisor.person.id == user.person.id
+        employee.supervised_by?(user.person.try(:supervisor))
       end
 
-      # can read self
-      can :read, User do |user, cur_user|
-        user == cur_user
-      end
-
-      # can update self
-      can :update, User do |user, cur_user|
+      # can read and update self
+      can [:read, :update], User do |user, cur_user|
         user == cur_user
       end
 
       can :read, Payslip do |payslip, user|
         # can read if personal payslip
-        payslip.employee.supervisor.person.id == user.person.id
+        payslip.employee.supervisor.person == user.person
       end
 
       can :read, Charge do |charge, user|
         # can read if charge is for reporting employee
-        charge.employee.supervisor.person.id == user.person.id
+        charge.employee.supervisor.person == user.person
       end
 
       can :read, Loan do |loan, user|
         # can read if loan is for reporting employee
-        loan.employee.supervisor.person.id == user.person.id
+        loan.employee.supervisor.person == user.person
       end
 
       can :read, LoanPayment do |loan_payment, user|
         # can read if loan_payment is for reporting employee
-        loan_payment.loan.employee.supervisor.person.id == user.person.id
+        loan_payment.loan.employee.supervisor.person == user.person
       end
 
       can :read, WorkHour do |work_hour, user|
         # can read if work_hour is for reporting employee
-        work_hour.employee.supervisor.person.id == user.person.id
+        work_hour.employee.supervisor.person == user.person
       end
     end
 
@@ -168,7 +161,7 @@ class AccessPolicy
 
       can :read, Employee do |employee, user|
         # can read if looking at self
-        employee.person.id == user.person.id
+        employee.person == user.person
       end
 
       # can read self
@@ -183,32 +176,32 @@ class AccessPolicy
 
       can :read, Payslip do |payslip, user|
         # can read if personal payslip
-        payslip.employee.person.id == user.person.id
+        payslip.employee.person == user.person
       end
 
       can :read, Charge do |charge, user|
         # can read if looking at self
-        charge.employee.person.id == user.person.id
+        charge.employee.person == user.person
       end
 
       can :read, Loan do |loan, user|
         # can read if looking at self
-        loan.employee.person.id == user.person.id
+        loan.employee.person == user.person
       end
 
       can :read, LoanPayment do |loan_payment, user|
         # can read if looking at self
-        loan_payment.loan.employee.person.id == user.person.id
+        loan_payment.loan.employee.person == user.person
       end
 
       can :read, Child do |child, user|
         # can read if looking at own child
-        child.parent.id == user.person.id
+        child.parent == user.person
       end
 
       can :read, WorkHour do |work_hour, user|
         # can read if looking at own work_hour
-        work_hour.employee.person.id == user.person.id
+        work_hour.employee.person == user.person
       end
     end
 

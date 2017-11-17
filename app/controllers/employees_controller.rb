@@ -4,14 +4,14 @@ class EmployeesController < ApplicationController
     if params[:supervisor]
       authorize! :read, Supervisor
 
-      @employees = Supervisor.find(params[:supervisor]).employees
-      @employees = @employees.active unless params[:view_all]
+      @employees = Supervisor.find(params[:supervisor]).all_employees
+      @employees.reject!{ |e| e.inactive? } unless params[:view_all]
     elsif current_user.user?
       @employees = Array.new
       @employees << Employee.find_by(person_id: current_user.person.id)
     elsif current_user.supervisor?
-      @employees = Supervisor.find_by(person_id: current_user.person.id).employees_and_sup
-      @employees = @employees.active unless params[:view_all]
+      @employees = Supervisor.find_by(person_id: current_user.person.id).all_employees_and_me
+      @employees.reject!{ |e| e.inactive? } unless params[:view_all]
     elsif current_user.admin?
       @employees = Employee.all
       @employees = @employees.active unless params[:view_all]

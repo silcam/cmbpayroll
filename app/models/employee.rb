@@ -26,6 +26,7 @@ class Employee < ApplicationRecord
   validates :title, presence: {message: I18n.t(:Not_blank)}
   validates :hours_day, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }
   validates :wage, presence: true, if: :echelon_requires_wage?
+  validate :is_not_own_supervisor
 
   scope :active, -> { where.not(employment_status: :inactive) }
   scope :currently_paid, -> {
@@ -64,6 +65,21 @@ class Employee < ApplicationRecord
     employment_status == "full_time" ||
         employment_status == "part_time" ||
           employment_status == "temporary"
+  end
+
+  def supervised_by? possible_sup
+    my_sup = supervisor
+    until my_sup.nil?
+      return true if my_sup == possible_sup
+      my_sup = my_sup.person.employee.try(:supervisor)
+    end
+    false
+  end
+
+  def is_not_own_supervisor
+    if !person.supervisor.nil? and supervised_by? person.supervisor
+      errors.add(:base, "Employee cannot be in their own chain of supervisors.")
+    end
   end
 
   def self.list_departments

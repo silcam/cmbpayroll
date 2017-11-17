@@ -253,7 +253,7 @@ class Payslip < ApplicationRecord
       #self[:taxable] += pay
       #self[:gross_pay] += pay
 
-      earnings.create(description: 'Salaire de congé', amount: pay)
+      earnings << Earning.new(description: 'Salaire de congé', amount: pay)
     end
   end
 

@@ -59,12 +59,26 @@ class Vacation < ApplicationRecord
   def self.days_earned(employee, period)
     return 0 if period.finish < employee.first_day
     earned = SystemVariable.value(:vacation_days) / 12.0
+    earned + supplemental_days(employee, period)
+  end
+
+  def self.supplemental_days(employee, period)
     if period.month == employee.contract_start.try(:month)
       years = period.year - employee.contract_start.year
       multiple = years / SystemVariable.value(:supplemental_days_period) # Integer division intentional
-      earned += multiple * SystemVariable.value(:supplemental_days)
+      earned = multiple * SystemVariable.value(:supplemental_days)
+      earned + mom_supplemental_days(employee)
+    else
+      0
     end
-    earned
+  end
+
+  def self.mom_supplemental_days(employee)
+    if employee.female?
+      2 * employee.children_under_6
+    else
+      0
+    end
   end
 
   def self.days_used(employee, period)

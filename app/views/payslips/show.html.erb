@@ -63,7 +63,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
   hours_worked, days_worked = WorkHour.compute_hours_and_days(employee, @payslip.period)
 %>
 <tr>
-  <td>Days Employee Worked:</b></td>
+  <td><b>Days Employee Worked:</b></td>
   <td><%= @payslip.days %></td>
 </tr>
 <tr>
@@ -71,7 +71,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
   <td><%= employee.workdays_per_month(@payslip.period) %></td>
 </tr>
 <tr>
-  <td>Hours Employee Worked:</b></td>
+  <td><b>Hours Employee Worked:</b></td>
   <td><%= @payslip.hours %></td>
 </tr>
 <tr>
@@ -96,15 +96,15 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 
 <table class="table table-striped payslip">
 <tr>
-  <td>Overtime Hours Worked (&lt; 8 hours):</b></td>
+  <td><b>Overtime Hours Worked (&lt; 8 hours):</b></td>
   <td><%= @payslip.overtime_hours %> hours @ <%= number_to_currency(@payslip.overtime_rate, locale: :cm) %></td>
 </tr>
 <tr>
-  <td>Overtime Hours Worked (8 - 16 hours):</b></td>
+  <td><b>Overtime Hours Worked (8 - 16 hours):</b></td>
   <td><%= @payslip.overtime2_hours %> hours @ <%= number_to_currency(@payslip.overtime2_rate, locale: :cm) %></td>
 </tr>
 <tr>
-  <td>Overtime Hours Worked (16+ hours):</b></td>
+  <td><b>Overtime Hours Worked (16+ hours):</b></td>
   <td><%= @payslip.overtime3_hours %> hours @ <%= number_to_currency(@payslip.overtime3_rate, locale: :cm) %></td>
 </tr>
 <% @payslip.earnings.where(is_bonus: false).each do |record| %>
@@ -129,7 +129,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
   <td><b><%= number_to_currency(@payslip.bonusbase, locale: :cm) %></b></td>
 </tr>
 <tr>
-  <td>Seniority Bonus: (<%= @payslip.years_of_service %> years * <%= number_to_percentage(@payslip.seniority_benefit ? @payslip.seniority_benefit * 100 : 0) %>)</b></td>
+  <td><b>Seniority Bonus: (<%= @payslip.years_of_service %> years * <%= number_to_percentage(@payslip.seniority_benefit ? @payslip.seniority_benefit * 100 : 0) %>)</b></td>
   <td>+ <%= number_to_currency(@payslip.seniority_bonus_amount, locale: :cm) %></td>
 </tr>
 <tr>
@@ -157,7 +157,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
   <td><b>= <%= number_to_currency(@payslip.cnpswage, locale: :cm) %></b></td>
 </tr>
 <tr>
-  <td>Transportation:</b></td>
+  <td><b>Transportation:</b></td>
   <td>+ <%= number_to_currency(@payslip.transportation, locale: :cm) %></td>
 </tr>
 <tr>
@@ -221,7 +221,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 <td>Communal Tax:</td>
 <td><%= number_to_currency(@payslip.communal, locale: :cm) %></td>
 </tr><tr>
-<td><b>Total Taxes:<b></td>
+<td><b>Total Taxes:</b></td>
 <td><b><%= number_to_currency(@payslip.total_tax, locale: :cm) %></b></td>
 </tr>
 </table>
@@ -254,10 +254,10 @@ Payslip Date: <%= @payslip.payslip_date %><br />
   </colgroup>
 <tr>
   <td>Ce mois-ci:</td>
-  <td><%= number_to_human(@payslip.vacation_earned, precision: 2) %> days</td>
+  <td><%= number_to_human(@payslip.vacation_earned) %> days</td>
 </tr><tr>
   <td>Jusqu'aujourd'hui:</td>
-  <td><%= number_to_human(@payslip.vacation_balance, precision: 2) %> days</td>
+  <td><%= number_to_human(@payslip.vacation_balance) %> days</td>
 </tr><tr>
   <td>Dernier congé:</td>
 <% if !@payslip.last_vacation_start %>

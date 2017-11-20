@@ -127,11 +127,11 @@ module ControllerTestHelper
   end
 
   def login(user_sym, role_sym=nil)
-    luke = users(user_sym)
+    login_user = users(user_sym)
     unless (role_sym.nil?)
-      assert_equal(role_sym, luke.role, "incorrect role")
+      assert(login_user.send("#{role_sym}?"), "incorrect role")
     end
-    sign_in_as(luke)
+    sign_in_as(login_user)
   end
 
   def sign_in_as(user)

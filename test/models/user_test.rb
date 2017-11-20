@@ -36,10 +36,10 @@ class UserTest < ActiveSupport::TestCase
       assert(@quigon.admin?, "can be admin")
     end
 
-    assert_nothing_raised do
-      @quigon.supervisor!
-      assert(@quigon.supervisor?, "can be supervisor")
-    end
+    # assert_nothing_raised do
+    #   @quigon.supervisor!
+    #   assert(@quigon.supervisor?, "can be supervisor")
+    # end
   end
 
   test "Default roles" do

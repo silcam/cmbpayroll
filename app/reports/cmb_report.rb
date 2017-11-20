@@ -59,7 +59,11 @@ class CMBReport < Dossier::Report
   end
 
   def format_children(value)
-    Employee.find(value).children.size
+    if value.nil?
+      0
+    else
+      value
+    end
   end
 
   def format_gender(value)
@@ -71,7 +75,7 @@ class CMBReport < Dossier::Report
   end
 
   def format_base_wage(value)
-    formatter.number_to_currency(Employee.find(value).find_wage, locale: :cm, unit: '')
+    cfa(value)
   end
 
   def format_per(value)

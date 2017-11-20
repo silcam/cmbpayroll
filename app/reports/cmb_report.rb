@@ -36,6 +36,28 @@ class CMBReport < Dossier::Report
     I18n.t(output.gsub(/^([a-z]{1}).*$/, '\1'), scope: scope, default: output) if output
   end
 
+  # Options selector
+  def year
+    period = options[:period]
+    year, month = period.split('-')
+    if (year.nil?)
+      Period.current.year
+    else
+      year
+    end
+  end
+
+  # Options selector
+  def month
+    period = options[:period]
+    year, month = period.split('-')
+    if (month.nil?)
+      Period.current.month
+    else
+      month
+    end
+  end
+
   def format_children(value)
     Employee.find(value).children.size
   end

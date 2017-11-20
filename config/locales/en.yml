@@ -321,8 +321,10 @@ en:
     Employee_report: Employee Report
     Employee_report_by_dept: Employee Report - By Department
     Cnps_report: CNPS Report
+    Dipes_report: DIPES Report
     Employee_deduction_report: Employee Deduction Report
     Download_report_as: Download report as
+    Download_report_as_text_file: Download report as text file
     Report_for_period: Report for period
     Select_a_report: Select a Report
     Select_a_period: Select a Period

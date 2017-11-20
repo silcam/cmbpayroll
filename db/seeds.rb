@@ -15,23 +15,17 @@ end
 # - IMPORTANT: SEED DATA ONLY
 # - DO NOT EXPORT TABLE STRUCTURES
 # - DO NOT EXPORT DATA FROM `schema_migrations`
-sql = File.read('db/wages.sql')
-statements = sql.split(/;$/)
-statements.pop  # the last empty statement
 
-ActiveRecord::Base.transaction do
-  statements.each do |statement|
-    connection.execute(statement)
-  end
-end
+%w[db/wages.sql db/taxtable.sql db/dipes.sql].each do |tbl|
+  puts "Loading data from #{tbl}"
+  sql = File.read(tbl)
+  statements = sql.split(/;$/)
+  statements.pop  # the last empty statement
 
-sql = File.read('db/taxtable.sql')
-statements = sql.split(/;$/)
-statements.pop  # the last empty statement
-
-ActiveRecord::Base.transaction do
-  statements.each do |statement|
-    connection.execute(statement)
+  ActiveRecord::Base.transaction do
+    statements.each do |statement|
+      connection.execute(statement)
+    end
   end
 end
 

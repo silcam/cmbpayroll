@@ -325,8 +325,10 @@ fr:
     Employee_report: Le Rapport des Employés
     Employee_report_by_dept: Le Rapport des Employés par Département
     Cnps_report: Le Rapport CNPS
+    Dipes_report: Le Rapport DIPES
     Employee_deduction_report: Le Rapport des prélèvements des employées
     Download_report_as: Télécharger le rapport comme
+    Download_report_as_text_file: Télécharger le rapport comme un fichier texte
     Report_for_period: Le rapport pour la période
     Select_a_report: Choisissez un rapport
     Select_a_period: Choisissez une période

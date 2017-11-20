@@ -1,35 +1,39 @@
 class ReportsController < ApplicationController
   before_action :set_params, only: [:index, :show]
 
-  self.responder  = Dossier::Responder
+  self.responder = Dossier::XXCustomResponder
 
-  respond_to :html, :json, :csv, :xls
+  respond_to :html, :json, :csv, :xls, :txt
 
   NUMBER_OF_MONTHS_SHOWN=24
   REPORTS = {
     'employee' => {
-          name: "Employee Report",
-          instance: Proc.new{|p| EmployeeReport.new()}
+      name: "Employee Report",
+      instance: Proc.new{|p| EmployeeReport.new()}
     },
     'employee_by_dept' => {
-          name: "Employee Report - By Department",
-          instance: Proc.new{|p| EmployeeByDepartmentReport.new()}
+      name: "Employee Report - By Department",
+      instance: Proc.new{|p| EmployeeByDepartmentReport.new()}
     },
     'cnps' => {
-          name: "CNPS Report",
-          instance: Proc.new{|p| CnpsReport.new()}
+      name: "CNPS Report",
+      instance: Proc.new{|p| CnpsReport.new()}
     },
     'employee_vacation' => {
-          name: "Employee Vacation Report",
-          instance: Proc.new{|p| EmployeeVacationReport.new()}
+      name: "Employee Vacation Report",
+      instance: Proc.new{|p| EmployeeVacationReport.new()}
     },
     'employee_deduction' => {
-          name: "Employee Deduction Report",
-          instance: Proc.new{|p| EmployeeDeductionReport.new()}
+      name: "Employee Deduction Report",
+      instance: Proc.new{|p| EmployeeDeductionReport.new()}
+    },
+    'dipes' => {
+      name: "DIPES Report",
+      instance: Proc.new{|p| DipesReport.new()}
     },
     'dept_charges' => {
-          name: "Department Charges Report",
-          instance: Proc.new{|p| EmployeeReport.new()}
+      name: "Department Charges Report",
+      instance: Proc.new{|p| EmployeeReport.new()}
     }
   }
 

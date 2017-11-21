@@ -14,7 +14,8 @@ class EmployeesController < ApplicationController
       @employees.reject!{ |e| e.inactive? } unless params[:view_all]
     elsif current_user.user?
       @employees = Array.new
-      @employees << Employee.find_by(person_id: current_user.person.id)
+      employee = Employee.find_by(person_id: current_user.person.id)
+      @employees << employee unless employee.nil?
     else
       @employees = Array.new
     end

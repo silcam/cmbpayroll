@@ -22,11 +22,15 @@ class ActiveSupport::TestCase
     assert should_save.save, "Should save #{model} with valid params"
   end
 
-  def log_in_luke
+  def log_in(user)
     visit login_path
-    fill_in 'Username', with: 'luke'
-    fill_in 'Password', with: 'luke'
+    fill_in 'Username', with: user.username
+    fill_in 'Password', with: user.username
     click_button 'Log in'
+  end
+
+  def log_in_luke
+    log_in users(:Luke)
   end
 
   def log_in_admin

@@ -7,7 +7,7 @@ Luke:
 Quigon:
   person: Quigon
   username: quigon
-  role: supervisor
+  role: user
   password_digest: <%= BCrypt::Password.create('quigon', cost: 5) %>
 
 JarJar:

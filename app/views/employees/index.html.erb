@@ -24,7 +24,7 @@
   <tbody id="employees-data">
   <% @employees.each do |employee| %>
     <tr>
-      <td><%= link_to employee.full_name, employee_path(employee) %></td>
+      <td><%= link_to employee.full_name_rev, employee_path(employee) %></td>
       <td><%= employee.title %></td>
       <td><%= employee.department_name %></td>
     </tr>

@@ -9,7 +9,7 @@
   </tr>
   <% @supervisors.each do |supervisor| %>
     <tr>
-      <td><%= supervisor.full_name %></td>
+      <td><%= supervisor.full_name_rev %></td>
       <td>
         <% if supervisor.employees.empty? %>
           <%= t :No_employees %>

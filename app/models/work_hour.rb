@@ -106,7 +106,9 @@ class WorkHour < ApplicationRecord
   def self.calculate_overtime(date, day_hash)
     return {} if day_hash[:hours].nil? or day_hash[:hours] == 0
     return {holiday: day_hash[:hours]} if holiday_overtime? date, day_hash
-    if day_hash[:hours] > workday
+    if is_off_day? date
+      {overtime: day_hash[:hours]}
+    elsif day_hash[:hours] > workday
       {normal: workday, overtime: (day_hash[:hours]-workday)}
     else
       {normal: day_hash[:hours]}

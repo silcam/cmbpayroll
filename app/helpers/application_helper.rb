@@ -4,7 +4,7 @@ module ApplicationHelper
     (1 .. 5) === date.wday  # TODO Hardcoded workweek as from Mon to Fri
   end
 
-  def is_off_day?(date, holiday)
+  def is_off_day?(date, holiday=false)
     (not holiday.nil?) || (not is_weekday?(date))
   end
 

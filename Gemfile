@@ -46,6 +46,7 @@ gem 'audited', '~> 4.5'
 
 # Reports
 gem 'dossier', '~> 2.13', '>= 2.13.1'
+gem 'fixy', '~> 0.0.8'
 
 # Date Validation
 # gem 'validates_timeliness', '~>4.0'

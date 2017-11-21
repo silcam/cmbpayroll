@@ -68,18 +68,6 @@ ORDER BY
     custom_headers.fetch(column_name.to_sym) { super }
   end
 
-  def year
-    period = options[:period]
-    year, month = period.split('-')
-    year
-  end
-
-  def month
-    period = options[:period]
-    year, month = period.split('-')
-    month
-  end
-
   def format_gross_pay(value)
     cfa(value)
   end

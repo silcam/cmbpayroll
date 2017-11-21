@@ -3,18 +3,24 @@ class CnpsReport < CMBReport
   def sql
 
     select =<<-SELECTSTATEMENT
-CONCAT(people.first_name, ' ', people.last_name) as name,
-employees.id as id,
-employees.cnps as cnps_no,
-employees.dipe as dipe,
-employees.title as job_description,
-CONCAT(employees.category, '-', employees.echelon) as cat_ech,
-employees.marital_status as m_c,
-employees.id as children,
-people.gender
+SELECT
+  CONCAT(p.first_name, ' ', p.last_name) as name,
+  e.id as id,
+  e.cnps as cnps_no,
+  e.dipe as dipe,
+  e.title as job_description,
+  CONCAT(e.category, '-', e.echelon) as cat_ech,
+  e.marital_status as m_c,
+  c.numchildren as children,
+  p.gender
+FROM
+  employees e,
+  people p LEFT OUTER JOIN
+  (select parent_id, count(*) as numchildren from children GROUP BY parent_id) c ON
+    p.id = c.parent_id
+WHERE
+  e.person_id = p.id
     SELECTSTATEMENT
-
-    Employee.select(select).joins(:person).all().to_sql
   end
 
   def formatted_title

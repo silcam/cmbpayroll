@@ -128,12 +128,17 @@ form.auto-width {
   }
 }
 
-table.no-border{
+table.no-border {
   td {
     border-top: none !important;
   }
 }
 
+table.workhour-calendar {
+  input[type=text] {
+    margin-bottom: 12px;
+  }
+}
 
 //Payslips
 

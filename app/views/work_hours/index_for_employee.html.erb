@@ -11,7 +11,7 @@
 </div>
 
 <h3 >
-  <%= @period.month_name %> :
+  <%= @period.month_name.camelize %> :
   <%= number_to_human @hours_worked[:normal] or 0 %>
   <small><%= t :Regular_hours %></small>
   <% if @hours_worked[:overtime] %>

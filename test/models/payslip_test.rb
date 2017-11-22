@@ -196,7 +196,7 @@ class PayslipTest < ActiveSupport::TestCase
              '2017-08-05' => 1,
              '2017-08-06' => 1.2}
 
-    WorkHour.update employee, hours, {}
+    WorkHour.update employee, hours
 
     ### verify hours
     exp = {normal: 171.5, overtime: 1, holiday: 1.2}
@@ -249,7 +249,7 @@ class PayslipTest < ActiveSupport::TestCase
              '2017-08-06' => 1.2,
              '2017-08-12' => 3.2}
 
-    WorkHour.update employee, hours, {}
+    WorkHour.update employee, hours
 
     ### verify hours
     exp = {normal: 171.5, overtime: 4.2,  holiday: 1.2}
@@ -785,7 +785,7 @@ class PayslipTest < ActiveSupport::TestCase
       "2018-01-02" => true
     }
 
-    WorkHour.update(employee, hours, sickhours)
+    WorkHour.update(employee, hours)
     payslip = Payslip.process(employee, period)
 
     assert_equal(23, employee.workdays_per_month(period))
@@ -812,7 +812,7 @@ class PayslipTest < ActiveSupport::TestCase
     hours = {
       "2017-12-01" => 8
     }
-    WorkHour.update(employee, hours, {})
+    WorkHour.update(employee, hours)
     payslip = Payslip.process(employee, period)
 
     assert_equal(108580, employee.wage)
@@ -826,7 +826,7 @@ class PayslipTest < ActiveSupport::TestCase
       "2017-12-01" => 8,
       "2017-12-25" => 0
     }
-    WorkHour.update(employee, hours, {})
+    WorkHour.update(employee, hours)
     generate_work_hours employee, period
     payslip = Payslip.process(employee, period)
 
@@ -892,7 +892,7 @@ class PayslipTest < ActiveSupport::TestCase
       '2018-01-08' => 8
     }
 
-    WorkHour.update(employee, hours, {})
+    WorkHour.update(employee, hours)
     payslip = Payslip.process(employee, jan18)
 
     assert_equal(6, payslip.days)
@@ -980,7 +980,7 @@ class PayslipTest < ActiveSupport::TestCase
       '2018-01-08' => 8
     }
 
-    WorkHour.update(employee, hours, {})
+    WorkHour.update(employee, hours)
     payslip = Payslip.process(employee, jan18)
 
     assert_equal(48, payslip.hours)
@@ -1015,7 +1015,7 @@ class PayslipTest < ActiveSupport::TestCase
       '2018-01-01' => 10,
     }
 
-    WorkHour.update(employee, hours, {})
+    WorkHour.update(employee, hours)
     payslip = Payslip.process(employee, jan18)
 
     assert(employee.paid_monthly?, "employee is paid monthly")
@@ -1057,7 +1057,7 @@ class PayslipTest < ActiveSupport::TestCase
       '2018-01-01' => 17,
     }
 
-    WorkHour.update(employee, hours, {})
+    WorkHour.update(employee, hours)
     payslip = Payslip.process(employee, jan18)
 
     hrs = WorkHour.total_hours(employee, jan18)
@@ -1113,7 +1113,7 @@ class PayslipTest < ActiveSupport::TestCase
       '2018-01-02' => 18,
     }
 
-    WorkHour.update(employee, hours, {})
+    WorkHour.update(employee, hours)
     payslip = Payslip.process(employee, jan18)
 
     hrs = WorkHour.total_hours(employee, jan18)

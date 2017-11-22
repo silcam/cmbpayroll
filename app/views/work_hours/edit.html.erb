@@ -2,7 +2,7 @@
 <h2>
   <%= t :Hours_for %>
   <%= @employee.full_name %>
-  <small><%= @period.month_name %></small>
+  <small><%= @period.month_name.camelize %></small>
 </h2>
 
 <% if defined? @all_errors %>

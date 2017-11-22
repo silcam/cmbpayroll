@@ -197,6 +197,10 @@ fr:
   Sick_day: Malade
   employees_need_hours_entered: employés ont besoin d'avoir leurs heures saisies pour ce mois.
   no_employees_need_hours_entered: Toutes heures sont saisies pour ce mois.
+  Excused_absence: Absence excusée
+  Excused_hours: Heures excusés
+  Reason: 'Raison :'
+  hours_excused: heures excusés.
 
   # WorkLoans
   Work_loans: Prêts de Travail

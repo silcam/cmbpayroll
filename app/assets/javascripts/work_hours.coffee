@@ -1,8 +1,10 @@
 $(document).on "turbolinks:load", ->
-  $('input.sick-day-checkbox').change ->
-    hours_text = $(this).closest('td').find('input.hours-text').first()
+  $('input.excused-absence-checkbox').change ->
+    excuse_section = $(this).closest('td').find('div.excuse-section').first()
     if $(this).is(':checked')
-      hours_text.val('0')
-      hours_text.prop('disabled', true)
+      excuse_section.find('input.excused-hours-excuse').prop('disabled', false)
+      excuse_section.slideDown('fast')
     else
-      hours_text.prop('disabled', false)
+      excuse_section.slideUp('fast')
+      excuse_section.find('input.excused-hours-excuse').prop('disabled', true)
+      excuse_section.find('input.excused-hours').val(0)

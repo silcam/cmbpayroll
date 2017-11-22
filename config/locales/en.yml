@@ -193,6 +193,10 @@ en:
   Sick_day: Sick Day
   employees_need_hours_entered: employees need to have hours entered for this period.
   no_employees_need_hours_entered: All hours have been entered for this period.
+  Excused_absence: Excused Absence
+  Excused_hours: Excused Hours
+  Reason: 'Reason:'
+  hours_excused: hours excused.
 
   # WorkLoans
   Work_loans: Work Loans

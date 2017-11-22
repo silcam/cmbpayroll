@@ -9,6 +9,7 @@ class WorkHour < ApplicationRecord
 
   validates :date, presence: true
   validates :hours, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24}
+  validates :excused_hours, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24, allow_blank: true}
   validate :not_during_vacation
   validate :not_during_posted_period
 
@@ -32,7 +33,9 @@ class WorkHour < ApplicationRecord
     work_hours = WorkHour.for(employee, start, finish)
     days = {}
     work_hours.each do |work_hour|
-      days[work_hour.date] = {hours: work_hour.hours, sick: work_hour.sick}
+      days[work_hour.date] = {hours: work_hour.hours,
+                              excused_hours: work_hour.excused_hours,
+                              excuse: work_hour.excuse }
     end
     days
   end
@@ -73,14 +76,13 @@ class WorkHour < ApplicationRecord
     days
   end
 
-  def self.update(employee, days_hours, days_sick)
-    days_sick ||= {}
-    days_sick.each{ |day, sick| days_hours[day] = 0 if sick}
+  def self.update(employee, days_hours)
     all_errors = []
-    days_hours.each do |day, hours|
+    days_hours.each do |day, hours_hash|
       day = Date.strptime day
       work_hour = employee.work_hours.find_or_initialize_by(date: day)
-      work_hour.update(hours: hours, sick: days_sick[day.to_s])
+      hours_hash.keep_if { |k,v| [:hours, :excused_hours, :excuse].include? k.to_sym }.permit!
+      work_hour.update hours_hash
       all_errors << work_hour.errors if work_hour.errors.any?
     end
     return all_errors.empty?, all_errors
@@ -185,18 +187,16 @@ class WorkHour < ApplicationRecord
     days = WorkHour.complete_days_hash(employee, period.start, period.finish)
 
     date = period.start
-    while (date <= period.finish)
-      if (days[date])
-        if (days[date][:sick] == true)
-          days_worked += 1
-          hours_worked += NUMBER_OF_HOURS_IN_A_WORKDAY
-        elsif (days[date][:hours])
-          hours_worked += days[date][:hours]
+    while date <= period.finish
+      if days[date]
+        if days[date][:hours] > 0 or days[date][:excused_hours] > 0
+          hours_worked_that_day = days[date][:hours] + days[date][:excused_hours]
+          hours_worked += hours_worked_that_day
 
-          if (days[date][:hours].to_i >= WorkHour.workday)
+          if hours_worked_that_day.to_i >= WorkHour.workday or is_off_day?(date, days[date][:holiday])
             days_worked += 1
           end
-        elsif (days[date][:holiday])
+        elsif days[date][:holiday]
           days_worked += 1
           hours_worked += NUMBER_OF_HOURS_IN_A_WORKDAY
         end

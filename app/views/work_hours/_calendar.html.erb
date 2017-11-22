@@ -1,5 +1,5 @@
 <% date = @period.start %>
-<table class="table table-bordered">
+<table class="table table-bordered workhour-calendar">
 
   <!-- Days of the week headers -->
   <tr>
@@ -30,16 +30,24 @@
               <% else %>
                 <% if form %>
                   <% hours = day_hash[:hours] || WorkHour.default_hours(date, day_hash[:holiday]) %>
+                  <% excused_hours = day_hash[:excused_hours] || 0 %>
                   <% css_class = 'form-control hours-text' %>
                   <% css_class += ' off-day-field' if is_off_day?(date, day_hash[:holiday]) %>
-                  <%= text_field_tag "hours[#{date}]",
+                  <%= text_field_tag "hours[#{date}][hours]",
                                      number_to_human(hours),
                                      class: css_class %>
                   <label style="font-weight: normal">
-                    <%= check_box_tag "sick[#{date}]", 1, day_hash[:sick], class: 'sick-day-checkbox' %>
-                    <%= t :Sick_day %>
+                    <%= check_box_tag "excused_absence[#{date}]", 1, (excused_hours>0), class: 'excused-absence-checkbox' %>
+                    <%= t :Excused_absence %>
                   </label>
-
+                  <div class="excuse-section" <%= 'style="display: none;"'.html_safe unless excused_hours > 0 %> >
+                    <i><%= t :Excused_hours %></i>
+                    <% disabled =  !(excused_hours > 0) %>
+                    <%= text_field_tag "hours[#{date}][excused_hours]", number_to_human(excused_hours), class: 'form-control excused-hours' %>
+                    <i><%= t :Reason %></i>
+                    <% excuse = day_hash[:excuse] || 'Sick' %>
+                    <%= text_field_tag "hours[#{date}][excuse]", excuse, class: 'form-control excused-hours-excuse', disabled: disabled %>
+                  </div>
 
                 <% else %>
                   <h3>
@@ -51,11 +59,15 @@
                         <%= number_to_human day_hash[:hours] %>&nbsp;
                         <small>
                           <%= t :Hours %>
-                          <%= "(#{t :Sick})" if day_hash[:sick] %>
                         </small>
                       </span>
                     <% end %>
                   </h3>
+                  <% if day_hash[:excused_hours] > 0 %>
+                    <%= number_to_human(day_hash[:excused_hours]) %>
+                    <%= t :hours_excused %><br />
+                    <%= t :Reason %> <%= day_hash[:excuse] %>
+                  <% end %>
                 <% end %>
               <% end %>
             </td>

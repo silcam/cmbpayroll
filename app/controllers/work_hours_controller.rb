@@ -30,7 +30,7 @@ class WorkHoursController < ApplicationController
   def update
     authorize! :admin, Employee
 
-    success, @all_errors = WorkHour.update(@employee, params['hours'], params['sick'])
+    success, @all_errors = WorkHour.update(@employee, params[:hours])
     if success
       if params[:enter_all] == 'true'
         employee = WorkHour.employees_lacking_work_hours(LastPostedPeriod.current).first
@@ -51,9 +51,12 @@ class WorkHoursController < ApplicationController
 
   private
 
-  def work_hour_params
-    params.require(:work_hour).permit(:employee_id, :date, :hours)
+  def hour_params
+    params.require(:hours).permit()
   end
+  # def work_hour_params
+  #   params.require(:work_hour).permit(:employee_id, :date, :hours)
+  # end
 
   def set_employee
     @employee = Employee.find(params[:employee_id]) if params[:employee_id]

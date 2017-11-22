@@ -68,7 +68,7 @@ class Period
   end
 
   def month_name
-    start.strftime("%B")
+    I18n.l(start, format: "%B")
   end
 
   def short_name

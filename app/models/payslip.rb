@@ -163,6 +163,21 @@ class Payslip < ApplicationRecord
     hours_worked * employee.hourly_rate
   end
 
+  def self.overtime_tranches(hours_hash)
+    ot1_limit = SystemVariable.value :ot1_hours_limit
+    ot2_limit = SystemVariable.value :ot2_hours_limit
+    ot_tranches = {ot1: (hours_hash[:overtime] || 0), ot2: 0, ot3: (hours_hash[:holiday] || 0)}
+    if ot_tranches[:ot1] > ot1_limit
+      ot_tranches[:ot2] = ot_tranches[:ot1] - ot1_limit
+      ot_tranches[:ot1] = ot1_limit
+      if ot_tranches[:ot2] > ot2_limit
+        ot_tranches[:ot3] += ot_tranches[:ot2] - ot2_limit
+        ot_tranches[:ot2] = ot2_limit
+      end
+    end
+    ot_tranches
+  end
+
   def overtime_earnings
     # If we have a bonusbase, we've already run this.
     if (self[:bonusbase])
@@ -170,38 +185,32 @@ class Payslip < ApplicationRecord
     end
 
     hours = WorkHour.total_hours(employee, period)
+    ot_hours = Payslip.overtime_tranches hours
 
-    ot, ot2, ot3 = 0, 0, 0
-
-    ot = hours[:overtime] if (hours[:overtime])
-    ot2 = hours[:overtime2] if (hours[:overtime2])
-    ot3 = hours[:overtime3] if (hours[:overtime3])
-    ot3 += hours[:holiday] if (hours[:holiday])
-
-    ot_earnings = ot * employee.otrate
-    ot2_earnings = ot2 * employee.ot2rate
-    ot3_earnings = ot3 * employee.ot3rate
+    ot1_earnings = ot_hours[:ot1] * employee.otrate
+    ot2_earnings = ot_hours[:ot2] * employee.ot2rate
+    ot3_earnings = ot_hours[:ot3] * employee.ot3rate
 
     # TODO: remove these columns
-    self[:overtime_hours] = ot
-    self[:overtime2_hours] = ot2
-    self[:overtime3_hours] = ot3
+    self[:overtime_hours] = ot_hours[:ot1]
+    self[:overtime2_hours] = ot_hours[:ot2]
+    self[:overtime3_hours] = ot_hours[:ot3]
     self[:overtime_rate] = employee.otrate
     self[:overtime2_rate] = employee.ot2rate
     self[:overtime3_rate] = employee.ot3rate
 
-    otearn = Earning.new(amount: ot_earnings, description: "OT hours",
-        hours: ot, rate: employee.otrate, overtime: true);
+    otearn = Earning.new(amount: ot1_earnings, description: "OT hours",
+        hours: ot_hours[:ot1], rate: employee.otrate, overtime: true);
     ot2earn = Earning.new(amount: ot2_earnings, description: "OT2 hours",
-        hours: ot2, rate: employee.ot2rate, overtime: true);
+        hours: ot_hours[:ot2], rate: employee.ot2rate, overtime: true);
     ot3earn = Earning.new(amount: ot3_earnings, description: "OT3 hours",
-        hours: ot3, rate: employee.ot3rate, overtime: true);
+        hours: ot_hours[:ot3], rate: employee.ot3rate, overtime: true);
 
     earnings << otearn
     earnings << ot2earn
     earnings << ot3earn
 
-    self[:overtime_earnings] = ot_earnings + ot2_earnings + ot3_earnings
+    self[:overtime_earnings] = ot1_earnings + ot2_earnings + ot3_earnings
   end
 
   def compute_bonusbase

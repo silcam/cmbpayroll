@@ -353,7 +353,9 @@ class WorkHourTest < ActiveSupport::TestCase
 
     # 36 hours ot
     WorkHour.update(@luke, hours, {})
-    exp = {normal: 184, overtime: 8, overtime2: 8, overtime3: 20}
+    # Old Logic. Overtime tranche calculation is now in Payslip.overtime_tranches()
+    # exp = {normal: 184, overtime: 8, overtime2: 8, overtime3: 20}
+    exp = {normal: 184, overtime: 36}
     assert_equal(exp, WorkHour.total_hours(@luke, jan))
   end
 

@@ -4,8 +4,6 @@ class WorkHour < ApplicationRecord
 
   NUMBER_OF_HOURS_IN_A_WORKDAY = 8
   NUMBER_OF_HOURS_IN_A_WEEKEND_WORKDAY = 0
-  NUMBER_OF_OT1_HOURS = 8
-  NUMBER_OF_OT2_HOURS = 8
 
   belongs_to :employee
 
@@ -164,14 +162,14 @@ class WorkHour < ApplicationRecord
       end
     end
 
-    if (hours[:overtime] && hours[:overtime] > NUMBER_OF_OT1_HOURS)
-      hours[:overtime2] = hours[:overtime] - NUMBER_OF_OT1_HOURS
-      hours[:overtime] = NUMBER_OF_OT1_HOURS 
-    end
-    if (hours[:overtime2] && hours[:overtime2] > NUMBER_OF_OT2_HOURS)
-      hours[:overtime3] = hours[:overtime2] - NUMBER_OF_OT2_HOURS
-      hours[:overtime2] = NUMBER_OF_OT2_HOURS
-    end
+    # if (hours[:overtime] && hours[:overtime] > NUMBER_OF_OT1_HOURS)
+    #   hours[:overtime2] = hours[:overtime] - NUMBER_OF_OT1_HOURS
+    #   hours[:overtime] = NUMBER_OF_OT1_HOURS
+    # end
+    # if (hours[:overtime2] && hours[:overtime2] > NUMBER_OF_OT2_HOURS)
+    #   hours[:overtime3] = hours[:overtime2] - NUMBER_OF_OT2_HOURS
+    #   hours[:overtime2] = NUMBER_OF_OT2_HOURS
+    # end
 
     hours
   end

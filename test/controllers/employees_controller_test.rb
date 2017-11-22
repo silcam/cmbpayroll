@@ -23,7 +23,7 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "tbody#employees-data tr td a" do |element|
-      assert_equal("Luke Skywalker", element.children.first.content, "should only be able to see self")
+      assert_equal("Skywalker, Luke", element.children.first.content, "should only be able to see self")
       assert_equal(1, element.children.size, "should only be able to see self")
     end
   end
@@ -99,7 +99,7 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "tbody#employees-data tr td a" do |element|
-      assert_equal("Obiwan Kenobi", element.children.last.content, "should be able to see report")
+      assert_equal("Kenobi, Obiwan", element.children.last.content, "should be able to see report")
       assert_equal(2, element.children.size, "should be able to see report and self")
     end
 

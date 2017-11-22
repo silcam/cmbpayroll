@@ -25,6 +25,8 @@ class SystemVariable < ApplicationRecord
     ot1: 1.2,
     ot2: 1.3,
     ot3: 1.4,
+    ot1_hours_limit: 8,
+    ot2_hours_limit: 8,
     cac: 0.1,
     ccf_rate: 0.01,
     crtv_rate: 0.0125,

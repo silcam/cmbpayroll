@@ -199,7 +199,7 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update employee, hours, {}
 
     ### verify hours
-    exp = {:normal => 172.5, :holiday => 1.2}
+    exp = {normal: 171.5, overtime: 1, holiday: 1.2}
     assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
 
     payslip = Payslip.process(employee, Period.new(2017,8))
@@ -252,7 +252,7 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update employee, hours, {}
 
     ### verify hours
-    exp = {:normal => 175.7, :holiday => 1.2}
+    exp = {normal: 171.5, overtime: 4.2,  holiday: 1.2}
     assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
 
     payslip = Payslip.process(employee, Period.new(2017,8))
@@ -1060,9 +1060,12 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update(employee, hours, {})
     payslip = Payslip.process(employee, jan18)
 
-    exp = {:normal => 184, :overtime => 8, :overtime2 => 1}
     hrs = WorkHour.total_hours(employee, jan18)
+    exp = {:normal => 184, :overtime => 9}
     assert_equal(exp, hrs)
+    ot_hrs = Payslip.overtime_tranches hrs
+    exp = {ot1: 8, ot2: 1, ot3: 0}
+    assert_equal exp, ot_hrs
 
     assert(employee.paid_monthly?, "employee is paid monthly")
     assert(payslip.worked_full_month?, "worked full month in jan18")
@@ -1113,9 +1116,12 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update(employee, hours, {})
     payslip = Payslip.process(employee, jan18)
 
-    exp = {:normal => 184, :overtime => 8, :overtime2 => 8, :overtime3 => 3}
     hrs = WorkHour.total_hours(employee, jan18)
+    exp = {:normal => 184, :overtime => 19}
     assert_equal(exp, hrs)
+    ot_hrs = Payslip.overtime_tranches hrs
+    exp = {ot1: 8, ot2: 8, ot3: 3}
+    assert_equal exp, ot_hrs
 
     assert(employee.paid_monthly?, "employee is paid monthly")
     assert(payslip.worked_full_month?, "worked full month in jan18")

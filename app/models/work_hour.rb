@@ -16,6 +16,13 @@ class WorkHour < ApplicationRecord
   default_scope { order(:date) }
   scope :current_period, -> { where(date: Period.current_as_range)}
 
+  def update_with_params(params)
+    self.hours = params[:hours].to_f
+    self.excused_hours = params[:excused_hours].to_f if params[:excused_hours]
+    self.excuse = params[:excuse]
+    save
+  end
+
   def self.for(employee, start, finish)
     where(employee: employee, date: (start .. finish))
   end
@@ -71,7 +78,8 @@ class WorkHour < ApplicationRecord
                                 Holiday.days_hash(start, finish),
                                 Vacation.days_hash(employee, start, finish)
     (start .. finish).each do |day|
-      days[day] = {} unless days.has_key? day
+      # Ensure that every day has a hash with at least hours and excused_hours defined
+      days[day] = {hours: 0, excused_hours: 0}.merge(days[day] || {})
     end
     days
   end
@@ -81,8 +89,7 @@ class WorkHour < ApplicationRecord
     days_hours.each do |day, hours_hash|
       day = Date.strptime day
       work_hour = employee.work_hours.find_or_initialize_by(date: day)
-      hours_hash.keep_if { |k,v| [:hours, :excused_hours, :excuse].include? k.to_sym }.permit!
-      work_hour.update hours_hash
+      work_hour.update_with_params hours_hash
       all_errors << work_hour.errors if work_hour.errors.any?
     end
     return all_errors.empty?, all_errors

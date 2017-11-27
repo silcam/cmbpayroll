@@ -189,12 +189,12 @@ class PayslipTest < ActiveSupport::TestCase
     employee = return_valid_employee()
     generate_work_hours employee, Period.new(2017, 8)
 
-    hours = {'2017-08-01' => 8,
-             '2017-08-02' => 6,
-             '2017-08-03' => 3.5,
-             '2017-08-04' => 2,
-             '2017-08-05' => 1,
-             '2017-08-06' => 1.2}
+    hours = {'2017-08-01' => {hours: 8},
+             '2017-08-02' => {hours: 6},
+             '2017-08-03' => {hours: 3.5},
+             '2017-08-04' => {hours: 2},
+             '2017-08-05' => {hours: 1},
+             '2017-08-06' => {hours: 1.2}}
 
     WorkHour.update employee, hours
 
@@ -241,13 +241,13 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(2, employee.bonuses.size)
 
     # give work hours
-    hours = {'2017-08-01' => 8,
-             '2017-08-02' => 6,
-             '2017-08-03' => 3.5,
-             '2017-08-04' => 2,
-             '2017-08-05' => 1,
-             '2017-08-06' => 1.2,
-             '2017-08-12' => 3.2}
+    hours = {'2017-08-01' => {hours: 8},
+             '2017-08-02' => {hours: 6},
+             '2017-08-03' => {hours: 3.5},
+             '2017-08-04' => {hours: 2},
+             '2017-08-05' => {hours: 1},
+             '2017-08-06' => {hours: 1.2},
+             '2017-08-12' => {hours: 3.2}}
 
     WorkHour.update employee, hours
 
@@ -779,10 +779,7 @@ class PayslipTest < ActiveSupport::TestCase
     generate_work_hours employee, period
 
     hours = {
-      "2018-01-02" => 0.0
-    }
-    sickhours = {
-      "2018-01-02" => true
+      "2018-01-02" => {hours: 0.0, excused_hours: '8', excuse: 'Sick'}
     }
 
     WorkHour.update(employee, hours)
@@ -810,7 +807,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     # work some of the month
     hours = {
-      "2017-12-01" => 8
+      "2017-12-01" => {hours: 8}
     }
     WorkHour.update(employee, hours)
     payslip = Payslip.process(employee, period)
@@ -823,8 +820,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     # Work the whole month
     hours = {
-      "2017-12-01" => 8,
-      "2017-12-25" => 0
+      "2017-12-01" => {hours: 8},
+      "2017-12-25" => {hours: 0}
     }
     WorkHour.update(employee, hours)
     generate_work_hours employee, period
@@ -884,12 +881,12 @@ class PayslipTest < ActiveSupport::TestCase
 
     # work a partial month (6 days)
     hours = {
-      '2018-01-01' => 8,
-      '2018-01-02' => 8,
-      '2018-01-03' => 8,
-      '2018-01-04' => 8,
-      '2018-01-05' => 8,
-      '2018-01-08' => 8
+      '2018-01-01' => {hours: 8},
+      '2018-01-02' => {hours: 8},
+      '2018-01-03' => {hours: 8},
+      '2018-01-04' => {hours: 8},
+      '2018-01-05' => {hours: 8},
+      '2018-01-08' => {hours: 8}
     }
 
     WorkHour.update(employee, hours)
@@ -972,12 +969,12 @@ class PayslipTest < ActiveSupport::TestCase
 
     # work a partial month (6 days)
     hours = {
-      '2018-01-01' => 8,
-      '2018-01-02' => 8,
-      '2018-01-03' => 8,
-      '2018-01-04' => 8,
-      '2018-01-05' => 8,
-      '2018-01-08' => 8
+      '2018-01-01' => {hours: 8},
+      '2018-01-02' => {hours: 8},
+      '2018-01-03' => {hours: 8},
+      '2018-01-04' => {hours: 8},
+      '2018-01-05' => {hours: 8},
+      '2018-01-08' => {hours: 8}
     }
 
     WorkHour.update(employee, hours)
@@ -1012,7 +1009,7 @@ class PayslipTest < ActiveSupport::TestCase
     generate_work_hours employee, jan18
     # full month, except 10 hours on 1/1
     hours = {
-      '2018-01-01' => 10,
+      '2018-01-01' => {hours: 10},
     }
 
     WorkHour.update(employee, hours)
@@ -1054,7 +1051,7 @@ class PayslipTest < ActiveSupport::TestCase
     generate_work_hours employee, jan18
     # full month, except 10 hours on 1/1
     hours = {
-      '2018-01-01' => 17,
+      '2018-01-01' => {hours: 17},
     }
 
     WorkHour.update(employee, hours)
@@ -1109,8 +1106,8 @@ class PayslipTest < ActiveSupport::TestCase
     generate_work_hours employee, jan18
     # full month, except 10 hours on 1/1
     hours = {
-      '2018-01-01' => 17,
-      '2018-01-02' => 18,
+      '2018-01-01' => {hours: 17},
+      '2018-01-02' => {hours: 18}
     }
 
     WorkHour.update(employee, hours)

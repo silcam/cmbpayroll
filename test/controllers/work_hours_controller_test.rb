@@ -82,7 +82,7 @@ class WorkHoursControllerTest < ActionDispatch::IntegrationTest
     assert_supervisor_permission(employee_work_hours_url(han), "get") # employee_work_hours#index
     assert_supervisor_permission(edit_employee_work_hours_url(han), "get") # employee_work_hours#edit
     assert_supervisor_permission(update_employee_work_hours_url(han), "post", params: {
-      'hours[2017-09-01]': '8' }) # employee_work_hours#update
+      'hours[2017-09-01]': {hours: '8'} }) # employee_work_hours#update
   end
 
   test "Admin: can't see add hours link on employee#show" do

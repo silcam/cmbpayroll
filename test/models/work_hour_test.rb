@@ -76,7 +76,11 @@ class WorkHourTest < ActiveSupport::TestCase
   end
 
   test "Update" do
-    hours = {'2017-08-07'=>'8', '2017-08-08'=>'12', '2017-08-09'=>'9', '2017-08-10'=>'8'}
+    hours = {'2017-08-07'=>{hours: '8'},
+             '2017-08-08'=>{hours:'12'},
+             '2017-08-09'=>{hours:'9'},
+             '2017-08-10'=>{hours:'8'},
+              '2017-08-11'=>{hours:'0', excused_hours:'8', excuse:'Sick'}}
     WorkHour.update @luke, hours
     assert_equal 8,  @luke.work_hours.find_by(date: '2017-08-07').hours, "This should have been updated"
     assert_equal 8, @luke.work_hours.find_by(date: '2017-08-10').hours, "This should have been created"
@@ -84,7 +88,7 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal 9, @luke.work_hours.find_by(date: '2017-08-09').hours
     sickday = @luke.work_hours.find_by(date: '2017-08-11')
     assert_equal 0, sickday.hours
-    assert sickday.sick
+    assert_equal 8, sickday.excused_hours
   end
 
   test "Days and Hours Worked with Sick" do
@@ -94,14 +98,14 @@ class WorkHourTest < ActiveSupport::TestCase
     luke_days_hash = WorkHour.days_hash(@luke, jan.start, jan.finish)
     assert_equal(0, luke_days_hash.keys.size, "should not have worked in jan yet")
 
-    sickhours = { "2018-01-02" => 8 }
+    # sickhours = { "2018-01-02" => {hours: 8} }
 
-    WorkHour.update(@luke, {})
+    WorkHour.update(@luke, {"2018-01-02"=>{hours: '', excused_hours: 8, excuse: 'Sick'}})
     luke_days_hash = WorkHour.days_hash(@luke, jan.start, jan.finish)
     assert_equal(1, luke_days_hash.keys.size, "1 day worked")
 
     assert(luke_days_hash[Date.new(2018,1,2)][:hours], "02 Jan should be 0 hours")
-    assert(luke_days_hash[Date.new(2018,1,2)][:sick], "02 Jan should be sick time")
+    assert_equal('Sick',luke_days_hash[Date.new(2018,1,2)][:excuse], "02 Jan should be sick time")
 
     hours_worked, days_worked = WorkHour.compute_hours_and_days(@luke, jan)
     assert_equal(1, days_worked, "sick time is a day")
@@ -125,12 +129,12 @@ class WorkHourTest < ActiveSupport::TestCase
     #31
 
     hours = {
-      "2017-12-01" => 8,
-      "2017-12-04" => 8,
-      "2017-12-05" => 8,
-      "2017-12-06" => 8,
-      "2017-12-07" => 8,
-      "2017-12-08" => 8
+      "2017-12-01" => {hours: 8},
+      "2017-12-04" => {hours: 8},
+      "2017-12-05" => {hours: 8},
+      "2017-12-06" => {hours: 8},
+      "2017-12-07" => {hours: 8},
+      "2017-12-08" => {hours: 8}
     }
 
     success, errors = WorkHour.update(@luke, hours)
@@ -144,13 +148,13 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal(56, WorkHour.hours_worked(@luke, dec))
 
     hours = {
-      "2017-12-01" => 8,
-      "2017-12-04" => 8,
-      "2017-12-05" => 8,
-      "2017-12-06" => 8,
-      "2017-12-07" => 8,
-      "2017-12-08" => 8,
-      "2017-12-11" => 8
+      "2017-12-01" => {hours: 8},
+      "2017-12-04" => {hours: 8},
+      "2017-12-05" => {hours: 8},
+      "2017-12-06" => {hours: 8},
+      "2017-12-07" => {hours: 8},
+      "2017-12-08" => {hours: 8},
+      "2017-12-11" => {hours: 8}
     }
 
     success, errors = WorkHour.update(@luke, hours)
@@ -176,13 +180,13 @@ class WorkHourTest < ActiveSupport::TestCase
 
     # 34 including Christmas
     hours = {
-      "2017-12-01" => 4,
-      "2017-12-04" => 2,
-      "2017-12-05" => 3,
-      "2017-12-06" => 4,
-      "2017-12-07" => 5,
-      "2017-12-08" => 7,
-      "2017-12-11" => 1
+      "2017-12-01" => {hours: 4},
+      "2017-12-04" => {hours: 2},
+      "2017-12-05" => {hours: 3},
+      "2017-12-06" => {hours: 4},
+      "2017-12-07" => {hours: 5},
+      "2017-12-08" => {hours: 7},
+      "2017-12-11" => {hours: 1}
     }
 
     success, errors = WorkHour.update(@luke, hours)
@@ -201,13 +205,13 @@ class WorkHourTest < ActiveSupport::TestCase
     refute(WorkHour.worked_full_month(@luke, dec))
 
     hours = {
-      "2017-12-01" => 8,
+      "2017-12-01" => {hours: 8},
 
-      "2017-12-04" => 8,
-      "2017-12-05" => 8,
-      "2017-12-06" => 8,
-      "2017-12-07" => 8,
-      "2017-12-08" => 8
+      "2017-12-04" => {hours: 8},
+      "2017-12-05" => {hours: 8},
+      "2017-12-06" => {hours: 8},
+      "2017-12-07" => {hours: 8},
+      "2017-12-08" => {hours: 8}
     }
 
     success, errors = WorkHour.update(@luke, hours)
@@ -217,34 +221,34 @@ class WorkHourTest < ActiveSupport::TestCase
     refute(WorkHour.worked_full_month(@luke, dec))
 
     hours = {
-      "2017-12-01" => 8,
+      "2017-12-01" => {hours: 8},
 
-      "2017-12-04" => 8,
-      "2017-12-05" => 8,
-      "2017-12-06" => 8,
-      "2017-12-07" => 8,
-      "2017-12-08" => 8,
+      "2017-12-04" => {hours: 8},
+      "2017-12-05" => {hours: 8},
+      "2017-12-06" => {hours: 8},
+      "2017-12-07" => {hours: 8},
+      "2017-12-08" => {hours: 8},
 
-      "2017-12-11" => 8,
-      "2017-12-12" => 8,
-      "2017-12-13" => 8,
-      "2017-12-14" => 8,
-      "2017-12-15" => 8,
+      "2017-12-11" => {hours: 8},
+      "2017-12-12" => {hours: 8},
+      "2017-12-13" => {hours: 8},
+      "2017-12-14" => {hours: 8},
+      "2017-12-15" => {hours: 8},
 
-      "2017-12-16" => 8,
-      "2017-12-17" => 8,
-      "2017-12-18" => 8,
-      "2017-12-19" => 8,
-      "2017-12-20" => 8,
+      "2017-12-16" => {hours: 8},
+      "2017-12-17" => {hours: 8},
+      "2017-12-18" => {hours: 8},
+      "2017-12-19" => {hours: 8},
+      "2017-12-20" => {hours: 8},
 
-      "2017-12-23" => 8,
-      "2017-12-24" => 8,
+      "2017-12-23" => {hours: 8},
+      "2017-12-24" => {hours: 8},
       #"2017-12-24" => 8 #Holiday
-      "2017-12-26" => 8,
-      "2017-12-27" => 8,
+      "2017-12-26" => {hours: 8},
+      "2017-12-27" => {hours: 8},
 
-      "2017-12-30" => 8,
-      "2017-12-31" => 8
+      "2017-12-30" => {hours: 8},
+      "2017-12-31" => {hours: 8}
     }
     success, errors = WorkHour.update(@luke, hours)
     assert(success, "should not have produced these errors: #{errors.inspect}")
@@ -264,16 +268,16 @@ class WorkHourTest < ActiveSupport::TestCase
   end
 
   test "Validate Valid Hours" do
-    hours = {'2017-08-31'=>'8.1', '2017-09-01'=>'24', '2017-09-02'=>'0'}
+    hours = {'2017-08-31'=>{hours: '8.1'}, '2017-09-01'=>{hours: '24'}, '2017-09-02'=>{hours:'0'}}
     success, errors = WorkHour.update @luke, hours
     assert success, "Should run without raising an exception"
   end
 
   test "Validate Invalid Hours" do
-    hours = {'2017-08-31'=>'-1', '2017-09-01'=>'25', '2017-09-02'=>'two'}
+    hours = {'2017-08-31'=>{hours: '-1'}, '2017-09-01'=>{hours: '25'}}
     success, errors = WorkHour.update @luke, hours
     refute success, "Update should not succeed with invalid hours"
-    assert_equal 3, errors.count
+    assert_equal 2, errors.count
   end
 
   test "Default Hours" do
@@ -326,9 +330,9 @@ class WorkHourTest < ActiveSupport::TestCase
     generate_work_hours(@luke, jan)
 
     hours = {
-      "2018-01-01" => 10,
-      "2018-01-04" => 10,
-      "2018-01-08" => 10,
+      "2018-01-01" => {hours: 10},
+      "2018-01-04" => {hours: 10},
+      "2018-01-08" => {hours: 10},
     }
 
     # 6 hours overtime
@@ -343,13 +347,13 @@ class WorkHourTest < ActiveSupport::TestCase
 
     generate_work_hours(@luke, jan)
 
-    hours = ActionController::Parameters.new({
+    hours = {
       "2018-01-01" => {hours: 12}, "2018-01-04" => {hours: 12},
       "2018-01-08" => {hours: 12}, "2018-01-11" => {hours: 12},
       "2018-01-15" => {hours: 12}, "2018-01-18" => {hours: 12},
       "2018-01-22" => {hours: 12}, "2018-01-25" => {hours: 12},
       "2018-01-29" => {hours: 12}
-    })
+    }
 
     # 36 hours ot
     WorkHour.update(@luke, hours)
@@ -366,7 +370,7 @@ class WorkHourTest < ActiveSupport::TestCase
     generate_work_hours(@luke, jan)
 
     hours = {
-      "2018-01-07" => 10 # 4 hours sunday OT
+      "2018-01-07" => {hours: 10} # 4 hours sunday OT
     }
 
     WorkHour.update(@luke, hours)
@@ -382,9 +386,9 @@ class WorkHourTest < ActiveSupport::TestCase
 
     Holiday.create!(name: "New Years", date: '2018-01-01')
 
-    hours = ActionController::Parameters.new({
+    hours = {
       "2018-01-01" => {hours: 12} # hours holiday OT
-    })
+    }
 
     WorkHour.update(@luke, hours)
     exp = {normal: 176.0,  holiday: 12}

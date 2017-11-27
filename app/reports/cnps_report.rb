@@ -4,7 +4,7 @@ class CnpsReport < CMBReport
 
     select =<<-SELECTSTATEMENT
 SELECT
-  CONCAT(p.first_name, ' ', p.last_name) as name,
+  CONCAT(p.last_name, ', ', p.first_name) as name,
   e.id as id,
   e.cnps as cnps_no,
   e.dipe as dipe,
@@ -19,7 +19,10 @@ FROM
   (select parent_id, count(*) as numchildren from children GROUP BY parent_id) c ON
     p.id = c.parent_id
 WHERE
-  e.person_id = p.id
+  e.person_id = p.id AND
+  e.employment_status IN :employment_status
+ORDER BY
+  name ASC
     SELECTSTATEMENT
   end
 

@@ -328,6 +328,7 @@ fr:
   reports:
     Employee_report: Le Rapport des Employés
     Employee_report_by_dept: Le Rapport des Employés par Département
+    Employee_advance_loan_report: Employee Advance and Loan Report
     Cnps_report: Le Rapport CNPS
     Dipes_report: Le Rapport DIPES
     Employee_deduction_report: Le Rapport des prélèvements des employées

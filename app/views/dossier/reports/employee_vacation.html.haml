@@ -15,7 +15,9 @@
 
     - @report.results.body.each do |row|
       - vac_days_ytd_sum += row[2].to_f
-      - vac_pay_sum += row[3].to_f
+      -# eliminate spaces from formatted value to sum
+      - pay_val = row[3]
+      - vac_pay_sum += pay_val.tr(' ', '').to_f unless pay_val.nil?
       - vac_days_period_sum += row[4].to_f
       %tr
         - row.each do |value|

@@ -324,6 +324,7 @@ en:
   reports:
     Employee_report: Employee Report
     Employee_report_by_dept: Employee Report - By Department
+    Employee_advance_loan_report: Employee Advance and Loan Report
     Cnps_report: CNPS Report
     Dipes_report: DIPES Report
     Employee_deduction_report: Employee Deduction Report

@@ -4,16 +4,20 @@ class EmployeeReport < CMBReport
 
     select =<<-SELECTSTATEMENT
 SELECT
-  CONCAT(p.first_name, ' ', p.last_name) as employee_name,
+  CONCAT(p.last_name, ', ', p.first_name) as employee_name,
   e.id as emp_number,
   d.name as department,
   e.title as job_description,
   to_char(e.contract_start, 'DD/MM/YYYY') as beginning_contract,
   to_char(e.contract_end, 'DD/MM/YYYY') as ending_contract,
-  w.basewage as base_wage,
+  CASE
+    WHEN w.basewage = 0
+      THEN e.wage
+      ELSE w.basewage
+      END AS base_wage,
   e.employment_status as per,
   CONCAT(e.category, '-', e.echelon) as cat_ech,
-  e.last_raise_date as last_raise,
+  to_char(e.last_raise_date, 'DD/MM/YYYY') as last_raise,
   e.marital_status as m_c,
   c.numchildren as children,
   p.gender
@@ -21,9 +25,13 @@ FROM
   employees e
     INNER JOIN people p ON
       e.person_id = p.id
+    INNER JOIN category_lookup cl ON
+      e.category = cl.emp_val
+    INNER JOIN echelon_lookup el ON
+      e.echelon = el.emp_val
     LEFT OUTER JOIN wages w ON
-      w.category = e.category AND
-      w.echelonalt = e.echelon
+      cl.wages_val = w.category AND
+      el.wages_val = w.echelonalt
     LEFT OUTER JOIN departments d ON
       e.department_id = d.id
     LEFT OUTER JOIN
@@ -35,6 +43,10 @@ FROM
       GROUP BY
         parent_id
       ) c ON p.id = c.parent_id
+WHERE
+  e.employment_status IN :employment_status
+ORDER BY
+  employee_name ASC
     SELECTSTATEMENT
   end
 

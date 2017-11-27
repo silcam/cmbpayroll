@@ -36,6 +36,10 @@ class CMBReport < Dossier::Report
     I18n.t(output.gsub(/^([a-z]{1}).*$/, '\1'), scope: scope, default: output) if output
   end
 
+  def employment_status
+    Employee.active_status_array
+  end
+
   # Options selector
   def year
     period = options[:period]
@@ -75,15 +79,44 @@ class CMBReport < Dossier::Report
   end
 
   def format_base_wage(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_per(value)
     fixup_enum(value, Employee.employment_statuses, :employment_statuses)
   end
 
+  def format_net_pay(value)
+    cfa_nofcfa(value)
+  end
+
+  def cfa_nofcfa(value)
+    formatter.number_to_currency(value, unit: '', locale: :cm)
+  end
+
   def cfa(value)
     formatter.number_to_currency(value, locale: :cm)
+  end
+
+  def pay_breakdown(pay)
+    output = { }
+
+    [10000,
+     5000,
+     2000,
+     1000,
+     500,
+     100,
+     50,
+     25,
+     10,
+     5].each { |amt|
+      res = pay.div(amt)
+      pay -= amt * res
+      output[amt] = res
+    }
+
+    output
   end
 
 end

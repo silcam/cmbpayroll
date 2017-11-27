@@ -9,14 +9,16 @@
 # SEED WAGES
 connection = ActiveRecord::Base.connection
 connection.tables.each do |table|
-  connection.execute("TRUNCATE #{table}") if table == "wages" || table == "taxes"
+  connection.execute("TRUNCATE #{table}") if table == "wages" ||
+      table == "taxes" || table == 'dipe_codes' ||
+        table == 'category_lookup' || table == 'echelon_lookup'
 end
 
 # - IMPORTANT: SEED DATA ONLY
 # - DO NOT EXPORT TABLE STRUCTURES
 # - DO NOT EXPORT DATA FROM `schema_migrations`
 
-%w[db/wages.sql db/taxtable.sql db/dipes.sql].each do |tbl|
+%w[db/wages.sql db/taxtable.sql db/dipes.sql db/lookups.sql].each do |tbl|
   puts "Loading data from #{tbl}"
   sql = File.read(tbl)
   statements = sql.split(/;$/)

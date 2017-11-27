@@ -30,11 +30,7 @@ class Employee < ApplicationRecord
 
   scope :active, -> { where.not(employment_status: :inactive) }
   scope :currently_paid, -> {
-    statuses = []
-    statuses << Employee.employment_statuses['full_time']
-    statuses << Employee.employment_statuses['part_time']
-    statuses << Employee.employment_statuses['temporary']
-    where("employment_status IN (?)", statuses)
+    where("employment_status IN (?)", Employee.active_status_array)
   }
 
   def echelon_requires_wage?
@@ -238,6 +234,14 @@ class Employee < ApplicationRecord
 
   def children_under_19
     person.children.under_19.count()
+  end
+
+  def self.active_status_array
+    statuses = []
+    statuses << Employee.employment_statuses['full_time']
+    statuses << Employee.employment_statuses['part_time']
+    statuses << Employee.employment_statuses['temporary']
+    statuses
   end
 
   def self.search(query)

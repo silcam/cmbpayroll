@@ -45,6 +45,7 @@ FROM
     (SELECT payslip_id, note, amount FROM deductions WHERE note = 'Salary Advance') dsa
     ON dsa.payslip_id = ps.id
 WHERE
+  e.employment_status IN :employment_status AND
   e.person_id = p.id AND
   e.id = ps.employee_id AND
   ps.period_year = :year AND

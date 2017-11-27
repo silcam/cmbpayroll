@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171122125236) do
+ActiveRecord::Schema.define(version: 20171127082904) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,10 @@ ActiveRecord::Schema.define(version: 20171122125236) do
     t.index ["bonus_id"], name: "index_bonuses_employees_on_bonus_id"
     t.index ["employee_id", "bonus_id"], name: "index_bonuses_employees_on_employee_id_and_bonus_id", unique: true
     t.index ["employee_id"], name: "index_bonuses_employees_on_employee_id"
+  end
+
+  create_table "category_lookup", primary_key: "emp_val", id: :integer, default: nil, force: :cascade do |t|
+    t.integer "wages_val", null: false
   end
 
   create_table "charges", force: :cascade do |t|
@@ -110,6 +114,10 @@ ActiveRecord::Schema.define(version: 20171122125236) do
     t.boolean "overtime", default: false, null: false
     t.boolean "is_bonus", default: false, null: false
     t.index ["payslip_id"], name: "index_earnings_on_payslip_id"
+  end
+
+  create_table "echelon_lookup", primary_key: "emp_val", id: :integer, default: nil, force: :cascade do |t|
+    t.integer "wages_val", null: false
   end
 
   create_table "employees", force: :cascade do |t|

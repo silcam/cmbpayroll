@@ -2,14 +2,14 @@ class EmployeeVacationReport < CMBReport
 
   def sql
     select =<<-SELECTSTATEMENT
-select DISTINCT ON (e.id)
+SELECT DISTINCT ON (e.id)
   CONCAT(p.first_name, ' ', p.last_name) as employee_name,
   e.id,
   a.vacation_balance,
   a.vacation_pay_earned,
   a.vacation_earned,
   a.last_vacation_end
-from
+FROM
   employees e
     LEFT JOIN people p ON e.person_id = p.id
     LEFT JOIN (
@@ -25,7 +25,9 @@ from
       from
         payslips
     ) a ON a.employee_id = e.id
-order by
+WHERE
+  e.employment_status IN :employment_status
+ORDER BY
   e.id desc,
   a.period_year desc,
   a.period_month desc;
@@ -49,9 +51,9 @@ order by
     number_with_precision(value, precision: 2)
   end
 
-  #def format_vacation_pay_earned(value)
-  #  number_to_currency(value, locale: :cm)
-  #end
+  def format_vacation_pay_earned(value)
+    cfa_nofcfa(value)
+  end
 
   def format_vacation_earned(value)
     number_with_precision(value, precision: 2)

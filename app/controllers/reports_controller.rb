@@ -31,6 +31,22 @@ class ReportsController < ApplicationController
       name: "DIPES Report",
       instance: Proc.new{|p| DipesReport.new()}
     },
+    'employee_advance_loan' => {
+      name: "Employee Advance and Loan Report",
+      instance: Proc.new{|p| EmployeeAdvanceLoanReport.new()}
+    },
+    'pay_breakdown_all' => {
+      name: "Pay Breakdown (All) Report",
+      instance: Proc.new{|p| PayBreakdownAllReport.new()}
+    },
+    'pay_breakdown_rfis' => {
+      name: "Pay Breakdown (RFIS) Report",
+      instance: Proc.new{|p| PayBreakdownRfisReport.new()}
+    },
+    'pay_breakdown_nonrfis' => {
+      name: "Pay Breakdown (Non-RFIS) Report",
+      instance: Proc.new{|p| PayBreakdownNonrfisReport.new()}
+    },
     'dept_charges' => {
       name: "Department Charges Report",
       instance: Proc.new{|p| EmployeeReport.new()}

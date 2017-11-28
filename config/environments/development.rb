@@ -54,4 +54,7 @@ Rails.application.configure do
 
   #config.i18n.default_locale = "fr"
 
+  config.logger = ActiveSupport::Logger.new(STDOUT)
+  config.log_level = :debug
+
 end

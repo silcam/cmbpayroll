@@ -77,12 +77,11 @@ ORDER BY
     period = options[:period]
     year, month = period.split('-')
 
-    if (year.nil? || month.nil?)
-      year = Period.current.year
-      month = Period.current.month
+    begin
+      Period.new(year.to_i, month.to_i).start
+    rescue InvalidPeriod
+      Period.current.start
     end
-
-    Date.new(year.to_i, month.to_i, 1)
   end
 
   # Options selector
@@ -90,12 +89,11 @@ ORDER BY
     period = options[:period]
     year, month = period.split('-')
 
-    if (year.nil? || month.nil?)
-      year = Period.current.year
-      month = Period.current.month
+    begin
+      Period.new(year.to_i, month.to_i).finish
+    rescue InvalidPeriod
+      Period.current.finish
     end
-
-    Date.new(year.to_i, month.to_i + 1, 1) - 1
   end
 
   def format_taxable(value)

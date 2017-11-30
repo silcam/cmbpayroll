@@ -9,3 +9,23 @@ LSS:
   name: LSS
   description: LSS Employees
   account: "2345"
+
+Aviation:
+  name: Aviation
+  description: People who work with planes
+  account: "3456"
+
+CTC:
+  name: CTC
+  description: People who work at CTC
+  account: "4567"
+
+RFIS:
+  name: RFIS
+  description: People who work at RFIS
+  account: "5678"
+
+Cam:
+  name: Cam Shop
+  description: People who work with power equipment
+  account: "6789"

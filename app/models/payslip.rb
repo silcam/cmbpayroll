@@ -1,8 +1,12 @@
 class Payslip < ApplicationRecord
 
+  VACATION_PAY = "Salaire de congé"
+  MONTHLY = 12.0
+
   has_many :earnings
   has_many :deductions
   has_many :payslip_corrections
+  has_many :work_loan_percentages
 
   belongs_to :employee
 
@@ -223,6 +227,17 @@ class Payslip < ApplicationRecord
 
   def compute_cnpswage
     self[:cnpswage] = ( compute_caissebase + process_bonuses + misc_pay ).ceil
+
+    # NOTE: this previously used the Format(value, "0") VBA function, which I
+    # intepreted as integer truncation.
+    if (self[:cnpswage] > SystemVariable.value(:cnps_ceiling))
+      self[:department_cnps] = ( self[:cnpswage] * SystemVariable.value(:dept_cnps_w_ceil) +
+          SystemVariable.value(:dept_cnps_max_base) ).floor
+    else
+      self[:department_cnps] = ( self[:cnpswage] * SystemVariable.value(:dept_cnps) ).floor
+    end
+
+    self[:cnpswage]
   end
 
   def process_taxable_wage()
@@ -230,6 +245,19 @@ class Payslip < ApplicationRecord
         employee.transportation : 0
 
     self[:taxable] = ( compute_cnpswage + transportation ).ceil
+
+    # NOTE: this previously used the Format(value, "0") VBA function, which I
+    # intepreted as integer truncation.
+    self[:department_credit_foncier] = ( self[:taxable] *
+        SystemVariable.value(:dept_credit_foncier) ).floor
+
+    if (self[:taxable] > SystemVariable.value(:emp_fund_salary_floor))
+      self[:employee_fund] = SystemVariable.value(:emp_fund_amount)
+    else
+      self[:employee_fund] = 0
+    end
+    # TODO: This is always zero, is this needed?
+    self[:employee_contribution] = 0
 
     self[:gross_pay] = self[:taxable]
   end
@@ -254,6 +282,15 @@ class Payslip < ApplicationRecord
     self[:net_pay] = self[:gross_pay] - self[:total_tax] - total_deductions()
   end
 
+  def get_vacation_pay
+    vac_pay = earnings.where(description: VACATION_PAY)&.first
+    unless (vac_pay.nil?)
+      vac_pay.amount
+    else
+      0
+    end
+  end
+
   def process_vacation_pay
     pay = calculate_vacation_pay(cnpswage, vacation_used)
     if pay > 0
@@ -262,7 +299,36 @@ class Payslip < ApplicationRecord
       #self[:taxable] += pay
       #self[:gross_pay] += pay
 
-      earnings << Earning.new(description: 'Salaire de congé', amount: pay)
+      earnings << Earning.new(description: VACATION_PAY, amount: pay)
+    end
+  end
+
+  def compute_work_loans
+    work_loans_by_dept = WorkLoan.work_loan_hash(employee, period)
+    percentage_so_far = 0
+
+    if (work_loans_by_dept.size > 0)
+      hours_worked_this_month = WorkHour.hours_worked(employee, period)
+
+      work_loans_by_dept.each do |dept,hours|
+        wlp = WorkLoanPercentage.new
+        percent_worked = hours.fdiv(hours_worked_this_month)
+        wlp.percentage = percent_worked > 1 ? 1 : percent_worked
+
+        found_dept = Department.find_by_name(dept)
+        found_dept = employee.department if found_dept.nil?
+        wlp.department_id = found_dept.id
+
+        work_loan_percentages << wlp
+        percentage_so_far += wlp.percentage
+      end
+    end
+
+    balance = 1 - percentage_so_far
+    if (balance > 0)
+      wlp = WorkLoanPercentage.create(department_id: employee.department_id,
+            percentage: balance)
+      work_loan_percentages << wlp
     end
   end
 
@@ -303,6 +369,7 @@ class Payslip < ApplicationRecord
     self[:cnpswage] = nil
     self[:taxable] = nil
 
+    work_loan_percentages.delete_all
     earnings.delete_all
     deductions.delete_all
   end
@@ -334,13 +401,14 @@ class Payslip < ApplicationRecord
     # Is this correct behavior, or throw exception?
     return nil unless employee.is_currently_paid?
 
+    employee.save
+
     payslip = Payslip.find_by(
                   employee_id: employee.id,
                   period_year: period.year,
                   period_month: period.month)
 
     if (payslip.nil?)
-      employee.save
       payslip = employee.payslips.build(period_year: period.year,
         period_month: period.month, payslip_date: Date.today)
     end
@@ -362,6 +430,7 @@ class Payslip < ApplicationRecord
       self.process_loans(payslip, employee, period)
       self.process_payslip_corrections(payslip, employee, period)
 
+      payslip.compute_work_loans
       payslip.compute_net_pay
 
       payslip.last_processed = DateTime.now
@@ -405,7 +474,7 @@ class Payslip < ApplicationRecord
   end
 
   def calculate_vacation_pay(cnpswage, vacation_used)
-    days_earned = SystemVariable.value(:vacation_days) / 12.0
+    days_earned = SystemVariable.value(:vacation_days) / MONTHLY
     vpay_factor = SystemVariable.value(:vacation_pay_factor)
     per_day = (cnpswage / days_earned) / vpay_factor
     (per_day * vacation_used).ceil

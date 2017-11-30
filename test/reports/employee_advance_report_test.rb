@@ -26,6 +26,11 @@ class EmployeeAdvanceLoanReportTest < ActiveSupport::TestCase
     assert_equal("2016-02-01", report.start.to_s)
     assert_equal("2016-02-29", report.finish.to_s)
 
+    report.options[:period] = "2017-12" # year boundary
+
+    assert_equal("2017-12-01", report.start.to_s)
+    assert_equal("2017-12-31", report.finish.to_s)
+
   end
 
 end

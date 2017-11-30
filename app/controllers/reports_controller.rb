@@ -47,9 +47,9 @@ class ReportsController < ApplicationController
       name: "Pay Breakdown (Non-RFIS) Report",
       instance: Proc.new{|p| PayBreakdownNonrfisReport.new()}
     },
-    'dept_charges' => {
-      name: "Department Charges Report",
-      instance: Proc.new{|p| EmployeeReport.new()}
+    'dept_charge' => {
+      name: "Department Charge Report",
+      instance: Proc.new{|p| DepartmentChargeReport.new()}
     }
   }
 

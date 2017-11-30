@@ -27,4 +27,18 @@ class WorkLoan < ApplicationRecord
     WorkLoan.unscoped().where(date: period.to_range()).group(:department_person).sum(:hours)
   end
 
+  def self.work_loan_hash(employee, period=Period.current)
+    dept_work_loans = {}
+
+    employee.work_loans.where(date: period.start..period.finish).each do |wl|
+      if (dept_work_loans[wl.department_person])
+        dept_work_loans[wl.department_person] += wl.hours
+      else
+        dept_work_loans[wl.department_person] = wl.hours
+      end
+    end
+
+    dept_work_loans
+  end
+
 end

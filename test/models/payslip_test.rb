@@ -4,16 +4,16 @@ require "logger"
 class PayslipTest < ActiveSupport::TestCase
 
   test "from_period_methods" do
-      payslip = Payslip.current_period
+    payslip = Payslip.current_period
 
-      assert_equal(Period.current.year, payslip.period_year)
-      assert_equal(Period.current.month, payslip.period_month)
+    assert_equal(Period.current.year, payslip.period_year)
+    assert_equal(Period.current.month, payslip.period_month)
 
-      january = Period.new(2017, 1)
-      payslip = Payslip.from_period(january)
+    january = Period.new(2017, 1)
+    payslip = Payslip.from_period(january)
 
-      assert_equal(january.year, payslip.period_year)
-      assert_equal(january.month, payslip.period_month)
+    assert_equal(january.year, payslip.period_year)
+    assert_equal(january.month, payslip.period_month)
   end
 
   test "must be valid with correct attributes" do
@@ -1246,6 +1246,10 @@ class PayslipTest < ActiveSupport::TestCase
     exp_cnps_w_pdc = (exp_cnps + (exp_cnps * 0.05).floor).ceil # PDC Bonus
     assert_equal(exp_cnps_w_pdc, payslip.compute_cnpswage, "cnps with pdc")
 
+    # Department CNPS
+    assert_equal(( exp_cnps_w_pdc * SystemVariable.value(:dept_cnps) ).floor,
+        payslip.department_cnps)
+
     # prime exceptionnel
     pe_bonus = Bonus.create!(name: "Prime Exceptionnelle", quantity: 0.30,
         bonus_type: "percentage")
@@ -1270,6 +1274,10 @@ class PayslipTest < ActiveSupport::TestCase
           (exp_cnps * 0.30).floor + 10000).ceil # PDC + PE Bonus
     assert_equal(exp_triple_bonus, payslip.compute_cnpswage, "cnps with pdc + pe + spot")
     new_exp_taxable = exp_triple_bonus + employee.transportation
+
+    # Department Credit Foncier
+    assert_equal( ( new_exp_taxable * SystemVariable.value(:dept_credit_foncier) ).floor,
+        payslip.department_credit_foncier)
 
     # verify can find out which bonuses were attached to payslip.
     assert_equal(3, payslip.earnings.where(is_bonus: true).count(), "bonuses as earnings (3)")
@@ -1328,6 +1336,291 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(new_exp_taxable - exp_total_tax - employee.amical, payslip.net_pay)
   end
 
+  test "Dept CNPS Ceiling" do
+    employee = return_valid_employee()
+
+    employee.hours_day = 8
+    employee.days_week = "five"
+    employee.category = 6
+    employee.echelon = "g"
+    employee.wage = "900215"
+    assert_equal(900215, employee.wage)
+
+    period = Period.new(2018,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    # verify dept cnps ceiling
+    expected_cnps = payslip.cnpswage()
+
+    # If ceiling hit, CNPSWage * 0.0175 + 84 000
+    assert_equal(
+          ( expected_cnps *
+              SystemVariable.value(:dept_cnps_w_ceil) + 84000 ).floor,
+          payslip.department_cnps)
+  end
+
+  test "Employee Contributions (w and w/o ceiling) and Employee Funds (Dept Charges Report)" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.category = "nine"
+    employee.echelon = "e"
+    employee.wage_scale = "a"
+    employee.contract_start = "2017-07-31"
+
+    period = Period.new(2018,1)
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    assert(employee.find_wage > SystemVariable.value(:emp_fund_salary_floor)) # default: 80 000
+    assert_equal(SystemVariable.value(:emp_fund_amount), payslip.employee_fund) # default 13 000
+    # TODO: What is this?
+    assert_equal(0, payslip.employee_contribution)
+
+    # Reduce wage so it is under salary floor and reprocess
+    employee.category = "one"
+    employee.echelon = "a"
+    employee.wage_scale = "b"
+    payslip = Payslip.process(employee, period)
+
+    assert(payslip.taxable < SystemVariable.value(:emp_fund_salary_floor),
+        "taxable is less than floor") # default: 80 000
+    # No contribution under the contribution limit
+    assert_equal(0, payslip.employee_fund)
+    # TODO: What is this?
+    assert_equal(0, payslip.employee_contribution)
+  end
+
+  test "Department Percentages from Work Loans (Dept Charges Report)" do
+    # config employee
+    employee = return_valid_employee()
+    lss_dept = departments :LSS
+    admin_dept = departments :Admin
+    employee.department_id = lss_dept.id
+
+    # create some work loans
+    # 1 week - 40 hours.
+    wl = WorkLoan.new
+    wl.date = "2018-01-15"
+    wl.department_person = "ADMIN"
+    wl.hours = 8
+    employee.work_loans << wl
+    wl = WorkLoan.new
+    wl.date = "2018-01-16"
+    wl.department_person = "ADMIN"
+    wl.hours = 8
+    employee.work_loans << wl
+    wl = WorkLoan.new
+    wl.date = "2018-01-17"
+    wl.department_person = "ADMIN"
+    wl.hours = 8
+    employee.work_loans << wl
+    wl = WorkLoan.new
+    wl.date = "2018-01-18"
+    wl.department_person = "ADMIN"
+    wl.hours = 8
+    employee.work_loans << wl
+    wl = WorkLoan.new
+    wl.date = "2018-01-19"
+    wl.department_person = "ADMIN"
+    wl.hours = 8
+    employee.work_loans << wl
+    # Simplify that.
+
+    period = Period.new(2018,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    # Verify that I have work loan percentages now.
+    # January 18 has 23 working days (or 184 hours).
+    # 40 / 184 is 21.739%
+    count = 0
+    payslip.work_loan_percentages.all.each do |wlp|
+      if (wlp.department_id == admin_dept.id)
+        assert_equal(21.74, (wlp.percentage * 100).round(2))
+        count += 1
+      else
+        # the rest of the month
+        assert_equal(78.26, (wlp.percentage * 100).round(2))
+        count += 1
+      end
+    end
+    assert_equal(2, count, "found two items")
+  end
+
+  test "No WorkLoans gives 1 entry" do
+    # config employee
+    employee = return_valid_employee()
+    period = Period.new(2018,1)
+
+    # no work loans
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    # Verify that I have work loan percentages now.
+    # January 18 has 23 working days (or 184 hours).
+    # 40 / 184 is 21.739%
+    assert_equal(1, payslip.work_loan_percentages.size, "should have exactly 1")
+    assert_equal(1, payslip.work_loan_percentages.first.percentage, "should be 100%")
+    assert_equal(employee.department_id, payslip.work_loan_percentages.first.department_id,
+        "should be in employee's department")
+  end
+
+  test "Test Full Time Loaned" do
+    # config employee
+    employee = return_valid_employee()
+    lss_dept = departments :LSS
+    admin_dept = departments :Admin
+    employee.department_id = lss_dept.id
+
+    period = Period.new(2018,1)
+    start_date = period.start
+    finish_date = period.finish
+
+    # Loan for every work day
+    (start_date..finish_date).each do |dt|
+      if (dt.wday > 0 && dt.wday < 6)
+        wl = WorkLoan.new
+        wl.date = "2018-01-15"
+        wl.department_person = "ADMIN"
+        wl.hours = 8
+        employee.work_loans << wl
+      end
+    end
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    # Verify that I have work loan percentages now.
+    # January 18 has 23 working days (or 184 hours).
+    # 40 / 184 is 21.739%
+    count = 0
+    assert_equal(1, payslip.work_loan_percentages.size, "should only be one")
+    assert_equal(1, payslip.work_loan_percentages.first.percentage, "should be for 100%")
+    assert_equal(admin_dept.id, payslip.work_loan_percentages.first.department_id,
+        "should be for admin dept")
+  end
+
+  test "Test Cannot be loaned more than 100% despite overtime" do
+    # config employee
+    employee = return_valid_employee()
+    lss_dept = departments :LSS
+    admin_dept = departments :Admin
+    employee.department_id = lss_dept.id
+
+    period = Period.new(2018,1)
+    start_date = period.start
+    finish_date = period.finish
+
+    # Loan for every day (Even weekends)
+    (start_date..finish_date).each do |dt|
+      wl = WorkLoan.new
+      wl.date = "2018-01-15"
+      wl.department_person = "ADMIN"
+      wl.hours = 8
+      employee.work_loans << wl
+    end
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    # Verify that I have work loan percentages now.
+    # January 18 has 23 working days (or 184 hours).
+    # 40 / 184 is 21.739%
+    count = 0
+    assert_equal(1, payslip.work_loan_percentages.size, "should only be one")
+    assert_equal(1, payslip.work_loan_percentages.first.percentage, "should be for 100%")
+    assert_equal(admin_dept.id, payslip.work_loan_percentages.first.department_id,
+        "should be for admin dept")
+  end
+
+  test "Test Many Departments" do
+
+    admin_dept = departments :Admin
+    av_dept = departments :Aviation
+    ctc_dept = departments :CTC
+    rfis_dept = departments :RFIS
+    cam_dept = departments :Cam
+    lss_dept = departments :LSS
+
+    to_create = {
+      admin_dept => 16, #  8.695%
+      av_dept => 40,    # 21.739%
+      ctc_dept => 32,   # 17.391%
+      rfis_dept => 8,   #  4.347%
+      cam_dept => 64,   # 34.780%
+    }
+    # total: 152 hours | 86.956%
+
+    # config employee
+    employee = return_valid_employee()
+    employee.department_id = lss_dept.id
+
+    period = Period.new(2018,1)
+    start_date = period.start
+    finish_date = period.finish
+
+    # Create Loans for every work day
+    tmp_date = start_date
+    to_create.each do |k,v|
+      tmp_amount = v
+
+      while (tmp_amount > 0)
+        wl = WorkLoan.new
+        wl.date = tmp_date
+        wl.department_person = k.name
+        wl.hours = 8
+        employee.work_loans << wl
+
+        tmp_date = tmp_date + 1
+        tmp_amount -= 8
+      end
+    end
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    # Verify that I have work loan percentages now.
+    count = 0
+    assert_equal(6, payslip.work_loan_percentages.size, "should be 6")
+
+    payslip.work_loan_percentages.all.each do |wlp|
+      if (wlp.department_id == admin_dept.id)
+        assert_equal(8.70, (wlp.percentage * 100).round(2))
+        count += 1
+      elsif (wlp.department_id == av_dept.id)
+        assert_equal(21.74, (wlp.percentage * 100).round(2))
+        count += 1
+      elsif (wlp.department_id == ctc_dept.id)
+        assert_equal(17.39, (wlp.percentage * 100).round(2))
+        count += 1
+      elsif (wlp.department_id == rfis_dept.id)
+        assert_equal(4.35, (wlp.percentage * 100).round(2))
+        count += 1
+      elsif (wlp.department_id == cam_dept.id)
+        assert_equal(34.78, (wlp.percentage * 100).round(2))
+        count += 1
+      elsif (wlp.department_id == lss_dept.id)
+        # the leftovers
+        assert_equal(13.04, (wlp.percentage * 100).round(2))
+        count += 1
+      end
+    end
+    # 5 plus leftovers
+    assert_equal(6, count, "found all 6 expected work loan percentages")
+  end
 
   test "Prime Exceptionnelle Maxxes Out" do
     # config employee
@@ -1391,6 +1684,37 @@ class PayslipTest < ActiveSupport::TestCase
     # expected value
     net_pay = expected_taxable - payslip.total_tax - employee.advance_amount()
     assert_equal(net_pay, payslip.net_pay)
+  end
+
+  test "Test Vacation Pay Calculations" do
+    # config employee
+    employee = return_valid_employee()
+    employee.uniondues = false;
+    employee.amical = 0;
+    employee.contract_start = "2017-01-01" # no senior bonus
+
+    period = Period.new(2018,1)
+
+    pre_balance = Vacation.balance(employee, period)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+
+    # remove working time for jan 22, 23, 24
+    employee.work_hours.where(date: "2018-01-22").first.delete
+    employee.work_hours.where(date: "2018-01-23").first.delete
+    employee.work_hours.where(date: "2018-01-24").first.delete
+
+    # Vacation add Vacation for 3 days (22, 23, 24 of jan 18)
+    vac = Vacation.new(start_date: '2018-01-22', end_date: '2018-01-24')
+    employee.vacations << vac
+
+    payslip = Payslip.process(employee, period)
+    vac_pay = 8481
+
+    assert_equal(vac_pay, payslip.get_vacation_pay)
+    assert_equal(1.5, payslip.vacation_earned)
+    assert_equal(pre_balance - 3,  payslip.vacation_balance)
   end
 
   test "Loans and payments count against net Pay" do

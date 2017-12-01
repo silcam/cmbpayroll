@@ -156,6 +156,12 @@ en:
   Note: Note
   Standard_charge_notes: Standard Charge Notes
 
+  # MiscPayments
+  Misc_payments: Miscellaneous Payments
+  Misc_payment: Payment
+  Misc_payments_for: Miscellaneous Payments for
+  Add_misc_payment: Add Payment
+
   # Payslips
   Payslip: Payslip
   Payslips: Payslips

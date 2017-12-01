@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root "home#home"
 
   resources :vacations, except: :show
+  resources :misc_payments
   resources :bonuses
   resources :work_loans, only: [ :index, :new, :create, :destroy ]
   resources :departments
@@ -31,6 +32,7 @@ Rails.application.routes.draw do
         end
       end
       resources :charges, except: [:edit, :update, :show]
+      resources :misc_payments, except: [:edit, :update, :show]
       resources :vacations, except: :show do
         get 'days_summary', on: :collection
       end

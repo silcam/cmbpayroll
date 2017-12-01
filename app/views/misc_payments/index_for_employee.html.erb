@@ -1,0 +1,32 @@
+<%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
+
+<h2>
+  <%= t :Misc_payments_for %> <%= @employee.full_name %>
+</h2>
+
+<% if can? :create, MiscPayment %>
+  <p>
+    <%= link_to t(:Add_misc_payment), new_employee_misc_payment_path(@employee), class: 'btn btn-primary' %>
+  </p>
+<% end %>
+
+<table class="table">
+  <tr>
+    <th><%= t :Period %></th>
+    <th><%= t :Amount %></th>
+    <th><%= t :Note %></th>
+    <th></th>
+  </tr>
+  <% @misc_payments.each do |misc_payment| %>
+    <tr>
+      <td><%= Period.from_date(misc_payment.date).short_name %></td>
+      <td>CFA <%= misc_payment.amount %></td>
+      <td><%= misc_payment.note %></td>
+      <td>
+        <% if misc_payment.destroyable? and can?(:destroy, misc_payment) %>
+          <%= link_to t(:Delete), misc_payment, method: :delete %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>

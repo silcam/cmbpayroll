@@ -18,6 +18,13 @@
     <% end %>
   </li>
   <li>
+    <label><%= t(:Misc_payments) %>:</label>
+    <%= link_to t(:View), employee_misc_payments_path(@employee) %>
+    <% if can? :create, MiscPayment %>
+       | <%= link_to t(:Add), new_employee_misc_payment_path(@employee, referred_by: request.path), id: 'add-misc-payment-link' %>
+    <% end %>
+  </li>
+  <li>
     <label><%= :Hours %>:</label>
     <%= link_to t(:View), employee_work_hours_path(@employee) %>
     <% if can? :update, WorkHour %>

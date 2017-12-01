@@ -54,6 +54,8 @@ class AccessPolicy
       can :update, Charge
       can :destroy, Charge
 
+      can :manage, MiscPayment
+
       can :create, Department
       can :read, Department
       can :update, Department
@@ -138,6 +140,11 @@ class AccessPolicy
         charge.employee.supervisor.person == user.person
       end
 
+      can :read, MiscPayment do |misc_payment, user|
+        # can read if charge is for reporting employee
+        misc_payment.employee.supervisor.person == user.person
+      end
+
       can :read, Loan do |loan, user|
         # can read if loan is for reporting employee
         loan.employee.supervisor.person == user.person
@@ -182,6 +189,10 @@ class AccessPolicy
       can :read, Charge do |charge, user|
         # can read if looking at self
         charge.employee.person == user.person
+      end
+
+      can :read, MiscPayment do |misc_payment, user|
+        misc_payment.employee.person == user.person
       end
 
       can :read, Loan do |loan, user|

@@ -27,9 +27,11 @@
       <td><%= std_datestring charge.date %></td>
       <td>FCFA <%= charge.amount %></td>
       <td><%= charge.note %></td>
-      <% if charge.destroyable? %>
-        <td><%= link_to t(:Delete), charge, method: :delete %></td>
-      <% end %>
+      <td>
+        <% if charge.destroyable? and can?(:destroy, charge)%>
+          <%= link_to t(:Delete), charge, method: :delete %>
+        <% end %>
+      </td>
     </tr>
   <% end %>
 </table>

@@ -20,6 +20,8 @@
         <li><%= link_to t(:Vacation), vacations_path, id: 'vacations-link' %></li>
       <% end %>
 
+      <li><%= link_to t(:Misc_payments), misc_payments_path, id: 'misc-payments-link' %></li>
+
       <% if can? :read, Bonus %>
         <li><%= link_to t(:Bonuses), bonuses_path %></li>
       <% end %>

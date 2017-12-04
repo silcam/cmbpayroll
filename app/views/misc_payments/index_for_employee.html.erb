@@ -20,7 +20,7 @@
   <% @misc_payments.each do |misc_payment| %>
     <tr>
       <td><%= Period.from_date(misc_payment.date).short_name %></td>
-      <td>CFA <%= misc_payment.amount %></td>
+      <td><%= number_to_currency(misc_payment.amount, locale: :cm) %></td>
       <td><%= misc_payment.note %></td>
       <td>
         <% if misc_payment.destroyable? and can?(:destroy, misc_payment) %>

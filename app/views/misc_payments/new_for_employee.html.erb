@@ -1,0 +1,28 @@
+<% provide :title, t(:Misc_payments) %>
+
+<%= link_to "<< #{@employee.full_name} #{t :Misc_payments}", employee_misc_payments_path(@employee) %>
+
+<h2><%= @employee.full_name %></h2>
+
+<%= render 'shared/error_messages', errors: @misc_payment.errors %>
+
+<%= form_for @misc_payment, url: employee_misc_payments_path(@employee), html: {class: 'auto-width'} do |form| %>
+  <div class="form-group">
+    <%= form.label :amount, t(:Amount) %>
+    <%= form.text_field :amount, placeholder: 'CFA', class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :date, t(:Date), style: 'display: block;' %>
+    <%= form.date_select :date, {}, class: 'form-control form-control-inline' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :note, t(:Note) %>
+    <%= form.text_field :note, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.submit t(:Save), class: 'btn btn-primary' %>
+  </div>
+<% end %>

@@ -25,7 +25,7 @@
   <% @charges.each do |charge| %>
     <tr>
       <td><%= std_datestring charge.date %></td>
-      <td>FCFA <%= charge.amount %></td>
+      <td><%= number_to_currency(charge.amount, locale: :cm) %></td>
       <td><%= charge.note %></td>
       <td>
         <% if charge.destroyable? and can?(:destroy, charge)%>

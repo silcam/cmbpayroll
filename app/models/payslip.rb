@@ -463,7 +463,7 @@ class Payslip < ApplicationRecord
 
   def self.process_misc_payments(payslip, employee, period)
     employee.misc_payments.for_period(period).each do |misc_payment|
-      payslip.earnings.create(amount: misc_payment.amount, description: misc_payment.note)
+      payslip.earnings << Earning.new(amount: misc_payment.amount, description: misc_payment.note)
     end
   end
 

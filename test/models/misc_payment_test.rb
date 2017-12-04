@@ -47,6 +47,21 @@ class MiscPaymentTest < ActiveSupport::TestCase
     refute_includes MiscPayment.all, @lukes_august_bonus
   end
 
+  test "Readable by user" do
+    all_mps = MiscPayment.all
+    # Admin can read
+    assert_includes MiscPayment.readable_by(all_mps, users(:MaceWindu)), @lukes_august_bonus
+
+    # Sup can read
+    assert_includes MiscPayment.readable_by(all_mps, users(:Yoda)), @lukes_august_bonus
+
+    # User can read
+    assert_includes MiscPayment.readable_by(all_mps, users(:Luke)), @lukes_august_bonus
+
+    # Others can't read
+    refute_includes MiscPayment.readable_by(all_mps, users(:Quigon)), @lukes_august_bonus
+  end
+
   def some_valid_params
     {amount: 10, employee: @luke, date: '2017-08-15'}
   end

@@ -7,6 +7,19 @@ class MiscPayment < ApplicationRecord
 
   default_scope{ order(:date) }
 
+  def self.for_period(period)
+    where(date: period.to_range)
+  end
+
+  def self.readable_by(misc_payments, user)
+    policy = AccessPolicy.new(user)
+    readable_misc_payments = []
+    misc_payments.each do |misc_payment|
+      readable_misc_payments << misc_payment if policy.can?(:read, misc_payment)
+    end
+    readable_misc_payments
+  end
+
   def destroyable?
     date_in_bounds
   end

@@ -16,10 +16,13 @@ class MiscPaymentsController < ApplicationController
   end
 
   def new
+    @misc_payment = MiscPayment.new
+    authorize! :create, @misc_payment
     if @employee
-      @misc_payment = @employee.misc_payments.new
-      authorize! :create, @misc_payment
       render 'new_for_employee'
+    else
+      @employees = employees_for_mass_payment
+      render 'new'
     end
   end
 
@@ -32,6 +35,17 @@ class MiscPaymentsController < ApplicationController
       else
         render 'new_for_employee'
       end
+    else
+      @misc_payment = Employee.new.misc_payments.new(misc_payment_params)
+      if @misc_payment.valid?
+        params[:employees].each do |employee_id|
+          Employee.find(employee_id).misc_payments.create(misc_payment_params)
+        end
+        redirect_to misc_payments_path
+      else
+        @employees = employees_for_mass_payment
+        render 'new'
+      end
     end
   end
 
@@ -42,6 +56,10 @@ class MiscPaymentsController < ApplicationController
   end
 
   private
+
+  def employees_for_mass_payment
+    Employee.all.unscope(:order).order("employment_status, people.last_name, people.first_name")
+  end
 
   def set_employee
     @employee = Employee.find(params[:employee_id]) if params[:employee_id]

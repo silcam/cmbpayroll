@@ -1,0 +1,30 @@
+<% provide :title, t(:Misc_payments) %>
+
+<%= link_to "<< #{t(:Misc_payments)}", misc_payments_path %>
+
+<h2><%= t :New_misc_payment %></h2>
+
+<%= form_for @misc_payment, html: {class: 'auto-width'} do |form| %>
+
+  <%= render 'misc_payment_form', form: form %>
+
+  <label><%= t :Employees %></label>
+
+  <table class="table">
+    <% @employees.each do |employee| %>
+      <tr>
+        <td>
+          <%= check_box_tag "employees[]", employee.id, employee.is_currently_paid? %>
+          <%= employee.full_name_rev %>
+        </td>
+        <td>
+          <%= t employee.employment_status %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+
+  <div class="form-group">
+    <%= form.submit t(:Save), class: 'btn btn-primary' %>
+  </div>
+<% end %>

@@ -59,6 +59,7 @@ en:
   cant_be_in_future: can't be in the future.
   cant_be_during_posted_period: is in a period that is already posted.
   cant_change_during_posted_period: is in a period that is already posted.
+  is_invalid: is invalid.
 
   # Alerts
   never_had_raise: "%{name} started %{date} and has never had a raise."
@@ -161,6 +162,7 @@ en:
   Misc_payment: Payment
   Misc_payments_for: Miscellaneous Payments for
   Add_misc_payment: Add Payment
+  New_misc_payment: New Payment
 
   # Payslips
   Payslip: Payslip

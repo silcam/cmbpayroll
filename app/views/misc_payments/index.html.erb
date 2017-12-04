@@ -1,0 +1,30 @@
+<% provide :title, t(:Misc_payments) %>
+
+<%= link_to t(:Add_misc_payment), new_misc_payment_path, class: 'btn btn-primary' %>
+
+<h2><%= t(:Misc_payments_for) %> <%= @period.name %></h2>
+
+<%= render 'shared/period_nav', period: @period, path: misc_payments_path %>
+
+<table class="table">
+  <tr>
+    <th><%= t :Employee %></th>
+    <th><%= t :Period %></th>
+    <th><%= t :Amount %></th>
+    <th><%= t :Note %></th>
+    <th></th>
+  </tr>
+  <% @misc_payments.each do |misc_payment| %>
+    <tr>
+      <td><%= misc_payment.employee.full_name %></td>
+      <td><%= Period.from_date(misc_payment.date).short_name %></td>
+      <td><%= number_to_currency(misc_payment.amount, locale: :cm) %></td>
+      <td><%= misc_payment.note %></td>
+      <td>
+        <% if can?(:destroy, misc_payment) and misc_payment.destroyable? %>
+          <%= link_to t(:Delete), misc_payment, method: :delete %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>

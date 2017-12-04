@@ -357,6 +357,7 @@ class Payslip < ApplicationRecord
       self.process_earnings_and_taxes(payslip, employee, period)
 
       self.process_charges(payslip, employee)
+      self.process_misc_payments(payslip, employee, period)
       self.process_employee_deductions(payslip, employee)
       self.process_loans(payslip, employee, period)
       self.process_payslip_corrections(payslip, employee, period)
@@ -457,6 +458,12 @@ class Payslip < ApplicationRecord
       deduction.date = charge.date
 
       payslip.deductions << deduction
+    end
+  end
+
+  def self.process_misc_payments(payslip, employee, period)
+    employee.misc_payments.for_period(period).each do |misc_payment|
+      payslip.earnings.create(amount: misc_payment.amount, description: misc_payment.note)
     end
   end
 

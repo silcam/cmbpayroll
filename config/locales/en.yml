@@ -329,6 +329,9 @@ en:
   Wages_admin_description: Modify standard wages for Categories and Echelons
   Variables_admin_description: Modify system variables that control how the system works
 
+  tool-tips:
+    WL_Department_person:  Please select a department the that hours will be loaned to.  You must enter one per day. If the loan is to a person and that person's account is not shown, please enter that account as a department using the Administration tools
+
   reports:
     Employee_report: Employee Report
     Employee_report_by_dept: Employee Report - By Department

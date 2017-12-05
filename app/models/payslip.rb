@@ -315,7 +315,7 @@ class Payslip < ApplicationRecord
         percent_worked = hours.fdiv(hours_worked_this_month)
         wlp.percentage = percent_worked > 1 ? 1 : percent_worked
 
-        found_dept = Department.find_by_name(dept)
+        found_dept = Department.find(dept)
         found_dept = employee.department if found_dept.nil?
         wlp.department_id = found_dept.id
 

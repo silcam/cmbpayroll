@@ -42,7 +42,7 @@ class WorkLoansController < ApplicationController
   private
 
   def work_loan_params
-    params.require(:work_loan).permit(:employee_id, :date, :hours, :department_person)
+    params.require(:work_loan).permit(:employee_id, :date, :hours, :department_id)
   end
 
   def get_departments
@@ -50,6 +50,6 @@ class WorkLoansController < ApplicationController
   end
 
   def get_employees
-    @employees = Employee.all()
+    @employees = Employee.currently_paid()
   end
 end

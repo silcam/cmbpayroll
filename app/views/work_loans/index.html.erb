@@ -32,7 +32,7 @@
       <tr>
         <td><%= loan.employee.full_name %></td>
         <td><%= loan.hours %></td>
-        <td><%= loan.department_person %></td>
+        <td><%= loan.department&.name %></td>
         <td><%= loan.date %></td>
         <td><%= link_to t(:Destroy), loan, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
       </tr>

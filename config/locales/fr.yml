@@ -333,6 +333,9 @@ fr:
   Wages_admin_description: Modifier les salaires bases des catégories et échelons
   Variables_admin_description: Modifier les variables qui dirigent le système
 
+  tool-tips:
+    WL_Department_person:  Veuillez saisir le département auquel les heures seront prêtées.  Si vous voulez créer un prêt pour une personne et cette personne n'existe pas dans la liste, veuillez ajouter le compte de cette personne utilisant la rubrique 'Administration -> Gestion des départements'
+
   reports:
     Employee_report: Le Rapport des Employés
     Employee_report_by_dept: Le Rapport des Employés par Département

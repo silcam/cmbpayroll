@@ -1405,32 +1405,15 @@ class PayslipTest < ActiveSupport::TestCase
 
     # create some work loans
     # 1 week - 40 hours.
-    wl = WorkLoan.new
-    wl.date = "2018-01-15"
-    wl.department_person = "ADMIN"
-    wl.hours = 8
-    employee.work_loans << wl
-    wl = WorkLoan.new
-    wl.date = "2018-01-16"
-    wl.department_person = "ADMIN"
-    wl.hours = 8
-    employee.work_loans << wl
-    wl = WorkLoan.new
-    wl.date = "2018-01-17"
-    wl.department_person = "ADMIN"
-    wl.hours = 8
-    employee.work_loans << wl
-    wl = WorkLoan.new
-    wl.date = "2018-01-18"
-    wl.department_person = "ADMIN"
-    wl.hours = 8
-    employee.work_loans << wl
-    wl = WorkLoan.new
-    wl.date = "2018-01-19"
-    wl.department_person = "ADMIN"
-    wl.hours = 8
-    employee.work_loans << wl
-    # Simplify that.
+    start = Date.new(2018,1,15)
+    finish = Date.new(2018,1,19)
+    (start..finish).each do |dt|
+      wl = WorkLoan.new
+      wl.date = dt
+      wl.department = departments :Admin
+      wl.hours = 8
+      employee.work_loans << wl
+    end
 
     period = Period.new(2018,1)
 
@@ -1491,7 +1474,7 @@ class PayslipTest < ActiveSupport::TestCase
       if (dt.wday > 0 && dt.wday < 6)
         wl = WorkLoan.new
         wl.date = "2018-01-15"
-        wl.department_person = "ADMIN"
+        wl.department = departments :Admin
         wl.hours = 8
         employee.work_loans << wl
       end
@@ -1526,7 +1509,7 @@ class PayslipTest < ActiveSupport::TestCase
     (start_date..finish_date).each do |dt|
       wl = WorkLoan.new
       wl.date = "2018-01-15"
-      wl.department_person = "ADMIN"
+      wl.department = departments :Admin
       wl.hours = 8
       employee.work_loans << wl
     end
@@ -1579,7 +1562,7 @@ class PayslipTest < ActiveSupport::TestCase
       while (tmp_amount > 0)
         wl = WorkLoan.new
         wl.date = tmp_date
-        wl.department_person = k.name
+        wl.department = k
         wl.hours = 8
         employee.work_loans << wl
 

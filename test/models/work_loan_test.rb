@@ -73,7 +73,7 @@ class WorkLoanTest < ActiveSupport::TestCase
   end
 
   def some_valid_params
-    {employee: @luke, date: '2017-08-09', hours: 9, department_person: @admin.name}
+    {employee: @luke, date: '2017-08-09', hours: 9, department: @admin}
   end
 
   def create_and_assign_loan(employee, period, hours, department = nil)
@@ -81,7 +81,7 @@ class WorkLoanTest < ActiveSupport::TestCase
 
     work_loan.date = period.start
     work_loan.hours = hours
-    work_loan.department_person = department.name
+    work_loan.department = department
 
     employee.work_loans << work_loan
     work_loan

@@ -2,8 +2,8 @@ include ApplicationHelper
 
 class WorkLoan < ApplicationRecord
   belongs_to :employee
+  belongs_to :department
 
-  validates :department_person, presence: true
   validates :date, presence: true
   validates :hours, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24}
 
@@ -24,17 +24,17 @@ class WorkLoan < ApplicationRecord
   end
 
   def self.total_hours_per_department(period=Period.current)
-    WorkLoan.unscoped().where(date: period.to_range()).group(:department_person).sum(:hours)
+    WorkLoan.unscoped().joins(:department).where(date: period.to_range()).group(:name).sum(:hours)
   end
 
   def self.work_loan_hash(employee, period=Period.current)
     dept_work_loans = {}
 
     employee.work_loans.where(date: period.start..period.finish).each do |wl|
-      if (dept_work_loans[wl.department_person])
-        dept_work_loans[wl.department_person] += wl.hours
+      if (dept_work_loans[wl.department.id])
+        dept_work_loans[wl.department.id] += wl.hours
       else
-        dept_work_loans[wl.department_person] = wl.hours
+        dept_work_loans[wl.department.id] = wl.hours
       end
     end
 

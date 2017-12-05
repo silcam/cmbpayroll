@@ -22,6 +22,10 @@
     <div class="col-md-8"><%= t(:Holidays_admin_description) %></div>
   </div>
   <div class="row">
+    <div class="col-md-4"><%= link_to t(:Print_timesheets), generate_timesheets_path %></div>
+    <div class="col-md-8"><%= t(:Print_timesheets_description) %></div>
+  </div>
+  <div class="row">
     <div class="col-md-4"><%= link_to t(:Standard_charge_notes), standard_charge_notes_path %></div>
     <div class="col-md-8"><%= t(:Charges_admin_description) %></div>
   </div>
@@ -41,11 +45,11 @@
   <hr />
 
   <div class="row">
-    <div class="col-md-4"><%= link_to t(:Wages_management), admin_manage_wages_path %></div>
+    <div class="col-md-4"><%= link_to t(:Manage_wages), admin_manage_wages_path %></div>
     <div class="col-md-8"><%= t(:Wages_admin_description) %></div>
   </div>
   <div class="row">
-    <div class="col-md-4"><%= link_to t(:Variable_management), admin_manage_variables_path %></div>
+    <div class="col-md-4"><%= link_to t(:Manage_variables), admin_manage_variables_path %></div>
     <div class="col-md-8"><%= t(:Variables_admin_description) %></div>
   </div>
 </div>

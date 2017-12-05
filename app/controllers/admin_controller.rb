@@ -39,6 +39,39 @@ class AdminController < ApplicationController
     end
   end
 
+  def timesheet
+    @periods = []
+    @current = Period.current()
+    period = @current.next.next
+
+    (0..12).each do
+      @periods << period
+      period = period.previous
+    end
+  end
+
+  def timesheets
+    @today = Date.today
+
+    period_param = params[:period]
+
+    begin
+      period_year, period_month = period_param.split('-')
+      period = Period.new(period_year.to_i, period_month.to_i)
+    rescue
+      period = Period.current
+    end
+
+    @start_date = period.start
+    @end_date = period.finish
+
+    @announcement = params[:timesheet][:announcement]
+
+    @employees = Employee.currently_paid()
+
+    @filename = 'eps-timesheet.pdf'
+  end
+
   private
 
   def wage_params

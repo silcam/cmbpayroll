@@ -309,6 +309,7 @@ en:
   Department_management: Department Management
 
   # Admin
+  Administration: Administration
   Manage_wages: Manage Wages
   Echelon_alt: Echelon Alt
   Base_wage: Base Wage
@@ -317,6 +318,9 @@ en:
   Base_wage_d: Base Wage D
   Base_wage_e: Base Wage E
   Wage_information_for: Wage Information for
+  Manage_variables: Gestion des variables
+  Print_timesheets: Print Timesheets
+  Choose_options_for_timesheets: Choose Options for Timesheets
 
   # Admin Index
   Payslips_admin_description: Post Payslips and Pay Periods for Employees
@@ -328,6 +332,7 @@ en:
   Departments_admin_description: Add or Modify Departments
   Wages_admin_description: Modify standard wages for Categories and Echelons
   Variables_admin_description: Modify system variables that control how the system works
+  Print_timesheets_description: Print timesheets for all employees for a month
 
   tool-tips:
     WL_Department_person:  Please select a department the that hours will be loaned to.  You must enter one per day. If the loan is to a person and that person's account is not shown, please enter that account as a department using the Administration tools

@@ -313,6 +313,7 @@ fr:
   Department_management: Gestion des départements
 
   # Admin
+  Administration: Administration
   Manage_wages: Gestion des salaires
   Echelon_alt: Échelon Alt
   Base_wage: Salaire de base
@@ -321,6 +322,9 @@ fr:
   Base_wage_d: Salaire de base D
   Base_wage_e: Salaire de base E
   Wage_information_for: Information sur la salaire de
+  Manage_variables: Gestion des variables
+  Print_timesheets: Imprimer les feuilles de temps
+  Choose_options_for_timesheets: Choisissez les réglages des feuilles de temps
 
   # Admin Index
   Payslips_admin_description: Création des bullitens de paie et finalisation des mois
@@ -332,6 +336,7 @@ fr:
   Departments_admin_description: Ajouter ou modifier les départements
   Wages_admin_description: Modifier les salaires bases des catégories et échelons
   Variables_admin_description: Modifier les variables qui dirigent le système
+  Print_timesheets_description: Imprimer les feuilles de temps pour tous les employées pour un mois
 
   tool-tips:
     WL_Department_person:  Veuillez saisir le département auquel les heures seront prêtées.  Si vous voulez créer un prêt pour une personne et cette personne n'existe pas dans la liste, veuillez ajouter le compte de cette personne utilisant la rubrique 'Administration -> Gestion des départements'

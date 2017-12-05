@@ -32,6 +32,10 @@ gem 'jbuilder', '~> 2.5'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 
+# PDFs
+gem 'prawn', '~> 2.1'
+gem 'prawn-rails', '~> 0.1.1'
+
 # date picker
 gem 'momentjs-rails', '>= 2.9.0'
 gem 'bootstrap3-datetimepicker-rails', '~>4.17.47'

@@ -14,6 +14,7 @@ class Payslip < ApplicationRecord
   validates :period_year,
             :period_month,
                presence: {message: I18n.t(:Not_blank)}
+  validates :net_pay, numericality: { :greater_than => 0, message: I18n.t(:Net_pay_error) }
 
   scope :for_period, ->(period) {
     where(period_year: period.year, period_month: period.month)
@@ -280,6 +281,15 @@ class Payslip < ApplicationRecord
   # After all calculations, compute net pay from gross pay less all deductions
   def compute_net_pay
     self[:net_pay] = self[:gross_pay] - self[:total_tax] - total_deductions()
+
+    if (self[:net_pay] < 0)
+      # This isn't good.
+      # Set the net_pay to zero,  This will raise an error since there's a model
+      # validation that net_pay must be greater than zero.
+      self[:net_pay] = 0
+    end
+
+    self[:net_pay]
   end
 
   def get_vacation_pay

@@ -172,6 +172,7 @@ en:
   Process: Process
   post_success_message: Pay period successfully posted.
   post_failure_message: Errors prevented this pay period from being posted.
+  Net_pay_error: Net Pay Computed to be less than Zero, Please investigate Charges and Loan Payments and reprocess.
 
   # Payslip Corrections
   Payslip_corrections: Payslip Corrections

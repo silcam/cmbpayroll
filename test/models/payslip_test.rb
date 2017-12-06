@@ -33,6 +33,7 @@ class PayslipTest < ActiveSupport::TestCase
     })
     refute_nil(payslip)
 
+    payslip.net_pay = 1
     employee.payslips << payslip
 
     refute_nil(payslip.employee_id)
@@ -50,6 +51,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip.payslip_date = "2017-07-31"
     payslip.period_year = Period.current.year
     payslip.period_month = Period.current.month
+    payslip.net_pay = 1
 
     create_earnings(payslip)
 
@@ -83,6 +85,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip.payslip_date = "2017-07-31"
     #payslip.period_year = Period.current.year
     payslip.period_month = Period.current.month
+    payslip.net_pay = 1
 
     create_earnings(payslip)
 
@@ -98,6 +101,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip.payslip_date = "2017-07-31"
     payslip.period_year = Period.current.year
     #payslip.period_month = Period.current.month
+    payslip.net_pay = 1
 
     create_earnings(payslip)
 
@@ -113,6 +117,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip.payslip_date = "2017-07-31"
     payslip.period_year = Period.current.year
     payslip.period_month = Period.current.month
+    payslip.net_pay = 1
 
     refute(payslip.valid?, "payslip should not be valid without earnings")
     refute(payslip.errors[:earnings].empty?, "yep, errors")
@@ -140,6 +145,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip.payslip_date = "2017-07-31"
     payslip.period_year = Period.current.year
     payslip.period_month = Period.current.month
+    payslip.net_pay = 1
 
     refute(payslip.valid?, "payslip should not be valid without earnings")
     refute(payslip.errors[:earnings].empty?, "yep, errors")
@@ -303,6 +309,7 @@ class PayslipTest < ActiveSupport::TestCase
         period_month: 8
     })
     refute_nil(payslip)
+    payslip.net_pay = 1
 
     employee.payslips << payslip
     create_earnings(payslip)
@@ -1754,6 +1761,35 @@ class PayslipTest < ActiveSupport::TestCase
       expected_net = (employee.wage + employee.transportation) - payslip.total_tax - 300
       assert_equal(expected_net, payslip.net_pay)
     end
+  end
+
+  test "Net Pay Cannot be Negative" do
+    # config employee
+    employee = return_valid_employee()
+    employee.uniondues = false;
+    employee.amical = 0;
+    employee.contract_start = "2017-01-01" # no senior bonus
+
+    # new Loan
+    loan = Loan.new(amount: 1000000, origination: "2017-10-25",
+        term: "six_month_term")
+    employee.loans << loan
+
+    # new Loan Payment in period
+    loan.loan_payments.create(amount: 500000, date: "2018-01-15");
+
+    period = Period.new(2018,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+
+    # process payslip
+    payslip = Payslip.process(employee, period)
+
+    # The Netpay is going to be negative, verify that it will only ever be 0
+    assert_equal(0, payslip.net_pay, "net pay should never be negative")
+    assert_equal(1, payslip.errors.size, "should have 1 error indicating a problem with this payslip")
+    assert(payslip.errors.include?(:net_pay), "should have an error for net pay")
   end
 
   private

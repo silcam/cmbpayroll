@@ -176,6 +176,7 @@ fr:
   Process: Exécuter
   post_success_message: Mois finalisé.
   post_failure_message: Des erreurs ont bloqué la finalisation de ce mois.
+  Net_pay_error: Le salaire net était calculé d'être moins de zéro. Veuillez evaluer les charges et les paiements de prêt et exécuter encore le bulletin de paie.
 
   # Payslip Corrections
   Payslip_corrections: Corrections de paie

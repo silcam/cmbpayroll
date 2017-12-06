@@ -344,6 +344,8 @@ en:
     Employee_advance_loan_report: Employee Advance and Loan Report
     Cnps_report: CNPS Report
     Dipes_report: DIPES Report
+    Transaction_audit_report_by_name: Transaction Audit Report By Name
+    Transaction_audit_report_by_type: Transaction Audit Report By Type
     Employee_deduction_report: Employee Deduction Report
     Download_report_as: Download report as
     Download_report_as_text_file: Download report as text file

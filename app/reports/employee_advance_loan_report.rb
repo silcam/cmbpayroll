@@ -73,30 +73,6 @@ ORDER BY
     custom_headers.fetch(column_name.to_sym) { super }
   end
 
-  # Options selector
-  def start
-    period = options[:period]
-    year, month = period.split('-')
-
-    begin
-      Period.new(year.to_i, month.to_i).start
-    rescue InvalidPeriod
-      Period.current.start
-    end
-  end
-
-  # Options selector
-  def finish
-    period = options[:period]
-    year, month = period.split('-')
-
-    begin
-      Period.new(year.to_i, month.to_i).finish
-    rescue InvalidPeriod
-      Period.current.finish
-    end
-  end
-
   def format_taxable(value)
     cfa_nofcfa(value)
   end

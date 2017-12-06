@@ -343,12 +343,14 @@ fr:
     WL_Department_person:  Veuillez saisir le département auquel les heures seront prêtées.  Si vous voulez créer un prêt pour une personne et cette personne n'existe pas dans la liste, veuillez ajouter le compte de cette personne utilisant la rubrique 'Administration -> Gestion des départements'
 
   reports:
-    Employee_report: Le Rapport des Employés
-    Employee_report_by_dept: Le Rapport des Employés par Département
-    Employee_advance_loan_report: Employee Advance and Loan Report
-    Cnps_report: Le Rapport CNPS
-    Dipes_report: Le Rapport DIPES
-    Employee_deduction_report: Le Rapport des prélèvements des employées
+    Employee_report: Le rapport des employés
+    Employee_report_by_dept: Le rapport des employés par département
+    Employee_advance_loan_report: Le rapport des prêts et des avances
+    Cnps_report: Le rapport CNPS
+    Dipes_report: Le rapport DIPES
+    Transaction_audit_report_by_name: Le rapport d'audit par nom
+    Transaction_audit_report_by_type: Le rapport d'audit par genre
+    Employee_deduction_report: Le rapport des prélèvements des employées
     Download_report_as: Télécharger le rapport comme
     Download_report_as_text_file: Télécharger le rapport comme un fichier texte
     Report_for_period: Le rapport pour la période

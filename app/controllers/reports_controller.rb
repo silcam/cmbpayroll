@@ -56,12 +56,12 @@ class ReportsController < ApplicationController
       instance: Proc.new{|p| CnpsReport.new()}
     },
     'transaction_by_name' => {
-      name: "(TODO) Transaction Audit Report - By Name",
-      instance: Proc.new{|p| CnpsReport.new()}
+      name: "Transaction Audit Report - By Name",
+      instance: Proc.new{|p| TransactionReportByName.new()}
     },
     'transaction_by_type' => {
-      name: "(TODO) Transaction Audit Report - By Type",
-      instance: Proc.new{|p| CnpsReport.new()}
+      name: "Transaction Audit Report - By Type",
+      instance: Proc.new{|p| TransactionReportByType.new()}
     },
     'cnps' => {
       name: "CNPS Report",

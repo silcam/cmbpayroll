@@ -344,6 +344,7 @@ en:
     Employee_advance_loan_report: Employee Advance and Loan Report
     Cnps_report: CNPS Report
     Dipes_report: DIPES Report
+    Salary_changes_report: Salary Changes Report
     Transaction_audit_report_by_name: Transaction Audit Report By Name
     Transaction_audit_report_by_type: Transaction Audit Report By Type
     Employee_deduction_report: Employee Deduction Report
@@ -365,6 +366,8 @@ en:
       p: P
       f: F
       n: ''
+    descriptions:
+      Salary_changes_report_description: View any changes in salary that occurred during this month.
 
   helpers:
     label:

@@ -1,5 +1,9 @@
 class CMBReport < Dossier::Report
 
+  def report_description
+    nil
+  end
+
   def set_options(options={})
     @options = options
   end

@@ -63,6 +63,10 @@ class ReportsController < ApplicationController
       name: "Transaction Audit Report - By Type",
       instance: Proc.new{|p| TransactionReportByType.new()}
     },
+    'salary_changes' => {
+      name: "Salary Changes Report",
+      instance: Proc.new{|p| SalaryChangesReport.new()}
+    },
     'cnps' => {
       name: "CNPS Report",
       instance: Proc.new{|p| CnpsReport.new()}
@@ -84,9 +88,11 @@ class ReportsController < ApplicationController
   def show
     authorize! :read, ReportsController
 
+
     if (REPORTS.has_key?(params[:report]))
       @report = REPORTS[params[:report]][:instance].call(params[:period])
       @report.set_options(params[:options].to_unsafe_h() || {})
+      @report_description = @report.report_description
 
       respond_with(@report)
     else

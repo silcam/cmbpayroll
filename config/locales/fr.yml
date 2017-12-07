@@ -348,6 +348,7 @@ fr:
     Employee_advance_loan_report: Le rapport des prêts et des avances
     Cnps_report: Le rapport CNPS
     Dipes_report: Le rapport DIPES
+    Salary_changes_report: Le rapport des changements de salaire
     Transaction_audit_report_by_name: Le rapport d'audit par nom
     Transaction_audit_report_by_type: Le rapport d'audit par genre
     Employee_deduction_report: Le rapport des prélèvements des employées
@@ -369,6 +370,8 @@ fr:
       p: M
       f: P
       n: ''
+    descriptions:
+      Salary_changes_report_description: Afficher les changements de salaire qui s'est passés pendant ce mois ci.
 
   helpers:
     label:

@@ -5,7 +5,7 @@ class ChargesController < ApplicationController
     # if can see employee, can see her charges
     authorize! :read, @employee
 
-    @period = get_params_period
+    @period = get_params_period(LastPostedPeriod.current)
     @charges = @employee.charges.for_period @period
   end
 

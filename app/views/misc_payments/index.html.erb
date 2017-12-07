@@ -4,7 +4,7 @@
 
 <h2><%= t(:Misc_payments_for) %> <%= @period.name %></h2>
 
-<%= render 'shared/period_nav', period: @period, path: misc_payments_path %>
+<%= render 'shared/period_nav', period: @period, last_period: Period.current, path: misc_payments_path %>
 
 <table class="table">
   <tr>

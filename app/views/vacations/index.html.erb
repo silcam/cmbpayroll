@@ -1,7 +1,7 @@
 <%= link_to t(:Enter_vacation), new_vacation_path, class: 'btn btn-primary' %>
 
 <h3><%= t(:Vacation_for) %> <%= @period.name %></h3>
-<%= render 'shared/period_nav', period: @period, path: vacations_path, future: true %>
+<%= render 'shared/period_nav', period: @period, path: vacations_path %>
 <% unless @period_vacations.empty? %>
   <%= render 'vacation_table', vacations: @period_vacations %>
 <% end %>

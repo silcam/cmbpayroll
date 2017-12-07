@@ -24,7 +24,9 @@
   <% end %>
 </h3>
 
-<%= render 'shared/period_nav', path: employee_work_hours_path(@employee), period: @period %>
+<%= render 'shared/period_nav', path: employee_work_hours_path(@employee),
+                                period: @period,
+                                last_period: LastPostedPeriod.current %>
 
 <%= render 'calendar', form: false %>
 

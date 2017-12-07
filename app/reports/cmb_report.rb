@@ -21,6 +21,10 @@ class CMBReport < Dossier::Report
     options[:period]
   end
 
+  def format_employee_id(value)
+    "%03d" % value
+  end
+
   def format_cat_ech(value)
     cat, ech = value.split('-')
 

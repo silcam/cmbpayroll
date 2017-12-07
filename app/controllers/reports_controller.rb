@@ -7,16 +7,16 @@ class ReportsController < ApplicationController
 
   NUMBER_OF_MONTHS_SHOWN=24
   REPORTS = {
-    'dipes_text' => {
-      name: "DIPES Report (Text)",
-      instance: Proc.new{|p| DipesReport.new()}
+    'cnps' => {
+      name: "CNPS Report",
+      instance: Proc.new{|p| CnpsReport.new()}
     },
     'dept_charge' => {
       name: "Department Charge Report",
       instance: Proc.new{|p| DepartmentChargeReport.new()}
     },
-    'dipe' => {
-      name: "(TODO) DIPES Report",
+    'dipes_text' => {
+      name: "DIPES Report (Text)",
       instance: Proc.new{|p| DipesReport.new()}
     },
     'dipe_govt' => {
@@ -24,8 +24,12 @@ class ReportsController < ApplicationController
       instance: Proc.new{|p| DipesReport.new()}
     },
     'dipe_internet' => {
-      name: "(TODO) DIPES Internal Report",
-      instance: Proc.new{|p| DipesReport.new()}
+      name: "DIPES Internal Report",
+      instance: Proc.new{|p| DipesInternalReport.new()}
+    },
+    'employee_advance_loan' => {
+      name: "Employee Advance and Loan Report",
+      instance: Proc.new{|p| EmployeeAdvanceLoanReport.new()}
     },
     'employee_deduction' => {
       name: "Employee Deduction Report",
@@ -38,6 +42,10 @@ class ReportsController < ApplicationController
     'employee_by_dept' => {
       name: "Employee Report - By Department",
       instance: Proc.new{|p| EmployeeByDepartmentReport.new()}
+    },
+    'employee_vacation' => {
+      name: "Employee Vacation Report",
+      instance: Proc.new{|p| EmployeeVacationReport.new()}
     },
     'pay_breakdown_all' => {
       name: "Pay Breakdown (All) Report",
@@ -55,6 +63,10 @@ class ReportsController < ApplicationController
       name: "(TODO) Post Report",
       instance: Proc.new{|p| CnpsReport.new()}
     },
+    'salary_changes' => {
+      name: "Salary Changes Report",
+      instance: Proc.new{|p| SalaryChangesReport.new()}
+    },
     'transaction_by_name' => {
       name: "Transaction Audit Report - By Name",
       instance: Proc.new{|p| TransactionReportByName.new()}
@@ -62,22 +74,6 @@ class ReportsController < ApplicationController
     'transaction_by_type' => {
       name: "Transaction Audit Report - By Type",
       instance: Proc.new{|p| TransactionReportByType.new()}
-    },
-    'salary_changes' => {
-      name: "Salary Changes Report",
-      instance: Proc.new{|p| SalaryChangesReport.new()}
-    },
-    'cnps' => {
-      name: "CNPS Report",
-      instance: Proc.new{|p| CnpsReport.new()}
-    },
-    'employee_vacation' => {
-      name: "Employee Vacation Report",
-      instance: Proc.new{|p| EmployeeVacationReport.new()}
-    },
-    'employee_advance_loan' => {
-      name: "Employee Advance and Loan Report",
-      instance: Proc.new{|p| EmployeeAdvanceLoanReport.new()}
     }
   }
 

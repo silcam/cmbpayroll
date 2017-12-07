@@ -13,6 +13,7 @@
 
 <%= render 'shared/period_nav',
            period: @period,
+           last_period: Period.current,
            path: employee_charges_path(@employee) %>
 
 <table class="table">

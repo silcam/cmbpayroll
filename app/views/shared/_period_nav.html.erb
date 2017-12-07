@@ -3,7 +3,7 @@
     <%= link_to "< #{period.previous.l_name}",
                 "#{path}?period=#{period.previous}" %>
   </li>
-  <% if period != LastPostedPeriod.current or (defined? future and future) %>
+  <% unless defined? last_period and period == last_period %>
       <li>
         <%= link_to "#{period.next.l_name} >",
                     "#{path}?period=#{period.next}" %>

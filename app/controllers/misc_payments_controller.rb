@@ -10,7 +10,7 @@ class MiscPaymentsController < ApplicationController
       @misc_payments = @employee.misc_payments
       render 'index_for_employee'
     else
-      @period = get_params_period
+      @period = get_params_period(LastPostedPeriod.current)
       @misc_payments = MiscPayment.readable_by(MiscPayment.for_period(@period), current_user)
     end
   end

@@ -25,7 +25,7 @@ ORDER BY
   end
 
   def formatted_title
-    I18n::t(:Pay_breakdown_all, scope: [:reports])
+    I18n::t(:Pay_breakdown_all_report, scope: [:reports])
   end
 
   def format_header(column_name)

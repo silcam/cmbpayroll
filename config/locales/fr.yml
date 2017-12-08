@@ -348,9 +348,16 @@ fr:
     Employee_report_by_dept: Le rapport des employés par département
     Employee_advance_loan_report: Le rapport des prêts et des avances
     Cnps_report: Le rapport CNPS
-    Dipes_report: Le rapport DIPES
+    Department_charge_report: Le rapport des frais départementals
+    Dipes_report_text: Le rapport DIPES (Texte)
     Dipes_government_report: Le rapport DIPES gouvernemental
     Dipes_internal_report: Le rapport DIPES interne
+    Employee_advance_and_loan_report: Le rapport des advances et prêts des employées
+    Employee_vacation_report: Le rapport des congés des employées
+    Pay_breakdown_all_report: Le rapport de l'allocation des salaires (Tout)
+    Pay_breakdown_rfis_report: Le rapport de l'allocation des  salaires (RFIS)
+    Pay_breakdown_non_rfis_report: Le rapport de l'allocation des salaires (Pas RFIS)
+    Post_report: Le rapport de finalisation
     Salary_changes_report: Le rapport des changements de salaire
     Transaction_audit_report_by_name: Le rapport d'audit par nom
     Transaction_audit_report_by_type: Le rapport d'audit par genre

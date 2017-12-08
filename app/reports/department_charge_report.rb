@@ -61,7 +61,7 @@ ORDER BY
   end
 
   def formatted_title
-    I18n::t(:Employee_report, scope: [:reports])
+    I18n::t(:Department_charge_report, scope: [:reports])
   end
 
   def format_header(column_name)

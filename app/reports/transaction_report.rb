@@ -53,9 +53,6 @@ WHERE
   ps.period_month = :month
     SELECTSTATEMENT
 
-  def formatted_title
-    I18n::t(:Transaction_audit_report_by_name, scope: [:reports])
-  end
 
   def format_header(column_name)
     custom_headers = {

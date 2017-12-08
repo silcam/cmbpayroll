@@ -1,7 +1,7 @@
 class PayBreakdownRfisReport < PayBreakdownAllReport
 
   def formatted_title
-    I18n::t(:Pay_breakdown_rfis, scope: [:reports])
+    I18n::t(:Pay_breakdown_rfis_report, scope: [:reports])
   end
 
   def dept

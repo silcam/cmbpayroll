@@ -20,71 +20,71 @@ class ReportsController < ApplicationController
   NUMBER_OF_MONTHS_SHOWN=24
   REPORTS = {
     'cnps' => {
-      name: "CNPS Report",
+      name: I18n.t(:Cnps_report, scope: "reports"),
       instance: Proc.new{|p| CnpsReport.new()}
     },
     'dept_charge' => {
-      name: "Department Charge Report",
+      name: I18n.t(:Department_charge_report, scope: "reports"),
       instance: Proc.new{|p| DepartmentChargeReport.new()}
     },
     'dipes' => {
-      name: "DIPES Report (Text)",
+      name: I18n.t(:Dipes_report_text, scope: "reports"),
       instance: Proc.new{|p| DipesReport.new()}
     },
     'dipes_government' => {
-      name: "DIPES Government Report",
+      name: I18n.t(:Dipes_government_report, scope: "reports"),
       instance: Proc.new{|p| DipesGovernmentReport.new()}
     },
     'dipe_internet' => {
-      name: "DIPES Internal Report",
+      name: I18n.t(:Dipes_internal_report, scope: "reports"),
       instance: Proc.new{|p| DipesInternalReport.new()}
     },
     'employee_advance_loan' => {
-      name: "Employee Advance and Loan Report",
+      name: I18n.t(:Employee_advance_and_loan_report, scope: "reports"),
       instance: Proc.new{|p| EmployeeAdvanceLoanReport.new()}
     },
     'employee_deduction' => {
-      name: "Employee Deduction Report",
+      name: I18n.t(:Employee_deduction_report, scope: "reports"),
       instance: Proc.new{|p| EmployeeDeductionReport.new()}
     },
     'employee' => {
-      name: "Employee Report",
+      name: I18n.t(:Employee_report, scope: "reports"),
       instance: Proc.new{|p| EmployeeReport.new()}
     },
     'employee_by_dept' => {
-      name: "Employee Report - By Department",
+      name: I18n.t(:Employee_report_by_dept, scope: "reports"),
       instance: Proc.new{|p| EmployeeByDepartmentReport.new()}
     },
     'employee_vacation' => {
-      name: "Employee Vacation Report",
+      name: I18n.t(:Employee_vacation_report, scope: "reports"),
       instance: Proc.new{|p| EmployeeVacationReport.new()}
     },
     'pay_breakdown_all' => {
-      name: "Pay Breakdown (All) Report",
+      name: I18n.t(:Pay_breakdown_all_report, scope: "reports"),
       instance: Proc.new{|p| PayBreakdownAllReport.new()}
     },
     'pay_breakdown_rfis' => {
-      name: "Pay Breakdown (RFIS) Report",
+      name: I18n.t(:Pay_breakdown_rfis_report, scope: "reports"),
       instance: Proc.new{|p| PayBreakdownRfisReport.new()}
     },
     'pay_breakdown_nonrfis' => {
-      name: "Pay Breakdown (Non-RFIS) Report",
+      name: I18n.t(:Pay_breakdown_non_rfis_report, scope: "reports"),
       instance: Proc.new{|p| PayBreakdownNonrfisReport.new()}
     },
     'post' => {
-      name: "(TODO) Post Report",
-      instance: Proc.new{|p| CnpsReport.new()}
+      name: I18n.t(:Post_report, scope: "reports"),
+      instance: Proc.new{|p| PostReport.new()}
     },
     'salary_changes' => {
-      name: "Salary Changes Report",
+      name: I18n.t(:Salary_changes_report, scope: "reports"),
       instance: Proc.new{|p| SalaryChangesReport.new()}
     },
     'transaction_by_name' => {
-      name: "Transaction Audit Report - By Name",
+      name: I18n.t(:Transaction_audit_report_by_name, scope: "reports"),
       instance: Proc.new{|p| TransactionReportByName.new()}
     },
     'transaction_by_type' => {
-      name: "Transaction Audit Report - By Type",
+      name: I18n.t(:Transaction_audit_report_by_type, scope: "reports"),
       instance: Proc.new{|p| TransactionReportByType.new()}
     }
   }

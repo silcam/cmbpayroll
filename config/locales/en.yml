@@ -344,9 +344,16 @@ en:
     Employee_report_by_dept: Employee Report - By Department
     Employee_advance_loan_report: Employee Advance and Loan Report
     Cnps_report: CNPS Report
-    Dipes_report: DIPES Report
+    Department_charge_report: Department Charge Report
+    Dipes_report_text: DIPES Report (Text)
     Dipes_government_report: DIPES Government Report
     Dipes_internal_report: DIPES Internal Report
+    Employee_advance_and_loan_report: Employee Advance and Loan Report
+    Employee_vacation_report: Employee Vacation Report
+    Pay_breakdown_all_report: Pay Breakdown (All) Report
+    Pay_breakdown_rfis_report: Pay Breakdown (RFIS) Report
+    Pay_breakdown_non_rfis_report: Pay Breakdown (Non-RFIS) Report
+    Post_report: Post Report
     Salary_changes_report: Salary Changes Report
     Transaction_audit_report_by_name: Transaction Audit Report By Name
     Transaction_audit_report_by_type: Transaction Audit Report By Type

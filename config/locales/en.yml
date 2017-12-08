@@ -4,6 +4,7 @@ en:
     formats:
       name: "%B %Y"
       short: "%d %b %Y"
+      monthname: "%B"
   time:
     formats:
       short: "%d %b %Y"
@@ -344,6 +345,7 @@ en:
     Employee_advance_loan_report: Employee Advance and Loan Report
     Cnps_report: CNPS Report
     Dipes_report: DIPES Report
+    Dipes_government_report: DIPES Government Report
     Dipes_internal_report: DIPES Internal Report
     Salary_changes_report: Salary Changes Report
     Transaction_audit_report_by_name: Transaction Audit Report By Name
@@ -351,6 +353,7 @@ en:
     Employee_deduction_report: Employee Deduction Report
     Download_report_as: Download report as
     Download_report_as_text_file: Download report as text file
+    Download_report_as_pdf: Download report as PDF
     Report_for_period: Report for period
     Select_a_report: Select a Report
     Select_a_period: Select a Period

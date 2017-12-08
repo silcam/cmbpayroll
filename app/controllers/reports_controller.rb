@@ -3,7 +3,19 @@ class ReportsController < ApplicationController
 
   self.responder = Dossier::XXCustomResponder
 
-  respond_to :html, :json, :csv, :xls, :txt
+  ActionController.add_renderer :pdf do |pdf, options|
+    self.headers["Content-Type"] = "application/pdf"
+    self.headers["Content-Disposition"] = %[attachment;filename=#{@report.to_s}.pdf]
+    self.response_body = @report.render_pdf
+  end
+
+  ActionController.add_renderer :txt do |txt, options|
+    self.headers["Content-Type"] = "text/plain"
+    self.headers["Content-Disposition"] = %[attachment;filename=#{@report.to_s}.txt]
+    self.response_body = @report.render_txt
+  end
+
+  respond_to :html, :json, :csv, :xls, :txt, :pdf
 
   NUMBER_OF_MONTHS_SHOWN=24
   REPORTS = {
@@ -15,13 +27,13 @@ class ReportsController < ApplicationController
       name: "Department Charge Report",
       instance: Proc.new{|p| DepartmentChargeReport.new()}
     },
-    'dipes_text' => {
+    'dipes' => {
       name: "DIPES Report (Text)",
       instance: Proc.new{|p| DipesReport.new()}
     },
-    'dipe_govt' => {
-      name: "(TODO) DIPES Government Report",
-      instance: Proc.new{|p| DipesReport.new()}
+    'dipes_government' => {
+      name: "DIPES Government Report",
+      instance: Proc.new{|p| DipesGovernmentReport.new()}
     },
     'dipe_internet' => {
       name: "DIPES Internal Report",
@@ -83,7 +95,6 @@ class ReportsController < ApplicationController
 
   def show
     authorize! :read, ReportsController
-
 
     if (REPORTS.has_key?(params[:report]))
       @report = REPORTS[params[:report]][:instance].call(params[:period])

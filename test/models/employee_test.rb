@@ -407,6 +407,27 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(2, employee1.years_of_service(period), "2014-04-30 -> 2017-03-31 is 2 years")
   end
 
+  test "Dept Severance" do
+    employee = return_valid_employee()
+    period = Period.new(2017,12)
+
+    employee.contract_start = Date.new(2014,4,30)
+    assert_equal(3, employee.years_of_service(), "2014-04-30 -> 2017-12 is 3 years")
+    assert_equal(0, employee.department_severance_rate(period), "0-4 years, 0%")
+
+    employee.contract_start = Date.new(2010,4,30)
+    assert_equal(7, employee.years_of_service(), "2014-04-30 -> 2017-12 is 7 years")
+    assert_equal(0.4, employee.department_severance_rate(period), "5-10 years, 40%")
+
+    employee.contract_start = Date.new(2005,4,30)
+    assert_equal(12, employee.years_of_service(), "2005-04-30 -> 2017-12 is 12 years")
+    assert_equal(0.55, employee.department_severance_rate(period), "11-15 years, 55%")
+
+    employee.contract_start = Date.new(1990,4,30)
+    assert_equal(27, employee.years_of_service(), "1990-04-30 -> 2017-12 is 27 years")
+    assert_equal(0.6, employee.department_severance_rate(period), "15+ years, 60%")
+  end
+
   test "convert_days_week" do
     employee1 = return_valid_employee()
 

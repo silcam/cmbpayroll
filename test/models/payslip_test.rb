@@ -1286,6 +1286,12 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal( ( new_exp_taxable * SystemVariable.value(:dept_credit_foncier) ).floor,
         payslip.department_credit_foncier)
 
+    # Dept Severance
+    # years of service
+    assert_equal(8, employee.years_of_service(period))
+    # 40% for 8 years.
+    assert_equal(( payslip.cnpswage * 0.4 ).floor, payslip.department_severance())
+
     # verify can find out which bonuses were attached to payslip.
     assert_equal(3, payslip.earnings.where(is_bonus: true).count(), "bonuses as earnings (3)")
 

@@ -238,6 +238,8 @@ class Payslip < ApplicationRecord
       self[:department_cnps] = ( self[:cnpswage] * SystemVariable.value(:dept_cnps) ).floor
     end
 
+    self[:department_severance] = ( employee.department_severance_rate(period) * self[:cnpswage] ).floor
+
     self[:cnpswage]
   end
 

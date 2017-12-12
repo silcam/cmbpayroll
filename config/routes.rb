@@ -71,6 +71,8 @@ Rails.application.routes.draw do
   post 'admin/manage_wage_show', to: 'admin#manage_wage_update'
   get 'admin/timesheet', to: 'admin#timesheet', as: :generate_timesheets
   get 'admin/timesheets', to: 'admin#timesheets', as: :timesheet_pdf
+  get 'admin/estimatepay', to: 'admin#estimate_pay', as: :estimate_pay
+  post 'admin/estimate', to: 'admin#estimate_pay_process', as: :estimate_pay_post
 
   resources :users, except: [ 'show' ]
 

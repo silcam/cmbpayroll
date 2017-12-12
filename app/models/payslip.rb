@@ -61,6 +61,23 @@ class Payslip < ApplicationRecord
     return payslips
   end
 
+  # See the explanation in app/views/admin/estimate_pay.html.erb
+  def self.compute_wage_from_departmental_charge(charge)
+    charge -= SystemVariable.value(:emp_fund_amount)
+    result = charge.fdiv(1 + SystemVariable.value(:dept_credit_foncier) +
+        SystemVariable.value(:dept_cnps))
+
+    if (result > SystemVariable.value(:cnps_ceiling))
+      # recompute, to account for ceiling
+      charge -= SystemVariable.value(:dept_cnps_max_base)
+      result = charge.fdiv(1 + SystemVariable.value(:dept_credit_foncier) +
+          SystemVariable.value(:dept_cnps_w_ceil))
+    end
+
+    wage = result * 0.72
+    wage.floor
+  end
+
   def has_earnings?
     # query these items to see if there are any.
     if (self.earnings.empty?)

@@ -1,0 +1,48 @@
+<% provide :title,  t(:Administration) %>
+
+    <h2><%= t(:Estimate_pay) %></h2>
+
+<h4><%= t(:How_it_works) %></h4>
+
+<p><%= t(:Estimate_step_1) %></p>
+
+<%= form_with url: "#{estimate_pay_post_path()}.json", id: 'estimate-form' do |f| %>
+  <div class="form-group">
+    <%= label_tag :estimate, t(:Estimate) %>
+    <%= text_field_tag :estimate %>
+  </div>
+  <div class="form-group">
+    <%= submit_tag t(:Continue) %>
+  </div>
+<% end %>
+
+<p><%= t(:Estimate_step_2) %></p>
+
+<p class="bg-info">
+  <span><%= t(:Employees_pay) %></span><br />
+  <strong><span id="estimate-response"></span></strong> <span><strong>CFA</strong></span>
+</p>
+
+<hr />
+
+<h4><%= t(:How_the_numbers_are_calculated) %></h4>
+
+<p> <%= t(:Basic_formula) %> </p>
+
+<pre> <%= t(:Dept_charge_formula) %> </pre>
+
+<p>
+<%= t(:Dept_credit_foncier_explanation) %>
+  <pre><%= t(:Taxable_wage) %> * <%= SystemVariable.value(:dept_credit_foncier) %></pre>
+<%= t(:Dept_cnps_explanation) %>
+  <pre><%= t(:Taxable_wage) %> * <%= SystemVariable.value(:dept_cnps) %></pre>
+</p>
+
+<p>
+<%= t(:If_taxable_wage) %> &gt; <%= SystemVariable.value(:cnps_ceiling) %> <%= t(:Then) %>
+  <pre>Department CNPS = ( <%= t(:Taxable_wage) %> * <%= SystemVariable.value(:dept_cnps_w_ceil) %> + <%= SystemVariable.value(:dept_cnps_max_base) %>)</pre>
+</p>
+
+<p>
+  <%= t(:Percentage_explanation) %>
+</p>

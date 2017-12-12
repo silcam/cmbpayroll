@@ -1,5 +1,7 @@
 class AdminController < ApplicationController
 
+  respond_to :html, :json
+
   def index
     authorize! :read, AdminController
   end
@@ -40,6 +42,8 @@ class AdminController < ApplicationController
   end
 
   def timesheet
+    authorize! :read, AdminController
+
     @periods = []
     @current = Period.current()
     period = @current.next.next
@@ -51,6 +55,8 @@ class AdminController < ApplicationController
   end
 
   def timesheets
+    authorize! :read, AdminController
+
     @today = Date.today
 
     period_param = params[:period]
@@ -70,6 +76,25 @@ class AdminController < ApplicationController
     @employees = Employee.currently_paid()
 
     @filename = 'eps-timesheet.pdf'
+  end
+
+  def estimate_pay
+    authorize! :read, AdminController
+
+  end
+
+  def estimate_pay_process
+    authorize! :read, AdminController
+
+    estimate_to_use = params[:estimate]
+    @result = Payslip.compute_wage_from_departmental_charge(estimate_to_use.to_i)
+
+    respond_to do |format|
+      format.json do
+        render json: @result, :content_type => "text/json"
+      end
+    end
+
   end
 
   private

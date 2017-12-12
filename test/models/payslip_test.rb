@@ -1798,6 +1798,14 @@ class PayslipTest < ActiveSupport::TestCase
     assert(payslip.errors.include?(:net_pay), "should have an error for net pay")
   end
 
+  test "Figure Pay from Departmental Charge" do
+    departmental_charge = 500000
+    assert_equal(303715, Payslip.compute_wage_from_departmental_charge(departmental_charge))
+
+    departmental_charge = 1000000
+    assert_equal(623654, Payslip.compute_wage_from_departmental_charge(departmental_charge))
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

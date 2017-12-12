@@ -327,8 +327,12 @@ fr:
   Manage_variables: Gestion des variables
   Print_timesheets: Imprimer les feuilles de temps
   Choose_options_for_timesheets: Choisissez les réglages des feuilles de temps
+  Estimate_pay: Estimer une salaire
+  Estimate: L'estimation
+  How_it_works: Comment ça marche?
+  Continue: Continuer
 
-  # Admin Index
+  # Admin Descriptions
   Payslips_admin_description: Création des bullitens de paie et finalisation des mois
   Payslip_corrections_description: Faire les corrections pour des bullitens de paie déjà finalisés
   Holidays_admin_description: Ajouter ou modifier les jours fériés
@@ -339,6 +343,24 @@ fr:
   Wages_admin_description: Modifier les salaires bases des catégories et échelons
   Variables_admin_description: Modifier les variables qui dirigent le système
   Print_timesheets_description: Imprimer les feuilles de temps pour tous les employées pour un mois
+  Estimate_pay_description: Estimer une salaire selon les frais départementals
+  Employees_pay: Salaire
+  Estimate_step_1: "La première étape: Veuillez saisir les frais départementals attribuées à l'employée et tapez 'Continuer'"
+  Estimate_step_2: "La deuxième étape: Reglez comme nécessaire"
+  How_the_numbers_are_calculated: Comment on calcule ces chiffres?
+  Basic_formula: "Ce chiffre se calcule par ce calcul:"
+  Dept_charge_formula: >
+    Frais Départementals = Montant Cotisable +
+        CNPS de département +
+        Crédit Foncier de département +
+        Fond d'employée +
+        Contributions d'employée
+  Dept_credit_foncier_explanation: Où Crédit Foncier de département est
+  Dept_cnps_explanation: Où CNPS de département est
+  Taxable_wage: &Taxable_wage Montant Cotisable
+  If_taxable_wage: Si monant cotisable
+  Then: alors
+  Percentage_explanation: Ensuite, prennez 72% du montant cotisasble pour le salaire en vue des impots et des primes. Le résultat c'est le salaire.
 
   tool-tips:
     WL_Department_person:  Veuillez saisir le département auquel les heures seront prêtées.  Si vous voulez créer un prêt pour une personne et cette personne n'existe pas dans la liste, veuillez ajouter le compte de cette personne utilisant la rubrique 'Administration -> Gestion des départements'

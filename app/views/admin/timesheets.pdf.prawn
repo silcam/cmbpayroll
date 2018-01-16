@@ -5,7 +5,7 @@ prawn_document(page_layout: :landscape) do |pdf|
     # Header
     pdf.text_box("#{@today.strftime('%A %-d %B %Y')}", :at => [0,pdf.cursor])
     pdf.text "SIL EMPLOYEE TIMESHEET", :align => :center, :style => :bold
-    pdf.text_box("Employee: #{employee.first_name} #{employee.last_name} (#{employee.id}), Supervisor: #{employee.supervisor.first_name} #{employee.supervisor.last_name}", :at => [0,pdf.cursor])
+    pdf.text_box("Employee: #{employee.first_name} #{employee.last_name} (#{employee.id}), Supervisor: #{employee&.supervisor&.first_name} #{employee&.supervisor&.last_name}", :at => [0,pdf.cursor])
     pdf.move_down 15
     pdf.horizontal_rule
 

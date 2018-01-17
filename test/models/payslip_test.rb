@@ -1286,6 +1286,12 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal( ( new_exp_taxable * SystemVariable.value(:dept_credit_foncier) ).floor,
         payslip.department_credit_foncier)
 
+    # Dept Severance
+    # years of service
+    assert_equal(8, employee.years_of_service(period))
+    # 40% for 8 years.
+    assert_equal(( payslip.cnpswage * 0.4 ).floor, payslip.department_severance())
+
     # verify can find out which bonuses were attached to payslip.
     assert_equal(3, payslip.earnings.where(is_bonus: true).count(), "bonuses as earnings (3)")
 
@@ -1790,6 +1796,14 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.net_pay, "net pay should never be negative")
     assert_equal(1, payslip.errors.size, "should have 1 error indicating a problem with this payslip")
     assert(payslip.errors.include?(:net_pay), "should have an error for net pay")
+  end
+
+  test "Figure Pay from Departmental Charge" do
+    departmental_charge = 500000
+    assert_equal(303715, Payslip.compute_wage_from_departmental_charge(departmental_charge))
+
+    departmental_charge = 1000000
+    assert_equal(623654, Payslip.compute_wage_from_departmental_charge(departmental_charge))
   end
 
   private

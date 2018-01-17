@@ -4,6 +4,7 @@ en:
     formats:
       name: "%B %Y"
       short: "%d %b %Y"
+      monthname: "%B"
   time:
     formats:
       short: "%d %b %Y"
@@ -319,11 +320,15 @@ en:
   Base_wage_d: Base Wage D
   Base_wage_e: Base Wage E
   Wage_information_for: Wage Information for
-  Manage_variables: Gestion des variables
+  Manage_variables: Manage Variables
   Print_timesheets: Print Timesheets
   Choose_options_for_timesheets: Choose Options for Timesheets
+  Estimate_pay: Estimate Pay
+  Estimate: Estimate
+  How_it_works: How It Works
+  Continue: Continue
 
-  # Admin Index
+  # Admin Descriptions
   Payslips_admin_description: Post Payslips and Pay Periods for Employees
   Payslip_corrections_description: Correct posted payslips
   Holidays_admin_description: Add or Modify Yearly Holidays
@@ -334,6 +339,24 @@ en:
   Wages_admin_description: Modify standard wages for Categories and Echelons
   Variables_admin_description: Modify system variables that control how the system works
   Print_timesheets_description: Print timesheets for all employees for a month
+  Estimate_pay_description: Estimate pay based on expected departmental charge
+  Employees_pay: "Employee's Pay"
+  Estimate_step_1: "Step 1: Please enter a desired departmental charge for anticipated employee and submit"
+  Estimate_step_2: "Step 2: Adjust as necessary"
+  How_the_numbers_are_calculated: How the Numbers are Calculated
+  Basic_formula: This computes using this basic formula
+  Dept_charge_formula: >
+    TotalCharge = Taxable Wage +
+        Department CNPS +
+        Department Crédit Foncier +
+        Employee Fund +
+        Employee Contribution
+  Dept_credit_foncier_explanation: Where Department Crédit Foncier is
+  Dept_cnps_explanation: Where Department CNPS is
+  Taxable_wage: Taxable Wage
+  If_taxable_wage: If Taxable Wage
+  Then: then
+  Percentage_explanation: Then, approximately 72% of Taxable Wage will be Base Pay to account for taxes and bonuses.  That 72% is the value produced.
 
   tool-tips:
     WL_Department_person:  Please select a department the that hours will be loaned to.  You must enter one per day. If the loan is to a person and that person's account is not shown, please enter that account as a department using the Administration tools
@@ -343,10 +366,23 @@ en:
     Employee_report_by_dept: Employee Report - By Department
     Employee_advance_loan_report: Employee Advance and Loan Report
     Cnps_report: CNPS Report
-    Dipes_report: DIPES Report
+    Department_charge_report: Department Charge Report
+    Dipes_report_text: DIPES Report (Text)
+    Dipes_government_report: DIPES Government Report
+    Dipes_internal_report: DIPES Internal Report
+    Employee_advance_and_loan_report: Employee Advance and Loan Report
+    Employee_vacation_report: Employee Vacation Report
+    Pay_breakdown_all_report: Pay Breakdown (All) Report
+    Pay_breakdown_rfis_report: Pay Breakdown (RFIS) Report
+    Pay_breakdown_non_rfis_report: Pay Breakdown (Non-RFIS) Report
+    Post_report: Post Report
+    Salary_changes_report: Salary Changes Report
+    Transaction_audit_report_by_name: Transaction Audit Report By Name
+    Transaction_audit_report_by_type: Transaction Audit Report By Type
     Employee_deduction_report: Employee Deduction Report
     Download_report_as: Download report as
     Download_report_as_text_file: Download report as text file
+    Download_report_as_pdf: Download report as PDF
     Report_for_period: Report for period
     Select_a_report: Select a Report
     Select_a_period: Select a Period
@@ -363,6 +399,8 @@ en:
       p: P
       f: F
       n: ''
+    descriptions:
+      Salary_changes_report_description: View any changes in salary that occurred during this month.
 
   helpers:
     label:

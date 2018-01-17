@@ -3,77 +3,92 @@ class ReportsController < ApplicationController
 
   self.responder = Dossier::XXCustomResponder
 
-  respond_to :html, :json, :csv, :xls, :txt
+  ActionController.add_renderer :pdf do |pdf, options|
+    self.headers["Content-Type"] = "application/pdf"
+    self.headers["Content-Disposition"] = %[attachment;filename=#{@report.to_s}.pdf]
+    self.response_body = @report.render_pdf
+  end
+
+  ActionController.add_renderer :txt do |txt, options|
+    self.headers["Content-Type"] = "text/plain"
+    self.headers["Content-Disposition"] = %[attachment;filename=#{@report.to_s}.txt]
+    self.response_body = @report.render_txt
+  end
+
+  respond_to :html, :json, :csv, :xls, :txt, :pdf
 
   NUMBER_OF_MONTHS_SHOWN=24
   REPORTS = {
-    'dipes_text' => {
-      name: "DIPES Report (Text)",
-      instance: Proc.new{|p| DipesReport.new()}
+    'cnps' => {
+      name: I18n.t(:Cnps_report, scope: "reports"),
+      instance: Proc.new{|p| CnpsReport.new()}
     },
     'dept_charge' => {
-      name: "Department Charge Report",
+      name: I18n.t(:Department_charge_report, scope: "reports"),
       instance: Proc.new{|p| DepartmentChargeReport.new()}
     },
-    'dipe' => {
-      name: "(TODO) DIPES Report",
+    'dipes' => {
+      name: I18n.t(:Dipes_report_text, scope: "reports"),
       instance: Proc.new{|p| DipesReport.new()}
     },
-    'dipe_govt' => {
-      name: "(TODO) DIPES Government Report",
-      instance: Proc.new{|p| DipesReport.new()}
+    'dipes_government' => {
+      name: I18n.t(:Dipes_government_report, scope: "reports"),
+      instance: Proc.new{|p| DipesGovernmentReport.new()}
     },
     'dipe_internet' => {
-      name: "(TODO) DIPES Internal Report",
-      instance: Proc.new{|p| DipesReport.new()}
+      name: I18n.t(:Dipes_internal_report, scope: "reports"),
+      instance: Proc.new{|p| DipesInternalReport.new()}
+    },
+    'employee_advance_loan' => {
+      name: I18n.t(:Employee_advance_and_loan_report, scope: "reports"),
+      instance: Proc.new{|p| EmployeeAdvanceLoanReport.new()}
     },
     'employee_deduction' => {
-      name: "Employee Deduction Report",
+      name: I18n.t(:Employee_deduction_report, scope: "reports"),
       instance: Proc.new{|p| EmployeeDeductionReport.new()}
     },
     'employee' => {
-      name: "Employee Report",
+      name: I18n.t(:Employee_report, scope: "reports"),
       instance: Proc.new{|p| EmployeeReport.new()}
     },
     'employee_by_dept' => {
-      name: "Employee Report - By Department",
+      name: I18n.t(:Employee_report_by_dept, scope: "reports"),
       instance: Proc.new{|p| EmployeeByDepartmentReport.new()}
     },
+    'employee_vacation' => {
+      name: I18n.t(:Employee_vacation_report, scope: "reports"),
+      instance: Proc.new{|p| EmployeeVacationReport.new()}
+    },
     'pay_breakdown_all' => {
-      name: "Pay Breakdown (All) Report",
+      name: I18n.t(:Pay_breakdown_all_report, scope: "reports"),
+      footer_rows: 1,
       instance: Proc.new{|p| PayBreakdownAllReport.new()}
     },
     'pay_breakdown_rfis' => {
-      name: "Pay Breakdown (RFIS) Report",
+      name: I18n.t(:Pay_breakdown_rfis_report, scope: "reports"),
+      footer_rows: 1,
       instance: Proc.new{|p| PayBreakdownRfisReport.new()}
     },
     'pay_breakdown_nonrfis' => {
-      name: "Pay Breakdown (Non-RFIS) Report",
+      name: I18n.t(:Pay_breakdown_non_rfis_report, scope: "reports"),
+      footer_rows: 1,
       instance: Proc.new{|p| PayBreakdownNonrfisReport.new()}
     },
     'post' => {
-      name: "(TODO) Post Report",
-      instance: Proc.new{|p| CnpsReport.new()}
+      name: I18n.t(:Post_report, scope: "reports"),
+      instance: Proc.new{|p| PostReport.new()}
+    },
+    'salary_changes' => {
+      name: I18n.t(:Salary_changes_report, scope: "reports"),
+      instance: Proc.new{|p| SalaryChangesReport.new()}
     },
     'transaction_by_name' => {
-      name: "(TODO) Transaction Audit Report - By Name",
-      instance: Proc.new{|p| CnpsReport.new()}
+      name: I18n.t(:Transaction_audit_report_by_name, scope: "reports"),
+      instance: Proc.new{|p| TransactionReportByName.new()}
     },
     'transaction_by_type' => {
-      name: "(TODO) Transaction Audit Report - By Type",
-      instance: Proc.new{|p| CnpsReport.new()}
-    },
-    'cnps' => {
-      name: "CNPS Report",
-      instance: Proc.new{|p| CnpsReport.new()}
-    },
-    'employee_vacation' => {
-      name: "Employee Vacation Report",
-      instance: Proc.new{|p| EmployeeVacationReport.new()}
-    },
-    'employee_advance_loan' => {
-      name: "Employee Advance and Loan Report",
-      instance: Proc.new{|p| EmployeeAdvanceLoanReport.new()}
+      name: I18n.t(:Transaction_audit_report_by_type, scope: "reports"),
+      instance: Proc.new{|p| TransactionReportByType.new()}
     }
   }
 
@@ -86,7 +101,10 @@ class ReportsController < ApplicationController
 
     if (REPORTS.has_key?(params[:report]))
       @report = REPORTS[params[:report]][:instance].call(params[:period])
+      params[:options][:footer] = REPORTS[params[:report]][:footer_rows]
       @report.set_options(params[:options].to_unsafe_h() || {})
+
+      @report_description = @report.report_description
 
       respond_with(@report)
     else

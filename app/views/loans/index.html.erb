@@ -21,7 +21,7 @@
         <td><%= number_to_currency(loan.amount, locale: :cm) %></td>
         <td><%= loan.comment %></td>
         <td><%= l(loan.origination, format: :short) %></td>
-        <td><%= t(loan.term) %></td>
+        <td><%= t(loan.term) unless loan.term.blank? %></td>
         <td>
           <% if can? :update, Loan %>
               <%= link_to t(:Edit), edit_loan_path(loan), class: 'edit-loan-link' %>

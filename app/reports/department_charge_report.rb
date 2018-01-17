@@ -16,6 +16,7 @@ SELECT
   ps.department_cnps,
   ps.department_credit_foncier as credit_foncier,
   ps.cnpswage + ps.department_credit_foncier as dept_taxes,
+  ps.department_severance as dept_severance,
   ps.vacation_earned as vacation_days,
   ( ps.vacation_pay_earned * ps.vacation_earned ) as vacation_pay,
   ps.employee_fund,
@@ -61,7 +62,7 @@ ORDER BY
   end
 
   def formatted_title
-    I18n::t(:Employee_report, scope: [:reports])
+    I18n::t(:Department_charge_report, scope: [:reports])
   end
 
   def format_header(column_name)
@@ -103,6 +104,10 @@ ORDER BY
   end
 
   def format_dept_taxes(value)
+    cfa_nofcfa(value)
+  end
+
+  def format_dept_severance(value)
     cfa_nofcfa(value)
   end
 

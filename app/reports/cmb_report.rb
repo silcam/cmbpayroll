@@ -1,5 +1,9 @@
 class CMBReport < Dossier::Report
 
+  def report_description
+    nil
+  end
+
   def set_options(options={})
     @options = options
   end
@@ -15,6 +19,10 @@ class CMBReport < Dossier::Report
 
   def period
     options[:period]
+  end
+
+  def format_employee_id(value)
+    "%03d" % value
   end
 
   def format_cat_ech(value)
@@ -59,6 +67,30 @@ class CMBReport < Dossier::Report
       Period.current.month
     else
       month
+    end
+  end
+
+  # Options selector
+  def start
+    period = options[:period]
+    year, month = period.split('-')
+
+    begin
+      Period.new(year.to_i, month.to_i).start
+    rescue InvalidPeriod
+      Period.current.start
+    end
+  end
+
+  # Options selector
+  def finish
+    period = options[:period]
+    year, month = period.split('-')
+
+    begin
+      Period.new(year.to_i, month.to_i).finish
+    rescue InvalidPeriod
+      Period.current.finish
     end
   end
 

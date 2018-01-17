@@ -112,11 +112,11 @@ class Employee < ApplicationRecord
   end
 
   # Time in years between BeginContract and Period.end
-  def years_of_service(period)
+  def years_of_service(period=nil)
     # TODO: need a real general purpose date diff by year
     # function since this is likely needed in multiple places.
     return 0 if contract_start.nil?
-    return 0 if period.nil?
+    period = Period.current if period.nil?
     ((period.finish - contract_start.to_datetime) / 365).to_i
   end
 
@@ -161,6 +161,21 @@ class Employee < ApplicationRecord
       return ""
     else
       return department.name
+    end
+  end
+
+  def department_severance_rate(period=nil)
+
+    years = years_of_service(period)
+
+    if (years > SystemVariable.value(:dept_severance_high_cutoff))
+      SystemVariable.value(:dept_severance_high)
+    elsif (years > SystemVariable.value(:dept_severance_medium_cutoff))
+      SystemVariable.value(:dept_severance_medium)
+    elsif (years > SystemVariable.value(:dept_severance_low_cutoff))
+      SystemVariable.value(:dept_severance_low)
+    else
+      0
     end
   end
 

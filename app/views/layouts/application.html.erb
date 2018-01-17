@@ -19,6 +19,13 @@
         <% if logged_in? %>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
+              <% unless request.path == root_path %>
+                <li>
+                  <%= form_tag(search_employees_path, method: :get) do  %>
+                    <%= text_field_tag :q, '', placeholder: "#{t(:Find_employee)}...", class: 'form-control' %>
+                  <% end %>
+                </li>
+              <% end %>
               <li>
                 <%= link_to "#{t(:Welcome)}, #{current_user.first_first_name}", edit_user_path(current_user, referred_by: request.path) %>
               </li>

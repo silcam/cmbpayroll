@@ -363,8 +363,12 @@ class EmployeeTest < ActiveSupport::TestCase
     period = Period.new(2017,03)
     assert_equal(0, employee1.years_of_service(period), "no contract start is 0 years")
 
-    employee1.contract_start = Date.new(2017,1,1)
-    assert_equal(0, employee1.years_of_service(nil), "no period is 0 years")
+    # with a nil period, this uses the current period which moved with real time
+    # so fix on a certain date for this test.
+    on_sep_5 do
+      employee1.contract_start = Date.new(2017,1,1)
+      assert_equal(0, employee1.years_of_service(nil), "no period is 0 years")
+    end
 
     employee1.contract_start = Date.new(2017,1,1)
     period = Period.new(2017,03)

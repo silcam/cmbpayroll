@@ -96,7 +96,7 @@ class LoanPaymentsControllerTest < ActionDispatch::IntegrationTest
 
     get employee_loans_url(@han)
 
-    assert_select "a.add-loanpayment-link"
+    assert_select "a.add-loanpayment-link.btn.btn-primary"
     assert_select "a.edit-loanpayment-link"
     assert_select "a.delete-loanpayment-link"
   end

@@ -7,6 +7,8 @@ class LoanPayment < ApplicationRecord
   validates :date, presence: true
   validate :not_in_posted_period
 
+  default_scope { order(:date) }
+
   def self.get_all_payments(employee, period)
     raise ArgumentError if employee.nil? || period.nil?
 

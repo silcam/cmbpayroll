@@ -21,6 +21,21 @@ class Vacation < ApplicationRecord
     end
   end
 
+  def days
+    tmp_start_date = start_date.clone
+    holidays = Holiday.days_hash(start_date, end_date)
+
+    count = 0
+    while (tmp_start_date <= end_date)
+      unless (is_off_day?(tmp_start_date) || holidays.has_key?(tmp_start_date))
+        count += 1
+      end
+      tmp_start_date += 1
+    end
+
+    count
+  end
+
   def overlaps_work_hours?
     not overlapped_work_hours(false).empty?
   end

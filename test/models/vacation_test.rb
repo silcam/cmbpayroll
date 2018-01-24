@@ -39,6 +39,37 @@ class VacationTest < ActiveSupport::TestCase
     assert Vacation.new(params).valid?
   end
 
+  test "Vacation can compute the number of days" do
+    params = { employee: @luke, start_date: '2017-09-13', end_date: '2017-09-14' }
+
+    vacation = Vacation.new(params)
+    assert(vacation.valid?, "new vacation should be valid")
+    assert_equal(2, vacation.days, "This vacation should be 2 days")
+
+    params = { employee: @luke, start_date: '2017-09-13', end_date: '2017-09-13' }
+    vacation = Vacation.new(params)
+    assert(vacation.valid?, "new vacation should be valid")
+    assert_equal(1, vacation.days,
+        "Vacation that starts and ends the same day should be 1 day")
+
+    params = { employee: @luke, start_date: '2017-09-04', end_date: '2017-09-27' }
+    vacation = Vacation.new(params)
+    assert(vacation.valid?, "new vacation should be valid")
+    assert_equal(18, vacation.days, "18 days -- should not count weekends")
+    assert_equal(Date.new(2017,9,4), vacation.start_date, "should not have adjusted start date")
+    assert_equal(Date.new(2017,9,27), vacation.end_date, "should not have adjusted end date")
+
+    params = { employee: @luke, start_date: '2018-01-28', end_date: '2018-02-18' }
+    vacation = Vacation.new(params)
+    assert(vacation.valid?, "new vacation should be valid")
+    assert_equal(15, vacation.days, "15 days -- should not count weekends")
+
+    holiday = Holiday.new(name: "National Day", date: '2018-02-01')
+    assert(holiday.valid?, "holiday is valid")
+    holiday.save
+    assert_equal(14, vacation.days, "14 days -- should not count the holiday I just added")
+  end
+
   test "Vacations can't overlap existing" do
     invalids = [{employee: @luke, start_date: '2017-09-14', end_date: '2017-09-15'},
                 {employee: @luke, start_date: '2017-09-15', end_date: '2017-09-15'},

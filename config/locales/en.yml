@@ -55,6 +55,7 @@ en:
   male: Male
   View_all: View all
   No_results_found: No employees found matching '%{query}'
+  Days: Days
 
   # Error messages
   cant_be_in_future: can't be in the future.
@@ -254,6 +255,7 @@ en:
   Total_vacation: Vacation days allowed
   Vacation_used_or_planned: Vacation used or planned
   Remaining_days: Remaining days
+  Days_per: Days Per Vacation
 
   # Bonuses
   Bonuses: Bonuses

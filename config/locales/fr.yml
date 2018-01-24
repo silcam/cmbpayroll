@@ -55,6 +55,7 @@ fr:
   male: Mâle
   View_all: Voir tous
   No_results_found: Aucun employé trouvé par «%{query}»
+  Days: jours
 
   # Error messages
   cant_be_in_future: ne peut pas être au futur.
@@ -258,6 +259,7 @@ fr:
   Total_vacation: Jours de vacances permis
   Vacation_used_or_planned: Jours utilisés et prevus
   Remaining_days: Jours qui restent
+  Days_per: Montant de chaque vacances
 
   # Bonuses
   Bonuses: Primes

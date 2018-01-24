@@ -3,6 +3,7 @@
     <th><%= t :Employee %></th>
     <th><%= t :Start_date %></th>
     <th><%= t :End_date %></th>
+    <th><%= t :Days_per %></th>
     <th colspan="2"></th>
   </tr>
   <% vacations.each do |vacation| %>
@@ -10,6 +11,7 @@
         <td><%= vacation.employee.full_name %></td>
         <td><%= std_datestring vacation.start_date %></td>
         <td><%= std_datestring vacation.end_date %></td>
+        <td><%= vacation.days %> <%= t(:Days) %></td>
         <% referred_by = request.path %>
         <% referred_by += "?period=#{@period.to_s}" if @period %>
         <td>

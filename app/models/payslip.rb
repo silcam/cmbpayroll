@@ -613,6 +613,8 @@ class Payslip < ApplicationRecord
     payments = LoanPayment.get_all_payments(employee, period)
 
     payments.each do |pmnt|
+      next if pmnt.cash?
+
       deduction = Deduction.new
 
       deduction.note = LoanPayment::LOAN_PAYMENT_NOTE

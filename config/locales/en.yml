@@ -227,6 +227,7 @@ en:
   Paid_loans: Paid Loans For
   Add_a_loan_payment: Add a Loan Payment
   Loan_payment: Loan Payment
+  Cash_loan_payment: Cash Loan Payment
   Original_amount: Original Amount
   Origination: Origination
   Term: Term
@@ -239,6 +240,8 @@ en:
   Create_a_new_payment: Create a New Payment
   Editing_payment_for_loan: Editing Payment for Loan
   Editing_loan: Modifiant un prêt
+  This_is_a_cash_payment: This is a Cash Payment
+  Cash_payment_help_text: "Please Note: Cash Payments are for loan payments which are provided to the finance department in cash. Cash Payments will not be deducted from the employee's next payslip."
 
   # Vacations
   Enter_vacation: Enter Vacation

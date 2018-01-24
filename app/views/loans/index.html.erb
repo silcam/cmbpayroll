@@ -42,7 +42,13 @@
       <% loan.loan_payments.each do |payment| %>
         <tr>
           <td></td>
-          <td><%= number_to_currency(payment.amount, locale: :cm) %> - <em><%= t(:Loan_payment) %></em></td>
+          <td><%= number_to_currency(payment.amount, locale: :cm) %> - 
+              <% if payment.cash? %>
+                <em class="text-danger"><%= t(:Cash_loan_payment) %></em>
+              <% else %>
+                <em><%= t(:Loan_payment) %></em>
+              <% end %>
+          </td>
           <td><%= l(payment.date, format: :short) %></td>
           <td></td>
           <td>

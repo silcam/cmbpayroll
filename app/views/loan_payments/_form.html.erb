@@ -15,6 +15,13 @@
     <%= form.text_field :amount, id: :payment_amount, class: 'form-control' %>
   </div>
 
+  <div class="checkbox">
+    <%= form.label "cash_payment", t(:Cash_payment) do %>
+      <%= check_box_tag "loan_payment[cash_payment]" %> <%= t(:This_is_a_cash_payment) %>
+      <span id="helpBlock" class="help-block"><%= t(:Cash_payment_help_text) %></span>
+    <% end %>
+  </div>
+
   <div class="form-group">
     <%= form.label t(:Date) %>
     <div class="input-group date" id="datepicker">

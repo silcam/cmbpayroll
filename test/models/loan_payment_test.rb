@@ -68,6 +68,16 @@ class LoanPaymentTest < ActiveSupport::TestCase
     refute_includes LoanPayment.all(), septpay
   end
 
+  test "loan payment can be cash" do
+    septpay = loan_payments :septpay
+
+    septpay.cash_payment = true
+    assert(septpay.cash?, "should be a cash payment")
+
+    septpay.cash_payment = false
+    refute(septpay.cash?, "should now not be a cash payment")
+  end
+
   def some_valid_params
     { loan: @loan_one, date: '2017-10-02', amount: 90 }
   end

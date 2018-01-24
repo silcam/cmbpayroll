@@ -632,6 +632,57 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(loan.amount - pay.amount, payslip.loan_balance)
   end
 
+  test "Payslip doesn't deduct loan payments made in cash" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+
+    # create loan
+    loan = Loan.new
+    loan.employee = employee
+    loan.origination = "2017-08-01"
+    loan.amount = 50000
+    loan.comment = "aug loan"
+    loan.term = "six_month_term"
+
+    assert(loan.valid?, "loan should be valid")
+
+    pay = LoanPayment.new
+    pay.amount = "2500"
+    pay.date = "2017-08-02"
+    pay.save
+
+    loan.loan_payments << pay
+    loan.save
+
+    assert(pay.valid?, "payment should be valid")
+    refute(pay.cash?, "payment should not be a cash payment")
+    assert_equal(Date.new(2017,8,2), pay.date)
+
+    cash_pay = LoanPayment.new
+    cash_pay.amount = "7500"
+    cash_pay.date = "2017-08-04"
+    cash_pay.cash_payment = true
+    cash_pay.save
+
+    loan.loan_payments << cash_pay
+    loan.save
+
+    assert(cash_pay.valid?, "payment should be valid")
+    assert(cash_pay.cash?, "this payment should be a cash payment")
+    assert_equal(Date.new(2017,8,4), cash_pay.date)
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # check deductions
+    deductions = payslip.deductions.where(note: LoanPayment::LOAN_PAYMENT_NOTE)
+    assert_equal(1, deductions.size)
+    assert_equal(pay.amount, deductions.first.amount)
+    assert_equal(pay.date, deductions.first.date)
+
+    # check loan balance (should be reduced by both payments)
+    assert_equal(loan.amount - pay.amount - cash_pay.amount, payslip.loan_balance)
+  end
+
   test "Payslip handles no loans" do
     employee = return_valid_employee()
     generate_work_hours employee, Period.new(2017, 8)

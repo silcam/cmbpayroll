@@ -22,6 +22,10 @@ class LoanPayment < ApplicationRecord
     super if destroyable?
   end
 
+  def cash?
+    self[:cash_payment]
+  end
+
   private
 
   def not_in_posted_period

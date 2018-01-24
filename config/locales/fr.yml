@@ -172,7 +172,7 @@ fr:
   # Payslips
   Payslip: Bulletin de paie
   Payslips: Bulletins de paie
-  Payslip_management: Gestion des bullitens de paie
+  Payslip_management: Gestion des bulletins de paie
   For_the_month: du mois
   Process: Exécuter
   post_success_message: Mois finalisé.
@@ -231,18 +231,21 @@ fr:
   Paid_loans: Les prêts payés
   Add_a_loan_payment: Ajouter un paiement
   Loan_payment: Un paiement
+  Cash_loan_payment: Un paiement en espèces
   Original_amount: Le Montant original
   Origination: Création
   Term: Durée
   Outstanding_balance: Le montant restant à payer
   Total_outstanding: Le montant restant à payer
-  Total_amount: Le montant restant à payer
+  Total_amount: Le principal original des prêts
   New_payment_for_loan: Nouveau paiement
   On_date: le
   Create_a_new_loan: Créer un nouveau prêt
   Create_a_new_payment: Créer un nouveau paiement
   Editing_payment_for_loan: Modifiant un paiement
   Editing_loan: Modifiant un prêt
+  This_is_a_cash_payment: Voici c'est un paiement en espèces
+  Cash_payment_help_text: "NB: Les paiements en espèces sont les paiements qui ont été rendus à Finance.  Les paiements en espèces ne seront pas prélevés sur la prochain bulletin de paie."
 
   # Vacations
   Vacation: Vacances
@@ -333,8 +336,8 @@ fr:
   Continue: Continuer
 
   # Admin Descriptions
-  Payslips_admin_description: Création des bullitens de paie et finalisation des mois
-  Payslip_corrections_description: Faire les corrections pour des bullitens de paie déjà finalisés
+  Payslips_admin_description: Création des bulletins de paie et finalisation des mois
+  Payslip_corrections_description: Faire les corrections pour des bulletins de paie déjà finalisés
   Holidays_admin_description: Ajouter ou modifier les jours fériés
   Charges_admin_description: Ajouter ou modifier les notes standard des charges
   Supervisors_admin_description: Gestion de superviseurs

@@ -3,6 +3,10 @@
 
   <%= render 'shared/error_messages', errors: @vacation.errors %>
 
+  <% if params[:referred_by].present? %>
+    <%= hidden_field_tag "referred_by", params[:referred_by] %>
+  <% end %>
+
   <div class="form-group">
     <%= form.label :employee, t(:Employee) %>
     <%= form.collection_select :employee_id, Employee.all, :id, :full_name_rev,

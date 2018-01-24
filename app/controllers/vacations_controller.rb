@@ -42,7 +42,7 @@ class VacationsController < ApplicationController
     end
 
     if deconflicted_save
-      follow_redirect vacations_path
+      redirect_user
     end
   end
 
@@ -61,7 +61,7 @@ class VacationsController < ApplicationController
     end
 
     if deconflicted_save
-      follow_redirect vacations_path
+      redirect_user
     end
   end
 
@@ -69,7 +69,7 @@ class VacationsController < ApplicationController
     authorize! :destroy, Vacation
 
     @vacation.destroy
-    follow_redirect vacations_path
+    redirect_user
   end
 
   def days_summary
@@ -100,6 +100,15 @@ class VacationsController < ApplicationController
       return false
     end
     @vacation.save!
+  end
+
+
+  def redirect_user
+    if (params[:referred_by].present?)
+      redirect_to params[:referred_by]
+    else
+      follow_redirect vacations_path
+    end
   end
 
 end

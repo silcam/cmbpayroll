@@ -3,12 +3,9 @@ class Loan < ApplicationRecord
 
   has_many :loan_payments, :before_add => :validate_cannot_overpay_loan
 
-  validates :term, presence: true
   validates :origination, presence: true
   validates :amount, numericality: { :greater_than_or_equal_to => 1 }
   validate :not_in_posted_period
-
-  enum term: [ :six_month_term, :eight_month_term ]
 
   default_scope { order(origination: :asc) }
 

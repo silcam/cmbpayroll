@@ -605,7 +605,6 @@ class PayslipTest < ActiveSupport::TestCase
     loan.origination = "2017-08-01"
     loan.amount = 50000
     loan.comment = "aug loan"
-    loan.term = "six_month_term"
 
     assert(loan.valid?, "loan should be valid")
 
@@ -642,7 +641,6 @@ class PayslipTest < ActiveSupport::TestCase
     loan.origination = "2017-08-01"
     loan.amount = 50000
     loan.comment = "aug loan"
-    loan.term = "six_month_term"
 
     assert(loan.valid?, "loan should be valid")
 
@@ -707,7 +705,6 @@ class PayslipTest < ActiveSupport::TestCase
     loan.origination = "2017-08-01"
     loan.amount = 8000
     loan.comment = "aug loan"
-    loan.term = "six_month_term"
 
     assert(loan.valid?, "loan should be valid")
 
@@ -751,14 +748,12 @@ class PayslipTest < ActiveSupport::TestCase
     loan.origination = "2017-08-01"
     loan.amount = 8000
     loan.comment = "aug loan"
-    loan.term = "six_month_term"
 
     loan_other = Loan.new
     loan_other.employee = employee
     loan_other.origination = "2017-08-15"
     loan_other.amount = 10000
     loan_other.comment = "aug loan 2"
-    loan_other.term = "six_month_term"
 
     assert(loan.valid?, "loan should be valid")
     assert(loan_other.valid?, "loan should be valid")
@@ -810,7 +805,6 @@ class PayslipTest < ActiveSupport::TestCase
     loan.origination = "2017-08-01"
     loan.amount = 8000
     loan.comment = "aug loan"
-    loan.term = "six_month_term"
 
     pay = LoanPayment.new
     pay.amount = "8000"
@@ -1774,8 +1768,7 @@ class PayslipTest < ActiveSupport::TestCase
       employee.contract_start = "2017-01-01" # no senior bonus
 
       # new Loan
-      loan = Loan.new(amount: 10000, origination: "2017-10-25",
-          term: "six_month_term")
+      loan = Loan.new(amount: 10000, origination: "2017-10-25")
       employee.loans << loan
 
       # new Loan Payment in period
@@ -1828,8 +1821,7 @@ class PayslipTest < ActiveSupport::TestCase
     employee.contract_start = "2017-01-01" # no senior bonus
 
     # new Loan
-    loan = Loan.new(amount: 1000000, origination: "2017-10-25",
-        term: "six_month_term")
+    loan = Loan.new(amount: 1000000, origination: "2017-10-25")
     employee.loans << loan
 
     # new Loan Payment in period

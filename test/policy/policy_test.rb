@@ -149,10 +149,10 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:update, Department), "Supervisors can't update Department")
     refute(policy.can?(:destroy, Department), "Supervisors can't destroy Department")
 
-    obiwan_loan = @obiwan.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    obiwan_loan = @obiwan.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now)
     obiwan_loan_pmnt = obiwan_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
 
-    han_loan = @han.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    han_loan = @han.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now)
     han_loan_pmnt = han_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
 
     refute(policy.can?(:create, Loan), "Quigon can't create Loans")
@@ -279,10 +279,10 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:update, Department), "Luke can't update Department")
     refute(policy.can?(:destroy, Department), "Luke can't destroy Department")
 
-    luke_loan = @luke_emp.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    luke_loan = @luke_emp.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now)
     luke_loan_pmnt = luke_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
 
-    han_loan = @han.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    han_loan = @han.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now)
     han_loan_pmnt = han_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
 
     refute(policy.can?(:create, Loan), "Luke can't create Loans")
@@ -387,7 +387,7 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:update, Department), "Jar Jar can't update Department")
     refute(policy.can?(:destroy, Department), "Jar Jar can't destroy Department")
 
-    luke_loan = @luke_emp.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    luke_loan = @luke_emp.loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now)
     luke_loan_pmnt = luke_loan.loan_payments.create!(amount: 5000, date: DateTime.now)
     refute(policy.can?(:create, Loan), "Jar Jar can't create Loans")
     refute(policy.can?(:read, luke_loan), "Jar Jar can't read Loans")

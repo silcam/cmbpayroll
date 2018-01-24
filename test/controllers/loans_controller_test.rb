@@ -9,7 +9,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
 
     assert_user_permission(employee_loans_url(employees(:Luke)), "get") # index
     refute_user_permission(employee_loans_url(employees(:Luke)), "post", params: {
-        loan: { amount: 15000, comment: 'Desc', origination: DateTime.now, term: "six_month_term" }}) # create
+        loan: { amount: 15000, comment: 'Desc', origination: DateTime.now }}) # create
     refute_user_permission(new_employee_loan_url(employees(:Luke)), "get") # new
     refute_user_permission(edit_loan_url(Loan.all.first), "get") # edit
     refute_user_permission(loan_url(Loan.all.first), "patch", params: { loan: { commment: 'New Desc' }}) # update
@@ -27,7 +27,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
     login_user(:Luke)
 
     luke = employees(:Luke)
-    loan = luke.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    loan = luke.loans.create!(amount: 15000, origination: DateTime.now)
     assert(luke.loans.size > 0, "Luke has loans")
 
     get employee_loans_url(luke)
@@ -53,11 +53,11 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
   test "Things a Supervisor CANNOT do" do
     login_supervisor(:Quigon)
 
-    ben_loan = employees(:Obiwan).loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    ben_loan = employees(:Obiwan).loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now)
 
     assert_supervisor_permission(employee_loans_url(employees(:Obiwan)), "get") # index
     refute_supervisor_permission(employee_loans_url(employees(:Obiwan)), "post", params: {
-        loan: { amount: 15000, comment: 'Desc', origination: DateTime.now, term: "six_month_term" }}) # create
+        loan: { amount: 15000, comment: 'Desc', origination: DateTime.now }}) # create
     refute_supervisor_permission(new_employee_loan_url(employees(:Obiwan)), "get") # new
     refute_supervisor_permission(edit_loan_url(ben_loan), "get") # edit
     refute_supervisor_permission(loan_url(ben_loan), "patch", params: { loan: { commment: 'New Desc' }}) # update
@@ -75,7 +75,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
     login_supervisor(:Quigon)
 
     obiwan = employees(:Obiwan)
-    loan = obiwan.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    loan = obiwan.loans.create!(amount: 15000, origination: DateTime.now)
     assert(obiwan.loans.size > 0, "Ben has loans")
 
     get employee_loans_url(obiwan)
@@ -101,11 +101,11 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
   test "Things an Admin CANNOT do" do
     login_admin(:MaceWindu)
 
-    ben_loan = employees(:Obiwan).loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now, term: "six_month_term")
+    ben_loan = employees(:Obiwan).loans.create!(amount: 15000, comment: 'asd', origination: DateTime.now)
 
     assert_admin_permission(employee_loans_url(employees(:Obiwan)), "get") # index
     assert_admin_permission(employee_loans_url(employees(:Obiwan)), "post", params: {
-        loan: { amount: 15000, comment: 'Desc', origination: DateTime.now, term: "six_month_term" }}) # create
+        loan: { amount: 15000, comment: 'Desc', origination: DateTime.now }}) # create
     assert_admin_permission(new_employee_loan_url(employees(:Obiwan)), "get") # new
     assert_admin_permission(edit_loan_url(ben_loan), "get") # edit
     assert_admin_permission(loan_url(ben_loan), "patch", params: { loan: { commment: 'New Desc' }}) # update
@@ -123,7 +123,7 @@ class LoansControllerTest < ActionDispatch::IntegrationTest
     login_admin(:MaceWindu)
 
     han = employees(:Han)
-    loan = han.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    loan = han.loans.create!(amount: 15000, origination: DateTime.now)
     assert(han.loans.size > 0, "Han has loans")
 
     get employee_loans_url(han)

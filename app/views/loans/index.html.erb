@@ -10,18 +10,16 @@
       <th><%= t(:Original_amount) %></th>
       <th><%= t(:Comment) %></th>
       <th><%= t(:Origination) %></th>
-      <th><%= t(:Term) %></th>
       <th colspan="3"></th>
     </tr>
   </thead>
 
   <tbody>
     <% @unpaid_loans.each do |loan| %>
-      <tr>
+      <tr class="active">
         <td><%= number_to_currency(loan.amount, locale: :cm) %></td>
         <td><%= loan.comment %></td>
         <td><%= l(loan.origination, format: :short) %></td>
-        <td><%= t(loan.term) unless loan.term.blank? %></td>
         <td>
           <% if can? :update, Loan %>
               <%= link_to t(:Edit), edit_loan_path(loan), class: 'edit-loan-link' %>
@@ -50,7 +48,6 @@
               <% end %>
           </td>
           <td><%= l(payment.date, format: :short) %></td>
-          <td></td>
           <td>
             <% if can? :update, LoanPayment %>
               <%= link_to t(:Edit), edit_loan_payment_path(payment), class: 'edit-loanpayment-link' %>
@@ -79,6 +76,9 @@
 <strong><%= t(:Total_outstanding) %>:</strong> <%= number_to_currency(@total_balance, locale: :cm) %><br />
 <strong><%= t(:Total_amount) %>:</strong> <%= number_to_currency(@total_amount, locale: :cm) %><br />
 
+<hr />
+
+<div class="text-muted">
 <h2><%= t(:Paid_loans) %></h2>
 
 <table class="table">
@@ -87,7 +87,6 @@
       <th><%= t(:Original_amount) %></th>
       <th><%= t(:Comment) %></th>
       <th><%= t(:Origination) %></th>
-      <th><%= t(:Term) %></th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -98,7 +97,6 @@
         <td><%= number_to_currency(loan.amount, locale: :cm) %></td>
         <td><%= loan.comment %></td>
         <td><%= loan.origination %></td>
-        <td><%= loan.term %></td>
         <td>
           <% if can? :update, Loan %>
             <%= link_to 'Edit', edit_loan_path(loan), class: 'edit-paid-loan-link' %>
@@ -114,6 +112,7 @@
     <% end %>
   </tbody>
 </table>
+</div>
 
 <br />
 <br />

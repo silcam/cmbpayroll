@@ -18,7 +18,6 @@ class LoanTest < ActiveSupport::TestCase
     loan.origination = Date.today
     loan.comment = "Test Comment"
     loan.amount = 1000
-    loan.six_month_term!
 
     assert(loan.valid?, "should be valid")
 
@@ -41,7 +40,6 @@ class LoanTest < ActiveSupport::TestCase
     loan.comment = "Test Comment"
     loan.amount = 1000
     employee.loans << loan
-    loan.six_month_term!
 
     assert_equal(1000, Loan.total_amount(employee))
 
@@ -51,7 +49,6 @@ class LoanTest < ActiveSupport::TestCase
     loan.comment = "Test Comment"
     loan.amount = 1000
     employee.loans << loan
-    loan.eight_month_term!
 
     assert_equal(2000, Loan.total_amount(employee))
   end
@@ -65,7 +62,6 @@ class LoanTest < ActiveSupport::TestCase
     loan.comment = "Test Comment"
     loan.amount = 1000
     employee.loans << loan
-    loan.six_month_term!
 
     assert_equal(1000, Loan.total_amount(employee))
 
@@ -89,7 +85,6 @@ class LoanTest < ActiveSupport::TestCase
     loan1.comment = "Test Comment"
     loan1.amount = 1000
     employee.loans << loan1
-    loan1.six_month_term!
 
     assert_equal(1000, Loan.total_amount(employee))
 
@@ -98,7 +93,6 @@ class LoanTest < ActiveSupport::TestCase
     loan2.comment = "Test Comment"
     loan2.amount = 2000
     employee.loans << loan2
-    loan2.six_month_term!
 
     assert_equal(3000, Loan.total_amount(employee))
 
@@ -120,7 +114,6 @@ class LoanTest < ActiveSupport::TestCase
     loan.comment = "Test Comment"
     loan.amount = 1000
     employee.loans << loan
-    loan.six_month_term!
 
     assert_equal(1000, Loan.total_amount(employee))
 
@@ -148,7 +141,6 @@ class LoanTest < ActiveSupport::TestCase
     loan.comment = "Test Comment"
     loan.amount = 1000
     employee.loans << loan
-    loan.six_month_term!
 
     assert_equal(1000, Loan.total_amount(employee))
 
@@ -173,7 +165,6 @@ class LoanTest < ActiveSupport::TestCase
     loan.comment = "Test Comment"
     loan.amount = 1000
     employee.loans << loan
-    loan.six_month_term!
 
     assert_equal(1000, Loan.total_amount(employee))
 
@@ -197,7 +188,6 @@ class LoanTest < ActiveSupport::TestCase
       loan.amount = 2000
       loan.employee = @luke
       loan.origination = "2017-07-22"
-      loan.term = "six_month_term"
 
       refute loan.valid?, "should not be valid if created during posted period"
       loan.origination = '2017-08-01'
@@ -221,7 +211,7 @@ class LoanTest < ActiveSupport::TestCase
   end
 
   def some_valid_params
-    {employee: @luke, origination: '2017-08-09', term: :six_month_term, amount: 90000}
+    {employee: @luke, origination: '2017-08-09', amount: 90000}
   end
 
 end

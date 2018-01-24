@@ -5,17 +5,17 @@ class LoanPaymentsControllerTest < ActionDispatch::IntegrationTest
 
   def setup
     @luke = employees(:Luke)
-    @luke_loan = @luke.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    @luke_loan = @luke.loans.create!(amount: 15000, origination: DateTime.now)
     assert(@luke.loans.size > 0, "Luke has loans")
     @luke_pmnt = @luke_loan.loan_payments.create!(amount: @luke_loan.amount, date: DateTime.now)
 
     @obiwan = employees(:Obiwan)
-    @obiwan_loan = @obiwan.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    @obiwan_loan = @obiwan.loans.create!(amount: 15000, origination: DateTime.now)
     assert(@obiwan.loans.size > 0, "Luke has loans")
     @obiwan_pmnt = @obiwan_loan.loan_payments.create!(amount: @obiwan_loan.amount, date: DateTime.now)
 
     @han = employees(:Han)
-    @han_loan = @han.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    @han_loan = @han.loans.create!(amount: 15000, origination: DateTime.now)
     assert(@han.loans.size > 0, "Luke has loans")
     @han_pmnt = @han_loan.loan_payments.create!(amount: @han_loan.amount, date: DateTime.now)
   end
@@ -35,7 +35,7 @@ class LoanPaymentsControllerTest < ActionDispatch::IntegrationTest
   test "USER: can't see links on loans#index" do
     login_user(:Luke)
 
-    new_loan = @luke.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    new_loan = @luke.loans.create!(amount: 15000, origination: DateTime.now)
     assert(@luke.loans.size > 0, "Luke has loans")
     new_pmnt = new_loan.loan_payments.create!(amount: 7, date: DateTime.now)
     assert(new_loan.loan_payments.size > 0, "loan has payments")
@@ -62,7 +62,7 @@ class LoanPaymentsControllerTest < ActionDispatch::IntegrationTest
   test "Supervisor: can't see links on loans#index" do
     login_supervisor(:Quigon)
 
-    new_loan = @obiwan.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    new_loan = @obiwan.loans.create!(amount: 15000, origination: DateTime.now)
     assert(@obiwan.loans.size > 0, "Luke has loans")
     new_pmnt = new_loan.loan_payments.create!(amount: 7, date: DateTime.now)
     assert(new_loan.loan_payments.size > 0, "loan has payments")
@@ -89,7 +89,7 @@ class LoanPaymentsControllerTest < ActionDispatch::IntegrationTest
   test "Admin: can see links on loans#index" do
     login_admin(:MaceWindu)
 
-    new_loan = @han.loans.create!(amount: 15000, origination: DateTime.now, term: "six_month_term")
+    new_loan = @han.loans.create!(amount: 15000, origination: DateTime.now)
     assert(@han.loans.size > 0, "Luke has loans")
     new_pmnt = new_loan.loan_payments.create!(amount: 7, date: DateTime.now)
     assert(new_loan.loan_payments.size > 0, "loan has payments")

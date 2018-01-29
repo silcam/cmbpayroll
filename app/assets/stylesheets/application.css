@@ -14,6 +14,13 @@
  *= require_self
  */
 
+/*
+  high contrast mode for hilda
+*/
+.form-control {
+  border: 1px solid #777
+}
+
 .report {
   font-size:9pt;
   line-height:1.1;

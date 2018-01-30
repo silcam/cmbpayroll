@@ -54,8 +54,8 @@ FROM
     INNER JOIN departments ed ON e.department_id = ed.id
 WHERE
   e.employment_status in (0,1,2) AND
-  ps.period_year = 2017 AND
-  ps.period_month = 10
+  ps.period_year = :year AND
+  ps.period_month = :month
 ORDER BY
   department_name, employee_name ASC;
     SELECTSTATEMENT

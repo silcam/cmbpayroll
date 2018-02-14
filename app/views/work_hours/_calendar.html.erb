@@ -29,7 +29,7 @@
 
               <% else %>
                 <% if form %>
-                  <% hours = day_hash[:hours] || WorkHour.default_hours(date, day_hash[:holiday]) %>
+                  <% hours = day_hash[:hours_not_entered] ? WorkHour.default_hours(date, day_hash[:holiday]) : day_hash[:hours] %>
                   <% excused_hours = day_hash[:excused_hours] || 0 %>
                   <% css_class = 'form-control hours-text' %>
                   <% css_class += ' off-day-field' if is_off_day?(date, day_hash[:holiday]) %>

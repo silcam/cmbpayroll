@@ -79,7 +79,9 @@ class WorkHour < ApplicationRecord
                                 Vacation.days_hash(employee, start, finish)
     (start .. finish).each do |day|
       # Ensure that every day has a hash with at least hours and excused_hours defined
+      hours_not_entered = days[day].nil? || days[day][:hours].nil?
       days[day] = {hours: 0, excused_hours: 0}.merge(days[day] || {})
+      days[day][:hours_not_entered] = hours_not_entered
     end
     days
   end

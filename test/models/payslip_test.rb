@@ -867,8 +867,18 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(108580, employee.wage)
     assert_equal(5008, employee.daily_rate)
     # including 12/25
-    assert_equal(2, payslip.days_worked)
-    assert_equal(10016, payslip.base_pay)
+    days_worked = payslip.days_worked
+    assert_equal(2, days_worked)
+    workdays = employee.workdays_per_month(period)
+    assert_equal(21, workdays)
+
+    # The full-time employee is paid their wage, less
+    # the number of days *not worked* times their
+    # daily rate
+    assert_equal(
+        employee.wage - (
+          (workdays - days_worked ) * employee.daily_rate
+        ), payslip.base_pay)
 
     # Work the whole month
     hours = {
@@ -955,7 +965,7 @@ class PayslipTest < ActiveSupport::TestCase
     # compute bonusbase
     assert_equal(79475, employee.wage, "wage is expected")
     assert_equal(3672, employee.daily_rate, "daily rate is computed")
-    assert_equal(22032, payslip.compute_bonusbase, "proper bonus base for 6 days")
+    assert_equal(17051, payslip.compute_bonusbase, "proper bonus base for 6 days")
   end
 
   test "BonusBase Hourly Month" do
@@ -1751,7 +1761,14 @@ class PayslipTest < ActiveSupport::TestCase
     employee.vacations << vac
 
     payslip = Payslip.process(employee, period)
-    vac_pay = 8481
+
+
+    days_worked = WorkHour.days_worked(employee, period)
+    assert_equal(20, days_worked)
+    working_days_in_dec = employee.workdays_per_month(period)
+    assert_equal(23, working_days_in_dec)
+
+    vac_pay = 7924
 
     assert_equal(vac_pay, payslip.get_vacation_pay)
     assert_equal(1.5, payslip.vacation_earned)

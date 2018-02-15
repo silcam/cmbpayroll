@@ -20,7 +20,7 @@ class ChargesController < ApplicationController
 
     @charge = @employee.charges.new(charge_params)
     if @charge.save
-      redirect_to employee_charges_path @employee
+      redirect_to employee_charges_path @employee, period: Period.from_date(@charge.date)
     else
       render :new
     end

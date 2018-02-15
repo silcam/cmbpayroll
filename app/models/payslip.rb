@@ -139,7 +139,7 @@ class Payslip < ApplicationRecord
       earning.description = "Monthly Wages"
       earning.amount = employee.wage
     elsif (employee.paid_monthly? && days_worked > 0)
-      earning.description = "Daily earnings for #{days_worked} days"
+      earning.description = "Monthly wages less #{employee.workdays_per_month(period) - days_worked} days @ #{employee.daily_rate}"
       earning.rate = employee.daily_rate
       earning.amount = daily_earnings
     elsif (!employee.paid_monthly? && hours_worked > 0)
@@ -169,12 +169,13 @@ class Payslip < ApplicationRecord
   end
 
   def daily_earnings
+    days_in_month = employee.workdays_per_month(period)
     days_worked = WorkHour.days_worked(employee, period)
 
     self[:days] = days_worked
 
-    days_worked * employee.daily_rate
-
+    # NEW - compute pay based on removing working days * daily rate
+    wage - ( ( days_in_month - days_worked ) * employee.daily_rate )
   end
 
   def hourly_earnings

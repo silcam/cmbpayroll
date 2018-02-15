@@ -62,6 +62,7 @@ en:
   cant_be_during_posted_period: is in a period that is already posted.
   cant_change_during_posted_period: is in a period that is already posted.
   is_invalid: is invalid.
+  You_must_select: You Must Select an Employee First
 
   # Alerts
   never_had_raise: "%{name} started %{date} and has never had a raise."

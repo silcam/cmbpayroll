@@ -62,6 +62,7 @@ fr:
   cant_be_during_posted_period: est en un mois déjà finalisé.
   cant_change_during_posted_period: est en un mois déjà finalisé.
   is_invalid: n'est pas valide.
+  You_must_select: D'abord, Il faut choisir un employée
 
   # Alerts
   never_had_raise: "%{name} a commencé le %{date} et n'a jamais reçu une augmentation."

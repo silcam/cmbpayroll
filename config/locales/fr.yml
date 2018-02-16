@@ -249,6 +249,7 @@ fr:
   Editing_loan: Modifiant un prêt
   This_is_a_cash_payment: Voici c'est un paiement en espèces
   Cash_payment_help_text: "NB: Les paiements en espèces sont les paiements qui ont été rendus à Finance.  Les paiements en espèces ne seront pas prélevés sur la prochain bulletin de paie."
+  Show_hide_payments: Montrer/Cacher les paiements
 
   # Vacations
   Vacation: Vacances

@@ -245,6 +245,7 @@ en:
   Editing_loan: Modifiant un prêt
   This_is_a_cash_payment: This is a Cash Payment
   Cash_payment_help_text: "Please Note: Cash Payments are for loan payments which are provided to the finance department in cash. Cash Payments will not be deducted from the employee's next payslip."
+  Show_hide_payments: Show/Hide Payments
 
   # Vacations
   Enter_vacation: Enter Vacation

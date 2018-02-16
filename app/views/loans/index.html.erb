@@ -102,14 +102,50 @@
             <%= link_to 'Edit', edit_loan_path(loan), class: 'edit-paid-loan-link' %>
           <% end %>
         </td>
-        <td></td>
+        <td>
+
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse-<%= loan.id %>" aria-expanded="false" aria-controls="collapse-<%= loan.id %>"><%= t(:Show_hide_payments) %></a>
+
+        </td>
         <td>
           <% if can? :destroy, Loan %>
             <%= link_to 'Destroy', loan, method: :delete, data: { confirm: 'Are you sure?' }, class: 'delete-paid-loan-link' %>
           <% end %>
         </td>
       </tr>
+      <tr>
+        <td colspan="6">
+
+        <div id="collapse-<%= loan.id %>" class="panel-collapse collapse">
+
+      <% loan.loan_payments.each do |pmt| %>
+          <div>
+            <div class="payment-detail-left">
+                <%= number_to_currency(pmt.amount, locale: :cm) %>
+                (<%= l(pmt.date, format: :short) %>)
+            </div>
+            <div class="payment-detail-left">
+              <% if pmt.cash? %>
+                <em class="text-danger"><%= t(:Cash_loan_payment) %></em>
+              <% else %>
+                <em><%= t(:Loan_payment) %></em>
+              <% end %>
+            </div>
+            <% if can? :destroy, LoanPayment %>
+              <div class="payment-detail-right"><%= link_to t(:Destroy), pmt, method: :delete, data: { confirm: t(:Are_you_sure) }, class: 'delete-loanpayment-link' %></div>
+            <% end %>
+            <% if can? :update, LoanPayment %>
+              <div class="payment-detail-right"><%= link_to t(:Edit), edit_loan_payment_path(pmt), class: 'edit-loanpayment-link' %></div>
+            <% end %>
+          </div>
+          <br clear="all" />
+      <% end %>
+
+        </div>
     <% end %>
+
+      </td>
+    </tr>
   </tbody>
 </table>
 </div>

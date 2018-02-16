@@ -1,8 +1,8 @@
 <% provide :title,  t(:Loans) %>
 
-<h1><%= t(:Editing_payment_for_loan) %> (<%= number_to_currency(@loan.amount, locale: :cm) %> on <%= @loan.origination %>)</h1>
+<h1><%= t(:Editing_payment_for_loan) %> (<%= number_to_currency(@loan.amount, locale: :cm) %> on <%= l(@loan.origination, format: :short) %>)</h1>
 
-<%= form_for(@payment) do |form| %>
+<%= form_for(@loan_payment) do |form| %>
   <%= render 'form', form: form, loan: @loan %>
 <% end %>
 

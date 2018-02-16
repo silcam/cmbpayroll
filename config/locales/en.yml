@@ -56,6 +56,7 @@ en:
   View_all: View all
   No_results_found: No employees found matching '%{query}'
   Days: Days
+  Submit: Submit
 
   # Error messages
   cant_be_in_future: can't be in the future.

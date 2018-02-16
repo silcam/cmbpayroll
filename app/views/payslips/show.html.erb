@@ -21,9 +21,9 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 
 <p>
 <b>Raison sociale:</b> SIL BP 1299, Yaoundé<br />
-<b>No. d'immatriculation:</b> XXXXXXXXXXXXX<br />
+<b>No. d'immatriculation:</b> 5087501B<br />
 <b>Nom du travailleur:</b> <%= @payslip.employee.full_name %><br />
-<b>Matricule No.:</b> XXXXXXXXXXXXX<br />
+<b>Matricule No.:</b> <%= @payslip.employee.id %><br />
 </p>
 
 <h3>Wages Summary</h3>
@@ -200,26 +200,26 @@ Payslip Date: <%= @payslip.payslip_date %><br />
     <col class="col-xs-6"></col>
   </colgroup>
 <tr>
-<td>CRTV Tax:</td>
-<td><%= number_to_currency(@payslip.crtv, locale: :cm) %></td>
-</tr><tr>
-<td>CCF Tax:</td>
-<td><%= number_to_currency(@payslip.ccf, locale: :cm) %></td>
-</tr><tr>
-<td>Proportional Tax:</td>
+<td>IRPP:</td>
 <td><%= number_to_currency(@payslip.proportional, locale: :cm) %></td>
 </tr><tr>
-<td>CNPS Tax:</td>
-<td><%= number_to_currency(@payslip.cnps, locale: :cm) %></td>
-</tr><tr>
-<td>CAC Tax:</td>
+<td>C.A.C.:</td>
 <td><%= number_to_currency(@payslip.cac, locale: :cm) %></td>
 </tr><tr>
-<td>CAC #2 Tax:</td>
+<td>C.A.C.#2:</td>
 <td><%= number_to_currency(@payslip.cac2, locale: :cm) %></td>
 </tr><tr>
-<td>Communal Tax:</td>
+<td>Taxe communal:</td>
 <td><%= number_to_currency(@payslip.communal, locale: :cm) %></td>
+</tr><tr>
+<td>Pension vieillesse 4,2%:</td>
+<td><%= number_to_currency(@payslip.cnps, locale: :cm) %></td>
+</tr><tr>
+<td>Crédit foncier:</td>
+<td><%= number_to_currency(@payslip.ccf, locale: :cm) %></td>
+</tr><tr>
+<td>Audio-visuelle:</td>
+<td><%= number_to_currency(@payslip.crtv, locale: :cm) %></td>
 </tr><tr>
 <td><b>Total Taxes:</b></td>
 <td><b><%= number_to_currency(@payslip.total_tax, locale: :cm) %></b></td>
@@ -228,7 +228,8 @@ Payslip Date: <%= @payslip.payslip_date %><br />
 </p>
 
 <p class="bg-info" style="padding:20px">
-<b>NET PAY: <%= number_to_currency(@payslip.net_pay, locale: :cm) %></b>
+<b>NET PAY: <%= number_to_currency(@payslip.raw_net_pay, locale: :cm) %></b><br />
+<b>NET PAY: <%= number_to_currency(@payslip.net_pay, locale: :cm) %> (ARRONDI)</b>
 </p>
 
 <h3>Loans:</h3>

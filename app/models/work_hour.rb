@@ -101,7 +101,7 @@ class WorkHour < ApplicationRecord
     Employee.where("employees.id NOT IN
                     (SELECT DISTINCT employee_id FROM work_hours
                     WHERE work_hours.date BETWEEN :start AND :finish)",
-                   {start: period.start, finish: period.finish})
+                   {start: period.start, finish: period.finish}).currently_paid()
   end
 
   def self.default_hours(date, holiday)

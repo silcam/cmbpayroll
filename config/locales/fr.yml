@@ -56,12 +56,14 @@ fr:
   View_all: Voir tous
   No_results_found: Aucun employé trouvé par «%{query}»
   Days: jours
+  Submit: Envoyer
 
   # Error messages
   cant_be_in_future: ne peut pas être au futur.
   cant_be_during_posted_period: est en un mois déjà finalisé.
   cant_change_during_posted_period: est en un mois déjà finalisé.
   is_invalid: n'est pas valide.
+  You_must_select: D'abord, Il faut choisir un employée
 
   # Alerts
   never_had_raise: "%{name} a commencé le %{date} et n'a jamais reçu une augmentation."
@@ -247,6 +249,7 @@ fr:
   Editing_loan: Modifiant un prêt
   This_is_a_cash_payment: Voici c'est un paiement en espèces
   Cash_payment_help_text: "NB: Les paiements en espèces sont les paiements qui ont été rendus à Finance.  Les paiements en espèces ne seront pas prélevés sur la prochain bulletin de paie."
+  Show_hide_payments: Montrer/Cacher les paiements
 
   # Vacations
   Vacation: Vacances

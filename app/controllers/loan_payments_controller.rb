@@ -5,7 +5,7 @@ class LoanPaymentsController < ApplicationController
   def new
     authorize! :create, LoanPayment
 
-    @payment = LoanPayment.new
+    @loan_payment = LoanPayment.new
   end
 
   def edit
@@ -15,12 +15,12 @@ class LoanPaymentsController < ApplicationController
   def create
     authorize! :create, LoanPayment
 
-    @payment = nil
+    @loan_payment = nil
 
     begin
-      @payment = @loan.loan_payments.new(payment_params)
+      @loan_payment = @loan.loan_payments.new(payment_params)
 
-      if @payment.save
+      if @loan_payment.save
         redirect_to employee_loans_path(@employee), notice: 'Payment was successfully added.'
       else
         render :new
@@ -28,7 +28,7 @@ class LoanPaymentsController < ApplicationController
     rescue ActiveRecord::RecordInvalid => invalid_error
       Rails.logger.debug(":PAYMENT: #{invalid_error.record.errors.inspect}")
       Rails.logger.debug(":LOAN: #{@loan}")
-      @payment = invalid_error.record
+      @loan_payment = invalid_error.record
       render :new
     end
   end
@@ -36,7 +36,7 @@ class LoanPaymentsController < ApplicationController
   def update
     authorize! :update, LoanPayment
 
-    if @payment.update(payment_params)
+    if @loan_payment.update(payment_params)
       redirect_to employee_loans_path(@employee), notice: 'Payment was successfully updated.'
     else
       render :edit
@@ -46,7 +46,7 @@ class LoanPaymentsController < ApplicationController
   def destroy
     authorize! :destroy, LoanPayment
 
-    @payment.destroy
+    @loan_payment.destroy
     redirect_to employee_loans_path(@employee), notice: 'Payment was successfully destroyed.'
   end
 
@@ -57,9 +57,9 @@ class LoanPaymentsController < ApplicationController
     end
 
     def set_payment
-      @payment = LoanPayment.find(params[:id])
-      @loan = @payment.loan
-      @employee = @payment.loan.employee
+      @loan_payment = LoanPayment.find(params[:id])
+      @loan = @loan_payment.loan
+      @employee = @loan_payment.loan.employee
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

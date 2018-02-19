@@ -101,7 +101,7 @@ class WorkHour < ApplicationRecord
     employees = Employee.where("employees.id NOT IN
                     (SELECT DISTINCT employee_id FROM work_hours
                     WHERE work_hours.date BETWEEN :start AND :finish)",
-                   {start: period.start, finish: period.finish})
+                   {start: period.start, finish: period.finish}).currently_paid()
     return employees.reject{ |e| Vacation.on_vacation_during(e, period.start, period.finish)}
   end
 

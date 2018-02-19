@@ -49,4 +49,14 @@
   margin-bottom: 25px;
 }
 
+.payment-detail-left {
+  float: left;
+  margin-left: 20px;
+}
+
+.payment-detail-right {
+  float: right;
+  margin-right: 20px;
+}
+
 

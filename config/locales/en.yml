@@ -56,12 +56,14 @@ en:
   View_all: View all
   No_results_found: No employees found matching '%{query}'
   Days: Days
+  Submit: Submit
 
   # Error messages
   cant_be_in_future: can't be in the future.
   cant_be_during_posted_period: is in a period that is already posted.
   cant_change_during_posted_period: is in a period that is already posted.
   is_invalid: is invalid.
+  You_must_select: You Must Select an Employee First
 
   # Alerts
   never_had_raise: "%{name} started %{date} and has never had a raise."
@@ -243,6 +245,7 @@ en:
   Editing_loan: Modifiant un prêt
   This_is_a_cash_payment: This is a Cash Payment
   Cash_payment_help_text: "Please Note: Cash Payments are for loan payments which are provided to the finance department in cash. Cash Payments will not be deducted from the employee's next payslip."
+  Show_hide_payments: Show/Hide Payments
 
   # Vacations
   Enter_vacation: Enter Vacation

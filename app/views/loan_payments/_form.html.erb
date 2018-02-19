@@ -1,9 +1,9 @@
-  <% if @payment.errors.any? %>
+  <% if @loan_payment.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@payment.errors.count, "error") %> prohibited this payment from being saved:</h2>
+      <h2><%= pluralize(@loan_payment.errors.count, "error") %> prohibited this payment from being saved:</h2>
 
       <ul>
-      <% @payment.errors.full_messages.each do |message| %>
+      <% @loan_payment.errors.full_messages.each do |message| %>
         <li><%= message %></li>
       <% end %>
       </ul>
@@ -17,7 +17,7 @@
 
   <div class="checkbox">
     <%= form.label "cash_payment", t(:Cash_payment) do %>
-      <%= check_box_tag "loan_payment[cash_payment]" %> <%= t(:This_is_a_cash_payment) %>
+      <%= check_box :loan_payment, :cash_payment %> <%= t(:This_is_a_cash_payment) %>
       <span id="helpBlock" class="help-block"><%= t(:Cash_payment_help_text) %></span>
     <% end %>
   </div>
@@ -33,7 +33,7 @@
   </div>
 
   <div class="form-group">
-    <%= form.submit t(:Create_a_new_payment), :class => 'btn btn-primary' %>
+    <%= form.submit t(:Submit), :class => 'btn btn-primary' %>
   </div>
 
   <script>
@@ -41,7 +41,7 @@
         $('#datepicker').datetimepicker({
           useCurrent: false,
           showTodayButton: true,
-          defaultDate: moment('<%= @payment&.date ? @payment.date.strftime('%d/%m/%Y') : DateTime.now.strftime('%d/%m/%Y') %>', 'DD/MM/YYYY'),
+          defaultDate: moment('<%= @loan_payment&.date ? @loan_payment.date.strftime('%d/%m/%Y') : DateTime.now.strftime('%d/%m/%Y') %>', 'DD/MM/YYYY'),
           format: 'DD/MM/YYYY',
           <% if I18n.locale == :en %>
             locale: 'en'

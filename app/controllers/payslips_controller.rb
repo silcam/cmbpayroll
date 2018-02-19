@@ -32,7 +32,14 @@ class PayslipsController < ApplicationController
   def process_employee
     authorize! :update, Payslip
 
-    @period = LastPostedPeriod.current
+    if (params[:employee].blank? || params[:employee][:id].blank?)
+      @employees = Employee.currently_paid
+      flash.now[:alert] = I18n.t(:You_must_select)
+      render "index"
+    else
+      @employee = Employee.find(params[:employee][:id])
+      @period = LastPostedPeriod.current
+    end
   end
 
   def process_all_employees

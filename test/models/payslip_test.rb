@@ -1401,7 +1401,22 @@ class PayslipTest < ActiveSupport::TestCase
           payslip.crtv + payslip.ccf
 
     assert_equal(exp_total_tax, payslip.total_tax)
-    assert_equal(new_exp_taxable - exp_total_tax - employee.amical, payslip.net_pay)
+
+    # This is the raw number
+    assert_equal(new_exp_taxable - exp_total_tax - employee.amical, payslip.raw_net_pay)
+    # This is rounded.
+    assert_equal(Payslip.cfa_round(new_exp_taxable - exp_total_tax - employee.amical), payslip.net_pay)
+  end
+
+  test "CFA Round" do
+    num = 123456
+    assert_equal(123460, Payslip.cfa_round(num))
+
+    num = 123466
+    assert_equal(123470, Payslip.cfa_round(num))
+
+    num = 123599
+    assert_equal(123600, Payslip.cfa_round(num))
   end
 
   test "Dept CNPS Ceiling" do
@@ -1734,7 +1749,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     # expected value
     net_pay = expected_taxable - payslip.total_tax - employee.advance_amount()
-    assert_equal(net_pay, payslip.net_pay)
+    assert_equal(net_pay, payslip.raw_net_pay)
+    assert_equal(Payslip.cfa_round(net_pay), payslip.net_pay)
   end
 
   test "Test Vacation Pay Calculations" do
@@ -1802,7 +1818,7 @@ class PayslipTest < ActiveSupport::TestCase
       # Loan payment (5000) comes out of net pay
       expected_net = (employee.wage + employee.transportation) -
           payslip.total_tax - 5000
-      assert_equal(expected_net, payslip.net_pay)
+      assert_equal(Payslip.cfa_round(expected_net), payslip.net_pay)
     end
   end
 
@@ -1826,7 +1842,8 @@ class PayslipTest < ActiveSupport::TestCase
 
       # 300 Franc charge
       expected_net = (employee.wage + employee.transportation) - payslip.total_tax - 300
-      assert_equal(expected_net, payslip.net_pay)
+      assert_equal(expected_net, payslip.raw_net_pay)
+      assert_equal(Payslip.cfa_round(expected_net), payslip.net_pay)
     end
   end
 

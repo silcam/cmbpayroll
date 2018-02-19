@@ -304,6 +304,8 @@ class Payslip < ApplicationRecord
     self[:raw_net_pay] = self[:gross_pay] - self[:total_tax] -
         total_deductions()
 
+    Rails.logger.debug("GP: #{gross_pay} - (TT: #{total_tax} + TD: #{total_deductions()}) = RNP: #{raw_net_pay}")
+
     if (self[:raw_net_pay] < 0)
       # This isn't good.
       # Set the net_pay to zero,  This will raise an error since

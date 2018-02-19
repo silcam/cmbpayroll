@@ -408,19 +408,18 @@ class Payslip < ApplicationRecord
   end
 
   def seniority_bonus
-    bonus = 0
+    self[:years_of_service] = employee.years_of_service(period)
+    self[:seniority_benefit] = SystemVariable.value(:seniority_benefit)
 
     if (employee_eligible_for_seniority_bonus?)
-      self[:years_of_service] = employee.years_of_service(period)
-      self[:seniority_benefit] = SystemVariable.value(:seniority_benefit)
-
       bonus = employee.find_base_wage() *
           ( self[:seniority_benefit] * self[:years_of_service] )
-
-      self[:seniority_bonus_amount] = bonus
+    else
+      bonus = 0
+      self[:seniority_benefit] = 0
     end
 
-    bonus
+    self[:seniority_bonus_amount] = bonus
   end
 
   private

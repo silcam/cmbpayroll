@@ -241,6 +241,22 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal -3.5, Vacation.balance(chewie, Period.new(2017, 8))
   end
 
+  test "Luke is on vacation all of July" do
+    assert Vacation.on_vacation_during(@luke, Date.new(2017, 7, 1), Date.new(2017, 7, 31))
+    assert Vacation.on_vacation_during(@luke, Date.new(2017, 7, 10), Date.new(2017, 7, 25))
+  end
+
+  test "Anakin is not on vacation all of June" do
+    refute Vacation.on_vacation_during(@anakin, Date.new(2017, 6, 1), Date.new(2017, 6, 9))
+    refute Vacation.on_vacation_during(@anakin, Date.new(2017, 6, 5), Date.new(2017, 6, 10))
+  end
+
+  test "More vacation for Luke" do
+    @luke.vacations.create(start_date: '2017-12-25', end_date: '2018-01-20')
+    @luke.vacations.create(start_date: '2018-01-21', end_date: '2018-02-04')
+    assert Vacation.on_vacation_during(@luke, Date.new(2018, 1, 1), Date.new(2018, 1, 31))
+  end
+
   test "Days Hash" do
     days = Vacation.days_hash(@luke, Date.new(2017, 7, 30), Date.new(2017, 8, 2))
     assert_equal 2, days.length

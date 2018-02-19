@@ -124,6 +124,16 @@ class Vacation < ApplicationRecord
     balance
   end
 
+  def self.on_vacation_during(employee, start, finish)
+    check_date = start
+    while check_date <= finish
+      vacation = employee.vacations.find_by("start_date <= :date AND end_date >= :date", date: check_date)
+      return false unless vacation
+      check_date = vacation.end_date + 1
+    end
+    return true
+  end
+
   def self.days_hash(employee, start, finish)
     vacations = employee.vacations.where(overlap_clause(start, finish))
     vdays = {}

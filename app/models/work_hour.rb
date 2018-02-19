@@ -98,10 +98,11 @@ class WorkHour < ApplicationRecord
   end
 
   def self.employees_lacking_work_hours(period)
-    Employee.where("employees.id NOT IN
+    employees = Employee.where("employees.id NOT IN
                     (SELECT DISTINCT employee_id FROM work_hours
                     WHERE work_hours.date BETWEEN :start AND :finish)",
                    {start: period.start, finish: period.finish})
+    return employees.reject{ |e| Vacation.on_vacation_during(e, period.start, period.finish)}
   end
 
   def self.default_hours(date, holiday)

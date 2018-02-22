@@ -409,6 +409,10 @@ class EmployeeTest < ActiveSupport::TestCase
     employee1.contract_start = Date.new(2014,4,30)
     period = Period.new(2017,03)
     assert_equal(2, employee1.years_of_service(period), "2014-04-30 -> 2017-03-31 is 2 years")
+
+    employee1.contract_start = Date.new(1986,1,6)
+    period = Period.new(2018,01)
+    assert_equal(32, employee1.years_of_service(period), "1986-01-06 -> 2017-01-31 is 32 years")
   end
 
   test "Dept Severance" do

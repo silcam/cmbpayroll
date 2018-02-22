@@ -129,7 +129,7 @@ Payslip Date: <%= @payslip.payslip_date %><br />
   <td><b><%= number_to_currency(@payslip.bonusbase, locale: :cm) %></b></td>
 </tr>
 <tr>
-  <td><b>Seniority Bonus: (<%= @payslip.years_of_service %> years * <%= number_to_percentage(@payslip.seniority_benefit ? @payslip.seniority_benefit * 100 : 0) %>)</b></td>
+  <td><b>Seniority Bonus: (<%= @payslip.years_of_service %> years * <%= number_to_percentage(@payslip.seniority_benefit ? @payslip.seniority_benefit * 100 : 0) %> of <%= @payslip.basewage %>)</b></td>
   <td>+ <%= number_to_currency(@payslip.seniority_bonus_amount, locale: :cm) %></td>
 </tr>
 <tr>

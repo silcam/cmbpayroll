@@ -233,15 +233,15 @@ class Employee < ApplicationRecord
   end
 
   def otrate
-    hourly_rate * SystemVariable.value(:ot1)
+    ( hourly_rate * SystemVariable.value(:ot1) ).round
   end
 
   def ot2rate
-    hourly_rate * SystemVariable.value(:ot2)
+    ( hourly_rate * SystemVariable.value(:ot2) ).round
   end
 
   def ot3rate
-    hourly_rate * SystemVariable.value(:ot3)
+    ( hourly_rate * SystemVariable.value(:ot3) ).round
   end
 
   def children_under_6

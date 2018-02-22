@@ -15,6 +15,11 @@
     </div>
 
     <div class="form-group">
+      <%= form.label t_gen(:spouse_employed, @employee.female?) %>?
+      <%= form.check_box :spouse_employed %>
+    </div>
+
+    <div class="form-group">
       <%= form.label :transportation %>
       <%= form.text_field :transportation, class: 'form-control' %>
     </div>
@@ -23,9 +28,8 @@
       <%= form.label :amical %>
       <%= form.text_field :amical, class: 'form-control' %>
     </div>
-    
+
     <div class="form-group">
       <%= form.label :uniondues %>?
       <%= form.check_box :uniondues %>
     </div>
-    

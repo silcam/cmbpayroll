@@ -156,6 +156,8 @@
     <tr>
       <th scope="row"><%= t(:Marital_status) %>:</th>
       <td><%= t_gen(@employee.marital_status, @employee.female?) %></td>
+      <th scope="row"><%= t_gen(:spouse_employed, @employee.female?) %>:</th>
+      <td><%= @employee.spouse_employed ? t(:Yes) : t(:No) %></td>
       <th scope="row"><%= t(:Transportation) %></th>
       <td><%= number_to_currency(@employee.transportation, locale: :cm) %></td>
     </tr>
@@ -168,6 +170,7 @@
               number_to_currency(@employee.union_dues_amount, locale: :cm) :
               t(:No)  %>
       </td>
+      <th></th><td></td>
     </tr>
   </tbody>
 </table>

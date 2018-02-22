@@ -165,6 +165,7 @@ class EmployeesController < ApplicationController
         :gender,
         :marital_status,
         :wage,
+        :spouse_employed,
         :amical,
         :uniondues]
     unless params[:employee][:supervisor].nil?

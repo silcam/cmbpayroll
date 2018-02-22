@@ -67,7 +67,7 @@ class Tax < ApplicationRecord
 
     # If both spouses are employed, only take taxes from
     # the male spouse.
-    if (employee.female? && employee.spouse_employed)
+    if (employee.female? || employee.spouse_employed?)
       communal_tax = 0
     end
 

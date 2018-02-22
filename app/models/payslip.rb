@@ -459,7 +459,6 @@ class Payslip < ApplicationRecord
       self.process_earnings_and_taxes(payslip, employee, period)
 
       self.process_charges(payslip, employee)
-      self.process_misc_payments(payslip, employee, period)
       self.process_employee_deductions(payslip, employee)
       self.process_loans(payslip, employee, period)
       self.process_payslip_corrections(payslip, employee, period)
@@ -533,8 +532,14 @@ class Payslip < ApplicationRecord
   # end
 
   def misc_pay
-    # TODO Where does misc pay come from?
-    0
+    misc_pay_total = 0
+
+    employee.misc_payments.for_period(period).each do |misc_payment|
+      misc_pay_total += misc_payment.amount
+      earnings << Earning.new(amount: misc_payment.amount, description: "Misc. Payment: #{misc_payment.note}")
+    end
+
+    misc_pay_total
   end
 
   def employee_eligible_for_seniority_bonus?
@@ -561,12 +566,6 @@ class Payslip < ApplicationRecord
       deduction.date = charge.date
 
       payslip.deductions << deduction
-    end
-  end
-
-  def self.process_misc_payments(payslip, employee, period)
-    employee.misc_payments.for_period(period).each do |misc_payment|
-      payslip.earnings << Earning.new(amount: misc_payment.amount, description: misc_payment.note)
     end
   end
 

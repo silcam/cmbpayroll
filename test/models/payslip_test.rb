@@ -1823,6 +1823,49 @@ class PayslipTest < ActiveSupport::TestCase
     end
   end
 
+  test "Misc Payments are counted" do
+    # config employee
+    employee = return_valid_employee()
+    employee.uniondues = false;
+    employee.amical = 0;
+    employee.contract_start = "2017-01-01" # no senior bonus
+
+    # Add a payment to verify is there.
+    pmnt = MiscPayment.new
+    pmnt.amount = 50000
+    pmnt.note = "Testing"
+    pmnt.date = "2018-01-15"
+    employee.misc_payments << pmnt
+    assert(pmnt.valid?, "payment should be valid and not with these errors #{pmnt.errors.messages.inspect}")
+    assert(pmnt.save, "payment is saved")
+
+    period = Period.new(2018,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+
+    # process payslip with advance
+    payslip = Payslip.process(employee, period)
+
+    # compute caissebase
+    wage = employee.wage
+    base_wage = employee.find_base_wage
+
+    exp_caisse = wage
+    exp_cnps = exp_caisse + pmnt.amount
+    assert_equal(exp_cnps, payslip.compute_cnpswage, "cnps same as caisse")
+
+    # verify taxable (adds transportation)
+    expected_taxable = exp_cnps + employee.transportation
+    assert_equal(expected_taxable, payslip.process_taxable_wage, "taxable")
+    assert_equal(0, payslip.earnings.where(is_bonus: true).count(), "no bonuses")
+
+    # expected value
+    net_pay = expected_taxable - payslip.total_tax
+    assert_equal(net_pay, payslip.raw_net_pay)
+    assert_equal(Payslip.cfa_round(net_pay), payslip.net_pay)
+  end
+
   test "Charges/Deductions against net Pay" do
     Date.stub :today, Date.new(2018, 2, 5) do
 

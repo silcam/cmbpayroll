@@ -63,6 +63,20 @@ class BonusTest < ActiveSupport::TestCase
     }
   end
 
+  test "can be made to work with CaisseBase" do
+    bonus.name = "Caisse Bonus"
+    bonus.bonus_type = "percentage"
+    bonus.quantity = 0.30
+    assert bonus.valid?, "that looks good to me! #{bonus.errors.messages.inspect}"
+    refute bonus.use_caisse, "should be false by default"
+
+    bonus.use_caisse = true
+    assert bonus.use_caisse, "is now using caisse"
+
+    assert bonus.valid?, "Still valid!"
+    assert bonus.save, "Totally saved"
+  end
+
   def test_valid_input_formats
 
     bonus.name = "Test Bonus"

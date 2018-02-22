@@ -281,10 +281,66 @@ class PayslipTest < ActiveSupport::TestCase
         payslip.earnings.where(hours: 1.2).size())
     assert_equal(1,
         payslip.earnings.where(hours: 1.2).size())
-    payslip.earnings.where(description: "First Bonus")
-    payslip.earnings.where(description: "First Bonus")
 
     assert_equal(6, payslip.earnings.size, "must have 6 entries after processing")
+  end
+
+  test "bonuses can use caisse base" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+    assert employee.valid?
+
+    # create bonuses
+    bonus = Bonus.new
+    bonus.name = "First Bonus"
+    bonus.quantity = 0.12
+    bonus.percentage!
+    bonus.use_caisse = false
+    assert bonus.valid?
+    bonus.save
+
+    bonus2 = Bonus.new
+    bonus2.name = "Second Bonus"
+    bonus2.quantity = 0.05
+    bonus2.percentage!
+    bonus2.use_caisse = true
+    assert bonus2.valid?
+    bonus2.save
+
+    # assign to employee
+    employee.bonuses << bonus
+    employee.bonuses << bonus2
+
+    assert_equal(2, employee.bonuses.size)
+
+    # give work hours
+    hours = {'2017-08-01' => {hours: 8},
+             '2017-08-02' => {hours: 6},
+             '2017-08-03' => {hours: 3.5},
+             '2017-08-04' => {hours: 2},
+             '2017-08-05' => {hours: 1},
+             '2017-08-06' => {hours: 1.2},
+             '2017-08-12' => {hours: 3.2}}
+
+    WorkHour.update employee, hours
+
+    ### verify hours
+    exp = {normal: 171.5, overtime: 4.2,  holiday: 1.2}
+    assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # Find specific earnings entries
+    first = payslip.earnings.where(description: "First Bonus").take
+    second = payslip.earnings.where(description: "Second Bonus").take
+
+    bonusbase = payslip.bonusbase
+    caissebase = payslip.caissebase
+
+    assert_equal(( bonusbase * bonus.quantity ).round, first.amount,
+        "correct bonus for bonus")
+    assert_equal(( caissebase * bonus2.quantity ).round, second.amount,
+        "correct bonus amount for bonus2")
   end
 
   test "test_payslip_with_period_information" do
@@ -1306,7 +1362,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # verify cnps
-    exp_cnps_w_pdc = (exp_cnps + (bonusbase * 0.05).floor).ceil # PDC Bonus
+    exp_cnps_w_pdc = (exp_cnps + (bonusbase * 0.05).round).ceil # PDC Bonus
     assert_equal(exp_cnps_w_pdc, payslip.compute_cnpswage, "cnps with pdc")
 
     # Department CNPS
@@ -1321,8 +1377,8 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # verify cnps
-    exp_pdc_pe = (exp_cnps + (bonusbase * 0.05).floor +
-          (bonusbase * 0.30).floor).ceil # PDC + PE Bonus
+    exp_pdc_pe = (exp_cnps + (bonusbase * 0.05).round +
+          (bonusbase * 0.30).round).ceil # PDC + PE Bonus
     assert_equal(exp_pdc_pe, payslip.compute_cnpswage, "cnps with pdc + pe")
 
     # another bonus
@@ -1333,8 +1389,8 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # verify cnps
-    exp_triple_bonus = (exp_cnps + (bonusbase * 0.05).floor +
-          (bonusbase * 0.30).floor + 10000).ceil # PDC + PE Bonus
+    exp_triple_bonus = (exp_cnps + (bonusbase * 0.05).round +
+          (bonusbase * 0.30).round + 10000).ceil # PDC + PE Bonus
     assert_equal(exp_triple_bonus, payslip.compute_cnpswage, "cnps with pdc + pe + spot")
     new_exp_taxable = exp_triple_bonus + employee.transportation
 

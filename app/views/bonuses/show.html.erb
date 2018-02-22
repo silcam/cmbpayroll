@@ -23,5 +23,10 @@
   <%= @bonus.comment %>
 </p>
 
+<p>
+  <strong><%= t(:Use_caisse) %>:</strong>
+  <%= @bonus.use_caisse %>
+</p>
+
 <%= link_to t(:Edit), edit_bonus_path(@bonus) %> |
 <%= link_to t(:Back), bonuses_path %>

@@ -282,6 +282,7 @@ fr:
   Must_be_between_zero_and_one_hundred: 'doit être entre 0 et 100'
   Must_be_a_number: doit être un numéro
   Maximum: Maximum
+  Use_caisse: Utiliser le base de caisse
 
   # Raises
   New_raise: Nouvelle augmentation

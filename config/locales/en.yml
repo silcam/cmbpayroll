@@ -278,6 +278,7 @@ en:
   Must_be_between_zero_and_one_hundred: 'must be between 0 and 100'
   Must_be_a_number: must be a number
   Maximum: Maximum
+  Use_caisse: Use Caisse Base
 
   # Raises
   New_raise: New Raise

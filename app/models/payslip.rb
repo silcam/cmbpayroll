@@ -414,8 +414,8 @@ class Payslip < ApplicationRecord
     self[:seniority_benefit] = SystemVariable.value(:seniority_benefit)
 
     if (employee_eligible_for_seniority_bonus?)
-      bonus = employee.find_base_wage() *
-          ( self[:seniority_benefit] * self[:years_of_service] )
+      bonus = ( employee.find_base_wage() *
+          ( self[:seniority_benefit] * self[:years_of_service] )).round
     else
       bonus = 0
       self[:seniority_benefit] = 0
@@ -485,7 +485,6 @@ class Payslip < ApplicationRecord
       return self[:bonuspay]
     end
 
-    base = bonusbase
     bonus_total = 0
 
     employee.bonuses.all.each do |bonus|
@@ -496,7 +495,9 @@ class Payslip < ApplicationRecord
         earning.percentage = bonus.quantity
       end
 
-      earning.amount = bonus.effective_bonus(base).floor
+      base = bonus.use_caisse ? caissebase : bonusbase
+      earning.amount = bonus.effective_bonus(base).round
+
       earning.is_bonus = true
       earnings << earning
 

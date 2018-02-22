@@ -8,7 +8,7 @@
 
   <div class="form-group">
     <%= form.label t(:Type) %>
-    <%= form.select :bonus_type, options_for_select(Bonus.bonus_types.keys.collect{ |key| [t(key), key] }, @bonus.bonus_type), {id: :bonus_bonus_type}, class: 'form-control'  %>
+    <%= form.select :bonus_type, options_for_select(Bonus.bonus_types.keys.collect{ |key| [t(key), key] }, bonus.bonus_type), {id: :bonus_bonus_type}, class: 'form-control'  %>
   </div>
 
   <div class="form-group">
@@ -25,6 +25,11 @@
   <div class="form-group">
     <%= form.label t(:Comment) %>
     <%= form.text_field :comment, id: :bonus_comment, class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label t(:Use_caisse) %>
+    <%= form.check_box "use_caisse", class: 'form-control' %>
   </div>
 
   <div class="form-group">

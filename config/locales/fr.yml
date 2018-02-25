@@ -136,6 +136,7 @@ fr:
   Find_employee: Rechercher un employé
   spouse_employed_m: Épouse est employée
   spouse_employed_f: Époux est employé
+  Location: &Location Lieu
 
   # Supervisors
   Supervisors: Superviseurs
@@ -425,6 +426,7 @@ fr:
         birth_date: *Birth_date
         title: *Title
         department: *Department
+        location: *Location
         supervisor_id: *Supervisor
         contract_start: *Contract_start
         contract_end: *Contract_end
@@ -456,6 +458,10 @@ fr:
         married: Marrié(e)
         single: Célibataire
         widowed: Veu(f/ve)
+        nonrfis: "non-RFIS"
+        rfis: RFIS
+        bro: BRO
+        gnro: GNRO
       employee/wage_scale:
         one: 1ere
         two: 2eme

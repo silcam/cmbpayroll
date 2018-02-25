@@ -147,6 +147,7 @@ class EmployeesController < ApplicationController
         :name,
         :title,
         :department_id,
+        :location,
         :cnps,
         :dipe,
         :birth_date,

@@ -50,10 +50,10 @@ class Payslip < ApplicationRecord
     return self.process_payslip(employee, period, true)
   end
 
-  def self.process_all(period)
+  def self.process_all(employees, period)
     payslips = Array.new
 
-    Employee.currently_paid.each do |emp|
+    employees.each do |emp|
       tmp_payslip = Payslip.process(emp, period)
       payslips.push(tmp_payslip) unless tmp_payslip.nil?
     end

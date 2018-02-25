@@ -42,11 +42,38 @@ class PayslipsController < ApplicationController
     end
   end
 
+  def process_nonrfis_employees
+    authorize! :update, Payslip
+
+    @payslips = Payslip.process_all(Employee.nonrfis(), LastPostedPeriod.current)
+    render 'process_all_employees'
+  end
+
+  def process_rfis_employees
+    authorize! :update, Payslip
+
+    @payslips = Payslip.process_all(Employee.rfis(), LastPostedPeriod.current)
+    render 'process_all_employees'
+  end
+
+  def process_bro_employees
+    authorize! :update, Payslip
+
+    @payslips = Payslip.process_all(Employee.bro(), LastPostedPeriod.current)
+    render 'process_all_employees'
+  end
+
+  def process_gnro_employees
+    authorize! :update, Payslip
+
+    @payslips = Payslip.process_all(Employee.gnro(), LastPostedPeriod.current)
+    render 'process_all_employees'
+  end
+
   def process_all_employees
     authorize! :update, Payslip
 
-    @period = LastPostedPeriod.current
-    @payslips = Payslip.process_all(LastPostedPeriod.current)
+    @payslips = Payslip.process_all(Employee.currently_paid(), LastPostedPeriod.current)
   end
 
   def process_employee_complete
@@ -76,7 +103,7 @@ class PayslipsController < ApplicationController
   def post_period
     authorize! :update, Payslip
 
-    @payslips = Payslip.process_all LastPostedPeriod.current
+    @payslips = Payslip.process_all Employee.currently_paid(), LastPostedPeriod.current
     if @payslips.any?{ |payslip| payslip.errors.any? }
       @post_period_success = false
     else

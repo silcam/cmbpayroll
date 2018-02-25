@@ -54,6 +54,10 @@ Rails.application.routes.draw do
   post 'payslips/process', to: 'payslips#process_employee', as: :payslip_process_employee
   post 'payslips/process_complete', to: 'payslips#process_employee_complete', as: :payslip_process_employee_complete
   post 'payslips/process_all', to: 'payslips#process_all_employees', as: :payslip_process_all
+  post 'payslips/process_all_nonrfis', to: 'payslips#process_nonrfis_employees', as: :payslip_process_nonrfis
+  post 'payslips/process_all_rfis', to: 'payslips#process_rfis_employees', as: :payslip_process_rfis
+  post 'payslips/process_all_bro', to: 'payslips#process_bro_employees', as: :payslip_process_bro
+  post 'payslips/process_all_gnro', to: 'payslips#process_gnro_employees', as: :payslip_process_gnro
   post 'payslips/post_period', to: 'payslips#post_period', as: :payslip_post_period
   post 'payslips/unpost_period', to: 'payslips#unpost_period', as: :payslip_unpost_period
 

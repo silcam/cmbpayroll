@@ -13,6 +13,56 @@ class EmployeeTest < ActiveSupport::TestCase
     t = Employee.reflect_on_association(:charges).macro == :has_many
   end
 
+  test "Locations" do
+    assert(@luke.valid?, "luke defaults to bro")
+    assert_equal("bro", @luke.location, "luke defaults to bro")
+
+    @luke.location = "nonrfis"
+    assert(@luke.valid?)
+    @luke.location = "rfis"
+    assert(@luke.valid?)
+
+    assert_raise(ArgumentError) do
+      @luke.location = "lagos"
+    end
+
+    @luke.location = "bro"
+    assert(@luke.valid?)
+
+    assert_raise(ArgumentError) do
+      @luke.location = "sanfrancisco"
+    end
+
+    @luke.location = "gnro"
+    assert(@luke.valid?)
+  end
+
+  test "Location Scopes" do
+    @anakin = employees :Anakin
+    @chewie = employees :Chewie
+
+    @luke.location = "nonrfis"
+    @anakin.location = "nonrfis"
+    @chewie.location = "bro"
+    assert(@luke.save)
+    assert(@anakin.save)
+    assert(@chewie.save)
+    assert_equal(2, Employee.nonrfis().count())
+    assert_equal(2, Employee.rfis().count())
+    assert_equal(1, Employee.bro().count())
+    assert_equal(0, Employee.gnro().count())
+
+    @luke.location = "rfis"
+    @anakin.location = "gnro"
+    assert(@luke.save)
+    assert(@anakin.save)
+    assert(@chewie.save)
+    assert_equal(0, Employee.nonrfis().count())
+    assert_equal(3, Employee.rfis().count())
+    assert_equal(1, Employee.bro().count())
+    assert_equal(1, Employee.gnro().count())
+  end
+
   test "Associations" do
     lukes_coke = charges :LukesCoke
     luke_jr = children :LukeJr
@@ -526,6 +576,7 @@ class EmployeeTest < ActiveSupport::TestCase
     {first_name: 'Joe',
      last_name: 'Shmoe',
      title: 'Director',
+     location: 'bro',
      department: @admin,
      hours_day: 12,
      supervisor: @yoda}.merge params

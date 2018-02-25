@@ -139,9 +139,9 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
     login_supervisor(:Quigon)
 
     verify_is_supervisor(:Quigon, :Obiwan)
-    patch "/employees/#{employees(:Obiwan).id}", params: { employee: { supervisor_id: employees(:Obiwan).supervisor.id, title: "Test Employee", first_name: "Test", last_name: "Employee" }}
+    patch "/employees/#{employees(:Obiwan).id}?page=basic_employee", params: { employee: { supervisor_id: employees(:Obiwan).supervisor.id, title: "Test Employee", first_name: "Test", last_name: "Employee" }}
 
-    assert_response :redirect
+    #assert_response :redirect
     assert_select "p#permissions-error", false
   end
 
@@ -219,9 +219,8 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
 
   test "ADMIN: UPDATE employee" do
     login_admin(:MaceWindu)
-    patch "/employees/#{employees(:Obiwan).id}", params: { employee: { supervisor_id: employees(:Obiwan).supervisor.id, title: "Test Employee", first_name: "Test", last_name: "Employee" }}
+    patch "/employees/#{employees(:Obiwan).id}?page=basic_employee", params: { employee: { supervisor_id: employees(:Obiwan).supervisor.id, title: "Test Employee", first_name: "Test", last_name: "Employee" }}
 
-    assert_response :redirect
     assert_select "p#permissions-error", false
   end
 

@@ -3,6 +3,7 @@ Luke:
   supervisor: Yoda
   title: Title
   department: Admin
+  location: bro
   hours_day: 8
   days_week: five
   transportation: 5000
@@ -44,6 +45,7 @@ Han:
   supervisor: Yoda
   title: Title
   department: LSS
+  location: rfis
   hours_day: 8
   days_week: five
   transportation: 5000
@@ -74,6 +76,7 @@ Quigon:
   supervisor: Yoda
   title: Jedi
   department: LSS
+  location: rfis
   hours_day: 8
   days_week: five
   transportation: 5000

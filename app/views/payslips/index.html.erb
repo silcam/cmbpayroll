@@ -34,6 +34,38 @@
 
     <hr />
 
+    <p>
+      Process all payslips for the location (in period: <%= current_period %>):<br />
+    </p>
+
+    <div class="inline-payslip-button">
+    <%= form_tag("/payslips/process_all_nonrfis", method: "post", class: 'form-inline') do %>
+      <%= submit_tag("non-RFIS", class: 'btn btn-primary') %>
+    <% end %>
+    </div>
+
+    <div class="inline-payslip-button">
+    <%= form_tag("/payslips/process_all_rfis", method: "post", class: 'form-inline') do %>
+      <%= submit_tag("RFIS", class: 'btn btn-primary') %>
+    <% end %>
+    </div>
+
+    <div class="inline-payslip-button">
+    <%= form_tag("/payslips/process_all_bro", method: "post", class: 'form-inline') do %>
+      <%= submit_tag("BRO", class: 'btn btn-primary') %>
+    <% end %>
+    </div>
+
+    <div class="inline-payslip-button">
+    <%= form_tag("/payslips/process_all_gnro", method: "post", class: 'form-inline') do %>
+      <%= submit_tag("GNRO", class: 'btn btn-primary') %>
+    <% end %>
+    </div>
+
+    <br clear="all" />
+
+    <hr />
+
     <%= form_tag(payslip_post_period_path, method: "post") do %>
 
     <p>

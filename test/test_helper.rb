@@ -53,6 +53,7 @@ class ActiveSupport::TestCase
     employee.first_name = "Playslip"
     employee.last_name = "Recipient"
     employee.title = "Title"
+    employee.location = "nonrfis"
     employee.employment_status = "full_time"
     employee.department = departments :Admin
     employee.wage_period = "monthly"

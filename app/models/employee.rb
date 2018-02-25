@@ -24,12 +24,20 @@ class Employee < ApplicationRecord
 
   has_and_belongs_to_many :bonuses
 
-  validates :title, presence: {message: I18n.t(:Not_blank)}
+  validates :title, :location, presence: {message: I18n.t(:Not_blank)}
   validates :hours_day, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }
   validates :wage, presence: true, if: :echelon_requires_wage?
   validate :is_not_own_supervisor
 
   scope :active, -> { where.not(employment_status: :inactive) }
+  scope :nonrfis, -> {
+      where.not(location: [
+        Employee.statuses[:rfis], Employee.statuses[:bro], Employee.statuses[:gnro],
+      ])
+  }
+  scope :rfis, -> { where("location = ?", Employee.statuses[:rfis]) }
+  scope :bro, -> { where("location = ?", Employee.statuses[:bro]) }
+  scope :gnro, -> { where("location = ?", Employee.statuses[:gnro]) }
   scope :currently_paid, -> {
     where("employment_status IN (?)", Employee.active_status_array)
   }
@@ -49,6 +57,7 @@ class Employee < ApplicationRecord
                     :a, :b, :c, :d, :e, :f, :g ], _prefix: :echelon
   enum wage_scale: [ :a, :b, :c, :d, :e ], _prefix: :wage_scale
   enum wage_period: [ :hourly, :monthly ]
+  enum location: { nonrfis: 0, rfis: 1, bro: 2, gnro: 3 }
 
   def gender
     person.gender

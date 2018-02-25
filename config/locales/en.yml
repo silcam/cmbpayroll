@@ -131,6 +131,7 @@ en:
   Other_info: Other Info
   Find_employee: Find employee
   spouse_employed: Spouse Employed
+  Location: &Location Location
 
   # Supervisors
   Supervisors: Supervisors
@@ -420,6 +421,7 @@ en:
         birth_date: *Birth_date
         title: *Title
         department: *Department
+        location: *Location
         supervisor_id: *Supervisor
         contract_start: *Contract_start
         contract_end: *Contract_end
@@ -451,6 +453,10 @@ en:
         married: Married
         single: Single
         widowed: Widowed
+        nonrfis: non-RFIS
+        rfis: RFIS
+        bro: BRO
+        gnro: GNRO
       employee/wage_scale:
         one: 1st
         two: 2nd

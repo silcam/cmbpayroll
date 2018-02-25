@@ -510,7 +510,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, employee3.payslips.size)
 
     # process all payslips
-    payslips = Payslip.process_all(period)
+    payslips = Payslip.process_all(Employee.all, period)
 
     # processed one for 2 employees (except 1 on leave)
     assert_equal(employee_count + 2, payslips.size,

@@ -1999,7 +1999,7 @@ class PayslipTest < ActiveSupport::TestCase
     # Deductions?
     deduction = payslip.deductions.find_by(note: Payslip::LOCATION_TRANSFER)
     assert(deduction, "should have deduction for transfer")
-    assert_equal(72410, deduction.amount, "should have deduction for transfer")
+    assert_equal(72407, deduction.amount, "should have deduction for transfer")
 
     # Rerun in CTC
     employee.location = "nonrfis"

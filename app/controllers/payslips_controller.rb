@@ -70,6 +70,13 @@ class PayslipsController < ApplicationController
     render 'process_all_employees'
   end
 
+  def process_av_employees
+    authorize! :update, Payslip
+
+    @payslips = Payslip.process_all(Employee.aviation(), LastPostedPeriod.current)
+    render 'process_all_employees'
+  end
+
   def process_all_employees
     authorize! :update, Payslip
 

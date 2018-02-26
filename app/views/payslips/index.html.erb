@@ -6,7 +6,7 @@
 
 <% current_period = LastPostedPeriod.current %>
 
-  <div class="col-md-6" style="border:1px dotted gray; padding:20px">
+  <div class="col-md-8" style="border:1px dotted gray; padding:20px">
 
     <h2><%= t(:Payslip_management) %></h2>
 
@@ -59,6 +59,12 @@
     <div class="inline-payslip-button">
     <%= form_tag("/payslips/process_all_gnro", method: "post", class: 'form-inline') do %>
       <%= submit_tag("GNRO", class: 'btn btn-primary') %>
+    <% end %>
+    </div>
+
+    <div class="inline-payslip-button">
+    <%= form_tag("/payslips/process_all_av", method: "post", class: 'form-inline') do %>
+      <%= submit_tag("Aviation", class: 'btn btn-primary') %>
     <% end %>
     </div>
 

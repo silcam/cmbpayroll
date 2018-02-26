@@ -310,9 +310,7 @@ class Payslip < ApplicationRecord
     Rails.logger.debug("[E: #{employee.id}] GP: #{gross_pay} - (TT: #{total_tax} + TD: #{total_deductions()}) = RNP: #{raw_net_pay}")
 
     if (self[:raw_net_pay] >= 0)
-      if (employee.location == "nonrfis")
-        self[:net_pay] = Payslip.cfa_round(self[:raw_net_pay])
-      else
+      if (employee.create_location_transfer?)
         deduction = Deduction.new
         deduction.note = Payslip::LOCATION_TRANSFER
         deduction.amount = self[:raw_net_pay]
@@ -321,6 +319,8 @@ class Payslip < ApplicationRecord
         deductions << deduction
 
         self[:net_pay] = self[:raw_net_pay] = 0
+      else
+        self[:net_pay] = Payslip.cfa_round(self[:raw_net_pay])
       end
     else
       # This isn't good.  Give up.

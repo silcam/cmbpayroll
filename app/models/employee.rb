@@ -38,6 +38,7 @@ class Employee < ApplicationRecord
   scope :rfis, -> { where("location = ?", Employee.statuses[:rfis]) }
   scope :bro, -> { where("location = ?", Employee.statuses[:bro]) }
   scope :gnro, -> { where("location = ?", Employee.statuses[:gnro]) }
+  scope :aviation, -> { where("location = ?", Employee.statuses[:aviation]) }
   scope :currently_paid, -> {
     where("employment_status IN (?)", Employee.active_status_array)
   }
@@ -57,7 +58,7 @@ class Employee < ApplicationRecord
                     :a, :b, :c, :d, :e, :f, :g ], _prefix: :echelon
   enum wage_scale: [ :a, :b, :c, :d, :e ], _prefix: :wage_scale
   enum wage_period: [ :hourly, :monthly ]
-  enum location: { nonrfis: 0, rfis: 1, bro: 2, gnro: 3 }
+  enum location: { nonrfis: 0, rfis: 1, bro: 2, gnro: 3, aviation: 4 }
 
   def gender
     person.gender
@@ -259,6 +260,10 @@ class Employee < ApplicationRecord
 
   def children_under_19
     person.children.under_19.count()
+  end
+
+  def create_location_transfer?
+    location != "nonrfis"
   end
 
   def self.active_status_array

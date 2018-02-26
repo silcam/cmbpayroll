@@ -29,12 +29,32 @@ class EmployeeTest < ActiveSupport::TestCase
     @luke.location = "bro"
     assert(@luke.valid?)
 
+    @luke.location = "aviation"
+    assert(@luke.valid?)
+
     assert_raise(ArgumentError) do
       @luke.location = "sanfrancisco"
     end
 
     @luke.location = "gnro"
     assert(@luke.valid?)
+  end
+
+  test "create_location_transfer?" do
+    assert_equal("bro", @luke.location, "luke defaults to bro")
+    assert(@luke.create_location_transfer?)
+
+    @luke.location = "nonrfis"
+    refute(@luke.create_location_transfer?)
+
+    @luke.location = "rfis"
+    assert(@luke.create_location_transfer?)
+
+    @luke.location = "aviation"
+    assert(@luke.create_location_transfer?)
+
+    @luke.location = "gnro"
+    assert(@luke.create_location_transfer?)
   end
 
   test "Location Scopes" do
@@ -51,16 +71,18 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(2, Employee.rfis().count())
     assert_equal(1, Employee.bro().count())
     assert_equal(0, Employee.gnro().count())
+    assert_equal(0, Employee.aviation().count())
 
-    @luke.location = "rfis"
+    @luke.location = "aviation"
     @anakin.location = "gnro"
     assert(@luke.save)
     assert(@anakin.save)
     assert(@chewie.save)
     assert_equal(0, Employee.nonrfis().count())
-    assert_equal(3, Employee.rfis().count())
+    assert_equal(2, Employee.rfis().count())
     assert_equal(1, Employee.bro().count())
     assert_equal(1, Employee.gnro().count())
+    assert_equal(1, Employee.aviation().count())
   end
 
   test "Associations" do

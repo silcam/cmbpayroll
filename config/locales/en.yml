@@ -457,6 +457,7 @@ en:
         rfis: RFIS
         bro: BRO
         gnro: GNRO
+        aviation: Aviation
       employee/wage_scale:
         one: 1st
         two: 2nd

@@ -107,7 +107,9 @@
       <th scope="row">DIPE:</th>
       <td><%= @employee.dipe %></td>
       <th scope="row"><%= t(:Location) %></th>
-      <td><%= (@employee.location) %></td>
+      <td><%= unless @employee.location.nil?
+              Employee.human_attribute_name(@employee.location)
+             end %></td>
     </tr>
   </tbody>
 </table>

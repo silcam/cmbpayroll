@@ -1959,7 +1959,7 @@ class PayslipTest < ActiveSupport::TestCase
     employee.loans << loan
 
     # new Loan Payment in period
-    loan.loan_payments.create(amount: 500000, date: "2018-01-15");
+    loan.loan_payments.create(amount: 500000, date: "2018-01-15")
 
     period = Period.new(2018,1)
 
@@ -1970,9 +1970,47 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # The Netpay is going to be negative, verify that it will only ever be 0
-    assert_equal(0, payslip.net_pay, "net pay should never be negative")
+    assert(payslip.net_pay < 0, "net pay should never be negative")
     assert_equal(1, payslip.errors.size, "should have 1 error indicating a problem with this payslip")
     assert(payslip.errors.include?(:net_pay), "should have an error for net pay")
+  end
+
+  test "Non-Non-RFIS employees get automatic charge" do
+    # config employee
+    employee = return_valid_employee()
+    employee.uniondues = false
+    employee.amical = 0
+    employee.location = "bro"
+    employee.contract_start = "2017-01-01" # no senior bonus
+    assert_equal("bro", employee.location, "employee works in BRO")
+
+    period = Period.new(2018,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+
+    # process payslip
+    payslip = Payslip.process(employee, period)
+
+    # The Netpay is going to be negative, verify that it will only ever be 0
+    assert_equal(0, payslip.net_pay, "net pay should be zero")
+    assert_equal(0, payslip.errors.size, "should not have errors regarding 0 pay")
+
+    # Deductions?
+    deduction = payslip.deductions.find_by(note: Payslip::LOCATION_TRANSFER)
+    assert(deduction, "should have deduction for transfer")
+    assert_equal(72410, deduction.amount, "should have deduction for transfer")
+
+    # Rerun in CTC
+    employee.location = "nonrfis"
+    assert_equal("nonrfis", employee.location, "employee works in BRO")
+    payslip = Payslip.process(employee, period)
+
+    # Deductions?
+    assert_equal(72410, payslip.net_pay, "net pay should be zero")
+    assert_equal(0, payslip.errors.size, "should not have errors regarding 0 pay")
+    refute(payslip.deductions.find_by(note: Payslip::LOCATION_TRANSFER),
+        "should not have deduction for transfer")
   end
 
   test "Figure Pay from Departmental Charge" do

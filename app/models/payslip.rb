@@ -1,6 +1,7 @@
 class Payslip < ApplicationRecord
 
   VACATION_PAY = "Salaire de congé"
+  LOCATION_TRANSFER = "Salary Transfer to Other Office Location"
   MONTHLY = 12.0
 
   has_many :earnings
@@ -12,9 +13,11 @@ class Payslip < ApplicationRecord
 
   validate :has_earnings?
   validates :period_year,
-            :period_month,
-               presence: {message: I18n.t(:Not_blank)}
-  validates :net_pay, numericality: { :greater_than => 0, message: I18n.t(:Net_pay_error) }
+            :period_month, presence: {message: I18n.t(:Not_blank)}
+  validates :net_pay, numericality: {
+              :greater_than_or_equal_to => 0,
+              message: I18n.t(:Net_pay_error)
+  }
 
   scope :for_period, ->(period) {
     where(period_year: period.year, period_month: period.month)
@@ -306,14 +309,25 @@ class Payslip < ApplicationRecord
 
     Rails.logger.debug("[E: #{employee.id}] GP: #{gross_pay} - (TT: #{total_tax} + TD: #{total_deductions()}) = RNP: #{raw_net_pay}")
 
-    if (self[:raw_net_pay] < 0)
-      # This isn't good.
-      # Set the net_pay to zero,  This will raise an error since
-      # there's a model validation that net_pay must be greater
-      # than zero.
-      self[:net_pay] = 0
+    if (self[:raw_net_pay] >= 0)
+      if (employee.location == "nonrfis")
+        self[:net_pay] = Payslip.cfa_round(self[:raw_net_pay])
+      else
+        deduction = Deduction.new
+        deduction.note = Payslip::LOCATION_TRANSFER
+        deduction.amount = Payslip.cfa_round(self[:raw_net_pay])
+        deduction.date = period.finish
+
+        deductions << deduction
+
+        self[:net_pay] = self[:raw_net_pay] = 0
+      end
     else
-      self[:net_pay] = Payslip.cfa_round(self[:raw_net_pay])
+      # This isn't good.  Give up.
+      # This will raise an error since there's a model
+      # validation that net_pay must be
+      # greater_than_or_equal_to zero.
+      self[:net_pay] = self[:raw_net_pay]
     end
   end
 

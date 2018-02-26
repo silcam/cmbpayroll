@@ -15,7 +15,7 @@ class Payslip < ApplicationRecord
   validates :period_year,
             :period_month, presence: {message: I18n.t(:Not_blank)}
   validates :net_pay, numericality: {
-              :greater_than_or_equal_to => 0,
+              :greater_than_or_equal_to => -4,
               message: I18n.t(:Net_pay_error)
   }
 
@@ -142,7 +142,7 @@ class Payslip < ApplicationRecord
       earning.description = "Monthly Wages"
       earning.amount = employee.wage
     elsif (employee.paid_monthly? && days_worked > 0)
-      earning.description = "Monthly wages less #{employee.workdays_per_month(period) - days_worked} days @ #{employee.daily_rate}"
+      earning.description = "Monthly wages for #{days_worked} days @ #{employee.daily_rate}"
       earning.rate = employee.daily_rate
       earning.amount = daily_earnings
     elsif (!employee.paid_monthly? && hours_worked > 0)
@@ -172,18 +172,14 @@ class Payslip < ApplicationRecord
   end
 
   def daily_earnings
-    days_in_month = employee.workdays_per_month(period)
     days_worked = WorkHour.days_worked(employee, period)
-
     self[:days] = days_worked
 
-    # NEW - compute pay based on removing working days * daily rate
-    wage - ( ( days_in_month - days_worked ) * employee.daily_rate )
+    days_worked * employee.daily_rate
   end
 
   def hourly_earnings
     hours_worked = WorkHour.hours_worked(employee, period)
-
     self[:hours] = hours_worked
 
     hours_worked * employee.hourly_rate
@@ -309,7 +305,7 @@ class Payslip < ApplicationRecord
 
     Rails.logger.debug("[E: #{employee.id}] GP: #{gross_pay} - (TT: #{total_tax} + TD: #{total_deductions()}) = RNP: #{raw_net_pay}")
 
-    if (self[:raw_net_pay] >= 0)
+    if (self[:raw_net_pay] >= -4)
       if (employee.create_location_transfer?)
         deduction = Deduction.new
         deduction.note = Payslip::LOCATION_TRANSFER

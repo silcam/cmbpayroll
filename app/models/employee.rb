@@ -127,7 +127,19 @@ class Employee < ApplicationRecord
     # function since this is likely needed in multiple places.
     return 0 if contract_start.nil?
     period = Period.current if period.nil?
-    ((period.finish - contract_start.to_datetime) / 365).to_i
+
+    if (period.finish > contract_start)
+      tmp_date = period.finish
+      count = 0
+      while (tmp_date.prev_year >= contract_start.to_date)
+        tmp_date = tmp_date.prev_year
+        count += 1
+      end
+
+      count
+    else
+      0
+    end
   end
 
   def workdays_per_month(period)

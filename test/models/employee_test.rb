@@ -456,7 +456,7 @@ class EmployeeTest < ActiveSupport::TestCase
 
     employee1.contract_start = Date.new(2017,1,1)
     period = Period.new(2013,03)
-    assert_equal(-3, employee1.years_of_service(period), "2017-01-01 -> 2013-03-31 is -3 years")
+    assert_equal(0, employee1.years_of_service(period), "2017-01-01 -> 2013-03-31 is -3 years")
 
     employee1.contract_start = Date.new(2016,3,31)
     period = Period.new(2017,03)
@@ -472,7 +472,7 @@ class EmployeeTest < ActiveSupport::TestCase
 
     employee1.contract_start = Date.new(2016,2,29)
     period = Period.new(2017,02) # leap year tests (this is 365 days, thus a year)
-    assert_equal(1, employee1.years_of_service(period), "2016-02-29 -> 2017-02-28 is 1 years")
+    assert_equal(0, employee1.years_of_service(period), "2016-02-29 -> 2017-02-28 is 0 years")
 
     employee1.contract_start = Date.new(2014,1,31)
     period = Period.new(2017,03)
@@ -484,7 +484,15 @@ class EmployeeTest < ActiveSupport::TestCase
 
     employee1.contract_start = Date.new(1986,1,6)
     period = Period.new(2018,01)
-    assert_equal(32, employee1.years_of_service(period), "1986-01-06 -> 2017-01-31 is 32 years")
+    assert_equal(32, employee1.years_of_service(period), "1986-01-06 -> 2018-01-31 is 32 years")
+
+    employee1.contract_start = Date.new(2016,2,1)
+    period = Period.new(2018,01)
+    assert_equal(1, employee1.years_of_service(period), "2016-02-01 -> 2018-01-31 is 1 year")
+
+    employee1.contract_start = Date.new(2016,2,1)
+    period = Period.new(2018,02)
+    assert_equal(2, employee1.years_of_service(period), "2016-02-01 -> 2018-02-28 is 2 years")
   end
 
   test "Dept Severance" do

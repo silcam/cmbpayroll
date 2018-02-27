@@ -124,14 +124,14 @@ class TaxTest < ActiveSupport::TestCase
     # but these still work
     assert_equal(5234250, tax.grosspay, "rounding is correct")
     assert_equal(52343, tax.ccf(), "ccf")
-    assert_equal(65428, tax.crtv(), "crtv")
+    assert_equal(68250, tax.crtv(), "crtv")
     assert_equal(251244, tax.proportional(), "prportional tax")
     assert_equal(25124, tax.cac(), "cac")
     assert_equal(5234345, tax.cnpswage(), "cnps wage")
     assert_equal(31500, tax.cnps(), "cnps tax") # ceiling
     assert_equal(0, tax.cac2(), "cac2")
     assert_equal(250, tax.communal(), "communal tax")
-    assert_equal(425889, tax.total_tax(), "total_tax")
+    assert_equal(428711, tax.total_tax(), "total_tax")
   end
 
   test "round down logic" do

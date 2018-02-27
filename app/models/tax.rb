@@ -31,7 +31,7 @@ class Tax < ApplicationRecord
 
   def crtv
     if self[:crtv].nil?
-      ( grosspay * SystemVariable.value(:crtv_rate) ).round
+      ( 1950 + ((grosspay.div(100000) - 1) * 1300) )
     else
       self[:crtv]
     end

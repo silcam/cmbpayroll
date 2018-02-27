@@ -309,7 +309,7 @@ class Payslip < ApplicationRecord
       if (employee.create_location_transfer?)
         deduction = Deduction.new
         deduction.note = Payslip::LOCATION_TRANSFER
-        deduction.amount = self[:raw_net_pay]
+        deduction.amount = Payslip.cfa_round(self[:raw_net_pay])
         deduction.date = period.finish
 
         deductions << deduction

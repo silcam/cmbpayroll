@@ -23,7 +23,7 @@ class Tax < ApplicationRecord
 
   def ccf
     if self[:ccf].nil?
-      ( grosspay * SystemVariable.value(:ccf_rate) ).round
+      ( grosspay * SystemVariable.value(:ccf_rate) ).floor
     else
       self[:ccf]
     end

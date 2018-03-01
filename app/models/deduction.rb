@@ -9,6 +9,17 @@ class Deduction < ApplicationRecord
   validates :note, :amount, :date, presence: {message: I18n.t(:Not_blank)}
   validate :date_is_valid_for_payslip
 
+  scope :second_page, -> { where.not(note: [
+      Charge::ADVANCE,
+      Employee::UNION,
+      Payslip::LOCATION_TRANSFER
+  ])}
+  scope :advances, -> { where(note: [
+      Charge::ADVANCE,
+      Payslip::LOCATION_TRANSFER
+  ])}
+  scope :loan_payments, -> { where(note: LoanPayment::LOAN_PAYMENT_NOTE) }
+
   private
 
   def date_is_valid_for_payslip

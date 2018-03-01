@@ -7,6 +7,8 @@ class Employee < ApplicationRecord
 
   WEEKS_IN_YEAR = 52
   MONTHS_IN_YEAR = 12
+  UNION = "union"
+  AMICAL = "amical"
 
   belongs_to :supervisor
   belongs_to :department
@@ -117,6 +119,10 @@ class Employee < ApplicationRecord
     Wage.find_wage(category, "a", wage_scale)
   end
 
+  def category_roman
+    RomanNumerals.to_roman(word_to_int(category))
+  end
+
   def paid_monthly?
     wage_period == "monthly"
   end
@@ -213,8 +219,8 @@ class Employee < ApplicationRecord
 
   def deductable_expenses
       expense_hash = {
-        amical: :amical,
-        union: :union_dues_amount
+        AMICAL => :amical,
+        UNION => :union_dues_amount
       }
   end
 

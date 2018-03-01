@@ -21,19 +21,26 @@ class Loan < ApplicationRecord
     total_amount
   end
 
-  def self.total_balance(employee)
+  def self.total_balance(employee, period=Period.current)
     total_balance = 0
 
-    employee.loans.each do |loan|
+    employee.loans.where("origination <= ?", period.finish).each do |loan|
       next if loan.is_paid()
 
       loan_sum = loan.amount
-      payments_sum = loan.loan_payments.all().sum(:amount)
+      payments_sum = loan.loan_payments.
+          where("date <= ?", period.finish).sum(:amount)
 
       total_balance += (loan_sum - payments_sum)
     end
 
     total_balance
+  end
+
+  def self.new_loan_amount_this_period(employee, period)
+    where(employee_id: employee.id).
+    where('origination between ? AND ?', period.start, period.finish).
+    sum(:amount)
   end
 
   def self.paid_loans(employee)

@@ -45,7 +45,8 @@ class SystemVariable < ApplicationRecord
     communal_cutoff: 100000,
     communal_low: 166,
     communal_high: 250,
-    raise_interval: 4
+    raise_interval: 4,
+    immatriculation_no: '5087501B'
   }
 
   def self.value(key)

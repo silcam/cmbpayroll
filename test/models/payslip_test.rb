@@ -931,7 +931,7 @@ class PayslipTest < ActiveSupport::TestCase
     # The full-time employee is paid their wage, times
     # the number of days worked times their daily rate
     assert_equal(
-        (employee.wage - ( (workdays - days_worked) * employee.daily_rate)).to_i,
+        (employee.wage - ( (workdays - days_worked) * employee.daily_rate)).round,
         payslip.base_pay
     )
 
@@ -1020,7 +1020,7 @@ class PayslipTest < ActiveSupport::TestCase
     # compute bonusbase
     assert_equal(79475, employee.wage, "wage is expected")
     assert_equal(3668, employee.daily_rate.round, "daily rate is computed")
-    assert_equal(17117, payslip.compute_bonusbase, "proper bonus base for 6 days")
+    assert_equal(17118, payslip.compute_bonusbase, "proper bonus base for 6 days")
   end
 
   test "BonusBase Hourly Month" do

@@ -119,6 +119,27 @@ class Payslip < ApplicationRecord
     return tmp_total
   end
 
+  def prime_de_caisse
+    earnings.where(is_caisse: true, is_bonus: true).take
+  end
+
+  def union_dues
+    deductions.where(note: Employee::UNION).take&.amount
+  end
+
+  def salary_advance
+    deductions.advances.sum(:amount)
+  end
+
+  def salary_earnings
+    # Need something better.
+    earnings.where(overtime: false, is_bonus: false, is_caisse: false).where("description not like 'Misc. Pay%'")&.take&.amount
+  end
+
+  def first_page_deductions_sum
+    total_tax.to_i + union_dues.to_i + salary_advance.to_i
+  end
+
   def period
     if (period_year && period_month)
       return Period.new(period_year, period_month)
@@ -178,7 +199,7 @@ class Payslip < ApplicationRecord
 
     self[:days] = days_worked
 
-    wage - ( ( days_in_month - days_worked ) * employee.daily_rate )
+    ( wage - ( ( days_in_month - days_worked ) * employee.daily_rate ) ).round
   end
 
   def hourly_earnings
@@ -512,6 +533,7 @@ class Payslip < ApplicationRecord
       earning.amount = bonus.effective_bonus(base).round
 
       earning.is_bonus = true
+      earning.is_caisse = true if bonus.use_caisse
       earnings << earning
 
       bonus_total += earning.amount
@@ -550,7 +572,8 @@ class Payslip < ApplicationRecord
 
     employee.misc_payments.for_period(period).each do |misc_payment|
       misc_pay_total += misc_payment.amount
-      earnings << Earning.new(amount: misc_payment.amount, description: "Misc. Payment: #{misc_payment.note}")
+      earnings << Earning.new(amount: misc_payment.amount,
+          description: "Misc. Payment: #{misc_payment.note}", is_bonus: false)
     end
 
     misc_pay_total

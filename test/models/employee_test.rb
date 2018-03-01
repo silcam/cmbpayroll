@@ -423,13 +423,13 @@ class EmployeeTest < ActiveSupport::TestCase
     expenses_hash = employee.deductable_expenses()
     assert_equal(2, expenses_hash.length)
 
-    assert(expenses_hash[:amical])
+    assert(expenses_hash[Employee::AMICAL])
 
-    assert_equal(:amical, expenses_hash[:amical])
-    assert_equal(:union_dues_amount, expenses_hash[:union])
+    assert_equal(:amical, expenses_hash[Employee::AMICAL])
+    assert_equal(:union_dues_amount, expenses_hash[Employee::UNION])
 
-    assert_equal(3000, employee.send(expenses_hash[:amical]))
-    assert_equal(0, employee.send(expenses_hash[:union]))
+    assert_equal(3000, employee.send(expenses_hash[Employee::AMICAL]))
+    assert_equal(0, employee.send(expenses_hash[Employee::UNION]))
   end
 
   test "years_of_service" do

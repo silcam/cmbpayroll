@@ -103,7 +103,7 @@ class PayslipsController < ApplicationController
     if (@payslip.errors.size > 0)
       render 'process_employee'
     else
-      redirect_to payslip_url(@payslip)
+      redirect_to payslip_url(@payslip, format: "pdf")
     end
   end
 

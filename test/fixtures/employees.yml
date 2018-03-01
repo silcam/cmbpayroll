@@ -9,6 +9,7 @@ Luke:
   transportation: 5000
   echelon: a
   category: five
+  marital_status: single
   employment_status: full_time
   contract_start: 2017-01-01
   first_day: 2016-12-01
@@ -48,6 +49,7 @@ Han:
   location: rfis
   hours_day: 8
   days_week: five
+  marital_status: single
   transportation: 5000
   echelon: a
   category: five

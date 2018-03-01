@@ -35,6 +35,7 @@ gem 'bcrypt', '~> 3.1.7'
 # PDFs
 gem 'prawn', '~> 2.1'
 gem 'prawn-rails', '~> 0.1.1'
+gem 'prawn-table', '~> 0.2.2'
 
 # date picker
 gem 'momentjs-rails', '>= 2.9.0'
@@ -51,6 +52,8 @@ gem 'audited', '~> 4.5'
 # Reports
 gem 'dossier', '~> 2.13', '>= 2.13.1'
 gem 'fixy', '~> 0.0.8'
+
+gem 'roman-numerals', '~> 0.3.0'
 
 # Date Validation
 # gem 'validates_timeliness', '~>4.0'

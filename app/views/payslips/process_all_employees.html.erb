@@ -18,7 +18,7 @@
 <% @payslips.each do |slip| %>
 
   <li>
-    Processed Payslip ID <%= link_to slip.id, slip %> for <%= link_to slip.employee.full_name, slip.employee %>
+    Processed Payslip ID <%= link_to slip.id, slip %> [<%= link_to "PDF", payslip_path(slip.id, :format => :pdf) %>] for <%= link_to slip.employee.full_name, slip.employee %>
     <% if (!slip.errors.empty?) %>
     <ul>
       <% slip.errors.messages.each do |err| %>

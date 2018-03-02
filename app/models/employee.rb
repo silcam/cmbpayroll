@@ -160,12 +160,12 @@ class Employee < ApplicationRecord
   end
 
   def daily_rate
-    hours_day * hourly_rate
+    (wage * MONTHS_IN_YEAR).fdiv(WEEKS_IN_YEAR).fdiv(days_week_to_i)
   end
 
   def hourly_rate
-    return 0 if (hours_per_month() == 0)
-    (wage / hours_per_month()).round
+    return 0 if (hours_day == 0)
+    daily_rate.fdiv(hours_day)
   end
 
   # Find out average number of hours per month based on

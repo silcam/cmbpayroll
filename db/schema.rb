@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180225130125) do
+ActiveRecord::Schema.define(version: 20180302090051) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -114,6 +114,7 @@ ActiveRecord::Schema.define(version: 20180225130125) do
     t.decimal "percentage"
     t.boolean "overtime", default: false, null: false
     t.boolean "is_bonus", default: false, null: false
+    t.boolean "is_caisse", default: false, null: false
     t.index ["payslip_id"], name: "index_earnings_on_payslip_id"
   end
 
@@ -269,8 +270,8 @@ ActiveRecord::Schema.define(version: 20180225130125) do
     t.integer "overtime3_rate"
     t.integer "transportation"
     t.integer "total_tax"
-    t.integer "hourly_rate"
-    t.integer "daily_rate"
+    t.decimal "hourly_rate"
+    t.decimal "daily_rate"
     t.integer "seniority_bonus_amount"
     t.integer "years_of_service"
     t.decimal "seniority_benefit"

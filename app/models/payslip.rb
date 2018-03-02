@@ -133,6 +133,7 @@ class Payslip < ApplicationRecord
       return self[:basepay]
     end
 
+    days_in_month = employee.workdays_per_month(period)
     days_worked = WorkHour.days_worked(employee, period)
     hours_worked = WorkHour.hours_worked(employee, period)
 
@@ -142,7 +143,7 @@ class Payslip < ApplicationRecord
       earning.description = "Monthly Wages"
       earning.amount = employee.wage
     elsif (employee.paid_monthly? && days_worked > 0)
-      earning.description = "Monthly wages for #{days_worked} days @ #{employee.daily_rate}"
+      earning.description = "Monthly wages less #{days_in_month - days_worked} days @ #{employee.daily_rate}"
       earning.rate = employee.daily_rate
       earning.amount = daily_earnings
     elsif (!employee.paid_monthly? && hours_worked > 0)
@@ -172,10 +173,12 @@ class Payslip < ApplicationRecord
   end
 
   def daily_earnings
+    days_in_month = employee.workdays_per_month(period)
     days_worked = WorkHour.days_worked(employee, period)
+
     self[:days] = days_worked
 
-    days_worked * employee.daily_rate
+    wage - ( ( days_in_month - days_worked ) * employee.daily_rate )
   end
 
   def hourly_earnings

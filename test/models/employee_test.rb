@@ -351,6 +351,8 @@ class EmployeeTest < ActiveSupport::TestCase
     employee.hours_day = 8
     employee.days_week = "five"
 
+    period = Period.new(2018,1)
+
     employee.category = "nine"
     employee.echelon = "five"
     employee.wage_scale = "b"
@@ -358,8 +360,8 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(195565, employee.find_wage())
     # 173 and 1/3
     assert_equal(Rational(520,3), employee.hours_per_month())
-    assert_equal(1128, employee.hourly_rate())
-    assert_equal(9024, employee.daily_rate())
+    assert_equal(1128, employee.hourly_rate.round)
+    assert_equal(9026, employee.daily_rate.round)
   end
 
   test "Hourly Rate" do
@@ -367,6 +369,8 @@ class EmployeeTest < ActiveSupport::TestCase
     employee.hours_day = 8
     employee.days_week = "five"
 
+    period = Period.new(2018,1)
+
     employee.category = "nine"
     employee.echelon = "five"
     employee.wage_scale = "b"
@@ -374,7 +378,7 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(195565, employee.find_wage())
     # 173 and 1/3
     assert_equal(Rational(520,3), employee.hours_per_month())
-    assert_equal(1128, employee.hourly_rate())
+    assert_equal(1128, employee.hourly_rate.round)
   end
 
   test "AMICAL" do

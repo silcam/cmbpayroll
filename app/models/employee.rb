@@ -275,7 +275,7 @@ class Employee < ApplicationRecord
   end
 
   def create_location_transfer?
-    location != "nonrfis"
+    location != "nonrfis" && location != "rfis"
   end
 
   def self.active_status_array

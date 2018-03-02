@@ -48,7 +48,7 @@ class EmployeeTest < ActiveSupport::TestCase
     refute(@luke.create_location_transfer?)
 
     @luke.location = "rfis"
-    assert(@luke.create_location_transfer?)
+    refute(@luke.create_location_transfer?)
 
     @luke.location = "aviation"
     assert(@luke.create_location_transfer?)

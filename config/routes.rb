@@ -42,7 +42,11 @@ Rails.application.routes.draw do
 
   resources :supervisors, except: [:show]
 
-  resources 'payslips', only: [ :index, :show ]
+  resources 'payslips', only: [ :index, :show ] do
+    collection do
+      post 'print_multi'
+    end
+  end
 
   # Reports index
   get 'reports', to: 'reports#index'

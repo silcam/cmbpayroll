@@ -14,7 +14,7 @@
     <% @employee_payslips.each do |slip| %>
       <tr>
         <td><%= slip.period.start %> - <%= slip.period.finish %></td>
-        <td><%= link_to("Payslip #{slip.id}", payslip_path(slip)) %> [<%= link_to("pdf", payslip_path(slip, :format=>:pdf)) %>]</td>
+        <td><%= link_to("View PDF", payslip_path(slip, :format =>:pdf)) %> (<%= link_to("View HTML", payslip_path(slip, :format=>:html), class: 'small text-muted') %>)</td>
       </tr>
     <% end %>
 

@@ -67,6 +67,7 @@ Obiwan:
   days_week: five
   transportation: 5000
   echelon: a
+  marital_status: single
   category: five
   employment_status: full_time
   contract_start: 2017-01-01

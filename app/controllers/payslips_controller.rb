@@ -1,4 +1,7 @@
+require 'payslip_generator'
+
 class PayslipsController < ApplicationController
+  include PayslipGenerator
 
   before_action :set_employee, only: [ :index ]
 
@@ -6,8 +9,7 @@ class PayslipsController < ApplicationController
     if (@employee)
       authorize! :read, @employee
 
-      @employee_payslips = @employee.payslips.
-          order(period_year: :desc, period_month: :desc)
+      @employee_payslips = @employee.payslips.order(period_year: :desc, period_month: :desc)
 
       # show history for single employee
       render "employee_history"
@@ -26,6 +28,11 @@ class PayslipsController < ApplicationController
     else
       @payslip = Payslip.find(params[:id])
       authorize! :read, @payslip
+
+      respond_to do |format|
+        format.html
+        format.pdf { pdf_generator(@payslip) }
+      end
     end
   end
 
@@ -44,43 +51,32 @@ class PayslipsController < ApplicationController
 
   def process_nonrfis_employees
     authorize! :update, Payslip
-
-    @payslips = Payslip.process_all(Employee.nonrfis(), LastPostedPeriod.current)
-    render 'process_all_employees'
+    process_subset(Employee.nonrfis())
   end
 
   def process_rfis_employees
     authorize! :update, Payslip
-
-    @payslips = Payslip.process_all(Employee.rfis(), LastPostedPeriod.current)
-    render 'process_all_employees'
+    process_subset(Employee.rfis())
   end
 
   def process_bro_employees
     authorize! :update, Payslip
-
-    @payslips = Payslip.process_all(Employee.bro(), LastPostedPeriod.current)
-    render 'process_all_employees'
+    process_subset(Employee.bro())
   end
 
   def process_gnro_employees
     authorize! :update, Payslip
-
-    @payslips = Payslip.process_all(Employee.gnro(), LastPostedPeriod.current)
-    render 'process_all_employees'
+    process_subset(Employee.gnro())
   end
 
   def process_av_employees
     authorize! :update, Payslip
-
-    @payslips = Payslip.process_all(Employee.aviation(), LastPostedPeriod.current)
-    render 'process_all_employees'
+    process_subset(Employee.aviation())
   end
 
   def process_all_employees
     authorize! :update, Payslip
-
-    @payslips = Payslip.process_all(Employee.currently_paid(), LastPostedPeriod.current)
+    process_subset(Employee.currently_paid())
   end
 
   def process_employee_complete
@@ -127,7 +123,28 @@ class PayslipsController < ApplicationController
     redirect_to payslips_path
   end
 
+  def print_multi
+    authorize! :update, Payslip
+
+    @slips = flash[:processed_payslips]
+    flash[:processed_payslips] = @slips
+
+    pdf_generate_multi(@slips, download = true)
+  end
+
   private
+
+  def process_subset(employees)
+    @payslips = Payslip.process_all(employees, LastPostedPeriod.current)
+
+    slips = []
+    @payslips.each do |p|
+      slips.push(p.id)
+    end
+    flash[:processed_payslips] = slips
+
+    render 'process_all_employees'
+  end
 
   def set_employee
     @employee = Employee.find(params[:employee_id]) if params[:employee_id]

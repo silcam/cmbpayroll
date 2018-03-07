@@ -34,7 +34,7 @@ class Bonus < ApplicationRecord
     end
   end
 
-  enum bonus_type: [ :percentage, :fixed ]
+  enum bonus_type: { percentage: 0, fixed: 1 }
 
   def ext_quantity
     if (bonus_type == "percentage")

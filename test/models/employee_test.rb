@@ -318,31 +318,31 @@ class EmployeeTest < ActiveSupport::TestCase
     employee = return_valid_employee()
 
     employee.category = "three"
-    employee.echelon = "six"
+    employee.echelon = "e"
     employee.wage_scale = "a"
 
-    assert_equal(83755, employee.find_wage())
+    assert_equal(78660, employee.find_wage())
     assert_equal(58280, employee.find_base_wage())
 
     employee.category = "three"
-    employee.echelon = "six"
+    employee.echelon = "d"
     employee.wage_scale = "b"
 
-    assert_equal(45080, employee.find_wage())
+    assert_equal(40410, employee.find_wage())
     assert_equal(33425, employee.find_base_wage())
 
     employee.category = "three"
-    employee.echelon = "six"
+    employee.echelon = "c"
     employee.wage_scale = "c"
 
-    assert_equal(33695, employee.find_wage())
+    assert_equal(27160, employee.find_wage())
     assert_equal(23080, employee.find_base_wage())
 
     employee.category = "nine"
-    employee.echelon = "five"
+    employee.echelon = "b"
     employee.wage_scale = "b"
 
-    assert_equal(195565, employee.find_wage())
+    assert_equal(158110, employee.find_wage())
     assert_equal(145555, employee.find_base_wage())
   end
 
@@ -354,14 +354,14 @@ class EmployeeTest < ActiveSupport::TestCase
     period = Period.new(2018,1)
 
     employee.category = "nine"
-    employee.echelon = "five"
+    employee.echelon = "b"
     employee.wage_scale = "b"
 
-    assert_equal(195565, employee.find_wage())
+    assert_equal(158110, employee.find_wage())
     # 173 and 1/3
     assert_equal(Rational(520,3), employee.hours_per_month())
-    assert_equal(1128, employee.hourly_rate.round)
-    assert_equal(9026, employee.daily_rate.round)
+    assert_equal(912, employee.hourly_rate.round)
+    assert_equal(7297, employee.daily_rate.round)
   end
 
   test "Hourly Rate" do
@@ -372,13 +372,13 @@ class EmployeeTest < ActiveSupport::TestCase
     period = Period.new(2018,1)
 
     employee.category = "nine"
-    employee.echelon = "five"
+    employee.echelon = "d"
     employee.wage_scale = "b"
 
-    assert_equal(195565, employee.find_wage())
+    assert_equal(183080, employee.find_wage())
     # 173 and 1/3
     assert_equal(Rational(520,3), employee.hours_per_month())
-    assert_equal(1128, employee.hourly_rate.round)
+    assert_equal(1056, employee.hourly_rate.round)
   end
 
   test "AMICAL" do

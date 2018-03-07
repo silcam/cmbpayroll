@@ -10,7 +10,7 @@ class Person < ApplicationRecord
 
   validates :first_name, :last_name, presence: {message: I18n.t(:Not_blank)}
 
-  enum gender: [ :male, :female ]
+  enum gender: { male: 0, female: 1 }
 
   default_scope { order(:last_name, :first_name) }
 

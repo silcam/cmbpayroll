@@ -5,8 +5,7 @@ class User < ApplicationRecord
 
   validates :username, :role, presence: {message: I18n.t(:Not_blank)}
 
-  enum language: [:en, :fr]
-
+  enum language: { en: 0, fr: 1 }
   enum role: { user: 0, admin: 2 }
 
   def supervisor?

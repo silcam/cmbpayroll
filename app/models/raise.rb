@@ -2,13 +2,11 @@ class Raise < ApplicationRecord
   belongs_to :employee
 
   # TODO : How can we avoid reduplicating this code ?
-  enum category: [ :one, :two, :three, :four, :five, :six, :seven,
-                   :eight, :nine, :ten, :eleven, :twelve, :thirteen ], _prefix: :category
-  enum echelon: [ :one, :two, :three, :four, :five, :six, :seven,
-                  :eight, :nine, :ten, :eleven, :twelve, :thirteen,
-                  :a, :b, :c, :d, :e, :f, :g ], _prefix: :echelon
-  enum wage_scale: [ :a, :b, :c, :d, :e ], _prefix: :wage_scale
-  enum wage_period: [ :hourly, :monthly ]
+  enum category: { one: 0, two: 1, three: 2, four: 3, five: 4, six: 5, seven: 6,
+                   eight: 7, nine: 8, ten: 9, eleven: 10, twelve: 11, thirteen: 13 }, _prefix: :category
+  enum echelon: { a: 14, b: 15, c: 16, d: 17, e: 18, f: 19, g: 20 }, _prefix: :echelon
+  enum wage_scale: { a: 0, b: 1, c: 2, d: 3, e: 4 }, _prefix: :wage_scale
+  enum wage_period: { hourly: 0, monthly: 1 }
 
   def self.new_for(employee)
     raise = employee.raises.new

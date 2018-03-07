@@ -49,17 +49,16 @@ class Employee < ApplicationRecord
     echelon == "g"
   end
 
-  enum employment_status: [ :full_time, :part_time, :temporary, :leave, :terminated_to_year_end, :inactive]
-  enum marital_status: [ :single, :married, :widowed ]
-  enum days_week: [ :one, :two, :three, :four, :five, :six, :seven ], _suffix: :day
+  enum employment_status: { full_time: 0, part_time: 1, temporary: 2, leave: 3,
+                            terminated_to_year_end: 4, inactive:5 }
+  enum marital_status: { single: 0, married: 1, widowed: 2 }
+  enum days_week: { one: 0, two: 1, three: 2, four: 3, five: 4, six: 5, seven: 6 }, _suffix: :day
 
-  enum category: [ :one, :two, :three, :four, :five, :six, :seven,
-                    :eight, :nine, :ten, :eleven, :twelve, :thirteen ], _prefix: :category
-  enum echelon: [ :one, :two, :three, :four, :five, :six, :seven,
-                    :eight, :nine, :ten, :eleven, :twelve, :thirteen,
-                    :a, :b, :c, :d, :e, :f, :g ], _prefix: :echelon
-  enum wage_scale: [ :a, :b, :c, :d, :e ], _prefix: :wage_scale
-  enum wage_period: [ :hourly, :monthly ]
+  enum category: { one: 0, two: 1, three: 2, four: 3, five: 4, six: 5, seven: 6,
+                    eight: 7, nine: 8, ten: 9, eleven: 10, twelve: 11, thirteen: 12 }, _prefix: :category
+  enum echelon: { a: 14, b: 15, c: 16, d: 17, e: 18, f: 19, g: 20 }, _prefix: :echelon
+  enum wage_scale: { a: 0, b: 1, c: 2, d: 3, e: 4 }, _prefix: :wage_scale
+  enum wage_period: { hourly: 0, monthly: 1 }
   enum location: { nonrfis: 0, rfis: 1, bro: 2, gnro: 3, aviation: 4 }
 
   def gender

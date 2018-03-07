@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180302090051) do
+ActiveRecord::Schema.define(version: 20180307173616) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -362,6 +362,8 @@ ActiveRecord::Schema.define(version: 20180302090051) do
     t.date "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "paid", default: false, null: false
+    t.decimal "vacation_pay"
     t.index ["employee_id"], name: "index_vacations_on_employee_id"
   end
 

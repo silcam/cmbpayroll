@@ -2,6 +2,10 @@ include ApplicationHelper
 
 class Vacation < ApplicationRecord
 
+  MONTHLY = 12.0
+
+  attr :tax
+
   belongs_to :employee
 
   validates :start_date, presence: true
@@ -9,6 +13,7 @@ class Vacation < ApplicationRecord
   validate :end_date_after_start
   validate :doesnt_overlap_existing
   validate :dont_violate_posted_period
+  validate :cant_modify_if_already_paid
 
   default_scope { order(:start_date) }
 
@@ -56,11 +61,11 @@ class Vacation < ApplicationRecord
   end
 
   def destroyable?
-    not LastPostedPeriod.in_posted_period? start_date
+    (not LastPostedPeriod.in_posted_period? start_date) && (not self[:paid])
   end
 
   def editable?
-    not LastPostedPeriod.in_posted_period? end_date
+    (not LastPostedPeriod.in_posted_period? end_date) && (not self[:paid])
   end
 
   def self.for_period(period = Period.current)
@@ -143,6 +148,31 @@ class Vacation < ApplicationRecord
     vdays
   end
 
+  def prep_print
+    vacation_pay
+    self[:paid] = true
+  end
+
+  # Compute vacation pay for this vacation based on who took
+  # it and how long it is.
+  def vacation_pay
+    if (self[:vacation_pay].nil?)
+      pay = Payslip.find_pay(employee)
+      vacation_pay = (Vacation.vacation_daily_rate(pay) * days).ceil
+      self[:vacation_pay] = vacation_pay
+    end
+
+    self[:vacation_pay]
+  end
+
+  def get_tax
+    if @tax.nil?
+      @tax = Tax.compute_taxes(employee, vacation_pay, vacation_pay)
+    else
+      @tax
+    end
+  end
+
   # def self.missed_days(employee, period=Period.current)
   #   missed_days_for employee, period.start, period.finish
   # end
@@ -158,6 +188,55 @@ class Vacation < ApplicationRecord
   # def self.missed_hours_so_far(employee)
   #   Vacation.missed_days_so_far(employee) * WorkHour.workday
   # end
+
+  # def prev_vacation_pay_balance
+  #   previous_slip = previous
+  #   previous_slip.nil? ? 0 : previous_slip.vacation_pay_balance
+  # end
+
+  # def calculate_vacation_pay_used
+  #   days_used = Vacation.days_used employee, period
+  #   previous_days_balance = Vacation.balance(employee, period.previous)
+  #   previous_pay_balance = prev_vacation_pay_balance
+  #   ((previous_pay_balance * days_used) / previous_days_balance).to_i
+  # end
+
+  # def calculate_vacation_pay_balance
+  #   prev_vacation_pay_balance +
+  #     calculate_vacation_pay -
+  #     calculate_vacation_pay_used
+  # end
+
+  # def calculate_vacation_pay(cnpswage, vacation_used)
+  #   (vacation_daily_rate(cnpswage) * vacation_used).ceil
+  # end
+
+  def self.vacation_daily_rate(cnpswage)
+    days_earned = SystemVariable.value(:vacation_days) / MONTHLY
+    vpay_factor = SystemVariable.value(:vacation_pay_factor)
+    per_day = (cnpswage / days_earned) / vpay_factor
+  end
+
+  def get_vacation_pay
+    vac_pay = earnings.where(description: VACATION_PAY)&.take
+    unless (vac_pay.nil?)
+      vac_pay.amount
+    else
+      0
+    end
+  end
+
+  def process_vacation_pay
+    pay = calculate_vacation_pay(cnpswage, vacation_used)
+    if pay > 0
+
+      # TODO: is this right?
+      #self[:taxable] += pay
+      #self[:gross_pay] += pay
+
+      earnings << Earning.new(description: VACATION_PAY, amount: pay)
+    end
+  end
 
   private
 
@@ -194,6 +273,17 @@ class Vacation < ApplicationRecord
       end
       if end_date_changed? and LastPostedPeriod.in_posted_period? end_date, end_date_was
         errors.add :end_date, I18n.t(:cant_change_during_posted_period)
+      end
+    end
+  end
+
+  def cant_modify_if_already_paid
+    if (self[:paid])
+      if start_date_changed?
+        errors.add :start_date, I18n.t(:cant_change_paid_record)
+      end
+      if end_date_changed?
+        errors.add :end_date, I18n.t(:cant_change_paid_record)
       end
     end
   end

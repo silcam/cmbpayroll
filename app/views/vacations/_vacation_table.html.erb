@@ -4,6 +4,8 @@
     <th><%= t :Start_date %></th>
     <th><%= t :End_date %></th>
     <th><%= t :Days_per %></th>
+    <th><%= t :Paid? %></th>
+    <th><%= t :Voucher %></th>
     <th colspan="2"></th>
   </tr>
   <% vacations.each do |vacation| %>
@@ -12,6 +14,8 @@
         <td><%= std_datestring vacation.start_date %></td>
         <td><%= std_datestring vacation.end_date %></td>
         <td><%= vacation.days %> <%= t(:Days) %></td>
+        <td><%= vacation.paid? ? t(:Yes) : t(:No) %></td>
+        <td><%= link_to t(:Print_voucher),  print_voucher_vacation_path(vacation) %></td>
         <% referred_by = request.path %>
         <% referred_by += "?period=#{@period.to_s}" if @period %>
         <td>
@@ -21,7 +25,7 @@
         </td>
         <td>
           <% if vacation.destroyable? %>
-            <%= link_to t(:Delete),  vacation_path(vacation, referred_by: referred_by), method: :delete %>
+            <%= link_to t(:Delete),  vacation_path(vacation, referred_by: referred_by), method: :delete, data: { confirm: t(:Are_you_sure) }  %>
           <% end %>
         </td>
       </tr>

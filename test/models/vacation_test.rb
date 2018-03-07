@@ -263,6 +263,102 @@ class VacationTest < ActiveSupport::TestCase
     assert days[Date.new(2017, 7, 31)][:vacation]
   end
 
+  test "Vacations Can be paid" do
+    vacay = Vacation.create()
+    vacay.employee = @luke
+    vacay.start_date = "2018-01-01"
+    vacay.end_date = "2018-12-31"
+    refute(vacay.paid?, "should not be paid by default")
+
+    assert(vacay.valid?, "should be valid")
+    assert(vacay.save, "should save correctly")
+
+    vacay.paid = true
+    assert(vacay.paid?, "should be paid now")
+  end
+
+  test "Vacation Can Figure Daily Vacation Rate" do
+    employee = return_valid_employee()
+
+    pay = Payslip.find_pay(employee)
+    assert_equal(3405.167, Vacation.vacation_daily_rate(pay).round(3))
+  end
+
+  test "Vacation knows how much should be paid for vacations" do
+    pay = Payslip.find_pay(@luke)
+    vacation_rate = Vacation.vacation_daily_rate(pay)
+
+    assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
+    assert_equal((21 * vacation_rate).ceil, @lukes_vacation.vacation_pay,
+        "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
+  end
+
+  test "Vacation (payslip) can figure how much taxes are for this vacation" do
+    pay = Payslip.find_pay(@luke)
+    vacation_rate = Vacation.vacation_daily_rate(pay)
+
+    assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
+    assert_equal((21 * vacation_rate).ceil, @lukes_vacation.vacation_pay,
+        "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
+
+    tax = Tax.compute_taxes(@luke, @lukes_vacation.vacation_pay, @lukes_vacation.vacation_pay)
+
+    assert_equal(tax.ccf, @lukes_vacation.get_tax.ccf)
+    assert_equal(tax.crtv, @lukes_vacation.get_tax.crtv)
+    assert_equal(tax.proportional, @lukes_vacation.get_tax.proportional)
+    assert_equal(tax.cac, @lukes_vacation.get_tax.cac)
+    assert_equal(tax.cac2, @lukes_vacation.get_tax.cac2)
+    assert_equal(tax.communal, @lukes_vacation.get_tax.communal)
+    assert_equal(tax.cnps, @lukes_vacation.get_tax.cnps)
+    assert_equal(tax.total_tax, @lukes_vacation.get_tax.total_tax)
+  end
+
+  test "Cannot edit vacations that are paid" do
+    period = LastPostedPeriod.current
+
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = period.start
+    vac.end_date = period.finish
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.editable?)
+
+    vac.paid = true
+    assert(vac.save)
+
+    refute(vac.editable?)
+
+    vac.end_date = vac.end_date - 1
+    refute(vac.save, "cannot edit a paid vacation")
+  end
+
+  test "Cannot delete vacations that are paid" do
+    period = LastPostedPeriod.current
+
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = period.start
+    vac.end_date = period.finish
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.destroyable?)
+
+    vac.paid = true
+
+    refute(vac.destroyable?)
+    refute(vac.destroy, "cannot delete a paid vacation")
+  end
+
+  test "printing makes paid and saves vacation pay total" do
+    refute(@lukes_vacation.paid?, "not paid yet")
+    assert_equal(0, @lukes_vacation.changes.size, "nothing to be saved to the DB")
+
+    @lukes_vacation.prep_print
+    assert_equal(2, @lukes_vacation.changes.size, "vacation pay and paid to be saved to the DB #{@lukes_vacation.changes.inspect}")
+    assert(@lukes_vacation.paid?, "paid now")
+  end
+
   # test "Missed Days and Hours" do
   #   june = Period.new(2017, 6)
   #   assert_equal 5, Vacation.missed_days(@anakin, june)

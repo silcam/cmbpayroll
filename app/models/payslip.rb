@@ -2,7 +2,6 @@ class Payslip < ApplicationRecord
 
   VACATION_PAY = "Salaire de congé"
   LOCATION_TRANSFER = "Salary Transfer to Other Office Location"
-  MONTHLY = 12.0
 
   has_many :earnings
   has_many :deductions
@@ -43,6 +42,23 @@ class Payslip < ApplicationRecord
     payslip.period_year = period.year
     payslip.period_month = period.month
     return payslip
+  end
+
+  def self.find_pay(employee, period=Period.current)
+    # Create a dummy payslip
+    payslip = Payslip.new(period_year: period.year, period_month: period.month)
+    payslip.employee = employee
+    payslip.store_employee_attributes
+    # Compute pay
+    payslip.process_taxable_wage(true)
+    wage = payslip.cnpswage
+
+#    Rails.logger.error(payslip.inspect)
+
+    # Delete it.
+    payslip.delete
+
+    wage
   end
 
   def self.process(employee, period=Period.current)
@@ -148,7 +164,7 @@ class Payslip < ApplicationRecord
     end
   end
 
-  def base_pay
+  def base_pay(override = false)
     # If we have a bonus base, we've already run
     if (self[:bonusbase])
       return self[:basepay]
@@ -160,7 +176,7 @@ class Payslip < ApplicationRecord
 
     earning = Earning.new
 
-    if (worked_full_month? && employee.paid_monthly?)
+    if (override || (worked_full_month? && employee.paid_monthly?))
       earning.description = "Monthly Wages"
       earning.amount = employee.wage
     elsif (employee.paid_monthly? && days_worked > 0)
@@ -259,16 +275,16 @@ class Payslip < ApplicationRecord
     self[:overtime_earnings] = ot1_earnings + ot2_earnings + ot3_earnings
   end
 
-  def compute_bonusbase
-    self[:bonusbase] = ( base_pay + overtime_earnings ).ceil
+  def compute_bonusbase(override = false)
+    self[:bonusbase] = ( base_pay(override) + overtime_earnings ).ceil
   end
 
-  def compute_caissebase
-    self[:caissebase] = ( compute_bonusbase + seniority_bonus ).ceil
+  def compute_caissebase(override = false)
+    self[:caissebase] = ( compute_bonusbase(override) + seniority_bonus ).ceil
   end
 
-  def compute_cnpswage
-    self[:cnpswage] = ( compute_caissebase + process_bonuses + misc_pay ).ceil
+  def compute_cnpswage(override = false)
+    self[:cnpswage] = ( compute_caissebase(override) + process_bonuses + misc_pay ).ceil
 
     # NOTE: this previously used the Format(value, "0") VBA function, which I
     # intepreted as integer truncation.
@@ -284,11 +300,11 @@ class Payslip < ApplicationRecord
     self[:cnpswage]
   end
 
-  def process_taxable_wage()
+  def process_taxable_wage(override = false)
     transportation = employee.transportation ?
         employee.transportation : 0
 
-    self[:taxable] = ( compute_cnpswage + transportation ).ceil
+    self[:taxable] = ( compute_cnpswage(override) + transportation ).ceil
 
     # NOTE: this previously used the Format(value, "0") VBA function, which I
     # intepreted as integer truncation.
@@ -351,26 +367,6 @@ class Payslip < ApplicationRecord
     end
   end
 
-  def get_vacation_pay
-    vac_pay = earnings.where(description: VACATION_PAY)&.take
-    unless (vac_pay.nil?)
-      vac_pay.amount
-    else
-      0
-    end
-  end
-
-  def process_vacation_pay
-    pay = calculate_vacation_pay(cnpswage, vacation_used)
-    if pay > 0
-
-      # TODO: is this right?
-      #self[:taxable] += pay
-      #self[:gross_pay] += pay
-
-      earnings << Earning.new(description: VACATION_PAY, amount: pay)
-    end
-  end
 
   def compute_work_loans
     work_loans_by_dept = WorkLoan.work_loan_hash(employee, period)
@@ -488,6 +484,7 @@ class Payslip < ApplicationRecord
       end
 
       payslip.reset_payslip
+      payslip.store_employee_attributes
 
       self.process_vacation(payslip, employee, period)
       self.process_earnings_and_taxes(payslip, employee, period)
@@ -542,31 +539,6 @@ class Payslip < ApplicationRecord
     self[:bonuspay] = bonus_total
   end
 
-  def calculate_vacation_pay(cnpswage, vacation_used)
-    days_earned = SystemVariable.value(:vacation_days) / MONTHLY
-    vpay_factor = SystemVariable.value(:vacation_pay_factor)
-    per_day = (cnpswage / days_earned) / vpay_factor
-    (per_day * vacation_used).ceil
-  end
-
-  # def prev_vacation_pay_balance
-  #   previous_slip = previous
-  #   previous_slip.nil? ? 0 : previous_slip.vacation_pay_balance
-  # end
-  #
-  # def calculate_vacation_pay_used
-  #   days_used = Vacation.days_used employee, period
-  #   previous_days_balance = Vacation.balance(employee, period.previous)
-  #   previous_pay_balance = prev_vacation_pay_balance
-  #   ((previous_pay_balance * days_used) / previous_days_balance).to_i
-  # end
-  #
-  # def calculate_vacation_pay_balance
-  #   prev_vacation_pay_balance +
-  #     calculate_vacation_pay -
-  #     calculate_vacation_pay_used
-  # end
-
   def misc_pay
     misc_pay_total = 0
 
@@ -585,9 +557,8 @@ class Payslip < ApplicationRecord
   end
 
   def self.process_earnings_and_taxes(payslip, employee, period)
-    payslip.store_employee_attributes
     payslip.process_taxable_wage
-    payslip.process_vacation_pay
+    #payslip.process_vacation_pay
     payslip.process_taxes
   end
 
@@ -677,6 +648,7 @@ class Payslip < ApplicationRecord
         payslip.deductions << Deduction.new(amount: correction.cfa_debit, date: period.finish, note: "Correction pour le bulletin de #{correction.payslip.period} : #{correction.note}")
       end
 
+      # TODO, What to do with this?
       unless correction.vacation_days == 0
         payslip.vacation_balance += correction.vacation_days
       end

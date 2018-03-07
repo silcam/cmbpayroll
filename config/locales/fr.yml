@@ -62,6 +62,7 @@ fr:
   cant_be_in_future: ne peut pas être au futur.
   cant_be_during_posted_period: est en un mois déjà finalisé.
   cant_change_during_posted_period: est en un mois déjà finalisé.
+  cant_change_paid_record: ne peut pas être changé, les vacances sont déjà payées.
   is_invalid: n'est pas valide.
   You_must_select: D'abord, Il faut choisir un employée
 
@@ -266,6 +267,9 @@ fr:
   Vacation_used_or_planned: Jours utilisés et prevus
   Remaining_days: Jours qui restent
   Days_per: Montant de chaque vacances
+  Paid?: Payée?
+  Voucher: Coupon
+  Print_voucher: Imprimer le coupon
 
   # Bonuses
   Bonuses: Primes

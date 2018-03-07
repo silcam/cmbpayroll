@@ -1,0 +1,26 @@
+
+<h4>Bulletin de Paie - Congé</h4>
+
+<p>
+Dates exactes de congé: du <%= @vacation.start_date %> au <%= @vacation.end_date %><br />
+Nom du travailleur: <%= @vacation.employee.full_name %><br />
+Matricule No. <%= @vacation.employee.id %><br />
+Catégoire professionnelle: <%= @vacation.employee.category_roman %>-<%= @vacation.employee.echelon.upcase %><br />
+Nombre de journées: <%= @vacation.days %> @ <%= @vacation.vacation_pay.fdiv(@vacation.days).round(2) %> soit CFA <%= @vacation.vacation_pay.round %><br />
+</p>
+
+<h4>Déductions</h4>
+
+<p>
+Taxe Proportionelle: <%= @vacation.get_tax.proportional %><br />
+C.A.C.: <%= @vacation.get_tax.cac %><br />
+Taxe communale: <%= @vacation.get_tax.communal %><br />
+Pension vieillesse 4,2%: <%= @vacation.get_tax.cnps %><br />
+Crédit foncier: <%= @vacation.get_tax.ccf %><br />
+Audio-visuelle: <%= @vacation.get_tax.crtv %><br />
+</p>
+
+<p>
+MONTANT DES DEDUCTIONS: <%= @vacation.get_tax.total_tax %><br />
+MONTANT DE LA PAIE: <%= ( @vacation.vacation_pay - @vacation.get_tax.total_tax ).round %>
+</p>

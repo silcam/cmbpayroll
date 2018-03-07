@@ -4,7 +4,11 @@ Rails.application.routes.draw do
 
   root "home#home"
 
-  resources :vacations, except: :show
+  resources :vacations, except: [:show] do
+    member do
+      get 'print_voucher'
+    end
+  end
   resources :misc_payments
   resources :bonuses
   resources :work_loans, only: [ :index, :new, :create, :destroy ]

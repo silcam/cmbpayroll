@@ -46,6 +46,14 @@ class VacationsController < ApplicationController
     end
   end
 
+  def print_voucher
+    authorize! :create, Vacation
+
+    @vacation = Vacation.find params[:id]
+    @vacation.prep_print
+    @vacation.save
+  end
+
   def edit
     authorize! :update, Vacation
 
@@ -101,7 +109,6 @@ class VacationsController < ApplicationController
     end
     @vacation.save!
   end
-
 
   def redirect_user
     if (params[:referred_by].present?)

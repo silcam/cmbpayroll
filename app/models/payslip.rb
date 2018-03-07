@@ -352,7 +352,7 @@ class Payslip < ApplicationRecord
   end
 
   def get_vacation_pay
-    vac_pay = earnings.where(description: VACATION_PAY)&.first
+    vac_pay = earnings.where(description: VACATION_PAY)&.take
     unless (vac_pay.nil?)
       vac_pay.amount
     else

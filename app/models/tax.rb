@@ -88,7 +88,7 @@ class Tax < ApplicationRecord
     cac + cac2 + communal + cnps + ccf + crtv + proportional
   end
 
-  # Round pay to the nearest 250
+  # Round pay to the last 250 reached
   #  i.e.  952 -> 750
   #    or  99123 -> 99000
   def self.roundpay(grosspay)

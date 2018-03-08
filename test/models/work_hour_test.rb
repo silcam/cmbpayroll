@@ -112,6 +112,26 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal(8, hours_worked, "sick time is 8 hours")
   end
 
+  test "Days and Hours should return 0 if no work" do
+    @luke.days_week = "five"
+    dec18 = Period.new(2018,12)
+
+    assert_equal(0, @luke.work_hours.where("date BETWEEN ? AND ?",
+        dec18.start, dec18.finish).count(),
+          "no work hours in period")
+
+    hours_worked, days_worked = WorkHour.compute_hours_and_days(@luke, dec18)
+
+    assert_equal(0, days_worked, "0 when no work")
+    assert_equal(0, hours_worked, "0 when no work")
+
+    days_worked = WorkHour.days_worked(@luke, dec18)
+    hours_worked = WorkHour.hours_worked(@luke, dec18)
+
+    assert_equal(0, days_worked, "0 when no work")
+    assert_equal(0, hours_worked, "0 when no work")
+  end
+
   test "Days and Hours Worked" do
     dec = Period.new(2017,12)
     @luke.days_week = "five"

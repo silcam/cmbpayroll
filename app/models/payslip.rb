@@ -174,6 +174,9 @@ class Payslip < ApplicationRecord
     days_worked = WorkHour.days_worked(employee, period)
     hours_worked = WorkHour.hours_worked(employee, period)
 
+    self[:days] = days_worked
+    self[:hours] = hours_worked
+
     earning = Earning.new
 
     if (override || (worked_full_month? && employee.paid_monthly?))
@@ -213,14 +216,11 @@ class Payslip < ApplicationRecord
     days_in_month = employee.workdays_per_month(period)
     days_worked = WorkHour.days_worked(employee, period)
 
-    self[:days] = days_worked
-
     ( wage - ( ( days_in_month - days_worked ) * employee.daily_rate ) ).round
   end
 
   def hourly_earnings
     hours_worked = WorkHour.hours_worked(employee, period)
-    self[:hours] = hours_worked
 
     hours_worked * employee.hourly_rate
   end
@@ -443,7 +443,7 @@ class Payslip < ApplicationRecord
     self[:years_of_service] = employee.years_of_service(period)
     self[:seniority_benefit] = SystemVariable.value(:seniority_benefit)
 
-    if (employee_eligible_for_seniority_bonus?)
+    if (employee_eligible_for_seniority_bonus? && !on_vacation_entire_period?)
       bonus = ( employee.find_base_wage() *
           ( self[:seniority_benefit] * self[:years_of_service] )).round
     else

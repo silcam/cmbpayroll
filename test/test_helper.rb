@@ -110,7 +110,11 @@ class ActiveSupport::TestCase
 
   # Assumes no holidays
   def generate_work_hours(employee, period)
-    (period.start .. period.finish).each do |date|
+    generate_work_hours_for_range(employee, period.start, period.finish)
+  end
+
+  def generate_work_hours_for_range(employee, start, finish)
+    (start .. finish).each do |date|
       hours = WorkHour.default_hours date, nil
       employee.work_hours.create!(date: date, hours: hours)
     end

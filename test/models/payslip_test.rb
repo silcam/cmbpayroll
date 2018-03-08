@@ -1010,7 +1010,8 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, jan18)
 
     assert_equal(6, payslip.days)
-    assert_nil(payslip.hours)
+    #assert_nil(payslip.hours)
+    assert_equal(48.0, payslip.hours)
 
     assert_equal(6, payslip.days_worked(), "worked 6 days")
     assert_equal(48, payslip.hours_worked(), "worked 48 hours")
@@ -1045,15 +1046,15 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(184, payslip.hours_worked())
 
     assert_equal(184, payslip.hours)
-    assert_nil(payslip.days)
+    #assert_nil(payslip.days)
+    assert_equal(23.0, payslip.days)
 
     assert(payslip.worked_full_month?)
     refute(employee.paid_monthly?)
 
     # compute bonusbase
     assert_equal(79475, employee.wage)
-    assert_equal(84365, payslip.compute_bonusbase, "I'm not sure this is really correct")
-    # XXX TODO CHECK THIS.
+    assert_equal(84365, payslip.compute_bonusbase)
   end
 
   test "Overtime Rates" do
@@ -1194,8 +1195,8 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(640, payslip.overtime2_rate)
     assert_equal(689, payslip.overtime3_rate)
 
-    assert_nil(payslip.days)
-    assert_nil(payslip.hours)
+    assert_equal(23.0, payslip.days)
+    assert_equal(193.0, payslip.hours)
 
     # compute bonusbase
     assert_equal(85300, employee.wage, "wage is expected")
@@ -1242,8 +1243,8 @@ class PayslipTest < ActiveSupport::TestCase
     assert(employee.paid_monthly?, "employee is paid monthly")
     assert(payslip.worked_full_month?, "worked full month in jan18")
 
-    assert_nil(payslip.days)
-    assert_nil(payslip.hours)
+    assert_equal(23.0, payslip.days)
+    assert_equal(203.0, payslip.hours)
 
     assert_equal(8, payslip.overtime_hours)
     assert_equal(8, payslip.overtime2_hours)
@@ -1831,7 +1832,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.net_pay, "net should be zero")
   end
 
-  test "Test Vacation Pay Calculations" do
+  test "Test Vacation Pay and Balance Calculations" do
     # config employee
     employee = return_valid_employee()
     employee.uniondues = false;
@@ -1866,6 +1867,112 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert_equal(1.5, payslip.vacation_earned)
     assert_equal(pre_balance - 3,  payslip.vacation_balance)
+  end
+
+  # Could this test *be* any more complicated?
+  # Basically let's run a vacation that spans 3 months
+  # and ensure each slip along the way is copacetic.
+  test "Les grandes grandes vacances" do
+    # config employee
+    employee = return_valid_employee()
+    employee.uniondues = false;
+    employee.amical = 0;
+    employee.contract_start = "1992-01-01"
+
+    period = Period.new(2018,1)
+
+    # I do what I want!
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update year: 2017, month: 12
+    lpp.save!
+
+    assert_equal(period.month, LastPostedPeriod.current.month, "We're in the right period")
+    assert_equal(period.year, LastPostedPeriod.current.year, "We're in the right period!")
+
+    payslip = Payslip.process(employee, period)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    pre_balance = Vacation.balance(employee, period)
+
+    # remove working time for jan 22, 23, 24
+    employee.work_hours.where(date: "2018-01-22").first.delete
+    employee.work_hours.where(date: "2018-01-23").first.delete
+    employee.work_hours.where(date: "2018-01-24").first.delete
+
+    # Vacation add Vacation for 3 days (22, 23, 24 of jan 18)
+    vac = Vacation.new(start_date: '2018-01-22', end_date: '2018-03-03')
+    employee.vacations << vac
+    assert_equal(30, vac.days, "should be 30 days between 22/1/18 and 3/3/18")
+
+    # January (8 Days vacation)
+    payslip = Payslip.process(employee, period)
+    assert_equal(employee.workdays_per_month(period) - 8, payslip.days,
+        "not paid for 8 vacation days in January")
+
+    # Verify payslip vacation totals are correct for Jan
+    jan_days_earned = Vacation.days_earned(employee, period)
+    assert_equal(11.5, jan_days_earned, "earning is correct")
+
+    jan_days_used = Vacation.days_used(employee, period)
+    assert_equal(8, jan_days_used, "8 vac days in Jan")
+
+    jan_days_balance = Vacation.balance(employee, period)
+    jan_balance = pre_balance - jan_days_used
+    assert_equal(jan_balance, jan_days_balance,
+        "Jan balance is correct (11.5 was already added in the pre_balance)")
+
+    # Advance to February (20 Days Vacation - (entire working month))
+    LastPostedPeriod.post_current
+    period = LastPostedPeriod.current
+
+    assert_equal(2, period.month, "We're in the right period")
+    assert_equal(2018, period.next.year, "We're in the right period!")
+    assert_equal(period.month, LastPostedPeriod.current.month, "We're in the right period")
+    assert_equal(period.next.year, LastPostedPeriod.current.year, "We're in the right period!")
+    assert_equal({}, WorkHour.total_hours(employee, period), "no hours worked in Feb")
+
+    payslip = Payslip.process(employee, period)
+
+    vdays = Vacation.days_used(employee, period)
+    wdays = employee.workdays_per_month(period)
+    assert(vdays >= wdays, "feb is a wash yo")
+
+    assert_equal(0, payslip.days, "no days in February")
+    assert_equal(0, payslip.gross_pay, "not paid for February")
+    assert_equal(0, payslip.net_pay, "not paid for February")
+
+    # Verify payslip vacation totals are correct for Feb
+    feb_days_earned = Vacation.days_earned(employee, period)
+    assert_equal(1.5, feb_days_earned, "earning is correct")
+
+    feb_days_used = Vacation.days_used(employee, period)
+    assert_equal(20, feb_days_used, "20 vac days in Feb")
+
+    feb_days_balance = Vacation.balance(employee, period)
+    feb_balance = jan_balance - feb_days_used + feb_days_earned
+    assert_equal(feb_balance, feb_days_balance, "Feb balance is correct")
+
+    # Advance to March (2 Days Vacation)
+    LastPostedPeriod.post_current
+    period = LastPostedPeriod.current
+
+    generate_work_hours_for_range(employee, Date.new(2018,3,4), Date.new(2018,3,31))
+
+    payslip = Payslip.process(employee, period)
+    assert_equal(employee.workdays_per_month(period) - 2, payslip.days,
+        "not paid for 2 vacation days in March")
+
+    # Verify payslip vacation totals are correct for Feb
+    mar_days_earned = Vacation.days_earned(employee, period)
+    assert_equal(1.5, mar_days_earned, "earning is correct")
+
+    mar_days_used = Vacation.days_used(employee, period)
+    assert_equal(2, mar_days_used, "2 vac days in Mar")
+
+    mar_days_balance = Vacation.balance(employee, period)
+    mar_balance = feb_balance - mar_days_used + mar_days_earned
+    assert_equal(mar_balance, mar_days_balance, "Mar balance is correct")
   end
 
   test "Can Compute Wage without Period" do

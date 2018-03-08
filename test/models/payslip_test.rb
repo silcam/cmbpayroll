@@ -1811,6 +1811,26 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(Payslip.cfa_round(net_pay), payslip.net_pay)
   end
 
+  test "If you are on vacation the whole month, you get nothing, not even bonuses" do
+    # https://media.giphy.com/media/nygbstO5bEJmE/giphy.gif
+    # config employee
+    employee = return_valid_employee()
+    employee.uniondues = false;
+    employee.amical = 0;
+    employee.contract_start = "2017-01-01" # no senior bonus
+
+    period = Period.new(2018,1)
+
+    # Vacation the whole month (maybe read a good book?)
+    vac = Vacation.new(start_date: period.start, end_date: period.finish)
+    employee.vacations << vac
+
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(0, payslip.gross_pay, "gross should be zero")
+    assert_equal(0, payslip.net_pay, "net should be zero")
+  end
+
   test "Test Vacation Pay Calculations" do
     # config employee
     employee = return_valid_employee()

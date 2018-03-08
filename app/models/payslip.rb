@@ -301,8 +301,8 @@ class Payslip < ApplicationRecord
   end
 
   def process_taxable_wage(override = false)
-    transportation = employee.transportation ?
-        employee.transportation : 0
+    transportation = employee.transportation ? employee.transportation : 0
+    transportation = 0 if on_vacation_entire_period?
 
     self[:taxable] = ( compute_cnpswage(override) + transportation ).ceil
 
@@ -456,6 +456,10 @@ class Payslip < ApplicationRecord
 
   private
 
+  def on_vacation_entire_period?
+    Vacation.days_used(employee, period) >= employee.workdays_per_month(period)
+  end
+
   def self.process_payslip(employee, period, with_advance)
     # Do all the stuff that is needed to process a payslip for this user
     # TODO: more validation
@@ -514,6 +518,10 @@ class Payslip < ApplicationRecord
     # If we have a CNPS wage, we've already done this.
     if (self[:cnpswage])
       return self[:bonuspay]
+    end
+
+    if (on_vacation_entire_period?)
+      return self[:bonuspay] = 0
     end
 
     bonus_total = 0

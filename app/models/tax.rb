@@ -55,6 +55,8 @@ class Tax < ApplicationRecord
   end
 
   def communal
+    return 0 if (grosspay == 0)
+
     communal_tax = self[:communal]
 
     if self[:communal].nil?

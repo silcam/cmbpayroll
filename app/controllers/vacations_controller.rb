@@ -1,4 +1,7 @@
+require 'payslip_generator'
+
 class VacationsController < ApplicationController
+  include PayslipGenerator
 
   before_action :set_employee, only: [:index, :new, :days_summary]
   before_action :set_vacation, only: [:edit, :update, :destroy]
@@ -52,6 +55,8 @@ class VacationsController < ApplicationController
     @vacation = Vacation.find params[:id]
     @vacation.prep_print
     @vacation.save
+
+    voucher_generator(@vacation)
   end
 
   def edit

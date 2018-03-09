@@ -1,5 +1,4 @@
-class PayslipPdf < Prawn::Document
-  extend ActiveSupport::Concern
+class PayslipPdf < CmbPayrollPdf
 
   attr_reader :payslips
   attr_reader :payslip
@@ -16,6 +15,19 @@ class PayslipPdf < Prawn::Document
     payslips.each_with_index do |ps,index|
       payslip = Payslip.find(ps)
       @payslip = payslip
+
+      @employee = @payslip.employee
+      @start_date = @payslip.period.start
+      @end_date = @payslip.period.finish
+      @tax = @payslip
+      @union_dues = @payslip.union_dues&.to_i
+      @salary_advances = @payslip.salary_advance&.to_i
+
+      @total_deductions = @payslip.first_page_deductions_sum()
+      @total_pay = @payslip.taxable - (
+          @payslip.total_tax +
+          @payslip.union_dues.to_i +
+          @payslip.salary_advance.to_i )
 
       first_page
       second_page
@@ -35,40 +47,7 @@ class PayslipPdf < Prawn::Document
 
     grid([0,0],[3,1]).bounding_box do
 
-      text "Bulletin de Paie", :font_size => 14
-
-      horizontal_line 0, bounds.width
-      move_down 3
-      horizontal_line 0, bounds.width
-
-      move_down 10
-
-      table(
-      [
-          [
-            "Raison sociale",
-            "SIL",
-            { :content => "No. d'immatriculation: #{SystemVariable.value(:immatriculation_no)}", :align => :right }
-          ],
-          [
-            "",
-            "BP 1299, Yaoundé",
-            { :content => "Paie du #{@payslip.period.start} à #{@payslip.period.finish}", :align => :right }
-          ]
-      ],
-      :cell_style => { :padding => 2, :borders => [] },
-      :width => bounds.width )
-
-      move_down 10
-
-      table([
-          ["Nom du travailleur", "#{payslip.employee.full_name}", "Matricule No.", "#{payslip.employee.id}" ],
-          ["Catégoire professionnelle",
-              { :content => "#{payslip.employee.title}", :colspan => 2 },
-           "#{payslip.employee.category_roman}-#{payslip.employee.echelon.upcase}" ],
-      ],
-      :cell_style => { :padding => 2, :borders => [] },
-      :width => bounds.width )
+      header
 
       move_down 10
 
@@ -157,33 +136,8 @@ class PayslipPdf < Prawn::Document
       :width => bounds.width)
 
       move_down 10
-      table([
-            ["<b>Déductions</b>", "", "", "", ""],
-            ["IRPP:", "",
-                { :content => "#{payslip.proportional}", :align => :right }, "", "" ],
-            ["C.A.C.:", "",
-                { :content => "#{payslip.cac}", :align => :right }, "", ""],
-            ["Taxe communale:","",
-                { :content => "#{payslip.communal}", :align => :right }, "", "" ],
-            ["Pension vieillesse 4,2%:", "",
-                { :content => "#{payslip.cnps}", :align => :right }, "", "" ],
-            ["Cotisation syndicale:", "",
-                { :content => "#{payslip.union_dues.to_i}", :align => :right }, "", "" ],
-            ["Crédit foncier:", "",
-                { :content => "#{payslip.ccf}", :align => :right }, "", "" ],
-            ["Audio-visuelle:", "",
-                { :content => "#{payslip.crtv}", :align => :right }, "", "" ],
-            ["Acomptes sur salaire:", "",
-                { :content => "#{payslip.salary_advance.to_i}", :align => :right }, "", "" ],
-            ["<b>MONTANT DES DEDUCTIONS</b>", "",
-                { :content => "#{payslip.first_page_deductions_sum()}", :align => :right },
-                { :content => "-----", :align => :center },
-                { :content => "#{payslip.first_page_deductions_sum()}", :align => :right } ],
-            ["", "", "", "", "" ],
-            ["<b>MONTANT DE LA PAIE</b>", "", "", "", { :content => "#{payslip.taxable - ( payslip.total_tax + payslip.union_dues.to_i + payslip.salary_advance.to_i ) }", :align => :right } ]
-        ],
-        :cell_style => { :padding => 2, :inline_format => true, :border_width => 1, :border_color => "BBBBBB", :borders => [ :bottom ] },
-        :width => bounds.width)
+
+      tax_table
     end
   end
 
@@ -191,14 +145,7 @@ class PayslipPdf < Prawn::Document
   def second_page
     grid([0,2],[3,3]).bounding_box do
 
-      text "Deductions Du Salaire", :align => :center
-      text "31/01/2018", :align => :center
-
-      move_down 10
-
-      text "Nom: #{payslip.employee.full_name}"
-
-      move_down 10
+      second_page_header
 
       data = [
           ["<b>Salaire Net (arrondi)</b>", "", "",
@@ -281,8 +228,8 @@ class PayslipPdf < Prawn::Document
     end
 
     grid([3,2],[3,3]).bounding_box do
-      text "Signature de l'employé:\n#{payslip.period.finish}", :valign => :middle
-      text "#{payslip.employee.full_name} -- #{payslip.period.finish}", :valign => :bottom, :align => :right
+      signature_box
+      date_and_name
     end
 
   end

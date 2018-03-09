@@ -454,6 +454,26 @@ class Payslip < ApplicationRecord
     self[:seniority_bonus_amount] = bonus
   end
 
+  def process_employee_deductions()
+    return if on_vacation_entire_period?
+
+    expenses_hash = employee.deductable_expenses()
+
+    expenses_hash.each do |k,v|
+      amount = employee.send(v)
+
+      if (amount && amount > 0)
+        deduction = Deduction.new
+
+        deduction.note = k
+        deduction.amount = amount
+        deduction.date = period.start
+
+        deductions << deduction
+      end
+    end
+  end
+
   private
 
   def on_vacation_entire_period?
@@ -494,7 +514,7 @@ class Payslip < ApplicationRecord
       self.process_earnings_and_taxes(payslip, employee, period)
 
       self.process_charges(payslip, employee)
-      self.process_employee_deductions(payslip, employee)
+      payslip.process_employee_deductions()
       self.process_loans(payslip, employee, period)
       self.process_payslip_corrections(payslip, employee, period)
 
@@ -582,24 +602,6 @@ class Payslip < ApplicationRecord
       deduction.date = charge.date
 
       payslip.deductions << deduction
-    end
-  end
-
-  def self.process_employee_deductions(payslip, employee)
-    expenses_hash = employee.deductable_expenses()
-
-    expenses_hash.each do |k,v|
-      amount = employee.send(v)
-
-      if (amount && amount > 0)
-        deduction = Deduction.new
-
-        deduction.note = k
-        deduction.amount = amount
-        deduction.date = payslip.period.start
-
-        payslip.deductions << deduction
-      end
     end
   end
 

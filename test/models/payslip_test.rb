@@ -1875,8 +1875,8 @@ class PayslipTest < ActiveSupport::TestCase
   test "Les grandes grandes vacances" do
     # config employee
     employee = return_valid_employee()
-    employee.uniondues = false;
-    employee.amical = 0;
+    employee.uniondues = true;
+    employee.amical = 3000;
     employee.contract_start = "1992-01-01"
 
     period = Period.new(2018,1)

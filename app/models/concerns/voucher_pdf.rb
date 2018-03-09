@@ -13,6 +13,7 @@ class VoucherPdf < CmbPayrollPdf
     @tax = @vacation.get_tax
     @union_dues = 0
     @salary_advances = 0
+    @is_payslip = false
 
     @total_deductions = @tax.total_tax
     @total_pay = (@vacation.vacation_pay - @tax.total_tax).round
@@ -55,7 +56,7 @@ class VoucherPdf < CmbPayrollPdf
   def pay_table
      table([
         ["Nombre de journées",
-            { :content => "#{@vacation.days} à franc #{Vacation.vacation_daily_rate(@vacation.vacation_pay)}", :align => :right },
+            { :content => "#{@vacation.days} à franc #{Vacation.vacation_daily_rate(@vacation.vacation_pay).round(2)}", :align => :right },
             { :content => "soit CFA", :align => :center },
             { :content => "#{@vacation.vacation_pay&.to_i}", :align => :right }]
         ],

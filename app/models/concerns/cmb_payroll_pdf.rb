@@ -7,7 +7,11 @@ class CmbPayrollPdf < Prawn::Document
   attr_reader :tax
 
   def header
-      text "Bulletin de Paie - CONGE", :font_size => 14
+      if (@is_payslip)
+        text "Bulletin de Paie", :font_size => 14
+      else
+        text "Bulletin de Paie - CONGE", :font_size => 14
+      end
 
       horizontal_line 0, bounds.width
       move_down 3

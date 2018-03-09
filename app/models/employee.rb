@@ -56,7 +56,7 @@ class Employee < ApplicationRecord
 
   enum category: { one: 0, two: 1, three: 2, four: 3, five: 4, six: 5, seven: 6,
                     eight: 7, nine: 8, ten: 9, eleven: 10, twelve: 11, thirteen: 12 }, _prefix: :category
-  enum echelon: { a: 14, b: 15, c: 16, d: 17, e: 18, f: 19, g: 20 }, _prefix: :echelon
+  enum echelon: { a: 13, b: 14, c: 15, d: 16, e: 17, f: 18, g: 19 }, _prefix: :echelon
   enum wage_scale: { a: 0, b: 1, c: 2, d: 3, e: 4 }, _prefix: :wage_scale
   enum wage_period: { hourly: 0, monthly: 1 }
   enum location: { nonrfis: 0, rfis: 1, bro: 2, gnro: 3, aviation: 4 }

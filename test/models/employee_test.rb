@@ -153,6 +153,24 @@ class EmployeeTest < ActiveSupport::TestCase
     refute(employee.is_currently_paid?, "inactive is not currently_paid")
   end
 
+  test "echelon enums" do
+    employee = return_valid_employee()
+
+    employee.echelon = "a"
+    assert_equal("a", employee.echelon)
+
+    employee.update! echelon: 14
+    assert_equal("b", employee.echelon)
+
+    employee.wage = 123456
+    employee.update! echelon: 19
+    assert_equal("g", employee.echelon)
+
+    employee.wage = nil
+    employee.echelon = 13
+    assert_equal("a", employee.echelon)
+  end
+
   test "enum_validations" do
     employee = Employee.new(some_valid_params(employment_status: :full_time,
                                               gender: :male,

@@ -921,7 +921,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     assert_equal(108580, employee.wage)
-    assert_equal(5011, employee.daily_rate.round)
+    assert_equal(5008, employee.daily_rate.round)
     # including 12/25
     days_worked = payslip.days_worked
     assert_equal(2, days_worked)
@@ -932,6 +932,7 @@ class PayslipTest < ActiveSupport::TestCase
     # the number of days worked times their daily rate
     assert_equal(
         (employee.wage - ( (workdays - days_worked) * employee.daily_rate)).round,
+        #(days_worked * employee.daily_rate).round,
         payslip.base_pay
     )
 
@@ -1020,8 +1021,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     # compute bonusbase
     assert_equal(79475, employee.wage, "wage is expected")
-    assert_equal(3668, employee.daily_rate.round, "daily rate is computed")
-    assert_equal(17118, payslip.compute_bonusbase, "proper bonus base for 6 days")
+    assert_equal(3672, employee.daily_rate.round, "daily rate is computed")
+    assert_equal(17051, payslip.compute_bonusbase, "proper bonus base for 6 days")
   end
 
   test "BonusBase Hourly Month" do
@@ -1054,7 +1055,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     # compute bonusbase
     assert_equal(79475, employee.wage)
-    assert_equal(84365, payslip.compute_bonusbase)
+    assert_equal(84456, payslip.compute_bonusbase)
   end
 
   test "Overtime Rates" do
@@ -1070,7 +1071,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert_equal(811, employee.otrate, "OT rate is correct")
     assert_equal(879, employee.ot2rate, "OT2 Rate is correct")
-    assert_equal(947, employee.ot3rate, "OT3 Rate is correct")
+    assert_equal(946, employee.ot3rate, "OT3 Rate is correct")
   end
 
   test "BonusBase Hourly Partial Month" do
@@ -1109,7 +1110,7 @@ class PayslipTest < ActiveSupport::TestCase
     # compute bonusbase
     assert_equal(79475, employee.wage, "wage is expected")
     assert_equal(459, employee.hourly_rate.round, "hourly rate is computed")
-    assert_equal(22008, payslip.compute_bonusbase, "proper bonus base for 6 days")
+    assert_equal(22032, payslip.compute_bonusbase, "proper bonus base for 6 days")
   end
 
   test "BonusBase Full Month with OT1" do
@@ -1141,17 +1142,17 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(2, payslip.overtime_hours)
     assert_equal(0, payslip.overtime2_hours)
     assert_equal(0, payslip.overtime3_hours)
-    assert_equal(591, payslip.overtime_rate)
+    assert_equal(590, payslip.overtime_rate)
     assert_equal(640, payslip.overtime2_rate)
     assert_equal(689, payslip.overtime3_rate)
 
     # compute bonusbase
     assert_equal(85300, employee.wage, "wage is expected")
     assert_equal(492, employee.hourly_rate.round, "hourly rate is computed")
-    assert_equal(3937, employee.daily_rate.round, "daily rate is computed")
+    assert_equal(3936, employee.daily_rate.round, "daily rate is computed")
 
     # 85300 + OT hours (2 * (hourlyrate * 1.2)) or
-    assert_equal(86482, payslip.compute_bonusbase, "proper bonus base for 2 OT1")
+    assert_equal(86480, payslip.compute_bonusbase, "proper bonus base for 2 OT1")
   end
 
   test "BonusBase with OT2" do
@@ -1191,7 +1192,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(1, payslip.overtime2_hours)
     assert_equal(0, payslip.overtime3_hours)
 
-    assert_equal(591, payslip.overtime_rate)
+    assert_equal(590, payslip.overtime_rate)
     assert_equal(640, payslip.overtime2_rate)
     assert_equal(689, payslip.overtime3_rate)
 
@@ -1201,7 +1202,7 @@ class PayslipTest < ActiveSupport::TestCase
     # compute bonusbase
     assert_equal(85300, employee.wage, "wage is expected")
     assert_equal(492, employee.hourly_rate.round, "hourly rate is computed")
-    assert_equal(3937, employee.daily_rate.round, "daily rate is computed")
+    assert_equal(3936, employee.daily_rate.round, "daily rate is computed")
 
     expected = (85300 + (8 * (employee.hourly_rate * 1.2).round) +
         (1 * (employee.hourly_rate * 1.3).round)).ceil
@@ -1250,7 +1251,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(8, payslip.overtime2_hours)
     assert_equal(3, payslip.overtime3_hours)
 
-    assert_equal(591, payslip.overtime_rate)
+    assert_equal(590, payslip.overtime_rate)
     assert_equal(640, payslip.overtime2_rate)
     assert_equal(689, payslip.overtime3_rate)
 
@@ -1258,7 +1259,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(85300, employee.wage, "wage is expected")
     assert_equal(employee.wage, payslip.base_pay, "base_pay is good")
     assert_equal(492, employee.hourly_rate.round, "hourly rate is computed")
-    assert_equal(3937, employee.daily_rate.round, "daily rate is computed")
+    assert_equal(3936, employee.daily_rate.round, "daily rate is computed")
 
     expected = (
         85300 + (8 * (employee.otrate)) +

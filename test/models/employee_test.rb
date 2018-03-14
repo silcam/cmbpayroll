@@ -379,7 +379,7 @@ class EmployeeTest < ActiveSupport::TestCase
     # 173 and 1/3
     assert_equal(Rational(520,3), employee.hours_per_month())
     assert_equal(912, employee.hourly_rate.round)
-    assert_equal(7297, employee.daily_rate.round)
+    assert_equal(7296, employee.daily_rate.round)
   end
 
   test "Hourly Rate" do

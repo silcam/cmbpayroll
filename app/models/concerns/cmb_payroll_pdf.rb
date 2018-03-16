@@ -52,7 +52,7 @@ class CmbPayrollPdf < Prawn::Document
   end
 
   def date_and_name
-      text "#{@full_name} -- #{Date.today}", :valign => :bottom, :align => :right
+      text "#{@employee.full_name} -- #{Date.today}", :valign => :bottom, :align => :right
   end
 
   def tax_table

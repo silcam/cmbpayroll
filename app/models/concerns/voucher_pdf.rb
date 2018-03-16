@@ -27,8 +27,8 @@ class VoucherPdf < CmbPayrollPdf
     font_size 8
 
     define_grid(:columns => 4, :rows => 4, :gutter => 25)
-#    grid.show_all
-#    stroke_axis
+    #grid.show_all
+    #stroke_axis
 
     grid([0,0],[3,1]).bounding_box do
       header
@@ -39,15 +39,17 @@ class VoucherPdf < CmbPayrollPdf
 
       tax_table
       move_down 20
-
-      signature_box
     end
 
     grid([0,2],[2,3]).bounding_box do
       second_page
     end
 
-    grid([3,3],[3,3]).bounding_box do
+    grid([2,2],[2,3]).bounding_box do
+      signature_box
+    end
+
+    grid([3,2],[3,3]).bounding_box do
       date_and_name
     end
 

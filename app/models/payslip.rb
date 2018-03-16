@@ -182,8 +182,8 @@ class Payslip < ApplicationRecord
     if (override || (worked_full_month? && employee.paid_monthly?))
       earning.description = "Monthly Wages"
       earning.amount = employee.wage
-    elsif (employee.paid_monthly? && days_worked > 0)
-      earning.description = "Monthly wages less #{days_in_month - days_worked} days @ #{employee.daily_rate}"
+    elsif (employee.paid_monthly? && days > 0)
+      earning.description = "Monthly wages for #{days} days @ #{employee.daily_rate}"
       earning.rate = employee.daily_rate
       earning.amount = daily_earnings
     elsif (!employee.paid_monthly? && hours_worked > 0)
@@ -213,10 +213,17 @@ class Payslip < ApplicationRecord
   end
 
   def daily_earnings
-    days_in_month = employee.workdays_per_month(period)
-    days_worked = WorkHour.days_worked(employee, period)
+    daily_earnings = ( employee.daily_rate * self[:days] ).round
 
-    ( wage - ( ( days_in_month - days_worked ) * employee.daily_rate ) ).round
+    # In the case that they work 22 days in a 23 day month, they
+    # won't be able to make *more* than their monthly salary. It's
+    # still odd that you take a whole day off and get your whole
+    # monthly salary, but at least you're not #winning.
+    if (daily_earnings > wage)
+      wage
+    else
+      daily_earnings
+    end
   end
 
   def hourly_earnings

@@ -931,8 +931,8 @@ class PayslipTest < ActiveSupport::TestCase
     # The full-time employee is paid their wage, times
     # the number of days worked times their daily rate
     assert_equal(
-        (employee.wage - ( (workdays - days_worked) * employee.daily_rate)).round,
-        #(days_worked * employee.daily_rate).round,
+        #(employee.wage - ( (workdays - days_worked) * employee.daily_rate)).round,
+        (payslip.days * employee.daily_rate).round,
         payslip.base_pay
     )
 
@@ -1022,7 +1022,7 @@ class PayslipTest < ActiveSupport::TestCase
     # compute bonusbase
     assert_equal(79475, employee.wage, "wage is expected")
     assert_equal(3672, employee.daily_rate.round, "daily rate is computed")
-    assert_equal(17051, payslip.compute_bonusbase, "proper bonus base for 6 days")
+    assert_equal(22032, payslip.compute_bonusbase, "proper bonus base for 6 days")
   end
 
   test "BonusBase Hourly Month" do
@@ -2168,6 +2168,60 @@ class PayslipTest < ActiveSupport::TestCase
 
     departmental_charge = 1000000
     assert_equal(623654, Payslip.compute_wage_from_departmental_charge(departmental_charge))
+  end
+
+  test "Pay Calculation for Various Days" do
+    employee = return_valid_employee()
+    period = Period.new(2018,2) # Feb 2018 has 20 working days.
+    assert_equal(0, WorkHour.days_worked(employee, period))
+
+    generate_work_hours employee, period
+    assert_equal(20, WorkHour.days_worked(employee, period))
+
+    # Vacation for 5 days. Go Camping?
+    vac = Vacation.new(start_date: '2018-02-05', end_date: '2018-02-09')
+    employee.vacations << vac
+
+    days_worked = WorkHour.days_worked(employee, period)
+    assert_equal(15, days_worked)
+
+    hours = {
+      "2018-02-21" => {hours: 0.0}
+    }
+    WorkHour.update(employee, hours)
+
+    days_worked = WorkHour.days_worked(employee, period)
+    assert_equal(14, days_worked)
+
+    payslip = Payslip.process(employee, period)
+    assert_equal(days_worked, payslip.days_worked)
+
+    daily_rate = employee.daily_rate
+    assert_equal((daily_rate * days_worked).round, payslip.base_pay)
+  end
+
+  test "22 days in 23 day month still gets you wage" do
+    employee = return_valid_employee()
+    period = Period.new(2018,5) # May 2018 has 23 working days.
+    assert_equal(0, WorkHour.days_worked(employee, period))
+
+    generate_work_hours employee, period
+    assert_equal(23, WorkHour.days_worked(employee, period))
+
+    hours = { "2018-05-17" => {hours: 0.0} }
+    WorkHour.update(employee, hours)
+
+    days_worked = WorkHour.days_worked(employee, period)
+    assert_equal(22, days_worked, "all days except the 17th")
+
+    payslip = Payslip.process(employee, period)
+    assert_equal(days_worked, payslip.days)
+
+    daily_rate = employee.daily_rate
+
+    assert((daily_rate * days_worked).round > employee.wage,
+        "this employee would've made more money")
+    assert_equal(employee.wage, payslip.base_pay, "but they didn't")
   end
 
   private

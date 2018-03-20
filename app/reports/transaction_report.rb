@@ -9,8 +9,8 @@ SELECT
   allitems.note,
   allitems.amount,
   allitems.unit,
-  d.id as dept_id,
-  d.name as dept_name
+  d.name as dept_name,
+  d.id as dept_id
 FROM
   people p, employees e
   LEFT JOIN payslips ps ON ps.employee_id = e.id
@@ -19,17 +19,21 @@ FROM
       FROM deductions
       WHERE upper(note) NOT IN ('AMICAL','UNION')
     UNION ALL
-      SELECT payslip_id, 'H' as type, description, hours, 'Hours' as unit, created_at
+      SELECT
+        payslip_id, 'H' as type, 'Overtime Hours' as description,
+        SUM(hours) as hours, 'Hours' as unit, MAX(created_at)
       FROM earnings
       WHERE
         upper(description) like 'OT%HOURS' AND
-        hours > 0
+        hours > 0 AND
+        payslip_id is not null
+      GROUP BY payslip_id
     UNION ALL
       SELECT payslip_id, 'E' as type, description, amount, 'CFA' as unit, created_at
       FROM earnings
       WHERE
         is_bonus = 'f' AND
-        upper(description) NOT IN ('MONTHLY WAGES', 'TRANSPORT','AMICAL') AND
+        upper(description) NOT IN ('MONTHLY WAGES','TRANSPORT','AMICAL') AND
         upper(description) NOT LIKE 'OT%' AND
         amount > 0
     UNION ALL

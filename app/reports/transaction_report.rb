@@ -63,6 +63,11 @@ WHERE
     custom_headers.fetch(column_name.to_sym) { super }
   end
 
+  def format_date(value)
+    date = DateTime.strptime(value, '%Y-%m-%d %H:%M:%S')
+    date.strftime('%Y-%m-%d')
+  end
+
   def format_amount(value)
     cfa_nofcfa(value)
   end

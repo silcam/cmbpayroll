@@ -4,9 +4,9 @@ class DipesInternalReport < CMBReport
 
     select =<<-SELECTSTATEMENT
 SELECT
+  CONCAT(p.last_name, ' ', p.first_name) as employee_name,
   e.dipe as dipe,
   SUBSTRING(e.cnps from 0 for 9) as cnps_no,
-  CONCAT(p.last_name, ' ', p.first_name) as employee_name,
   e.id as employee_id,
   DATE_PART('days', DATE_TRUNC('month',concat(ps.period_year,'-',ps.period_month,'-01')::date) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL) as days,
   ps.gross_pay as salaire_brut,

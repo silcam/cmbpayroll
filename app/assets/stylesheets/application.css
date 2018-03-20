@@ -35,6 +35,22 @@
   text-align:right;
 }
 
+/* The first column, usually the name
+   should be left aligned, which is
+   easier to read for text. Numbers are
+   easier to read when right aligned  */
+.report th:nth-child(1) {
+  text-align:left;
+}
+
+/* The first column, usually the name
+   should be left aligned, which is
+   easier to read for text. Numbers are
+   easier to read when right aligned  */
+.report td:nth-child(1) {
+  text-align:left;
+}
+
 .report td {
   text-transform:uppercase;
 }

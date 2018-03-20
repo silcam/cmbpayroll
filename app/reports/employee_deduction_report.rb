@@ -3,19 +3,19 @@ class EmployeeDeductionReport < CMBReport
   def sql
     select =<<-SELECTSTATEMENT
 SELECT
-  CONCAT(p.first_name, ' ', p.last_name) as Employee_Name,
+  CONCAT(p.last_name, ' ', p.first_name) as Employee_Name,
   e.id,
   ps.gross_pay,
-  dsa.amount as Salary_Advance,
+  SUM(dsa.amount) as Salary_Advance,
   ps.total_tax,
-  dun.amount as Union,
-  ps.net_pay,
-  dlo.amount as Loan_Payment,
-  dph.amount as Photocopies,
-  dte.amount as Telephone,
-  dwa.amount as Utilities,
-  dad.amount as AMICAL,
-  dot.amount as Other
+  SUM(dun.amount) as Union,
+  SUM(dlo.amount) as Loan_Payment,
+  SUM(dph.amount) as Photocopies,
+  SUM(dte.amount) as Telephone,
+  SUM(dwa.amount) as Utilities,
+  SUM(dad.amount) as AMICAL,
+  SUM(dot.amount) as Other,
+  ps.net_pay
 FROM
   people p,
   employees e,
@@ -50,8 +50,16 @@ WHERE
   e.id = ps.employee_id AND
   ps.period_year = :year AND
   ps.period_month = :month
+GROUP BY
+  ps.id,
+  p.first_name,
+  p.last_name,
+  e.id,
+  ps.gross_pay,
+  ps.total_tax,
+  ps.net_pay
 ORDER BY
-  ps.id DESC;
+  p.last_name ASC;
     SELECTSTATEMENT
   end
 
@@ -61,56 +69,54 @@ ORDER BY
 
   def format_header(column_name)
     custom_headers = {
-      children: 'No. Child',
-      emp_number: 'Emp No',
-      m_c: 'M/C',
-      cat_ech: 'Cat / Ech.'
+      taxable: 'Gross Wage',
+      net_pay: 'Cash Pay'
     }
     custom_headers.fetch(column_name.to_sym) { super }
   end
 
   def format_gross_pay(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_salary_advance(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_total_tax(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_union(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_net_pay(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_loan_payment(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_photocopies(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_telephone(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_utilities(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_amical(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
   def format_other(value)
-    cfa(value)
+    cfa_nofcfa(value)
   end
 
 end

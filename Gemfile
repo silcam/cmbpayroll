@@ -58,6 +58,10 @@ gem 'roman-numerals', '~> 0.3.0'
 # Date Validation
 # gem 'validates_timeliness', '~>4.0'
 
+# Declare I want a specific version of this gem.
+# 2.2.1 is a fixed version
+gem 'loofah', '~> 2.2.1'
+
 group :development, :test do
   # Use Puma as the app server in development
   gem 'puma', '~> 3.7'

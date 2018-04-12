@@ -90,8 +90,14 @@ class VacationTest < ActiveSupport::TestCase
 
   test "Overlapped work hours get clobbered" do
     lukes_day_off = @luke.work_hours.find_by(date: '2017-08-08')
-    @luke.vacations << Vacation.new(start_date: '2017-08-08', end_date: '2017-08-08')
+    assert(lukes_day_off, "should exist")
+
+    @vacation = Vacation.new(employee_id: @luke.id, start_date: '2017-08-08', end_date: '2017-08-08')
+    @vacation.save!
+
     assert_nil WorkHour.find_by id: lukes_day_off.id
+    lukes_day_off = @luke.work_hours.find_by(date: '2017-08-08')
+    assert_nil(lukes_day_off)
   end
 
   test "No Overlapped Work Hours" do

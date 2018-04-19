@@ -1,0 +1,357 @@
+report.set_layout tlf: 'reports/dipes_internal_report', layout_options: { default: true }
+
+@current_page = nil
+@item_page = nil
+@sal_brut_total = 0
+@sal_brut_grand_total = 0
+
+@total_a01_a02_taxable = 0
+
+@sal_brut_total = 0
+@sal_tax_total = 0
+@mon_total_total = 0
+@mon_total_plafonne_total = 0
+@tax_prop_total = 0
+@tax_prog_total = 0
+@tax_common_total = 0
+@tax_cac_total = 0
+@tax_cnps_total = 0
+@credit_foncier_total = 0
+@tax_crtv_total = 0
+@tax_total = 0
+@sal_brut_grand_total = 0
+@sal_tax_grand_total = 0
+@mon_total_grand_total = 0
+@mon_total_plafonne_grand_total = 0
+@tax_prop_grand_total = 0
+@tax_prog_grand_total = 0
+@tax_common_grand_total = 0
+@tax_cac_grand_total = 0
+@tax_cnps_grand_total = 0
+@credit_foncier_grand_total = 0
+@tax_crtv_grand_total = 0
+@tax_grand_total = 0
+
+@ranges = {
+  "lt_50" => 0..50000,
+  "50" => 50000..99999,
+  "100" => 100000..199999,
+  "200" => 200000..299999,
+  "300" => 300000..399999,
+  "400" => 400000..499999,
+  "500" => 500000..599999,
+  "600" => 600000..699999,
+  "700" => 700000..799999,
+  "800" => 800000..899999,
+  "900" => 900000..999999,
+  "gt_1000" => 1000000..Float::INFINITY
+}
+
+@av_counts = {
+  "lt_50" => 0,
+  "50" => 0,
+  "100" => 0,
+  "200" => 0,
+  "300" => 0,
+  "400" => 0,
+  "500" => 0,
+  "600" => 0,
+  "700" => 0,
+  "800" => 0,
+  "900" => 0,
+  "gt_1000" => 0
+}
+
+def total_av_counts
+  total = 0
+
+  @av_counts.each do |name,val|
+    total += val
+  end
+
+  total
+end
+
+def bucket_counts(value)
+  @ranges.each do |name,range|
+    if (range.cover?(value))
+      @av_counts[name] += 1
+    end
+  end
+end
+
+def add_summary(list)
+
+  # Blank line
+  list.add_row() do |row|
+    row.item(:group_separator_line).show
+  end
+
+  # group summary row
+  list.add_row(
+    salaire_brut: number_to_currency(@sal_brut_total, unit: '', locale: :cm),
+    salaire_taxable: number_to_currency(@sal_tax_total, unit: '', locale: :cm),
+    montant_total: number_to_currency(@mon_total_total, unit: '', locale: :cm),
+    tax_prop: number_to_currency(@tax_prop_total, unit: '', locale: :cm),
+    tax_progress: number_to_currency(@tax_prog_total, unit: '', locale: :cm),
+    tax_common: number_to_currency(@tax_common_total, unit: '', locale: :cm),
+    tax_cac: number_to_currency(@tax_cac_total, unit: '', locale: :cm),
+    tax_cnps: number_to_currency(@tax_cnps_total, unit: '', locale: :cm),
+    credit_foncier: number_to_currency(@credit_foncier_total, unit: '', locale: :cm),
+    tax_crtv: number_to_currency(@tax_crtv_total, unit: '', locale: :cm),
+    total_tax: number_to_currency(@tax_total, unit: '', locale: :cm)
+  ) do |row|
+    row.item(:group_total_header).show
+    row.item(:group_separator_line_bottom).hide
+  end
+
+  # Blank line
+  list.add_row() do |row|
+    row.item(:group_total_header).hide
+    row.item(:group_separator_line_bottom).hide
+  end
+
+  # running total summary row
+  list.add_row(
+    salaire_brut: number_to_currency(@sal_brut_grand_total, unit: '', locale: :cm),
+    salaire_taxable: number_to_currency(@sal_tax_grand_total, unit: '', locale: :cm),
+    montant_total: number_to_currency(@mon_total_grand_total, unit: '', locale: :cm),
+    tax_prop: number_to_currency(@tax_prop_grand_total, unit: '', locale: :cm),
+    tax_progress: number_to_currency(@tax_prog_grand_total, unit: '', locale: :cm),
+    tax_common: number_to_currency(@tax_common_grand_total, unit: '', locale: :cm),
+    tax_cac: number_to_currency(@tax_cac_grand_total, unit: '', locale: :cm),
+    tax_cnps: number_to_currency(@tax_cnps_grand_total, unit: '', locale: :cm),
+    credit_foncier: number_to_currency(@credit_foncier_grand_total, unit: '', locale: :cm),
+    tax_crtv: number_to_currency(@tax_crtv_grand_total, unit: '', locale: :cm),
+    total_tax: number_to_currency(@tax_grand_total, unit: '', locale: :cm)
+  ) do |row|
+    row.item(:running_grand_total).show
+  end
+
+  # Blank line
+  list.add_row() do |row|
+    row.item(:group_total_header).hide
+    row.item(:group_separator_line_bottom).hide
+  end
+
+  @current_page = @item_page
+
+  @sal_brut_total = 0
+  @sal_tax_total = 0
+  @mon_total_total = 0
+  @mon_total_plafonne_total = 0
+  @tax_prop_total = 0
+  @tax_prog_total = 0
+  @tax_common_total = 0
+  @tax_cac_total = 0
+  @tax_cnps_total = 0
+  @credit_foncier_total = 0
+  @tax_crtv_total = 0
+  @tax_total = 0
+
+  # make a new page.
+  list.page_break
+
+end
+
+report.on_page_create do |page|
+  page.item(:report_period).value = "January 2018"
+end
+
+
+# 1st page
+report.list("dipes_group") do |list|
+
+  @report.results.body.each do |t|
+
+    x_dipes_no = t[0].to_s
+    x_group = t[1].to_s
+    x_cnps_no = t[2].to_s
+    x_employee_name = t[3].to_s
+    x_employee_id = t[4].to_i
+    x_year = t[5].to_s
+    x_salaire_brut = t[6].to_i
+    x_salaire_taxable = t[7].to_i
+    x_montant_total = t[8].to_i
+    x_montant_total_plafonne = t[9].to_i
+    x_tax_prop = t[10].to_i
+    x_tax_progress = t[11].to_i
+    x_tax_cac = t[12].to_i
+    x_tax_cnps = t[13].to_i
+    x_tax_common = t[14].to_i
+    x_credit_foncier = t[15].to_i
+    x_tax_crtv = t[16].to_i
+    x_total_tax = t[17].to_i
+
+    if x_group.nil?
+      @item_page = "X"
+    else
+      @item_page = x_group
+    end
+
+    @current_page = @item_page if @current_page.nil?
+
+    unless @current_page == @item_page
+      add_summary(list)
+    end
+
+    @current_page = @item_page
+
+    list.add_row(
+      dipes_no: x_dipes_no,
+      cnps_no: x_cnps_no,
+      employee_name: x_employee_name,
+      employee_id: x_employee_id,
+      salaire_brut: number_to_currency(x_salaire_brut, unit: '', locale: :cm),
+      salaire_taxable: number_to_currency(x_salaire_taxable, unit: '', locale: :cm),
+      montant_total: number_to_currency(x_montant_total, unit: '', locale: :cm),
+      tax_prop: number_to_currency(x_tax_prop, unit: '', locale: :cm),
+      tax_progress: number_to_currency(x_tax_progress, unit: '', locale: :cm),
+      tax_common: number_to_currency(x_tax_common, unit: '', locale: :cm),
+      tax_cac: number_to_currency(x_tax_cac, unit: '', locale: :cm),
+      tax_cnps: number_to_currency(x_tax_cnps, unit: '', locale: :cm),
+      credit_foncier: number_to_currency(x_credit_foncier, unit: '', locale: :cm),
+      tax_crtv: number_to_currency(x_tax_crtv, unit: '', locale: :cm),
+      total_tax: number_to_currency(x_total_tax, unit: '', locale: :cm)
+    )
+
+    bucket_counts(x_salaire_brut)
+
+    if x_dipes_no == "A01" || x_dipes_no == "A02"
+      @total_a01_a02_taxable += x_montant_total
+    end
+
+    # Sums sums sums.
+    @sal_brut_total += x_salaire_brut
+    @sal_brut_grand_total += x_salaire_brut
+
+    @sal_tax_total += x_salaire_taxable
+    @sal_tax_grand_total += x_salaire_taxable
+
+    @mon_total_total += x_montant_total
+    @mon_total_grand_total += x_montant_total
+
+    @mon_total_plafonne_total += x_montant_total_plafonne
+    @mon_total_plafonne_grand_total += x_montant_total_plafonne
+
+    @tax_prop_total += x_tax_prop
+    @tax_prop_grand_total += x_tax_prop
+
+    @tax_prog_total += x_tax_progress
+    @tax_prog_grand_total += x_tax_progress
+
+    @tax_common_total += x_tax_common
+    @tax_common_grand_total += x_tax_common
+
+    @tax_cac_total += x_tax_cac
+    @tax_cac_grand_total += x_tax_cac
+
+    @tax_cnps_total += x_tax_cnps
+    @tax_cnps_grand_total += x_tax_cnps
+
+    @credit_foncier_total += x_credit_foncier
+    @credit_foncier_grand_total += x_credit_foncier
+
+    @tax_crtv_total += x_tax_crtv
+    @tax_crtv_grand_total += x_tax_crtv
+
+    @tax_total += x_total_tax
+    @tax_grand_total += x_total_tax
+
+  end
+
+  add_summary(list)
+
+  # GRAND FINAL FOOTER
+  list.on_footer_insert do |footer|
+    footer.item(:total_gross_wages).value(number_to_currency(@sal_brut_grand_total, unit: '', locale: :cm))
+    footer.item(:total_taxable_wages).value(number_to_currency(@sal_tax_grand_total, unit: '', locale: :cm))
+    footer.item(:total_cnps_wages).value(number_to_currency(@mon_total_grand_total, unit: '', locale: :cm))
+    footer.item(:total_cnps_plafonne).value(number_to_currency(@mon_total_plafonne_grand_total, unit: '', locale: :cm))
+    footer.item(:total_surtax_progressive).value(number_to_currency(@tax_prog_grand_total, unit: '', locale: :cm))
+    footer.item(:total_cac_10).value(number_to_currency((@tax_prog_grand_total * 0.1).round, unit: '', locale: :cm)) # VAR
+    footer.item(:total_tax_proportional).value(number_to_currency(@tax_prop_grand_total, unit: '', locale: :cm))
+    footer.item(:total_cac_10_2).value(number_to_currency((@tax_prop_grand_total * 0.1).round, unit: '', locale: :cm)) # VAR
+    footer.item(:total_tax_communal).value(number_to_currency(@tax_common_grand_total, unit: '', locale: :cm))
+
+    this_tax_total = @tax_prop_grand_total + (@tax_prop_grand_total * 0.1).round +
+                     @tax_prog_grand_total + (@tax_prog_grand_total * 0.1).round +
+                     @tax_common_grand_total
+    versement_tresor = 0
+
+    footer.item(:total_total).value(number_to_currency(this_tax_total, unit: '', locale: :cm))
+    footer.item(:versement_tresor).value(number_to_currency(versement_tresor, unit: '', locale: :cm))
+    footer.item(:difference_collected).value(number_to_currency((this_tax_total - versement_tresor), unit: '', locale: :cm))
+
+    # CNPS Summary
+    footer.item(:total_prestations_familiales).value(number_to_currency((@mon_total_plafonne_grand_total * 0.07).round, unit: '', locale: :cm)) # VAR
+    footer.item(:total_pension_vieillesse).value(number_to_currency((@mon_total_plafonne_grand_total * 0.084).round, unit: '', locale: :cm)) # VAR
+    footer.item(:total_accident_du_travail).value(number_to_currency((@mon_total_grand_total * 0.0175).round, unit: '', locale: :cm)) # VAR
+
+    # Credit Foncier Summary
+    cf_employer_contributions_total = (@sal_brut_grand_total * 0.025).round
+    cf_subtotal_total = ((@sal_brut_grand_total - @total_a01_a02_taxable) * 0.01).round # VAR
+    cf_total = cf_employer_contributions_total - cf_subtotal_total
+
+    footer.item(:cf_employer_contributions).value(number_to_currency(@sal_brut_grand_total, unit: '', locale: :cm))
+    footer.item(:cf_employer_taux).value("2.50%") # VAR
+    footer.item(:cf_employer_contributions_total).value(number_to_currency(cf_employer_contributions_total, unit: '', locale: :cm)) # VAR
+
+    footer.item(:cf_temporary).value(number_to_currency(@total_a01_a02_taxable, unit: '', locale: :cm))
+
+    footer.item(:cf_subtotal).value(number_to_currency(@sal_brut_grand_total - @total_a01_a02_taxable, unit: '', locale: :cm)) # VAR
+    footer.item(:cf_subtotal_taux).value("1.00%")
+    footer.item(:cf_subtotal_total).value(number_to_currency(cf_subtotal_total, unit: '', locale: :cm)) # VAR
+    footer.item(:cf_total).value(number_to_currency(cf_total, unit: '', locale: :cm)) # VAR
+
+    # AV Summaries
+    footer.item(:less_than_50).value(@av_counts["lt_50"])
+    footer.item(:v50_to_100).value(@av_counts["50"])
+    footer.item(:v100_to_200).value(@av_counts["100"])
+    footer.item(:v200_to_300).value(@av_counts["200"])
+    footer.item(:v300_to_400).value(@av_counts["300"])
+    footer.item(:v400_to_500).value(@av_counts["400"])
+    footer.item(:v500_to_600).value(@av_counts["500"])
+    footer.item(:v600_to_700).value(@av_counts["600"])
+    footer.item(:v700_to_800).value(@av_counts["700"])
+    footer.item(:v800_to_900).value(@av_counts["800"])
+    footer.item(:v900_to_1000).value(@av_counts["900"])
+    footer.item(:v1000_or_greater).value(@av_counts["gt_1000"])
+
+    # AV Summaries
+    footer.item(:less_than_50_tot).value(number_to_currency((@av_counts["lt_50"] * 0).round, unit: '', locale: :cm))
+    footer.item(:v50_to_100_tot).value(number_to_currency((@av_counts["50"] * 750).round, unit: '', locale: :cm))
+    footer.item(:v100_to_200_tot).value(number_to_currency((@av_counts["100"] * 1950).round, unit: '', locale: :cm))
+    footer.item(:v200_to_300_tot).value(number_to_currency((@av_counts["200"] * 3250).round, unit: '', locale: :cm))
+    footer.item(:v300_to_400_tot).value(number_to_currency((@av_counts["300"] * 4550).round, unit: '', locale: :cm))
+    footer.item(:v400_to_500_tot).value(number_to_currency((@av_counts["400"] * 5850).round, unit: '', locale: :cm))
+    footer.item(:v500_to_600_tot).value(number_to_currency((@av_counts["500"] * 7150).round, unit: '', locale: :cm))
+    footer.item(:v600_to_700_tot).value(number_to_currency((@av_counts["600"] * 8450).round, unit: '', locale: :cm))
+    footer.item(:v700_to_800_tot).value(number_to_currency((@av_counts["700"] * 9750).round, unit: '', locale: :cm))
+    footer.item(:v800_to_900_tot).value(number_to_currency((@av_counts["800"] * 11050).round, unit: '', locale: :cm))
+    footer.item(:v900_to_1000_tot).value(number_to_currency((@av_counts["900"] * 12350).round, unit: '', locale: :cm))
+    footer.item(:v1000_or_greater_tot).value(number_to_currency((@av_counts["gt_1000"] * 13000).round, unit: '', locale: :cm))
+
+    # AV Summaries
+    total_av_tot = (
+      (@av_counts["lt_50"] * 0).round +
+      (@av_counts["50"] * 750).round +
+      (@av_counts["100"] * 1950).round +
+      (@av_counts["200"] * 3250).round +
+      (@av_counts["300"] * 4550).round +
+      (@av_counts["400"] * 5850).round +
+      (@av_counts["500"] * 7150).round +
+      (@av_counts["600"] * 8450).round +
+      (@av_counts["700"] * 9750).round +
+      (@av_counts["800"] * 11050).round +
+      (@av_counts["900"] * 12350).round +
+      (@av_counts["gt_1000"] * 13000).round)
+
+    # AV Summaries
+    footer.item(:total_av).value(total_av_counts)
+    footer.item(:total_av_tot).value(number_to_currency(total_av_tot, unit: '', locale: :cm))
+    footer.item(:difference_collected_av).value(number_to_currency((@tax_crtv_grand_total - total_av_tot), unit: '', locale: :cm))
+
+  end
+
+end

@@ -50,6 +50,8 @@ gem 'access-granted', '~>1.2.0'
 gem 'audited', '~> 4.5'
 
 # Reports
+gem 'thinreports', '~> 0.10.2'
+gem 'thinreports-rails', '~> 0.4.0'
 gem 'dossier', '~> 2.13', '>= 2.13.1'
 gem 'fixy', '~> 0.0.8'
 

@@ -35,9 +35,10 @@ class ReportsController < ApplicationController
       name: I18n.t(:Dipes_government_report, scope: "reports"),
       instance: Proc.new{|p| DipesGovernmentReport.new()}
     },
-    'dipe_internet' => {
+    'dipe_internal' => {
       name: I18n.t(:Dipes_internal_report, scope: "reports"),
-      instance: Proc.new{|p| DipesInternalReport.new()}
+      instance: Proc.new{|p| DipesInternalReport.new()},
+      format: :pdf
     },
     'employee_advance_loan' => {
       name: I18n.t(:Employee_advance_and_loan_report, scope: "reports"),
@@ -106,7 +107,11 @@ class ReportsController < ApplicationController
 
       @report_description = @report.report_description
 
-      respond_with(@report)
+      if REPORTS[params[:report]][:format] == :pdf
+        render @report.report_name, formats: :pdf
+      else
+        respond_with(@report)
+      end
     else
       redirect_to "/reports/", status: 302
     end

@@ -598,10 +598,7 @@ class Payslip < ApplicationRecord
   end
 
   def self.process_charges(payslip, employee)
-    employee.charges.each do |charge|
-      next if (charge.date < payslip.period.start ||
-                  charge.date > payslip.period.finish)
-
+    employee.charges.for_period(payslip.period).each do |charge|
       deduction = Deduction.new
 
       deduction.note = charge.note

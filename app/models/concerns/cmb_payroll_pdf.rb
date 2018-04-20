@@ -7,35 +7,44 @@ class CmbPayrollPdf < Prawn::Document
   attr_reader :tax
 
   def header
-      if (@is_payslip)
-        text "Bulletin de Paie", :font_size => 14
-      else
-        text "Bulletin de Paie - CONGE", :font_size => 14
+
+      image "#{Rails.root}/app/assets/images/2014_sil_logo.png",
+        :width => 42, :height => 50
+
+      bounding_box([45, cursor + 50], :width => 320, :height => 50) do
+
+        if (@is_payslip)
+          font_size(14) do
+            text "Bulletin de Paie"
+          end
+        else
+          font_size(14) do
+            text "Bulletin de Paie - CONGE"
+          end
+        end
+
+        table(
+        [
+            [
+              "Raison sociale",
+              "SIL",
+              { :content => "No. d'immatriculation: #{SystemVariable.value(:immatriculation_no)}", :align => :right }
+            ],
+            [
+              "",
+              "BP 1299, Yaoundé",
+              { :content => "Paie du #{@start_date} à #{@end_date}", :align => :right }
+            ]
+        ],
+        :cell_style => { :padding => 2, :borders => [] },
+        :width => bounds.width )
+
       end
 
-      horizontal_line 0, bounds.width
-      move_down 3
-      horizontal_line 0, bounds.width
+      #move_down 10
 
-      move_down 10
 
-      table(
-      [
-          [
-            "Raison sociale",
-            "SIL",
-            { :content => "No. d'immatriculation: #{SystemVariable.value(:immatriculation_no)}", :align => :right }
-          ],
-          [
-            "",
-            "BP 1299, Yaoundé",
-            { :content => "Paie du #{@start_date} à #{@end_date}", :align => :right }
-          ]
-      ],
-      :cell_style => { :padding => 2, :borders => [] },
-      :width => bounds.width )
-
-      move_down 10
+      #move_down 10
 
       table([
           ["Nom du travailleur", "#{@employee.full_name}", "Matricule No.", "#{@employee.id}" ],
@@ -86,7 +95,9 @@ class CmbPayrollPdf < Prawn::Document
   end
 
   def second_page_header
-    text "Deductions Du Salaire", :align => :center
+    font_size(12) do
+      text "Deductions Du Salaire", :align => :center
+    end
     text "#{@end_date}", :align => :center
 
     move_down 10

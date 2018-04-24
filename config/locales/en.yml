@@ -3,6 +3,7 @@ en:
   date:
     formats:
       name: "%B %Y"
+      name_shortyear: "%B %y"
       short: "%d %b %Y"
       monthname: "%B"
   time:

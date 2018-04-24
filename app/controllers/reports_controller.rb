@@ -33,7 +33,8 @@ class ReportsController < ApplicationController
     },
     'dipes_government' => {
       name: I18n.t(:Dipes_government_report, scope: "reports"),
-      instance: Proc.new{|p| DipesGovernmentReport.new()}
+      instance: Proc.new{|p| DipesGovernmentReport.new()},
+      format: :pdf
     },
     'dipe_internal' => {
       name: I18n.t(:Dipes_internal_report, scope: "reports"),

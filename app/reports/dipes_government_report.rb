@@ -4,8 +4,23 @@ class DipesGovernmentReport < CMBReport
 
     select =<<-SELECTSTATEMENT
 SELECT
+  CASE
+    WHEN dipe is null OR dipe = '' THEN
+      CASE
+        WHEN ps.taxable < 25000 THEN 'A01'
+        ELSE 'A02'
+      END
+    ELSE dipe
+  END as DIPENo,
+  CASE
+    WHEN dipe='A01' OR dipe='A02' OR dipe='' OR dipe is null THEN '0'
+    ELSE substr(dipe,1,1)
+  END as Group,
   e.cnps as matricule_cnps,
-  SUBSTR(replace(e.cnps,'-',''),11,11) as cle,
+  CASE
+    WHEN e.cnps is null THEN ''
+    ELSE SUBSTR(replace(e.cnps,'-',''),11,11)
+  END as cle,
   DATE_PART('days', DATE_TRUNC('month',concat(ps.period_year,'-',ps.period_month,'-01')::date) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL) as nb_jour_2,
   ps.gross_pay as salaire_brut_3,
   '' as elements_exception_4,
@@ -22,13 +37,25 @@ FROM
   payslips ps
     INNER JOIN employees e ON ps.employee_id = e.id
     INNER JOIN people p ON p.id = e.person_id
-    INNER JOIN dipe_codes dc ON e.dipe = dc.line
 WHERE
   ps.period_year = :year AND
   ps.period_month = :month
 ORDER BY
-  dipe ASC
+  dipeno,matricule_cnps ASC
     SELECTSTATEMENT
+  end
+
+  def dipe_by_page(page)
+    SystemVariable.value(:"dipe_page_#{page}")
+  end
+
+  def feuille
+    feuille_month = start().strftime("%-m").to_i
+    if (feuille_month < 7)
+      feuille_month += 6
+    else
+      feuille_month -= 6
+    end
   end
 
   def report_month
@@ -50,42 +77,6 @@ ORDER BY
 
   def format_days(value)
     value.to_i
-  end
-
-  def format_salaire_brut(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_salaire_taxable(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_montant_total(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_tax_prop(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_cac(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_cnps(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_credit_foncier(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_audio_visual(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_total_taxes(value)
-    cfa_nofcfa(value)
   end
 
 end

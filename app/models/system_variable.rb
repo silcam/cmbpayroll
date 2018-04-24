@@ -46,7 +46,12 @@ class SystemVariable < ApplicationRecord
     communal_low: 166,
     communal_high: 250,
     raise_interval: 4,
-    immatriculation_no: '5087501B'
+    immatriculation_no: '5087501B',
+    dipe_page_1: '68029-E',
+    dipe_page_2: '68030-X',
+    dipe_page_3: '68031-P',
+    dipe_page_4: '68032-J',
+    dipe_page_5: '68033-C'
   }
 
   def self.value(key)

@@ -1,0 +1,244 @@
+report.set_layout tlf: 'reports/dipes_government_report', layout_options: { default: true }
+
+@item_page = nil
+@page_no = 1
+
+@salaire_taxable_total = 0
+@salaire_cotisable_total = 0
+@salaire_cotisable_plafonne_total = 0
+@retenue_taxe_prop_total = 0
+@retenue_surt_prog_total = 0
+@centime_add_com_total = 0
+@retenue_taxe_com_total = 0
+
+@salaire_taxable_last_total = 0
+@salaire_cotisable_last_total = 0
+@salaire_cotisable_plafonne_last_total = 0
+@retenue_taxe_prop_last_total = 0
+@retenue_surt_prog_last_total = 0
+@centime_add_com_last_total = 0
+@retenue_taxe_com_last_total = 0
+
+@salaire_taxable_grand_total = 0
+@salaire_cotisable_grand_total = 0
+@salaire_cotisable_plafonne_grand_total = 0
+@retenue_taxe_prop_grand_total = 0
+@retenue_surt_prog_grand_total = 0
+@centime_add_com_grand_total = 0
+@retenue_taxe_com_grand_total = 0
+
+def summary_vertical_rows(row)
+  (2..5).each do |i|
+    row.item(:"vertical_line_#{i}").hide
+  end
+  (6..13).each do |i|
+    row.item(:"vertical_line_#{i}").show
+  end
+  row.item(:vertical_line_14).hide
+end
+
+def add_summary(list, new_page=true)
+  # Totaux
+  list.add_row(
+        salaire_taxable: number_to_currency(@salaire_taxable_total, unit: '', locale: :cm),
+        total: number_to_currency(@salaire_cotisable_total, unit: '', locale: :cm),
+        plafonne: number_to_currency(@salaire_cotisable_plafonne_total, unit: '', locale: :cm),
+        retenue_taxe_prop: number_to_currency(@retenue_taxe_prop_total, unit: '', locale: :cm),
+        retenue_surt_prog: number_to_currency(@retenue_surt_prog_total, unit: '', locale: :cm),
+        retenue_taxe_com: number_to_currency(@retenue_taxe_com_total, unit: '', locale: :cm),
+      ) do |row|
+    row.item(:summary_separator).show
+    row.item(:totaux_header).show
+    summary_vertical_rows(row)
+  end
+
+  # Rapport
+  list.add_row(
+        dipe_rapport: @report.dipe_by_page(@page_no - 1)
+      ) do |row|
+    if @salaire_taxable_last_total > 0
+      row.item(:salaire_taxable).show
+      row.item(:salaire_taxable).value(number_to_currency(@salaire_taxable_last_total, unit: '', locale: :cm))
+      row.item(:total).show
+      row.item(:total).value(number_to_currency(@salaire_cotisable_last_total, unit: '', locale: :cm))
+      row.item(:plafonne).show
+      row.item(:plafonne).value(number_to_currency(@salaire_cotisable_plafonne_last_total, unit: '', locale: :cm))
+      row.item(:retenue_taxe_prop).show
+      row.item(:retenue_taxe_prop).value(number_to_currency(@retenue_taxe_prop_last_total, unit: '', locale: :cm))
+      row.item(:retenue_surt_prog).show
+      row.item(:retenue_surt_prog).value(number_to_currency(@retenue_surt_prog_last_total, unit: '', locale: :cm))
+      row.item(:retenue_taxe_com).show
+      row.item(:retenue_taxe_com).value(number_to_currency(@retenue_taxe_com_last_total, unit: '', locale: :cm))
+    end
+
+    row.item(:rapport_header).show
+    row.item(:dipe_rapport).show
+    summary_vertical_rows(row)
+    @page_no += 1
+  end
+
+  # Cumule
+  list.add_row(
+        salaire_taxable: number_to_currency(@salaire_taxable_grand_total, unit: '', locale: :cm),
+        total: number_to_currency(@salaire_cotisable_grand_total, unit: '', locale: :cm),
+        plafonne: number_to_currency(@salaire_cotisable_plafonne_grand_total, unit: '', locale: :cm),
+        retenue_taxe_prop: number_to_currency(@retenue_taxe_prop_grand_total, unit: '', locale: :cm),
+        retenue_surt_prog: number_to_currency(@retenue_surt_prog_grand_total, unit: '', locale: :cm),
+        retenue_taxe_com: number_to_currency(@retenue_taxe_com_grand_total, unit: '', locale: :cm),
+      ) do |row|
+    row.item(:cumule_header).show
+    summary_vertical_rows(row)
+    row.item(:summary_separator_bottom).show
+  end
+
+  # New Page
+  if (new_page)
+    list.page_break
+  end
+end
+
+report.on_page_create do |page|
+  #page.item(:dipe_header).value = @report.dipe_by_page(@page_no)
+  #page.item(:feuille_header).value = 18
+  #page.item(:report_month).value("JAN")
+  #page.item(:report_year).value(1999)
+end
+
+# 1st page
+report.list("dipes_group") do |list|
+
+  @report.results.body.each do |t|
+
+    x_dipes_no = t[0].to_s
+    x_group = t[1].to_s
+    x_matricule_cnps = t[2].to_s
+    x_cle = t[3].to_s
+    x_nb_jour = t[4].to_i
+    x_salaire_brut = t[5].to_i
+    x_elements_exception = t[6].to_i
+    x_salaire_taxable = t[7].to_i
+    x_total = t[8].to_i
+    x_plafonne = t[9].to_i
+    x_retenue_taxe_prop = t[10].to_i
+    x_retenue_surt_prog = t[11].to_i
+    x_centime_add_com = t[12].to_i
+    x_retenue_taxe_com = t[13].to_i
+    x_ligne = t[14].to_i
+    x_matricule_intern = t[15].to_i
+
+    @item_page = x_group if @item_page.nil?
+
+    list.add_row(
+      matricule_cnps: x_matricule_cnps,
+      cle: x_cle,
+      number_of_days: x_nb_jour,
+      salaire_brut: number_to_currency(x_salaire_brut, unit: '', locale: :cm),
+      elements_exception: x_elements_exception,
+      salaire_taxable: number_to_currency(x_salaire_taxable, unit: '', locale: :cm),
+      total: number_to_currency(x_total, unit: '', locale: :cm),
+      plafonne: number_to_currency(x_plafonne, unit: '', locale: :cm),
+      retenue_taxe_prop: number_to_currency(x_retenue_taxe_prop, unit: '', locale: :cm),
+      retenue_surt_prog: number_to_currency(x_retenue_surt_prog, unit: '', locale: :cm),
+      centime_add_com: number_to_currency(x_centime_add_com, unit: '', locale: :cm),
+      retenue_taxe_com: number_to_currency(x_retenue_taxe_com, unit: '', locale: :cm),
+      ligne: x_ligne,
+      matricule_intern: x_matricule_intern,
+    )
+
+    @salaire_taxable_total += x_salaire_taxable
+    @salaire_cotisable_total += x_total
+    @salaire_cotisable_plafonne_total += x_plafonne
+    @retenue_taxe_prop_total += x_retenue_taxe_prop
+    @retenue_surt_prog_total += x_retenue_surt_prog
+    @centime_add_com_total += x_centime_add_com
+    @retenue_taxe_com_total += x_retenue_taxe_com
+
+    @salaire_taxable_grand_total += x_salaire_taxable
+    @salaire_cotisable_grand_total += x_total
+    @salaire_cotisable_plafonne_grand_total += x_plafonne
+    @retenue_taxe_prop_grand_total += x_retenue_taxe_prop
+    @retenue_surt_prog_grand_total += x_retenue_surt_prog
+    @centime_add_com_grand_total += x_centime_add_com
+    @retenue_taxe_com_grand_total += x_retenue_taxe_com
+
+    if x_group.nil?
+      @item_page = "X"
+    end
+
+    unless @item_page == x_group
+      @item_page = x_group
+      add_summary(list)
+
+      @salaire_taxable_total = 0
+      @salaire_cotisable_total = 0
+      @salaire_cotisable_plafonne_total = 0
+      @retenue_taxe_prop_total = 0
+      @retenue_surt_prog_total = 0
+      @centime_add_com_total = 0
+      @retenue_taxe_com_total = 0
+
+      @salaire_taxable_last_total = @salaire_taxable_grand_total
+      @salaire_cotisable_last_total = @salaire_cotisable_grand_total
+      @salaire_cotisable_plafonne_last_total = @salaire_cotisable_plafonne_grand_total
+      @retenue_taxe_prop_last_total = @retenue_taxe_prop_grand_total
+      @retenue_surt_prog_last_total = @retenue_surt_prog_grand_total
+      @centime_add_com_last_total = @centime_add_com_grand_total
+      @retenue_taxe_com_last_total = @retenue_taxe_com_grand_total
+
+    end
+  end
+
+  add_summary(list, false)
+
+
+  # Switch to new layout for last page which is compltely different
+  report.use_layout 'app/views/reports/dipes_government_report_last_page.tlf', id: :lp
+  report.start_new_page layout: :lp do |page|
+
+    page.item(:feuille_no).value(@report.feuille)
+    page.item(:feuille_no_1).value(@report.feuille)
+
+    page.item(:dipe_no_1).value(@report.dipe_by_page(3)) # WHY 3???
+    page.item(:dipe_no_2).value(@report.dipe_by_page(3)) # WHY 3???
+
+    page.item(:report_month_abbrev).value(@report.start.strftime("%m/%y"))
+    page.item(:report_month_long).value(I18n.l(@report.start, format: :name_shortyear, locale: :fr))
+
+    page.item(:surtaxe_prog_total).value(number_to_currency(@retenue_surt_prog_grand_total, unit: '', locale: :cm))
+    page.item(:cac_surtaxe_prog_total).value(number_to_currency(@retenue_surt_prog_grand_total, unit: '', locale: :cm))
+    page.item(:tax_prop_total).value(number_to_currency(@retenue_taxe_prop_grand_total, unit: '', locale: :cm))
+    page.item(:cac_tax_prop_total).value(number_to_currency((@retenue_taxe_prop_grand_total * 0.01).round, unit: '', locale: :cm)) # VAR
+    page.item(:tax_comm_total).value(number_to_currency(@retenue_taxe_com_grand_total, unit: '', locale: :cm))
+    page.item(:penalties).value(number_to_currency(0, unit: '', locale: :cm)) # VERIFY
+    page.item(:versement_tresor).value(number_to_currency((
+        @retenue_taxe_com_grand_total +
+        @retenue_taxe_prop_grand_total +
+        (@retenue_taxe_prop_grand_total * 0.01).round), unit: '', locale: :cm)) # FIX
+
+    page.item(:reg_general_rate).value(
+        number_to_percentage(SystemVariable.value(:age_benefits) * 100, precision: 2, format: "%n PC")
+    )
+    page.item(:pension_vieillesse_rate).value(
+        number_to_percentage(SystemVariable.value(:emp_cnps) * 2 * 100, precision: 2, format: "%n PC")
+    )
+    page.item(:acc_travail_rate).value(
+        number_to_percentage(SystemVariable.value(:accident) * 100, precision: 2, format: "%n PC")
+    )
+
+    page.item(:page_no).value(@page_no)
+
+    page.item(:reg_general_total).value(number_to_currency(
+        (@salaire_cotisable_plafonne_grand_total * 0.07).round, unit: '', locale: :cm)) # VAR
+    page.item(:pension_vieillesse_total).value(number_to_currency(
+        (@salaire_cotisable_plafonne_grand_total * 0.084).round, unit: '', locale: :cm)) # VAR
+    page.item(:acc_travail_total).value(number_to_currency(
+        (@salaire_cotisable_plafonne_grand_total * 0.0175).round, unit: '', locale: :cm)) # VAR
+    page.item(:versement_cnps_total).value(number_to_currency((
+        (@salaire_cotisable_plafonne_grand_total * 0.07).round +
+        (@salaire_cotisable_plafonne_grand_total * 0.084).round +
+        (@salaire_cotisable_plafonne_grand_total * 0.0175).round), unit: '', locale: :cm)) # VAR
+    page.item(:penalties_retard_total).value(0)
+    page.item(:majorat_retard_total).value(0)
+  end
+end
+

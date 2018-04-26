@@ -1,7 +1,11 @@
 class TransactionReportByType < TransactionReport
 
+  def report_name
+    "transaction_audit_by_type"
+  end
+
   def sql
-    TransactionReport::SELECTSTMT + " ORDER BY allitems.type, allitems.note, employee_name ASC"
+    TransactionReport::SELECTSTMT + " ORDER BY allitems.type, allitems.note, allitems.date, employee_name ASC"
   end
 
   def formatted_title

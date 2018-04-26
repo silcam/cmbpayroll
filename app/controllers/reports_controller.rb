@@ -52,7 +52,8 @@ class ReportsController < ApplicationController
     },
     'employee' => {
       name: I18n.t(:Employee_report, scope: "reports"),
-      instance: Proc.new{|p| EmployeeReport.new()}
+      instance: Proc.new{|p| EmployeeReport.new()},
+      format: :pdf
     },
     'employee_by_dept' => {
       name: I18n.t(:Employee_report_by_dept, scope: "reports"),
@@ -65,17 +66,20 @@ class ReportsController < ApplicationController
     'pay_breakdown_all' => {
       name: I18n.t(:Pay_breakdown_all_report, scope: "reports"),
       footer_rows: 1,
-      instance: Proc.new{|p| PayBreakdownAllReport.new()}
+      instance: Proc.new{|p| PayBreakdownAllReport.new()},
+      format: :pdf
     },
     'pay_breakdown_rfis' => {
       name: I18n.t(:Pay_breakdown_rfis_report, scope: "reports"),
       footer_rows: 1,
-      instance: Proc.new{|p| PayBreakdownRfisReport.new()}
+      instance: Proc.new{|p| PayBreakdownRfisReport.new()},
+      format: :pdf
     },
     'pay_breakdown_nonrfis' => {
       name: I18n.t(:Pay_breakdown_non_rfis_report, scope: "reports"),
       footer_rows: 1,
-      instance: Proc.new{|p| PayBreakdownNonrfisReport.new()}
+      instance: Proc.new{|p| PayBreakdownNonrfisReport.new()},
+      format: :pdf
     },
     'post' => {
       name: I18n.t(:Post_report, scope: "reports"),
@@ -88,11 +92,13 @@ class ReportsController < ApplicationController
     },
     'transaction_by_name' => {
       name: I18n.t(:Transaction_audit_report_by_name, scope: "reports"),
-      instance: Proc.new{|p| TransactionReportByName.new()}
+      instance: Proc.new{|p| TransactionReportByName.new()},
+      format: :pdf
     },
     'transaction_by_type' => {
       name: I18n.t(:Transaction_audit_report_by_type, scope: "reports"),
-      instance: Proc.new{|p| TransactionReportByType.new()}
+      instance: Proc.new{|p| TransactionReportByType.new()},
+      format: :pdf
     }
   }
 

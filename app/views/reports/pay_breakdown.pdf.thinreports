@@ -1,0 +1,92 @@
+report.set_layout tlf: 'reports/cash_breakdown', layout_options: { default: true }
+
+@net_cash_total = 0
+
+@c_10_000_total = 0
+@c_5_000_total = 0
+@c_2_000_total = 0
+@c_1_000_total = 0
+@c_500_total = 0
+@c_100_total = 0
+@c_50_total = 0
+@c_25_total = 0
+@c_10_total = 0
+@c_5_total = 0
+
+
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name).upcase)
+  page.item(:report_type).value(@report.segment.upcase)
+end
+
+
+# 1st page
+report.list("employee_list") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_department_name = t[1].to_s
+    x_net_pay = t[2].to_i
+    x_10_000 = t[3].to_i
+    x_5_000 = t[4].to_i
+    x_2_000 = t[5].to_i
+    x_1_000 = t[6].to_i
+    x_500 = t[7].to_i
+    x_100 = t[8].to_i
+    x_50 = t[9].to_i
+    x_25 = t[10].to_i
+    x_10 = t[11].to_i
+    x_5 = t[12].to_i
+
+    list.add_row(
+      employee_name: x_employee_name,
+      net_cash: number_to_currency(x_net_pay, unit: '', locale: :cm),
+      c_10_000: x_10_000,
+      c_5_000: x_5_000,
+      c_2_000: x_2_000,
+      c_1_000: x_1_000,
+      c_500: x_500,
+      c_100: x_100,
+      c_50: x_50,
+      c_25: x_25,
+      c_10: x_10,
+      c_5: x_5
+    )
+
+    @net_cash_total += x_net_pay
+    @c_10_000_total += x_10_000
+    @c_5_000_total += x_5_000
+    @c_2_000_total += x_2_000
+    @c_1_000_total += x_1_000
+    @c_500_total += x_500
+    @c_100_total += x_100
+    @c_50_total += x_50
+    @c_25_total += x_25
+    @c_10_total += x_10
+    @c_5_total += x_5
+
+  end
+
+  list.add_row(
+    net_cash: number_to_currency(@net_cash_total, unit: '', locale: :cm),
+    c_10_000: @c_10_000_total,
+    c_5_000: @c_5_000_total,
+    c_2_000: @c_2_000_total,
+    c_1_000: @c_1_000_total,
+    c_500: @c_500_total,
+    c_100: @c_100_total,
+    c_50: @c_50_total,
+    c_25: @c_25_total,
+    c_10: @c_10_total,
+    c_5: @c_5_total
+  ) do |row|
+    row.item(:totals_header).show()
+    row.item(:employee_name).hide()
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:employee_count).value(@employee_count)
+  end
+
+end

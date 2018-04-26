@@ -158,7 +158,6 @@ report.on_page_create do |page|
   page.item(:report_period).value = "January 2018"
 end
 
-
 # 1st page
 report.list("dipes_group") do |list|
 

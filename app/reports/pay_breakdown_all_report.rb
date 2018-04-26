@@ -38,6 +38,14 @@ ORDER BY
     custom_headers.fetch(column_name.to_sym) { super }
   end
 
+  def report_name
+    "pay_breakdown"
+  end
+
+  def segment
+    "all"
+  end
+
   def dept
     ids = []
 

@@ -1,0 +1,78 @@
+report.set_layout tlf: 'reports/transaction_audit_report_by_type', layout_options: { default: true }
+
+@current_note = nil
+@current_date = nil
+@last_unit = nil
+@quantity_total = 0
+
+def add_summary(list)
+  list.add_row() do |row|
+    row.item(:summary_line).show
+    row.item(:quantity_total).show
+    row.item(:quantity_total).value = number_to_currency(@quantity_total, unit: '', locale: :cm)
+    row.item(:unit_total).show
+    row.item(:unit_total).value = @last_unit
+  end
+end
+
+# 1st page
+report.list("transaction_report") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_employee_id = t[1].to_s
+    x_type = t[2].to_s
+    x_date = t[3].to_s
+    x_note = t[4].to_s
+    x_amount = t[5].to_i
+    x_unit = t[6].to_s
+    x_dept_name = t[7].to_s
+    x_dept_id = t[8].to_s
+
+    unless (@current_note.nil? || @current_note == x_note)
+      add_summary(list)
+
+      @current_date = nil
+      @last_unit = nil
+      @quantity_total = 0
+
+      list.add_row() # blank row
+    end
+
+    list.add_row(
+      employee_name: x_employee_name,
+      employee_id: x_employee_id,
+      transaction_date: x_date,
+      code: x_type,
+      description: x_note,
+      quantity: number_to_currency(x_amount, unit: '', locale: :cm),
+      unit: x_unit,
+      department_id: x_dept_id,
+      department_name: x_dept_name,
+      comments: ''
+    ) do |row|
+      if (@current_note == x_note)
+        row.item(:code).hide()
+        row.item(:description).hide()
+      end
+      if (@current_date == x_date)
+        row.item(:transaction_date).hide()
+      end
+    end
+
+    @quantity_total += x_amount
+    @last_unit = x_unit
+
+
+    @current_note = x_note
+    @current_date = x_date
+  end
+
+  add_summary(list)
+
+  list.on_footer_insert do |footer|
+    #footer.item(:gross_salary_total).value(number_to_currency(@gross_salary_total, unit: '', locale: :cm))
+  end
+
+end

@@ -72,8 +72,4 @@ WHERE
     date.strftime('%Y-%m-%d')
   end
 
-  def format_amount(value)
-    cfa_nofcfa(value)
-  end
-
 end

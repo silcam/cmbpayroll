@@ -6,7 +6,8 @@ class EmployeeReport < CMBReport
 SELECT
   CONCAT(p.last_name, ', ', p.first_name) as employee_name,
   e.id as emp_number,
-  d.name as department,
+  d.name as department_name,
+  d.id as department_id,
   e.title as job_description,
   to_char(e.contract_start, 'DD/MM/YYYY') as beginning_contract,
   to_char(e.contract_end, 'DD/MM/YYYY') as ending_contract,

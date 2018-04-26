@@ -4,7 +4,7 @@ class DepartmentChargeReport < CMBReport
 
     select =<<-SELECTSTATEMENT
 SELECT
-  CONCAT(p.first_name, ' ', p.last_name) as employee_name,
+  CONCAT(p.last_name, ' ', p.first_name) as employee_name,
   d.id as department_id,
   d.name as department_name,
   e.id as employee_num,
@@ -56,7 +56,7 @@ WHERE
   ps.period_year = :year AND
   ps.period_month = :month
 ORDER BY
-  department_name, employee_name ASC;
+  department_id, employee_name ASC;
     SELECTSTATEMENT
   end
 

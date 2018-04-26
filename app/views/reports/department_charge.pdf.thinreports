@@ -24,6 +24,11 @@ def add_department_summary(row)
   row.item(:department_charge_total).value(number_to_currency(@department_total_charge, unit: '', locale: :cm))
 end
 
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name).upcase)
+end
+
+
 # 1st page
 report.list("department_charges") do |list|
 
@@ -62,7 +67,7 @@ report.list("department_charges") do |list|
 
       list.add_row() do |row|
         row.item(:department_header).show
-        row.item(:department_header).value = "*** #{x_department_id} #{x_department} DEPARTMENT ***"
+        row.item(:department_header).value = "*** #{x_department_id.rjust(2, '0')} #{x_department} DEPARTMENT ***"
       end
 
       @current_department = x_department

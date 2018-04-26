@@ -1,0 +1,46 @@
+report.set_layout tlf: 'reports/transaction_audit_report', layout_options: { default: true }
+
+@current_employee = nil
+
+# 1st page
+report.list("transaction_report") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_employee_id = t[1].to_s
+    x_type = t[2].to_s
+    x_date = t[3].to_s
+    x_note = t[4].to_s
+    x_amount = t[5].to_s
+    x_unit = t[6].to_s
+    x_dept_name = t[7].to_s
+    x_dept_id = t[8].to_s
+
+    list.add_row(
+      employee_name: x_employee_name,
+      employee_id: x_employee_id,
+      transaction_date: x_date,
+      code: x_type,
+      description: x_note,
+      quantity: x_amount,
+      unit: x_unit,
+      department_id: x_dept_id,
+      department_name: x_dept_name,
+      comments: ''
+    ) do |row|
+      if (@current_employee == x_employee_name)
+        row.item(:employee_name).hide()
+        row.item(:employee_id).hide()
+      end
+    end
+
+    @current_employee = x_employee_name
+
+  end
+
+  list.on_footer_insert do |footer|
+    #footer.item(:gross_salary_total).value(number_to_currency(@gross_salary_total, unit: '', locale: :cm))
+  end
+
+end

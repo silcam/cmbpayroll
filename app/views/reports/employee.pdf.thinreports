@@ -1,0 +1,49 @@
+report.set_layout tlf: 'reports/active_employee_list', layout_options: { default: true }
+
+@employee_count = 0
+
+# 1st page
+report.list("employee_list") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_employee_id = t[1].to_s
+    x_department_name = t[2].to_s
+    x_department_id = t[3].to_s
+    x_job_description = t[4].to_s
+    x_begin_contract = t[5].to_s
+    x_end_contract = t[6].to_s
+    x_base_wage = t[7].to_s
+    x_per = t[8].to_s
+    x_cat_ech = t[9].to_s
+    x_last_raise = t[10].to_s
+    x_m_c = t[11].to_s
+    x_children = t[12].to_s
+    x_gender = t[13].to_s
+
+    list.add_row(
+      employee_name: x_employee_name,
+      employee_id: x_employee_id,
+      department_id: x_department_id,
+      department_name: x_department_name,
+      job_description: x_job_description,
+      begin_contract: x_begin_contract,
+      end_contract: x_end_contract,
+      base_wage: x_base_wage,
+      per: x_per,
+      cat_ech: x_cat_ech.upcase,
+      last_raise: x_last_raise,
+      mc: x_m_c,
+      no_child: x_children,
+      gender: x_gender
+    )
+
+    @employee_count += 1
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:employee_count).value(@employee_count)
+  end
+
+end

@@ -1,0 +1,89 @@
+report.set_layout tlf: 'reports/post_report', layout_options: { default: true }
+
+@pages = 0
+
+@loan_prev_total = 0
+@loan_payments_total = 0
+@loan_new_loan_total = 0
+@loan_balance_total = 0
+@vacation_previous_pay_total = 0
+@vacation_new_pay_total = 0
+@vacation_used_pay_total = 0
+@vacation_balance_pay_total = 0
+
+
+report.start_page_number_from 1
+report.on_page_create do |page|
+  @pages += 1
+end
+
+# 1st page
+report.list("post_report") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_employee_id = t[1].to_s
+    x_prev_loan_balance = t[2].to_i
+    x_loan_payments = t[3].to_i
+    x_new_loan = t[4].to_i
+    x_balance = t[5].to_i
+    x_vacation_previous_days = t[6].to_i
+    x_vacation_previous_pay = t[7].to_i
+    x_vacation_new_days = t[8].to_i
+    x_vacation_new_pay = t[9].to_i
+    x_vacation_used_days = t[10].to_i
+    x_vacation_used_pay = t[11].to_i
+    x_vacation_balance_days = t[12].to_i
+    x_vacation_balance_pay = t[13].to_i
+    x_last_vacation = t[14].to_s
+    x_supp_days_given = t[15].to_i
+
+    list.add_row(
+      employee_name: x_employee_name,
+      employee_id: x_employee_id,
+      loans_prev: number_to_currency(x_prev_loan_balance, unit: '', locale: :cm),
+      loans_pmnts: number_to_currency(x_loan_payments, unit: '', locale: :cm),
+      loans_new_loan: number_to_currency(x_new_loan, unit: '', locale: :cm),
+      loans_balance: number_to_currency(x_balance, unit: '', locale: :cm),
+      vacation_previous_days: x_vacation_previous_days,
+      vacation_previous_pay: x_vacation_previous_pay,
+      vacation_new_days: x_vacation_new_days,
+      vacation_new_pay: x_vacation_new_pay,
+      vacation_used_days: x_vacation_used_days,
+      vacation_used_pay: x_vacation_used_pay,
+      vacation_balance_days: x_vacation_balance_days,
+      vacation_balance_pay: x_vacation_balance_pay,
+      last_vacation_date: x_last_vacation
+    )
+
+    @loan_prev_total += x_prev_loan_balance
+    @loan_payments_total += x_loan_payments
+    @loan_new_loan_total += x_new_loan
+    @loan_balance_total += x_balance
+
+    @vacation_previous_pay_total += x_vacation_previous_pay
+    @vacation_new_pay_total += x_vacation_new_pay
+    @vacation_used_pay_total += x_vacation_used_pay
+    @vacation_balance_pay_total += x_vacation_balance_pay
+  end
+
+  list.on_page_footer_insert do |page_footer|
+    #page_footer.item(:page_num).value(@pages)
+    page_footer.item(:page_total).value()
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:loan_prev_total).value( number_to_currency(@loan_prev_total, unit: '', locale: :cm))
+    footer.item(:loans_pmnts_total).value( number_to_currency(@loan_payments_total, unit: '', locale: :cm))
+    footer.item(:loans_new_loan_total).value( number_to_currency(@loan_new_loan_total, unit: '', locale: :cm))
+    footer.item(:loans_balance_total).value( number_to_currency(@loan_balance_total, unit: '', locale: :cm))
+
+    footer.item(:vacation_previous_pay_total).value( number_to_currency(@vacation_previous_pay_total, unit: '', locale: :cm))
+    footer.item(:vacation_new_pay_total).value( number_to_currency(@vacation_new_pay_total, unit: '', locale: :cm))
+    footer.item(:vacation_used_pay_total).value( number_to_currency(@vacation_used_pay_total, unit: '', locale: :cm))
+    footer.item(:vacation_balance_pay_total).value( number_to_currency(@vacation_balance_pay_total, unit: '', locale: :cm))
+
+  end
+
+end

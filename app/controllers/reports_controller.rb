@@ -25,7 +25,8 @@ class ReportsController < ApplicationController
     },
     'dept_charge' => {
       name: I18n.t(:Department_charge_report, scope: "reports"),
-      instance: Proc.new{|p| DepartmentChargeReport.new()}
+      instance: Proc.new{|p| DepartmentChargeReport.new()},
+      format: :pdf
     },
     'dipes' => {
       name: I18n.t(:Dipes_report_text, scope: "reports"),
@@ -78,7 +79,8 @@ class ReportsController < ApplicationController
     },
     'post' => {
       name: I18n.t(:Post_report, scope: "reports"),
-      instance: Proc.new{|p| PostReport.new()}
+      instance: Proc.new{|p| PostReport.new()},
+      format: :pdf
     },
     'salary_changes' => {
       name: I18n.t(:Salary_changes_report, scope: "reports"),

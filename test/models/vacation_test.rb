@@ -356,6 +356,27 @@ class VacationTest < ActiveSupport::TestCase
     refute(vac.destroy, "cannot delete a paid vacation")
   end
 
+  test "Can find out days used and pay earned per month" do
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-12"
+    vac.end_date = "2018-10-15"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.destroyable?)
+    vac.paid = true
+
+    # Count Vac Days/Pay for September
+    sept = Period.new(2018,9)
+    assert_equal(55746, Vacation.pay_earned(@luke, sept), "correct vacation pay for September")
+    assert_equal(13, Vacation.days_used(@luke, sept), "correct number of days in September counted")
+
+    # Count Vac Days/Pay for October
+    oct = Period.new(2018,10)
+    assert_equal(47170, Vacation.pay_earned(@luke, oct), "correct vacation pay for October")
+    assert_equal(11, Vacation.days_used(@luke, oct), "correct number of days in October counted")
+  end
+
   test "printing makes paid and saves vacation pay total" do
     refute(@lukes_vacation.paid?, "not paid yet")
     assert_equal(0, @lukes_vacation.changes.size, "nothing to be saved to the DB")

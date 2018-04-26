@@ -1,0 +1,130 @@
+report.set_layout tlf: 'reports/department_charge', layout_options: { default: true }
+
+@current_department = nil
+@department_total_charge = 0
+
+@gross_salary_total = 0
+@total_taxes_total = 0
+@net_salary_total = 0
+@add_total = 0
+@adj_wage_total = 0
+@dept_cnps_total = 0
+@credit_foncier_total = 0
+@vacation_pay_total = 0
+@vacation_days_total = 0
+@employee_fund_total = 0
+@contrib_consens_total = 0
+@total_charges_total = 0
+@department_charge_grand_total = 0
+
+def add_department_summary(row)
+  row.item(:department_total_header).show
+  row.item(:department_total_line).show
+  row.item(:department_charge_total).show
+  row.item(:department_charge_total).value(number_to_currency(@department_total_charge, unit: '', locale: :cm))
+end
+
+# 1st page
+report.list("department_charges") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_department_id = t[1].to_s
+    x_department = t[2].to_s
+    x_employee_id = t[3].to_i
+    x_gross_pay = t[4].to_i
+    x_total_tax = t[5].to_i
+    x_net_pay = t[6].to_i
+    x_add_pay = t[7].to_i
+    x_adj_wage = t[8].to_i
+    x_department_cnps = t[9].to_i
+    x_credit_foncier = t[10].to_i
+    x_dept_taxes = t[11].to_i
+    x_dept_severance = t[12].to_i
+    x_vacation_days = t[13].to_f
+    x_vacation_pay = t[14].to_i
+    x_employee_fund = t[15].to_i
+    x_employee_contribution = t[16].to_i
+    x_total_charge = t[17].to_i
+    x_dept_percentage = t[18].to_i
+    x_dept_charge = t[19].to_i
+
+    unless (@current_department == x_department)
+
+      unless (@current_department.nil?)
+        list.add_row() do |row|
+          add_department_summary(row)
+        end
+      end
+
+      list.add_row()  # Blank row
+
+      list.add_row() do |row|
+        row.item(:department_header).show
+        row.item(:department_header).value = "*** #{x_department_id} #{x_department} DEPARTMENT ***"
+      end
+
+      @current_department = x_department
+      @department_total_charge = 0
+    end
+
+    list.add_row(
+      employee_name: x_employee_name,
+      employee_id: x_employee_id,
+      gross_salary: number_to_currency(x_gross_pay, unit: '', locale: :cm),
+      total_taxes: number_to_currency(x_total_tax, unit: '', locale: :cm),
+      net_salary: number_to_currency(x_net_pay, unit: '', locale: :cm),
+      add: number_to_currency(x_add_pay, unit: '', locale: :cm),
+      adj_wage: number_to_currency(x_adj_wage, unit: '', locale: :cm),
+      dept_cnps: number_to_currency(x_department_cnps, unit: '', locale: :cm),
+      credit_foncier: number_to_currency(x_credit_foncier, unit: '', locale: :cm),
+      vacation_pay: number_to_currency(x_vacation_pay, unit: '', locale: :cm),
+      vacation_days: x_vacation_days,
+      employee_fund: number_to_currency(x_employee_fund, unit: '', locale: :cm),
+      contrib_consens: number_to_currency(x_employee_contribution, unit: '', locale: :cm),
+      total_charges: number_to_currency(x_total_charge, unit: '', locale: :cm),
+      department_percentage: number_to_percentage(x_dept_percentage * 100, precision: 2, strip_insignificant_zeros: true),
+      department_charge: number_to_currency(x_dept_charge, unit: '', locale: :cm)
+    )
+
+    @gross_salary_total += x_gross_pay
+    @total_taxes_total += x_total_tax
+    @net_salary_total += x_net_pay
+    @add_total += x_add_pay
+    @adj_wage_total += x_adj_wage
+    @dept_cnps_total += x_department_cnps
+    @credit_foncier_total += x_credit_foncier
+    @vacation_pay_total += x_vacation_pay
+    @vacation_days_total += x_vacation_days
+    @employee_fund_total += x_employee_fund
+    @contrib_consens_total += x_employee_contribution
+    @total_charges_total += x_total_charge
+    @department_total_charge += x_dept_charge
+    @department_charge_grand_total += x_dept_charge
+
+  end
+
+  list.add_row() do |row|
+    add_department_summary(row)
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:gross_salary_total).value(number_to_currency(@gross_salary_total, unit: '', locale: :cm))
+    #footer.item(:gross_salary_total).value(@gross_salary_total)
+    footer.item(:total_taxes_total).value(number_to_currency(@total_taxes_total, unit: '', locale: :cm))
+    footer.item(:net_salary_total).value(number_to_currency(@net_salary_total, unit: '', locale: :cm))
+    footer.item(:add_total).value(number_to_currency(@add_total, unit: '', locale: :cm))
+    footer.item(:adj_wage_total).value(number_to_currency(@adj_wage_total, unit: '', locale: :cm))
+    footer.item(:dept_cnps_total).value(number_to_currency(@dept_cnps_total, unit: '', locale: :cm))
+    footer.item(:credit_foncier_total).value(number_to_currency(@credit_foncier_total, unit: '', locale: :cm))
+    footer.item(:vacation_pay_total).value(number_to_currency(@vacation_pay_total, unit: '', locale: :cm))
+    footer.item(:vacation_days_total).value(number_to_currency(@vacation_days_total, unit: '', locale: :cm))
+    footer.item(:employee_fund_total).value(number_to_currency(@employee_fund_total, unit: '', locale: :cm))
+    footer.item(:contrib_consens_total).value(number_to_currency(@contrib_consens_total, unit: '', locale: :cm))
+    footer.item(:total_charges_total).value(number_to_currency(@total_charges_total, unit: '', locale: :cm))
+    footer.item(:department_charge_grand_total).value(number_to_currency(@department_charge_grand_total, unit: '', locale: :cm))
+    footer.item(:credit_foncier_plus_dept_cnps_total).value(number_to_currency(@credit_foncier_total + @dept_cnps_total, unit: '', locale: :cm))
+  end
+
+end

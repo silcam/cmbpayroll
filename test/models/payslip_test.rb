@@ -1831,6 +1831,12 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert_equal(0, payslip.gross_pay, "gross should be zero")
     assert_equal(0, payslip.net_pay, "net should be zero")
+
+    # although it should track the vacation pay and days used for reporting.
+    assert_equal(23, payslip.vacation_used, "correct days used")
+    assert_equal(1.5, payslip.vacation_earned, "correct days earned")
+    assert_equal(4598, payslip.vacation_pay_earned, "correct pay earned")
+    assert_equal(70500, payslip.vacation_pay_used, "correct pay used")
   end
 
   test "Test Vacation Pay and Balance Calculations" do

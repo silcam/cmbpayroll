@@ -624,7 +624,9 @@ class Payslip < ApplicationRecord
     payslip.vacation_earned = Vacation.days_earned(employee, period)
     payslip.vacation_used = Vacation.days_used(employee, period)
     payslip.vacation_balance = Vacation.balance(employee, period)
-    # payslip.vacation_pay_earned = payslip.calculate_vacation_pay
+
+    payslip.vacation_pay_used = Vacation.pay_earned(employee, period)
+    payslip.vacation_pay_earned = Vacation.pay_earned_with_days(employee, period, payslip.vacation_earned)
     # payslip.vacation_pay_used = payslip.calculate_vacation_pay_used
     # payslip.vacation_pay_balance = payslip.calculate_vacation_pay_balance
 

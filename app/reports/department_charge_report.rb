@@ -4,9 +4,9 @@ class DepartmentChargeReport < CMBReport
 
     select =<<-SELECTSTATEMENT
 SELECT
-  d.name as department_name,
   CONCAT(p.first_name, ' ', p.last_name) as employee_name,
-  ed.name as employees_department_name,
+  d.id as department_id,
+  d.name as department_name,
   e.id as employee_num,
   ps.gross_pay,
   ps.total_tax,
@@ -18,7 +18,7 @@ SELECT
   ps.cnpswage + ps.department_credit_foncier as dept_taxes,
   ps.department_severance as dept_severance,
   ps.vacation_earned as vacation_days,
-  ( ps.vacation_pay_earned * ps.vacation_earned ) as vacation_pay,
+  ps.vacation_pay_earned as vacation_pay,
   ps.employee_fund,
   ps.employee_contribution,
   ps.taxable +
@@ -29,7 +29,6 @@ SELECT
       ps.employee_fund +
       ps.employee_contribution as total_charge,
   wlp.percentage as dept_percentage,
-
   floor((ps.taxable +
       b.add_pay +
       ps.department_cnps +
@@ -73,62 +72,6 @@ ORDER BY
       cat_ech: 'Cat / Ech.'
     }
     custom_headers.fetch(column_name.to_sym) { super }
-  end
-
-  def format_gross_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_total_tax(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_net_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_add_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_adj_wage(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_department_cnps(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_credit_foncier(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_dept_taxes(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_dept_severance(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_vacation_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_employee_fund(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_total_charge(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_dept_percentage(value)
-    number_to_percentage(value * 100, precision: 2)
-  end
-
-  def format_dept_charge(value)
-    cfa_nofcfa(value)
   end
 
 end

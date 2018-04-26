@@ -12,13 +12,13 @@ SELECT DISTINCT ON (e.id)
   ps.vacation_balance - ps.vacation_earned as Vacation_Previous_Days,
   ps.vacation_pay_balance - ps.vacation_pay_earned as Vacation_Previous_Pay,
   ps.vacation_earned as Vacation_New_Days,
-  ps.vacation_earned - 1.5 as Supp_Days_Given, -- magic number
   ps.vacation_pay_earned as Vacation_New_Pay,
   ps.vacation_used as Vacation_Used_Days,
   COALESCE(ps.vacation_pay_used,0) as Vacation_Used_Pay,
   ps.vacation_balance as Vacation_Balance_Days,
   ps.vacation_pay_balance as Vacation_Balance_Pay,
-  ps.last_vacation_end
+  ps.last_vacation_end as Last_Vacation,
+  ps.vacation_earned - 1.5 as Supp_Days_Given -- magic number
 FROM
   employees e
     LEFT JOIN people p ON e.person_id = p.id
@@ -64,50 +64,6 @@ ORDER BY
     custom_headers = {
     }
     custom_headers.fetch(column_name.to_sym) { super }
-  end
-
-  def format_vacation_balance(value)
-    number_with_precision(value, precision: 2)
-  end
-
-  def format_vacation_pay_earned(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_vacation_earned(value)
-    number_with_precision(value, precision: 2)
-  end
-
-  def format_prev_loan_balance(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_loan_payments(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_new_loan(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_balance(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_vacation_previous_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_vacation_new_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_vacation_used_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_vacation_balance_pay(value)
-    cfa_nofcfa(value)
   end
 
 end

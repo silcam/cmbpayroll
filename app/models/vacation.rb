@@ -122,6 +122,16 @@ class Vacation < ApplicationRecord
     used
   end
 
+  def self.pay_earned(employee, period)
+    period_days = days_used(employee, period)
+    pay_earned_with_days(employee, period, period_days)
+  end
+
+  def self.pay_earned_with_days(employee, period, days)
+    pay = Payslip.find_pay(employee)
+    vacation_pay = (Vacation.vacation_daily_rate(pay) * days).ceil
+  end
+
   def self.balance(employee, period)
     if LastPostedPeriod.posted? period
       payslip = employee.payslip_for period

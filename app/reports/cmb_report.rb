@@ -118,10 +118,6 @@ class CMBReport < Dossier::Report
     fixup_enum(value, Employee.employment_statuses, :employment_statuses)
   end
 
-  def format_net_pay(value)
-    cfa_nofcfa(value)
-  end
-
   def cfa_nofcfa(value)
     formatter.number_to_currency(value, unit: '', locale: :cm)
   end

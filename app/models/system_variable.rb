@@ -11,6 +11,7 @@ class SystemVariable < ApplicationRecord
     union_dues: 0.01,
     dept_credit_foncier: 0.025,
     emp_cnps: 0.042,
+    full_cnps: 0.084,
     dept_cnps: 0.1295,
     dept_cnps_w_ceil: 0.0175,
     dept_cnps_max_base: 84000,

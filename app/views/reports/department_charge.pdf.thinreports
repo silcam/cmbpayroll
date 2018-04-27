@@ -28,7 +28,6 @@ report.on_page_create do |page|
   page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name).upcase)
 end
 
-
 # 1st page
 report.list("department_charges") do |list|
 
@@ -116,7 +115,6 @@ report.list("department_charges") do |list|
 
   list.on_footer_insert do |footer|
     footer.item(:gross_salary_total).value(number_to_currency(@gross_salary_total, unit: '', locale: :cm))
-    #footer.item(:gross_salary_total).value(@gross_salary_total)
     footer.item(:total_taxes_total).value(number_to_currency(@total_taxes_total, unit: '', locale: :cm))
     footer.item(:net_salary_total).value(number_to_currency(@net_salary_total, unit: '', locale: :cm))
     footer.item(:add_total).value(number_to_currency(@add_total, unit: '', locale: :cm))

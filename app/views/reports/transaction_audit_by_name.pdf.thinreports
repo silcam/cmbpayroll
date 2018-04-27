@@ -1,6 +1,10 @@
-report.set_layout tlf: 'reports/transaction_audit_report', layout_options: { default: true }
+report.set_layout tlf: 'reports/transaction_audit_by_name', layout_options: { default: true }
 
 @current_employee = nil
+
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name, locale: :fr).upcase)
+end
 
 # 1st page
 report.list("transaction_report") do |list|
@@ -37,10 +41,6 @@ report.list("transaction_report") do |list|
 
     @current_employee = x_employee_name
 
-  end
-
-  list.on_footer_insert do |footer|
-    #footer.item(:gross_salary_total).value(number_to_currency(@gross_salary_total, unit: '', locale: :cm))
   end
 
 end

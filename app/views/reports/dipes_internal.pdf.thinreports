@@ -1,4 +1,4 @@
-report.set_layout tlf: 'reports/dipes_internal_report', layout_options: { default: true }
+report.set_layout tlf: 'reports/dipes_internal', layout_options: { default: true }
 
 @current_page = nil
 @item_page = nil
@@ -268,13 +268,13 @@ report.list("dipes_group") do |list|
     footer.item(:total_cnps_wages).value(number_to_currency(@mon_total_grand_total, unit: '', locale: :cm))
     footer.item(:total_cnps_plafonne).value(number_to_currency(@mon_total_plafonne_grand_total, unit: '', locale: :cm))
     footer.item(:total_surtax_progressive).value(number_to_currency(@tax_prog_grand_total, unit: '', locale: :cm))
-    footer.item(:total_cac_10).value(number_to_currency((@tax_prog_grand_total * 0.1).round, unit: '', locale: :cm)) # VAR
+    footer.item(:total_cac_10).value(number_to_currency((@tax_prog_grand_total * SystemVariable.value(:cac)).round, unit: '', locale: :cm))
     footer.item(:total_tax_proportional).value(number_to_currency(@tax_prop_grand_total, unit: '', locale: :cm))
-    footer.item(:total_cac_10_2).value(number_to_currency((@tax_prop_grand_total * 0.1).round, unit: '', locale: :cm)) # VAR
+    footer.item(:total_cac_10_2).value(number_to_currency((@tax_prop_grand_total * SystemVariable.value(:cac)).round, unit: '', locale: :cm))
     footer.item(:total_tax_communal).value(number_to_currency(@tax_common_grand_total, unit: '', locale: :cm))
 
-    this_tax_total = @tax_prop_grand_total + (@tax_prop_grand_total * 0.1).round +
-                     @tax_prog_grand_total + (@tax_prog_grand_total * 0.1).round +
+    this_tax_total = @tax_prop_grand_total + (@tax_prop_grand_total * SystemVariable.value(:cac)).round +
+                     @tax_prog_grand_total + (@tax_prog_grand_total * SystemVariable.value(:cac)).round +
                      @tax_common_grand_total
     versement_tresor = 0
 
@@ -283,25 +283,25 @@ report.list("dipes_group") do |list|
     footer.item(:difference_collected).value(number_to_currency((this_tax_total - versement_tresor), unit: '', locale: :cm))
 
     # CNPS Summary
-    footer.item(:total_prestations_familiales).value(number_to_currency((@mon_total_plafonne_grand_total * 0.07).round, unit: '', locale: :cm)) # VAR
-    footer.item(:total_pension_vieillesse).value(number_to_currency((@mon_total_plafonne_grand_total * 0.084).round, unit: '', locale: :cm)) # VAR
-    footer.item(:total_accident_du_travail).value(number_to_currency((@mon_total_grand_total * 0.0175).round, unit: '', locale: :cm)) # VAR
+    footer.item(:total_prestations_familiales).value(number_to_currency((@mon_total_plafonne_grand_total * SystemVariable.value(:family_benefits)).round, unit: '', locale: :cm))
+    footer.item(:total_pension_vieillesse).value(number_to_currency((@mon_total_plafonne_grand_total * SystemVariable.value(:full_cnps)).round, unit: '', locale: :cm))
+    footer.item(:total_accident_du_travail).value(number_to_currency((@mon_total_grand_total * SystemVariable.value(:accident)).round, unit: '', locale: :cm))
 
     # Credit Foncier Summary
-    cf_employer_contributions_total = (@sal_brut_grand_total * 0.025).round
-    cf_subtotal_total = ((@sal_brut_grand_total - @total_a01_a02_taxable) * 0.01).round # VAR
+    cf_employer_contributions_total = (@sal_brut_grand_total * SystemVariable.value(:dept_credit_foncier)).round
+    cf_subtotal_total = ((@sal_brut_grand_total - @total_a01_a02_taxable) * SystemVariable.value(:ccf_rate)).round
     cf_total = cf_employer_contributions_total - cf_subtotal_total
 
     footer.item(:cf_employer_contributions).value(number_to_currency(@sal_brut_grand_total, unit: '', locale: :cm))
-    footer.item(:cf_employer_taux).value("2.50%") # VAR
-    footer.item(:cf_employer_contributions_total).value(number_to_currency(cf_employer_contributions_total, unit: '', locale: :cm)) # VAR
+    footer.item(:cf_employer_taux).value(number_to_percentage(SystemVariable.value(:dept_credit_foncier) * 100, precision: 2))
+    footer.item(:cf_employer_contributions_total).value(number_to_currency(cf_employer_contributions_total, unit: '', locale: :cm))
 
     footer.item(:cf_temporary).value(number_to_currency(@total_a01_a02_taxable, unit: '', locale: :cm))
 
-    footer.item(:cf_subtotal).value(number_to_currency(@sal_brut_grand_total - @total_a01_a02_taxable, unit: '', locale: :cm)) # VAR
-    footer.item(:cf_subtotal_taux).value("1.00%")
-    footer.item(:cf_subtotal_total).value(number_to_currency(cf_subtotal_total, unit: '', locale: :cm)) # VAR
-    footer.item(:cf_total).value(number_to_currency(cf_total, unit: '', locale: :cm)) # VAR
+    footer.item(:cf_subtotal).value(number_to_currency(@sal_brut_grand_total - @total_a01_a02_taxable, unit: '', locale: :cm))
+    footer.item(:cf_subtotal_taux).value(number_to_percentage(SystemVariable.value(:ccf_rate) * 100, precision: 2))
+    footer.item(:cf_subtotal_total).value(number_to_currency(cf_subtotal_total, unit: '', locale: :cm))
+    footer.item(:cf_total).value(number_to_currency(cf_total, unit: '', locale: :cm))
 
     # AV Summaries
     footer.item(:less_than_50).value(@av_counts["lt_50"])

@@ -134,7 +134,7 @@
             "description": "",
             "x": 194.4,
             "y": 81.5,
-            "width": 45.5,
+            "width": 47,
             "height": 18,
             "style": {
               "font-family": [
@@ -191,7 +191,7 @@
             "description": "",
             "x": 385,
             "y": 90.5,
-            "width": 44.1,
+            "width": 46.1,
             "height": 9,
             "style": {
               "font-family": [
@@ -219,7 +219,7 @@
             "description": "",
             "x": 536,
             "y": 89.5,
-            "width": 33.5,
+            "width": 35,
             "height": 11,
             "style": {
               "font-family": [
@@ -247,7 +247,7 @@
             "description": "",
             "x": 621,
             "y": 91,
-            "width": 45.3,
+            "width": 46.8,
             "height": 9,
             "style": {
               "font-family": [
@@ -275,7 +275,7 @@
             "description": "",
             "x": 736.5,
             "y": 91,
-            "width": 42.4,
+            "width": 43.9,
             "height": 9,
             "style": {
               "font-family": [
@@ -704,6 +704,38 @@
       "texts": [
         "Sorted by Name"
       ]
+    },
+    {
+      "id": "report_month",
+      "type": "text-block",
+      "display": true,
+      "description": "",
+      "x": 495,
+      "y": 32,
+      "width": 72.5,
+      "height": 11,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 10,
+        "color": "#000000",
+        "text-align": "left",
+        "vertical-align": "top",
+        "line-height": "",
+        "line-height-ratio": "",
+        "letter-spacing": "",
+        "font-style": [],
+        "overflow": "truncate",
+        "word-wrap": "break-word"
+      },
+      "reference-id": "",
+      "value": "",
+      "multiple-line": false,
+      "format": {
+        "base": "",
+        "type": ""
+      }
     }
   ],
   "state": {

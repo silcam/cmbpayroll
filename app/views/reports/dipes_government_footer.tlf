@@ -2487,38 +2487,6 @@
       }
     },
     {
-      "id": "page_no",
-      "type": "text-block",
-      "display": true,
-      "description": "",
-      "x": 371.5,
-      "y": 252.5,
-      "width": 97.5,
-      "height": 20,
-      "style": {
-        "font-family": [
-          "Helvetica"
-        ],
-        "font-size": 18,
-        "color": "#000000",
-        "text-align": "left",
-        "vertical-align": "top",
-        "line-height": "",
-        "line-height-ratio": "",
-        "letter-spacing": "",
-        "font-style": [],
-        "overflow": "truncate",
-        "word-wrap": "break-word"
-      },
-      "reference-id": "",
-      "value": "",
-      "multiple-line": false,
-      "format": {
-        "base": "",
-        "type": ""
-      }
-    },
-    {
       "id": "dipe_no_1",
       "type": "text-block",
       "display": true,

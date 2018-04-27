@@ -1,4 +1,4 @@
-report.set_layout tlf: 'reports/transaction_audit_report_by_type', layout_options: { default: true }
+report.set_layout tlf: 'reports/transaction_audit_by_type', layout_options: { default: true }
 
 @current_note = nil
 @current_date = nil
@@ -13,6 +13,10 @@ def add_summary(list)
     row.item(:unit_total).show
     row.item(:unit_total).value = @last_unit
   end
+end
+
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name, locale: :fr).upcase)
 end
 
 # 1st page
@@ -70,9 +74,5 @@ report.list("transaction_report") do |list|
   end
 
   add_summary(list)
-
-  list.on_footer_insert do |footer|
-    #footer.item(:gross_salary_total).value(number_to_currency(@gross_salary_total, unit: '', locale: :cm))
-  end
 
 end

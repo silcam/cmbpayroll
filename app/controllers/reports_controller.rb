@@ -3,12 +3,6 @@ class ReportsController < ApplicationController
 
   self.responder = Dossier::XXCustomResponder
 
-  ActionController.add_renderer :pdf do |pdf, options|
-    self.headers["Content-Type"] = "application/pdf"
-    self.headers["Content-Disposition"] = %[attachment;filename=#{@report.to_s}.pdf]
-    self.response_body = @report.render_pdf
-  end
-
   ActionController.add_renderer :txt do |txt, options|
     self.headers["Content-Type"] = "text/plain"
     self.headers["Content-Disposition"] = %[attachment;filename=#{@report.to_s}.txt]

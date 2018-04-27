@@ -2,8 +2,8 @@ class PostReport < CMBReport
 
   def sql
     select =<<-SELECTSTATEMENT
-SELECT DISTINCT ON (e.id)
-  CONCAT(p.first_name, ' ', p.last_name) as employee_name,
+SELECT
+  CONCAT(p.last_name, ' ', p.first_name) as employee_name,
   e.id,
   ps.loan_balance as Prev_Loan_Balance,
   COALESCE(pmts.amount,0) as Loan_Payments,
@@ -50,9 +50,7 @@ WHERE
   ps.period_month = :month AND
   ps.period_year = :year
 ORDER BY
-  e.id desc,
-  ps.period_year desc,
-  ps.period_month desc;
+  employee_name asc
     SELECTSTATEMENT
   end
 

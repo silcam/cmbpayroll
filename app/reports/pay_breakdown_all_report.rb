@@ -5,22 +5,27 @@ class PayBreakdownAllReport < CMBReport
 SELECT
   CONCAT(p.last_name, ', ', p.first_name) as employee_name,
   d.name as department,
-  ps.net_pay
+  all_pay.pay,
+  all_pay.type
 FROM
   employees e
-    INNER JOIN people p ON
-      e.person_id = p.id
-    INNER JOIN payslips ps ON
-      e.id = ps.employee_id
-    LEFT OUTER JOIN departments d ON
-      e.department_id = d.id
+    INNER JOIN people p ON e.person_id = p.id
+    LEFT OUTER JOIN (
+        SELECT employee_id, net_pay as pay, 'REGULAR' as type, period_year, period_month
+        FROM payslips
+      UNION ALL
+        SELECT employee_id, vacation_pay_used as pay, 'VACATION' as type, period_year, period_month
+        FROM payslips
+        WHERE vacation_pay_used > 0
+    ) as all_pay ON e.id = all_pay.employee_id
+    LEFT OUTER JOIN departments d ON e.department_id = d.id
 WHERE
   e.employment_status IN :employment_status AND
-  ps.period_year = :year AND
-  ps.period_month = :month AND
+  all_pay.period_year = :year AND
+  all_pay.period_month = :month AND
   e.department_id IN :dept
 ORDER BY
-  employee_name ASC
+  type, employee_name ASC
     SELECTSTATEMENT
   end
 

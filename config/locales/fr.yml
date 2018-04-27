@@ -6,6 +6,9 @@ fr:
       name_shortyear: "%B %y"
       short: "%d %b %Y"
       monthname: "%B"
+      monthname_abbrev: "%b"
+      long: "%A %-d %B %Y"
+      year: "%Y"
   time:
     formats:
       short: "%d %b %Y"

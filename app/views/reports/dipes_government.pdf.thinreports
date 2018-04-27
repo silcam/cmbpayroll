@@ -1,4 +1,24 @@
-report.set_layout tlf: 'reports/dipes_government_report', layout_options: { default: true }
+report.set_layout tlf: 'reports/dipes_government', layout_options: { default: true }
+
+@count = 0
+dipe_page = [
+  SystemVariable.value(:dipe_page_1),
+  SystemVariable.value(:dipe_page_2),
+  SystemVariable.value(:dipe_page_3),
+  SystemVariable.value(:dipe_page_4),
+  SystemVariable.value(:dipe_page_5),
+]
+
+report.on_page_create do |page|
+  if page.layout.default?
+    page.item(:dipe_header).value = dipe_page[@count]
+    page.item(:feuille_header).value(@report.feuille)
+    page.item(:report_month).value(I18n.l(@report.report_period.start, format: :monthname_abbrev, locale: :fr))
+    page.item(:report_year).value(I18n.l(@report.report_period.start, format: :year, locale: :fr))
+  else
+    Rails.logger.error("FOOTER PAGE!")
+  end
+end
 
 @item_page = nil
 @page_no = 1
@@ -90,19 +110,8 @@ def add_summary(list, new_page=true)
     summary_vertical_rows(row)
     row.item(:summary_separator_bottom).show
   end
-
-  # New Page
-  if (new_page)
-    list.page_break
-  end
 end
 
-report.on_page_create do |page|
-  #page.item(:dipe_header).value = @report.dipe_by_page(@page_no)
-  #page.item(:feuille_header).value = 18
-  #page.item(:report_month).value("JAN")
-  #page.item(:report_year).value(1999)
-end
 
 # 1st page
 report.list("dipes_group") do |list|
@@ -167,7 +176,11 @@ report.list("dipes_group") do |list|
 
     unless @item_page == x_group
       @item_page = x_group
+
       add_summary(list)
+
+      @count += 1
+      list.page_break
 
       @salaire_taxable_total = 0
       @salaire_cotisable_total = 0
@@ -184,15 +197,14 @@ report.list("dipes_group") do |list|
       @retenue_surt_prog_last_total = @retenue_surt_prog_grand_total
       @centime_add_com_last_total = @centime_add_com_grand_total
       @retenue_taxe_com_last_total = @retenue_taxe_com_grand_total
-
     end
   end
 
-  add_summary(list, false)
+  add_summary(list)
 
 
   # Switch to new layout for last page which is compltely different
-  report.use_layout 'app/views/reports/dipes_government_report_last_page.tlf', id: :lp
+  report.use_layout 'app/views/reports/dipes_government_footer.tlf', id: :lp
   report.start_new_page layout: :lp do |page|
 
     page.item(:feuille_no).value(@report.feuille)
@@ -207,13 +219,13 @@ report.list("dipes_group") do |list|
     page.item(:surtaxe_prog_total).value(number_to_currency(@retenue_surt_prog_grand_total, unit: '', locale: :cm))
     page.item(:cac_surtaxe_prog_total).value(number_to_currency(@retenue_surt_prog_grand_total, unit: '', locale: :cm))
     page.item(:tax_prop_total).value(number_to_currency(@retenue_taxe_prop_grand_total, unit: '', locale: :cm))
-    page.item(:cac_tax_prop_total).value(number_to_currency((@retenue_taxe_prop_grand_total * 0.01).round, unit: '', locale: :cm)) # VAR
+    page.item(:cac_tax_prop_total).value(number_to_currency((@retenue_taxe_prop_grand_total * SystemVariable.value(:cac)).round, unit: '', locale: :cm))
     page.item(:tax_comm_total).value(number_to_currency(@retenue_taxe_com_grand_total, unit: '', locale: :cm))
-    page.item(:penalties).value(number_to_currency(0, unit: '', locale: :cm)) # VERIFY
+    page.item(:penalties).value(number_to_currency(0, unit: '', locale: :cm))
     page.item(:versement_tresor).value(number_to_currency((
         @retenue_taxe_com_grand_total +
         @retenue_taxe_prop_grand_total +
-        (@retenue_taxe_prop_grand_total * 0.01).round), unit: '', locale: :cm)) # FIX
+        (@retenue_taxe_prop_grand_total * SystemVariable.value(:cac)).round), unit: '', locale: :cm))
 
     page.item(:reg_general_rate).value(
         number_to_percentage(SystemVariable.value(:age_benefits) * 100, precision: 2, format: "%n PC")
@@ -225,20 +237,17 @@ report.list("dipes_group") do |list|
         number_to_percentage(SystemVariable.value(:accident) * 100, precision: 2, format: "%n PC")
     )
 
-    page.item(:page_no).value(@page_no)
-
     page.item(:reg_general_total).value(number_to_currency(
-        (@salaire_cotisable_plafonne_grand_total * 0.07).round, unit: '', locale: :cm)) # VAR
+        (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:age_benefits)).round, unit: '', locale: :cm))
     page.item(:pension_vieillesse_total).value(number_to_currency(
-        (@salaire_cotisable_plafonne_grand_total * 0.084).round, unit: '', locale: :cm)) # VAR
+        (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:emp_cnps) * 2).round, unit: '', locale: :cm))
     page.item(:acc_travail_total).value(number_to_currency(
-        (@salaire_cotisable_plafonne_grand_total * 0.0175).round, unit: '', locale: :cm)) # VAR
+        (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:accident)).round, unit: '', locale: :cm))
     page.item(:versement_cnps_total).value(number_to_currency((
-        (@salaire_cotisable_plafonne_grand_total * 0.07).round +
-        (@salaire_cotisable_plafonne_grand_total * 0.084).round +
-        (@salaire_cotisable_plafonne_grand_total * 0.0175).round), unit: '', locale: :cm)) # VAR
+        (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:age_benefits)).round +
+        (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:emp_cnps) * 2).round +
+        (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:accident)).round), unit: '', locale: :cm))
     page.item(:penalties_retard_total).value(0)
     page.item(:majorat_retard_total).value(0)
   end
 end
-

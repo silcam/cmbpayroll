@@ -1,6 +1,4 @@
-report.set_layout tlf: 'reports/post_report', layout_options: { default: true }
-
-@pages = 0
+report.set_layout tlf: 'reports/post', layout_options: { default: true }
 
 @loan_prev_total = 0
 @loan_payments_total = 0
@@ -11,10 +9,9 @@ report.set_layout tlf: 'reports/post_report', layout_options: { default: true }
 @vacation_used_pay_total = 0
 @vacation_balance_pay_total = 0
 
-
-report.start_page_number_from 1
 report.on_page_create do |page|
-  @pages += 1
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name, locale: :fr).upcase)
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
 end
 
 # 1st page
@@ -68,11 +65,6 @@ report.list("post_report") do |list|
     @vacation_balance_pay_total += x_vacation_balance_pay
   end
 
-  list.on_page_footer_insert do |page_footer|
-    #page_footer.item(:page_num).value(@pages)
-    page_footer.item(:page_total).value()
-  end
-
   list.on_footer_insert do |footer|
     footer.item(:loan_prev_total).value( number_to_currency(@loan_prev_total, unit: '', locale: :cm))
     footer.item(:loans_pmnts_total).value( number_to_currency(@loan_payments_total, unit: '', locale: :cm))
@@ -83,7 +75,6 @@ report.list("post_report") do |list|
     footer.item(:vacation_new_pay_total).value( number_to_currency(@vacation_new_pay_total, unit: '', locale: :cm))
     footer.item(:vacation_used_pay_total).value( number_to_currency(@vacation_used_pay_total, unit: '', locale: :cm))
     footer.item(:vacation_balance_pay_total).value( number_to_currency(@vacation_balance_pay_total, unit: '', locale: :cm))
-
   end
 
 end

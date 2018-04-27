@@ -1,4 +1,4 @@
-report.set_layout tlf: 'reports/active_employee_list', layout_options: { default: true }
+report.set_layout tlf: 'reports/employee', layout_options: { default: true }
 
 @employee_count = 0
 

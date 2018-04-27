@@ -60,9 +60,11 @@ gem 'roman-numerals', '~> 0.3.0'
 # Date Validation
 # gem 'validates_timeliness', '~>4.0'
 
-# Declare I want a specific version of this gem.
+# Update verison for security vulnerability
 # 2.2.1 is a fixed version
 gem 'loofah', '~> 2.2.1'
+# 2.2.1 is a fixed version
+gem 'rails-html-sanitizer', '~>1.0.4'
 
 group :development, :test do
   # Use Puma as the app server in development

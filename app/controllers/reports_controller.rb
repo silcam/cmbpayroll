@@ -15,7 +15,8 @@ class ReportsController < ApplicationController
   REPORTS = {
     'cnps' => {
       name: I18n.t(:Cnps_report, scope: "reports"),
-      instance: Proc.new{|p| CnpsReport.new()}
+      instance: Proc.new{|p| CnpsReport.new()},
+      format: :pdf
     },
     'dept_charge' => {
       name: I18n.t(:Department_charge_report, scope: "reports"),

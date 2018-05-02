@@ -824,7 +824,7 @@
   "state": {
     "layout-guides": []
   },
-  "title": "Post Report",
+  "title": "Transaction Audit Report",
   "report": {
     "paper-type": "A4",
     "orientation": "landscape",

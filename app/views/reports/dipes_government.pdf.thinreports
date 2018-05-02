@@ -15,8 +15,6 @@ report.on_page_create do |page|
     page.item(:feuille_header).value(@report.feuille)
     page.item(:report_month).value(I18n.l(@report.report_period.start, format: :monthname_abbrev, locale: :fr))
     page.item(:report_year).value(I18n.l(@report.report_period.start, format: :year, locale: :fr))
-  else
-    Rails.logger.error("FOOTER PAGE!")
   end
 end
 

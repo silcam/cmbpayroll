@@ -1500,7 +1500,7 @@
   "state": {
     "layout-guides": []
   },
-  "title": "Post Report",
+  "title": "Employee Deduction Report",
   "report": {
     "paper-type": "A4",
     "orientation": "landscape",

@@ -5,7 +5,7 @@ report.on_page_create do |page|
 end
 
 # 1st page
-report.list("employee_list") do |list|
+report.list("cnps") do |list|
 
   @report.results.body.each do |t|
 

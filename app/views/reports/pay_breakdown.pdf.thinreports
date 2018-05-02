@@ -54,7 +54,7 @@ def add_summary(list)
 end
 
 # 1st page
-report.list("employee_list") do |list|
+report.list("pay_breakdown") do |list|
 
   @report.results.body.each do |t|
 

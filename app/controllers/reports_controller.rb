@@ -54,7 +54,8 @@ class ReportsController < ApplicationController
     },
     'employee_by_dept' => {
       name: I18n.t(:Employee_report_by_dept, scope: "reports"),
-      instance: Proc.new{|p| EmployeeByDepartmentReport.new()}
+      instance: Proc.new{|p| EmployeeByDepartmentReport.new()},
+      format: :pdf
     },
     'employee_vacation' => {
       name: I18n.t(:Employee_vacation_report, scope: "reports"),

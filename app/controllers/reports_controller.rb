@@ -39,7 +39,8 @@ class ReportsController < ApplicationController
     },
     'employee_advance_loan' => {
       name: I18n.t(:Employee_advance_and_loan_report, scope: "reports"),
-      instance: Proc.new{|p| EmployeeAdvanceLoanReport.new()}
+      instance: Proc.new{|p| EmployeeAdvanceLoanReport.new()},
+      format: :pdf
     },
     'employee_deduction' => {
       name: I18n.t(:Employee_deduction_report, scope: "reports"),

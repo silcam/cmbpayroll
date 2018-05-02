@@ -73,32 +73,4 @@ ORDER BY
     custom_headers.fetch(column_name.to_sym) { super }
   end
 
-  def format_taxable(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_advance(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_loanbalance(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_loanpaymentsthismonth(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_newloan(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_newloanb(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_balance(value)
-    cfa_nofcfa(value)
-  end
-
 end

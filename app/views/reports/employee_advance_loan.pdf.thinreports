@@ -1,0 +1,61 @@
+report.set_layout tlf: 'reports/employee_advance_loan', layout_options: { default: true }
+
+@taxable_total = 0
+@salary_advance_total = 0
+@loan_balance_total = 0
+@loan_payments_this_month_total = 0
+@new_loans_this_month_total = 0
+@new_loan_balance_total = 0
+@balance_total = 0
+
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name_shortyear, locale: :fr).upcase)
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
+end
+
+# 1st page
+report.list("employee_advance_loan") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_taxable = t[1].to_i
+    x_advance = t[2].to_i
+    x_loan_balance = t[3].to_i
+    x_loan_payments_this_month = t[4].to_i
+    x_new_loans_this_month = t[5].to_i
+    x_new_loan_balance = t[6].to_i
+    x_balance = t[7].to_i
+
+    list.add_row(
+      employee_name: x_employee_name,
+      taxable: number_to_currency(x_taxable, unit: '', locale: :cm),
+      salary_advance: number_to_currency(x_advance, unit: '', locale: :cm),
+      loan_balance: number_to_currency(x_loan_balance, unit: '', locale: :cm),
+      loan_payments_this_month: number_to_currency(x_loan_payments_this_month, unit: '', locale: :cm),
+      new_loans_this_month: number_to_currency(x_new_loans_this_month, unit: '', locale: :cm),
+      new_loan_balance: number_to_currency(x_new_loan_balance, unit: '', locale: :cm),
+      balance: number_to_currency(x_balance, unit: '', locale: :cm),
+    )
+
+    @taxable_total += x_taxable
+    @salary_advance_total += x_advance
+    @loan_balance_total += x_loan_balance
+    @loan_payments_this_month_total += x_loan_payments_this_month
+    @new_loans_this_month_total += x_new_loans_this_month
+    @new_loan_balance_total += x_new_loan_balance
+    @balance_total += x_balance
+
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:taxable_total).value( number_to_currency(@taxable_total, unit: '', locale: :cm))
+    footer.item(:salary_advance_total).value( number_to_currency(@salary_advance_total, unit: '', locale: :cm))
+    footer.item(:loan_balance_total).value( number_to_currency(@loan_balance_total, unit: '', locale: :cm))
+    footer.item(:loan_payments_this_month_total).value( number_to_currency(@loan_payments_this_month_total, unit: '', locale: :cm))
+    footer.item(:new_loans_this_month_total).value( number_to_currency(@new_loans_this_month_total, unit: '', locale: :cm))
+    footer.item(:new_loan_balance_total).value( number_to_currency(@new_loan_balance_total, unit: '', locale: :cm))
+    footer.item(:balance_total).value( number_to_currency(@balance_total, unit: '', locale: :cm))
+  end
+
+end

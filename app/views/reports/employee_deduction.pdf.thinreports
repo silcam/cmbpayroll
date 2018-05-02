@@ -1,0 +1,83 @@
+report.set_layout tlf: 'reports/employee_deduction', layout_options: { default: true }
+
+@gross_pay_total = 0
+@salary_advance_total = 0
+@total_tax_total = 0
+@union_total = 0
+@loan_payment_total = 0
+@photocopies_total = 0
+@telephone_total = 0
+@utilities_total = 0
+@amical_total = 0
+@other_total = 0
+@cash_pay_total = 0
+
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name_shortyear, locale: :fr).upcase)
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
+end
+
+# 1st page
+report.list("employee_deduction") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_employee_id = t[1].to_s
+    x_gross_pay = t[2].to_i
+    x_salary_advance = t[3].to_i
+    x_total_tax = t[4].to_i
+    x_union = t[5].to_i
+    x_loan_payment = t[6].to_i
+    x_photocopies = t[7].to_i
+    x_telephone = t[8].to_i
+    x_utilities = t[9].to_i
+    x_amical = t[10].to_i
+    x_other = t[11].to_i
+    x_net_pay = t[12].to_i
+
+    list.add_row(
+      employee_name: x_employee_name,
+      employee_id: x_employee_id,
+      gross_pay: number_to_currency(x_gross_pay, unit: '', locale: :cm),
+      salary_advance: number_to_currency(x_salary_advance, unit: '', locale: :cm),
+      total_tax: number_to_currency(x_total_tax, unit: '', locale: :cm),
+      union: number_to_currency(x_union, unit: '', locale: :cm),
+      loan_payment: number_to_currency(x_loan_payment, unit: '', locale: :cm),
+      photocopies: number_to_currency(x_photocopies, unit: '', locale: :cm),
+      telephone: number_to_currency(x_telephone, unit: '', locale: :cm),
+      utilities: number_to_currency(x_utilities, unit: '', locale: :cm),
+      amical: number_to_currency(x_amical, unit: '', locale: :cm),
+      other: number_to_currency(x_other, unit: '', locale: :cm),
+      cash_pay: number_to_currency(x_net_pay, unit: '', locale: :cm)
+    )
+
+    @gross_pay_total += x_gross_pay
+    @salary_advance_total += x_salary_advance
+    @total_tax_total += x_total_tax
+    @union_total += x_union
+    @loan_payment_total += x_loan_payment
+    @photocopies_total += x_photocopies
+    @telephone_total += x_telephone
+    @utilities_total += x_utilities
+    @amical_total += x_amical
+    @other_total += x_other
+    @cash_pay_total += x_net_pay
+
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:gross_pay_total).value( number_to_currency(@gross_pay_total, unit: '', locale: :cm))
+    footer.item(:salary_advance_total).value( number_to_currency(@salary_advance_total, unit: '', locale: :cm))
+    footer.item(:total_tax_total).value( number_to_currency(@total_tax_total, unit: '', locale: :cm))
+    footer.item(:union_total).value( number_to_currency(@union_total, unit: '', locale: :cm))
+    footer.item(:loan_payment_total).value( number_to_currency(@loan_payment_total, unit: '', locale: :cm))
+    footer.item(:photocopies_total).value( number_to_currency(@photocopies_total, unit: '', locale: :cm))
+    footer.item(:telephone_total).value( number_to_currency(@telephone_total, unit: '', locale: :cm))
+    footer.item(:utilities_total).value( number_to_currency(@utilities_total, unit: '', locale: :cm))
+    footer.item(:amical_total).value( number_to_currency(@amical_total, unit: '', locale: :cm))
+    footer.item(:other_total).value( number_to_currency(@other_total, unit: '', locale: :cm))
+    footer.item(:cash_pay_total).value( number_to_currency(@cash_pay_total, unit: '', locale: :cm))
+  end
+
+end

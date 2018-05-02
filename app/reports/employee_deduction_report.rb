@@ -42,7 +42,7 @@ FROM
     (SELECT payslip_id, note, amount FROM deductions WHERE note = 'Telephone') dte
     ON dte.payslip_id = ps.id
   LEFT OUTER JOIN
-    (SELECT payslip_id, note, amount FROM deductions WHERE note = 'Salary Advance') dsa
+    (SELECT payslip_id, note, amount FROM deductions WHERE note = '#{Charge::ADVANCE}' OR note = '#{Payslip::LOCATION_TRANSFER}') dsa
     ON dsa.payslip_id = ps.id
 WHERE
   e.employment_status IN :employment_status AND
@@ -73,50 +73,6 @@ ORDER BY
       net_pay: 'Cash Pay'
     }
     custom_headers.fetch(column_name.to_sym) { super }
-  end
-
-  def format_gross_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_salary_advance(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_total_tax(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_union(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_net_pay(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_loan_payment(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_photocopies(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_telephone(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_utilities(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_amical(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_other(value)
-    cfa_nofcfa(value)
   end
 
 end

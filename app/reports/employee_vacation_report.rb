@@ -51,10 +51,6 @@ ORDER BY
     number_with_precision(value, precision: 2)
   end
 
-  def format_vacation_pay_earned(value)
-    cfa_nofcfa(value)
-  end
-
   def format_vacation_earned(value)
     number_with_precision(value, precision: 2)
   end

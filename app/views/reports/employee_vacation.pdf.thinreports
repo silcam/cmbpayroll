@@ -1,0 +1,44 @@
+report.set_layout tlf: 'reports/employee_vacation', layout_options: { default: true }
+
+@reg_vacation_balance_to_date_total = 0
+@reg_vacation_pay_to_date_total = 0
+@reg_vac_days_current_period_total = 0
+
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name_shortyear, locale: :fr).upcase)
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
+end
+
+# 1st page
+report.list("employee_vacation") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_employee_id = t[1].to_i
+    x_vacation_balance = t[2].to_f
+    x_vacation_pay_earned = t[3].to_i
+    x_vacation_earned = t[4].to_f
+    x_last_vacation_end = t[5].to_s
+
+    list.add_row(
+      employee_name: x_employee_name,
+      reg_vacation_balance_to_date: x_vacation_balance,
+      reg_vacation_pay_to_date: number_to_currency(x_vacation_pay_earned, unit: '', locale: :cm),
+      reg_vac_days_current_period: x_vacation_earned,
+      last_vacation_end: x_last_vacation_end
+    )
+
+@reg_vacation_balance_to_date_total += x_vacation_balance
+@reg_vacation_pay_to_date_total += x_vacation_pay_earned
+@reg_vac_days_current_period_total += x_vacation_earned
+
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:reg_vacation_balance_to_date_total).value( @reg_vacation_balance_to_date_total )
+    footer.item(:reg_vacation_pay_to_date_total).value( number_to_currency(@reg_vacation_pay_to_date_total, unit: '', locale: :cm))
+    footer.item(:reg_vac_days_current_period_total).value( @reg_vac_days_current_period_total )
+  end
+
+end

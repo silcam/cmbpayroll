@@ -59,11 +59,12 @@ class ReportsController < ApplicationController
     },
     'employee_vacation' => {
       name: I18n.t(:Employee_vacation_report, scope: "reports"),
-      instance: Proc.new{|p| EmployeeVacationReport.new()}
+      instance: Proc.new{|p| EmployeeVacationReport.new()},
+      format: :pdf
     },
     'pay_breakdown_all' => {
       name: I18n.t(:Pay_breakdown_all_report, scope: "reports"),
-      footer_rows: 1,
+      footer_rows: 1, # FIX
       instance: Proc.new{|p| PayBreakdownAllReport.new()},
       format: :pdf
     },
@@ -75,7 +76,7 @@ class ReportsController < ApplicationController
     },
     'pay_breakdown_nonrfis' => {
       name: I18n.t(:Pay_breakdown_non_rfis_report, scope: "reports"),
-      footer_rows: 1,
+      footer_rows: 1, # FIX
       instance: Proc.new{|p| PayBreakdownNonrfisReport.new()},
       format: :pdf
     },

@@ -1,8 +1,0 @@
-= render(partial: 'dossier/reports/chooser')
-
-%h2= @report.formatted_title
-
-%p= "#{t(:Report_for_period, scope: :reports)}: #{@report.report_period.start} - #{@report.report_period.finish}"
-
-%div.download-links
-  = link_to t(:Download_report_as_text_file, scope: :reports), report_display_path(format: 'text', options: report.options, report: report)

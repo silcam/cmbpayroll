@@ -1,0 +1,688 @@
+{
+  "version": "0.10.0",
+  "items": [
+    {
+      "id": "",
+      "type": "text",
+      "display": true,
+      "description": "",
+      "x": 415,
+      "y": 20,
+      "width": 17.4,
+      "height": 11,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 10,
+        "color": "#000000",
+        "text-align": "left",
+        "vertical-align": "top",
+        "line-height": "",
+        "line-height-ratio": "",
+        "letter-spacing": "",
+        "font-style": []
+      },
+      "texts": [
+        "SIL"
+      ]
+    },
+    {
+      "id": "",
+      "type": "text",
+      "display": true,
+      "description": "",
+      "x": 299,
+      "y": 32,
+      "width": 160.4,
+      "height": 11,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 10,
+        "color": "#000000",
+        "text-align": "left",
+        "vertical-align": "top",
+        "line-height": "",
+        "line-height-ratio": "",
+        "letter-spacing": "",
+        "font-style": []
+      },
+      "texts": [
+        "SALARY CHANGES REPORT FOR"
+      ]
+    },
+    {
+      "id": "salary_changes",
+      "type": "list",
+      "display": true,
+      "description": "",
+      "x": 20,
+      "y": 53,
+      "width": 801.8,
+      "height": 522.2,
+      "header": {
+        "enabled": true,
+        "height": 23,
+        "translate": {
+          "x": 0,
+          "y": -28
+        },
+        "items": [
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 20,
+            "y": 89,
+            "width": 27.1,
+            "height": 11,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Name"
+            ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 266.5,
+            "y": 88.5,
+            "width": 53.2,
+            "height": 11,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "New Cat./Ech."
+            ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 410,
+            "y": 89,
+            "width": 45,
+            "height": 11,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "New Salary"
+            ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 550,
+            "y": 89,
+            "width": 50.6,
+            "height": 11,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Old Cat./Ech."
+            ]
+          },
+          {
+            "id": "",
+            "type": "line",
+            "display": true,
+            "description": "",
+            "style": {
+              "border-color": "#000000",
+              "border-width": 2,
+              "border-style": "solid"
+            },
+            "x1": 20,
+            "y1": 104,
+            "x2": 821.8,
+            "y2": 104
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 715,
+            "y": 89,
+            "width": 69,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "center",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Previous Salary"
+            ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 150,
+            "y": 89,
+            "width": 48.2,
+            "height": 11,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Employee ID"
+            ]
+          }
+        ]
+      },
+      "detail": {
+        "height": 18.2,
+        "translate": {
+          "x": 0,
+          "y": -103.8
+        },
+        "items": [
+          {
+            "id": "employee_name",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 20,
+            "y": 183.8,
+            "width": 96.5,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "new_category_echelon",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 271,
+            "y": 183.8,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "center",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "new_salary",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 405,
+            "y": 183.8,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "old_category_echelon",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 552,
+            "y": 183.8,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "center",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "previous_salary",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 730,
+            "y": 183.8,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "employee_id",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 156,
+            "y": 183.8,
+            "width": 28,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "center",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          }
+        ]
+      },
+      "page-footer": {
+        "enabled": true,
+        "height": 17.1,
+        "translate": {
+          "x": 0,
+          "y": -184.4
+        },
+        "items": [
+          {
+            "id": "",
+            "type": "line",
+            "display": true,
+            "description": "",
+            "style": {
+              "border-color": "#000000",
+              "border-width": 0.5,
+              "border-style": "solid"
+            },
+            "x1": 20,
+            "y1": 287.4,
+            "x2": 821.8,
+            "y2": 287.4
+          },
+          {
+            "id": "",
+            "type": "line",
+            "display": true,
+            "description": "",
+            "style": {
+              "border-color": "#000000",
+              "border-width": 0.5,
+              "border-style": "solid"
+            },
+            "x1": 20,
+            "y1": 289.1,
+            "x2": 821.8,
+            "y2": 289.1
+          }
+        ]
+      },
+      "footer": {
+        "enabled": false,
+        "height": 0,
+        "translate": {
+          "x": 0,
+          "y": -241.4
+        },
+        "items": []
+      },
+      "content-height": 499.20000000000005,
+      "auto-page-break": true
+    },
+    {
+      "id": "report_month",
+      "type": "text-block",
+      "display": true,
+      "description": "",
+      "x": 461,
+      "y": 32,
+      "width": 84.5,
+      "height": 11,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 10,
+        "color": "#000000",
+        "text-align": "left",
+        "vertical-align": "top",
+        "line-height": "",
+        "line-height-ratio": "",
+        "letter-spacing": "",
+        "font-style": [],
+        "overflow": "truncate",
+        "word-wrap": "break-word"
+      },
+      "reference-id": "",
+      "value": "",
+      "multiple-line": false,
+      "format": {
+        "base": "",
+        "type": ""
+      }
+    },
+    {
+      "id": "pageno",
+      "type": "page-number",
+      "display": true,
+      "description": "",
+      "x": 782,
+      "y": 20,
+      "width": 13.5,
+      "height": 9,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 8,
+        "color": "#000000",
+        "text-align": "center",
+        "letter-spacing": "",
+        "font-style": [],
+        "overflow": "truncate"
+      },
+      "format": "{page}",
+      "target": ""
+    },
+    {
+      "id": "",
+      "type": "page-number",
+      "display": true,
+      "description": "",
+      "x": 805.5,
+      "y": 20,
+      "width": 16.3,
+      "height": 9,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 8,
+        "color": "#000000",
+        "text-align": "center",
+        "letter-spacing": "",
+        "font-style": [],
+        "overflow": "truncate"
+      },
+      "format": "{total}",
+      "target": ""
+    },
+    {
+      "id": "date_generated",
+      "type": "text-block",
+      "display": true,
+      "description": "",
+      "x": 20,
+      "y": 20,
+      "width": 107,
+      "height": 9,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 8,
+        "color": "#000000",
+        "text-align": "left",
+        "vertical-align": "top",
+        "line-height": "",
+        "line-height-ratio": "",
+        "letter-spacing": "",
+        "font-style": [],
+        "overflow": "truncate",
+        "word-wrap": "break-word"
+      },
+      "reference-id": "",
+      "value": "",
+      "multiple-line": false,
+      "format": {
+        "base": "",
+        "type": ""
+      }
+    },
+    {
+      "id": "",
+      "type": "text",
+      "display": true,
+      "description": "",
+      "x": 761,
+      "y": 20,
+      "width": 21.2,
+      "height": 9,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 8,
+        "color": "#000000",
+        "text-align": "center",
+        "vertical-align": "top",
+        "line-height": "",
+        "line-height-ratio": "",
+        "letter-spacing": "",
+        "font-style": []
+      },
+      "texts": [
+        "Page"
+      ]
+    },
+    {
+      "id": "",
+      "type": "text",
+      "display": true,
+      "description": "",
+      "x": 797,
+      "y": 20,
+      "width": 9.4,
+      "height": 9,
+      "style": {
+        "font-family": [
+          "Helvetica"
+        ],
+        "font-size": 8,
+        "color": "#000000",
+        "text-align": "center",
+        "vertical-align": "top",
+        "line-height": "",
+        "line-height-ratio": "",
+        "letter-spacing": "",
+        "font-style": []
+      },
+      "texts": [
+        "of"
+      ]
+    }
+  ],
+  "state": {
+    "layout-guides": []
+  },
+  "title": "Salary Changes Report",
+  "report": {
+    "paper-type": "A4",
+    "orientation": "landscape",
+    "margin": [
+      20,
+      20,
+      20,
+      20
+    ]
+  }
+}

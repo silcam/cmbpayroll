@@ -1,0 +1,31 @@
+report.set_layout tlf: 'reports/salary_changes', layout_options: { default: true }
+
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name_shortyear, locale: :fr).upcase)
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
+end
+
+# 1st page
+report.list("salary_changes") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_employee_id = t[1].to_i
+    x_new_cat_ech = t[2].to_s
+    x_new_salary = t[3].to_i
+    x_old_cat_ech = t[4].to_s
+    x_previous_salary = t[5].to_i
+
+    list.add_row(
+      employee_name: x_employee_name,
+      employee_id: x_employee_id,
+      new_category_echelon: x_new_cat_ech.upcase,
+      new_salary: number_to_currency(x_new_salary, unit: '', locale: :cm),
+      old_category_echelon: x_old_cat_ech.upcase,
+      previous_salary: number_to_currency(x_previous_salary, unit: '', locale: :cm)
+    )
+
+  end
+
+end

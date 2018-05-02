@@ -89,12 +89,4 @@ WHERE
     format_cat_ech(value)
   end
 
-  def format_new_salary(value)
-    cfa_nofcfa(value)
-  end
-
-  def format_previous_salary(value)
-    cfa_nofcfa(value)
-  end
-
 end

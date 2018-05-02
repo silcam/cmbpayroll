@@ -100,8 +100,6 @@ ORDER BY
       sums[12] += bd[5]
     end
 
-    @query_results.result.rows << sums
-
   end
 
 end

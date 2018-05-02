@@ -64,19 +64,16 @@ class ReportsController < ApplicationController
     },
     'pay_breakdown_all' => {
       name: I18n.t(:Pay_breakdown_all_report, scope: "reports"),
-      footer_rows: 1, # FIX
       instance: Proc.new{|p| PayBreakdownAllReport.new()},
       format: :pdf
     },
     'pay_breakdown_rfis' => {
       name: I18n.t(:Pay_breakdown_rfis_report, scope: "reports"),
-      footer_rows: 1,
       instance: Proc.new{|p| PayBreakdownRfisReport.new()},
       format: :pdf
     },
     'pay_breakdown_nonrfis' => {
       name: I18n.t(:Pay_breakdown_non_rfis_report, scope: "reports"),
-      footer_rows: 1, # FIX
       instance: Proc.new{|p| PayBreakdownNonrfisReport.new()},
       format: :pdf
     },
@@ -87,7 +84,8 @@ class ReportsController < ApplicationController
     },
     'salary_changes' => {
       name: I18n.t(:Salary_changes_report, scope: "reports"),
-      instance: Proc.new{|p| SalaryChangesReport.new()}
+      instance: Proc.new{|p| SalaryChangesReport.new()},
+      format: :pdf
     },
     'transaction_by_name' => {
       name: I18n.t(:Transaction_audit_report_by_name, scope: "reports"),
@@ -110,7 +108,6 @@ class ReportsController < ApplicationController
 
     if (REPORTS.has_key?(params[:report]))
       @report = REPORTS[params[:report]][:instance].call(params[:period])
-      params[:options][:footer] = REPORTS[params[:report]][:footer_rows]
       @report.set_options(params[:options].to_unsafe_h() || {})
 
       @report_description = @report.report_description

@@ -25,16 +25,16 @@ report.list("post_report") do |list|
     x_loan_payments = t[3].to_i
     x_new_loan = t[4].to_i
     x_balance = t[5].to_i
-    x_vacation_previous_days = t[6].to_i
+    x_vacation_previous_days = t[6].to_f
     x_vacation_previous_pay = t[7].to_i
-    x_vacation_new_days = t[8].to_i
+    x_vacation_new_days = t[8].to_f
     x_vacation_new_pay = t[9].to_i
-    x_vacation_used_days = t[10].to_i
+    x_vacation_used_days = t[10].to_f
     x_vacation_used_pay = t[11].to_i
-    x_vacation_balance_days = t[12].to_i
+    x_vacation_balance_days = t[12].to_f
     x_vacation_balance_pay = t[13].to_i
     x_last_vacation = t[14].to_s
-    x_supp_days_given = t[15].to_i
+    x_supp_days_given = t[15].to_f
 
     list.add_row(
       employee_name: x_employee_name,

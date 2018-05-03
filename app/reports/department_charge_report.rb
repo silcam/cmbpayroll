@@ -21,21 +21,21 @@ SELECT
   ps.vacation_pay_earned as vacation_pay,
   ps.employee_fund,
   ps.employee_contribution,
-  ps.taxable +
-      b.add_pay +
-      ps.department_cnps +
-      ps.department_credit_foncier +
-      ps.vacation_pay_earned +
-      ps.employee_fund +
-      ps.employee_contribution as total_charge,
+  COALESCE(ps.taxable,0) +
+      COALESCE(b.add_pay,0) +
+      COALESCE(ps.department_cnps,0) +
+      COALESCE(ps.department_credit_foncier,0) +
+      COALESCE(ps.vacation_pay_earned,0) +
+      COALESCE(ps.employee_fund,0) +
+      COALESCE(ps.employee_contribution,0) as total_charge,
   wlp.percentage as dept_percentage,
-  floor((ps.taxable +
-      b.add_pay +
-      ps.department_cnps +
-      ps.department_credit_foncier +
-      ps.vacation_pay_earned +
-      ps.employee_fund +
-      ps.employee_contribution) * wlp.percentage) as dept_charge
+  floor((COALESCE(ps.taxable,0) +
+      COALESCE(b.add_pay,0) +
+      COALESCE(ps.department_cnps,0) +
+      COALESCE(ps.department_credit_foncier,0) +
+      COALESCE(ps.vacation_pay_earned,0) +
+      COALESCE(ps.employee_fund,0) +
+      COALESCE(ps.employee_contribution,0)) * wlp.percentage) as dept_charge
 FROM
   employees e
     INNER JOIN people p ON e.person_id = p.id
@@ -52,11 +52,11 @@ FROM
     INNER JOIN departments d ON wlp.department_id = d.id
     INNER JOIN departments ed ON e.department_id = ed.id
 WHERE
-  e.employment_status in (0,1,2) AND
+  e.employment_status in :employment_status AND
   ps.period_year = :year AND
   ps.period_month = :month
 ORDER BY
-  department_id, employee_name ASC;
+  department_id, employee_name ASC
     SELECTSTATEMENT
   end
 

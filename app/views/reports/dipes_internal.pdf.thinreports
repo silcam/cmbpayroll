@@ -168,19 +168,20 @@ report.list("dipes_group") do |list|
     x_cnps_no = t[2].to_s
     x_employee_name = t[3].to_s
     x_employee_id = t[4].to_i
-    x_year = t[5].to_s
-    x_salaire_brut = t[6].to_i
-    x_salaire_taxable = t[7].to_i
-    x_montant_total = t[8].to_i
-    x_montant_total_plafonne = t[9].to_i
-    x_tax_prop = t[10].to_i
-    x_tax_progress = t[11].to_i
-    x_tax_cac = t[12].to_i
-    x_tax_cnps = t[13].to_i
-    x_tax_common = t[14].to_i
-    x_credit_foncier = t[15].to_i
-    x_tax_crtv = t[16].to_i
-    x_total_tax = t[17].to_i
+    x_days = t[5].to_i
+    x_year = t[6].to_s
+    x_salaire_brut = t[7].to_i
+    x_salaire_taxable = t[8].to_i
+    x_montant_total = t[9].to_i
+    x_montant_total_plafonne = t[10].to_i
+    x_tax_prop = t[11].to_i
+    x_tax_progress = t[12].to_i
+    x_tax_cac = t[13].to_i
+    x_tax_cnps = t[14].to_i
+    x_tax_common = t[15].to_i
+    x_credit_foncier = t[16].to_i
+    x_tax_crtv = t[17].to_i
+    x_total_tax = t[18].to_i
 
     if x_group.nil?
       @item_page = "X"
@@ -201,6 +202,7 @@ report.list("dipes_group") do |list|
       cnps_no: x_cnps_no,
       employee_name: x_employee_name,
       employee_id: x_employee_id,
+      days: x_days,
       salaire_brut: number_to_currency(x_salaire_brut, unit: '', locale: :cm),
       salaire_taxable: number_to_currency(x_salaire_taxable, unit: '', locale: :cm),
       montant_total: number_to_currency(x_montant_total, unit: '', locale: :cm),

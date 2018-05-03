@@ -129,10 +129,10 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 276.4,
+            "x": 273,
             "y": 107,
-            "width": 35.1,
-            "height": 24,
+            "width": 23.8,
+            "height": 23.5,
             "style": {
               "font-family": [
                 "Helvetica"
@@ -156,9 +156,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 315,
+            "x": 330,
             "y": 107,
-            "width": 32.5,
+            "width": 26,
             "height": 24,
             "style": {
               "font-family": [
@@ -183,9 +183,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 364.5,
+            "x": 380,
             "y": 107,
-            "width": 37,
+            "width": 28.6,
             "height": 24.5,
             "style": {
               "font-family": [
@@ -210,9 +210,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 410.5,
+            "x": 425,
             "y": 107,
-            "width": 38,
+            "width": 32,
             "height": 25.5,
             "style": {
               "font-family": [
@@ -237,9 +237,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 461.5,
+            "x": 471,
             "y": 107,
-            "width": 40.6,
+            "width": 32.6,
             "height": 22.5,
             "style": {
               "font-family": [
@@ -263,9 +263,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 507.5,
+            "x": 515,
             "y": 107,
-            "width": 39.5,
+            "width": 32.5,
             "height": 23.5,
             "style": {
               "font-family": [
@@ -290,9 +290,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 549.5,
+            "x": 556,
             "y": 107.5,
-            "width": 39.5,
+            "width": 33.5,
             "height": 23.5,
             "style": {
               "font-family": [
@@ -317,9 +317,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 592.5,
+            "x": 608,
             "y": 107,
-            "width": 39.5,
+            "width": 24,
             "height": 23.5,
             "style": {
               "font-family": [
@@ -343,9 +343,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 634.5,
+            "x": 650,
             "y": 107,
-            "width": 39.5,
+            "width": 22.9,
             "height": 23.5,
             "style": {
               "font-family": [
@@ -369,9 +369,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 676.5,
+            "x": 688,
             "y": 107,
-            "width": 39.5,
+            "width": 27.5,
             "height": 23.5,
             "style": {
               "font-family": [
@@ -396,9 +396,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 719,
+            "x": 735,
             "y": 107,
-            "width": 39.5,
+            "width": 22.4,
             "height": 23.5,
             "style": {
               "font-family": [
@@ -425,7 +425,7 @@
             "description": "",
             "x": 762.5,
             "y": 107,
-            "width": 47.5,
+            "width": 41,
             "height": 23.5,
             "style": {
               "font-family": [
@@ -458,6 +458,32 @@
             "y1": 128,
             "x2": 821.8,
             "y2": 128
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 301,
+            "y": 107,
+            "width": 18.2,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": []
+            },
+            "texts": [
+              "Days"
+            ]
           }
         ]
       },
@@ -571,7 +597,7 @@
             "description": "",
             "x": 273.9,
             "y": 193,
-            "width": 33.6,
+            "width": 24.6,
             "height": 9,
             "style": {
               "font-family": [
@@ -601,9 +627,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 315,
+            "x": 319.5,
             "y": 193,
-            "width": 45.6,
+            "width": 41.1,
             "height": 9,
             "style": {
               "font-family": [
@@ -1059,6 +1085,38 @@
             "y1": 193,
             "x2": 821.8,
             "y2": 193
+          },
+          {
+            "id": "days",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 300,
+            "y": 193,
+            "width": 17.5,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "center",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
           }
         ]
       },

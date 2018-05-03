@@ -5,10 +5,10 @@ class PostReport < CMBReport
 SELECT
   CONCAT(p.last_name, ' ', p.first_name) as employee_name,
   e.id,
-  ps.loan_balance as Prev_Loan_Balance,
+  (ps.loan_balance + COALESCE(pmts.amount,0) - COALESCE(nl.amount,0)) as Prev_Loan_Balance,
   COALESCE(pmts.amount,0) as Loan_Payments,
   COALESCE(nl.amount,0) as New_Loan,
-  (ps.loan_balance - COALESCE(pmts.amount,0) + COALESCE(nl.amount,0)) as Balance,
+  ps.loan_balance as Balance,
   ps.vacation_balance - ps.vacation_earned as Vacation_Previous_Days,
   ps.vacation_pay_balance - ps.vacation_pay_earned as Vacation_Previous_Pay,
   ps.vacation_earned as Vacation_New_Days,

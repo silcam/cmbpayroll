@@ -17,8 +17,9 @@ SELECT
     ELSE substr(dipe,1,1)
   END as Group,
   substr(e.cnps,0,9) as cnpsno,
-  CONCAT(p.first_name, ' ', p.last_name) as employee_name,
+  CONCAT(p.last_name, ' ', p.first_name) as employee_name,
   e.id as EmployeeId,
+  DATE_PART('days', DATE_TRUNC('month',concat(ps.period_year,'-',ps.period_month,'-01')::date) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL) as days,
   ps.period_year as year,
   ps.taxable as SalBrut,
   ps.taxable as SalTax,
@@ -43,7 +44,7 @@ WHERE
   ps.period_year = '2018' AND
   ps.period_month = '01'
 ORDER BY
-  dipeno, cnpsno ASC
+  dipeno, cnpsno, employee_name ASC
     SELECTSTATEMENT
   end
 

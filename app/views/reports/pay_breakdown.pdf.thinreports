@@ -84,8 +84,7 @@ report.list("pay_breakdown") do |list|
 
       list.add_row() do |row| # Blank Row
         row.item(:pay_type).show
-        row.item(:pay_type).value = x_type
-        row.item(:pay_type_header).show
+        row.item(:pay_type).value = "#{x_type} PAYSLIPS"
       end
     end
 

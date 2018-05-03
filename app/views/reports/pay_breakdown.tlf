@@ -890,34 +890,6 @@
               "base": "",
               "type": ""
             }
-          },
-          {
-            "id": "pay_type_header",
-            "type": "text",
-            "display": false,
-            "description": "",
-            "x": 84,
-            "y": 184.8,
-            "width": 38.9,
-            "height": 11.7,
-            "style": {
-              "font-family": [
-                "Helvetica"
-              ],
-              "font-size": 8,
-              "color": "#000000",
-              "text-align": "left",
-              "vertical-align": "top",
-              "line-height": "",
-              "line-height-ratio": "",
-              "letter-spacing": "",
-              "font-style": [
-                "bold"
-              ]
-            },
-            "texts": [
-              "PAYSLIPS"
-            ]
           }
         ]
       },

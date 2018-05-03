@@ -43,14 +43,14 @@ report.list("post_report") do |list|
       loans_pmnts: number_to_currency(x_loan_payments, unit: '', locale: :cm),
       loans_new_loan: number_to_currency(x_new_loan, unit: '', locale: :cm),
       loans_balance: number_to_currency(x_balance, unit: '', locale: :cm),
-      vacation_previous_days: x_vacation_previous_days,
-      vacation_previous_pay: x_vacation_previous_pay,
-      vacation_new_days: x_vacation_new_days,
-      vacation_new_pay: x_vacation_new_pay,
-      vacation_used_days: x_vacation_used_days,
-      vacation_used_pay: x_vacation_used_pay,
-      vacation_balance_days: x_vacation_balance_days,
-      vacation_balance_pay: x_vacation_balance_pay,
+      vacation_previous_days: number_with_precision(x_vacation_previous_days, precision: 1),
+      vacation_previous_pay: number_to_currency(x_vacation_previous_pay, unit: '', locale: :cm),
+      vacation_new_days: number_with_precision(x_vacation_new_days, precision: 1),
+      vacation_new_pay: number_to_currency(x_vacation_new_pay, unit: '', locale: :cm),
+      vacation_used_days: number_with_precision(x_vacation_used_days, precision: 1),
+      vacation_used_pay: number_to_currency(x_vacation_used_pay, unit: '', locale: :cm),
+      vacation_balance_days: number_with_precision(x_vacation_balance_days, precision: 1),
+      vacation_balance_pay: number_to_currency(x_vacation_balance_pay, unit: '', locale: :cm),
       last_vacation_date: x_last_vacation
     )
 

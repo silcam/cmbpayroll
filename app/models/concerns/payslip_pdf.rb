@@ -25,10 +25,7 @@ class PayslipPdf < CmbPayrollPdf
       @is_payslip = true
 
       @total_deductions = @payslip.first_page_deductions_sum()
-      @total_pay = @payslip.taxable - (
-          @payslip.total_tax +
-          @payslip.union_dues.to_i +
-          @payslip.salary_advance.to_i )
+      @total_pay = @payslip.total_pay()
 
       first_page
       second_page

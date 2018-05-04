@@ -1466,6 +1466,12 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(new_exp_taxable - exp_total_tax - employee.amical, payslip.raw_net_pay)
     # This is rounded.
     assert_equal(Payslip.cfa_round(new_exp_taxable - exp_total_tax - employee.amical), payslip.net_pay)
+
+    # Total Pay
+    total_pay = payslip.taxable - (payslip.total_tax) +
+        payslip.union_dues +
+          payslip.salary_advance
+    assert_equal(total_pay, payslip.total_pay(), "total pay correct")
   end
 
   test "CFA Round" do

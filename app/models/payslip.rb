@@ -140,11 +140,13 @@ class Payslip < ApplicationRecord
   end
 
   def union_dues
-    deductions.where(note: Employee::UNION).take&.amount
+    dues = deductions.where(note: Employee::UNION).take&.amount
+    dues.nil? ? 0 : dues
   end
 
   def salary_advance
-    deductions.advances.sum(:amount)
+    advance = deductions.advances.sum(:amount)
+    advance.nil? ? 0 : advance
   end
 
   def salary_earnings
@@ -154,6 +156,10 @@ class Payslip < ApplicationRecord
 
   def first_page_deductions_sum
     total_tax.to_i + union_dues.to_i + salary_advance.to_i
+  end
+
+  def total_pay
+    taxable - (total_tax + union_dues + salary_advance)
   end
 
   def period

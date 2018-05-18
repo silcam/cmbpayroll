@@ -283,28 +283,43 @@ class VacationTest < ActiveSupport::TestCase
     assert(vacay.paid?, "should be paid now")
   end
 
-  test "Vacation Can Figure Daily Vacation Rate" do
-    employee = return_valid_employee()
-
-    pay = Payslip.find_pay(employee)
-    assert_equal(3405.167, Vacation.vacation_daily_rate(pay).round(3))
-  end
-
   test "Vacation knows how much should be paid for vacations" do
-    pay = Payslip.find_pay(@luke)
-    vacation_rate = Vacation.vacation_daily_rate(pay)
+    payslip = @luke.payslip_for(Period.from_date(@lukes_vacation.start_date))
+    assert(payslip, "payslip exists")
 
+    # make payslip valid.
+    payslip.net_pay = 342345
+    create_earnings(payslip)
+
+    # Set up balances.
+    payslip.vacation_balance = 42.0
+    payslip.vacation_pay_balance = 286978
+    assert(payslip.save, "should save properly")
+
+    # Vacation pay is the total pay balance / total days balance * vac days
+    assert_equal(42.0, payslip.vacation_balance)
+    assert_equal(286978, payslip.vacation_pay_balance)
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
-    assert_equal((21 * vacation_rate).ceil, @lukes_vacation.vacation_pay,
-        "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
+    assert_equal(143489, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
   end
 
   test "Vacation (payslip) can figure how much taxes are for this vacation" do
-    pay = Payslip.find_pay(@luke)
-    vacation_rate = Vacation.vacation_daily_rate(pay)
+    payslip = @luke.payslip_for(Period.from_date(@lukes_vacation.start_date))
+    assert(payslip, "payslip exists")
 
+    # make payslip valid.
+    payslip.net_pay = 342345
+    create_earnings(payslip)
+
+    # Set up balances.
+    payslip.vacation_balance = 42.0
+    payslip.vacation_pay_balance = 286978
+    assert(payslip.save, "should save properly")
+
+    # Do the test.
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
-    assert_equal((21 * vacation_rate).ceil, @lukes_vacation.vacation_pay,
+    assert_equal(6832.810, payslip.vacation_daily_rate.round(3), "can compute vacation rate")
+    assert_equal((21 * payslip.vacation_daily_rate).ceil, @lukes_vacation.vacation_pay,
         "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
 
     tax = Tax.compute_taxes(@luke, @lukes_vacation.vacation_pay, @lukes_vacation.vacation_pay)
@@ -356,7 +371,121 @@ class VacationTest < ActiveSupport::TestCase
     refute(vac.destroy, "cannot delete a paid vacation")
   end
 
+  test "Days in Period" do
+    aug = Period.new(2018,8)
+    sept = Period.new(2018,9)
+    oct = Period.new(2018,10)
+
+    # Days
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-12"
+    vac.end_date = "2018-09-14"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.destroyable?)
+
+    assert_equal(0, vac.days_in_period(aug))
+    assert_equal(3, vac.days_in_period(sept))
+    assert_equal(0, vac.days_in_period(oct))
+  end
+
+  test "Days in Period with Holiday" do
+    aug = Period.new(2018,8)
+    sept = Period.new(2018,9)
+    oct = Period.new(2018,10)
+
+    holiday = Holiday.new
+    holiday.name = "September Day"
+    holiday.date = "2018-09-13"
+    assert(holiday.save)
+
+    # Days
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-12"
+    vac.end_date = "2018-09-14"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.destroyable?)
+
+    assert_equal(0, vac.days_in_period(aug))
+    assert_equal(2, vac.days_in_period(sept))
+    assert_equal(0, vac.days_in_period(oct))
+  end
+
+  test "Days in Period with Vacation Spanning into Month" do
+    aug = Period.new(2018,8)
+    sept = Period.new(2018,9)
+    oct = Period.new(2018,10)
+
+    # Days
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-08-29"
+    vac.end_date = "2018-09-14"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.destroyable?)
+
+    assert_equal(3, vac.days_in_period(aug))
+    assert_equal(10, vac.days_in_period(sept))
+    assert_equal(0, vac.days_in_period(oct))
+  end
+
+  test "Days in Period with Vacation Spanning out of Month" do
+    aug = Period.new(2018,8)
+    sept = Period.new(2018,9)
+    oct = Period.new(2018,10)
+
+    # Days
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-21"
+    vac.end_date = "2018-10-08"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.destroyable?)
+
+    assert_equal(0, vac.days_in_period(aug))
+    assert_equal(6, vac.days_in_period(sept))
+    assert_equal(6, vac.days_in_period(oct))
+  end
+
+  test "Days in Period with Vacation Spanning across Month" do
+    aug = Period.new(2018,8)
+    sept = Period.new(2018,9)
+    oct = Period.new(2018,10)
+
+    # Days
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-08-21"
+    vac.end_date = "2018-10-08"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.destroyable?)
+
+    assert_equal(9, vac.days_in_period(aug))
+    assert_equal(20, vac.days_in_period(sept))
+    assert_equal(6, vac.days_in_period(oct))
+  end
+
   test "Can find out days used and pay earned per month" do
+    sept = Period.new(2018,9)
+    oct = Period.new(2018,10)
+
+    # Need to have a payslip in the start_date Period
+    sept_ps = @luke.payslip_for(sept)
+    sept_ps = create_and_return_payslip(@luke, sept) if (sept_ps.nil?)
+
+    sept_ps.vacation_balance = 25
+    sept_ps.vacation_pay_balance = 152423
+    assert_equal(6096.92, sept_ps.vacation_daily_rate)
+    assert(sept_ps.valid?)
+    assert(sept_ps.save)
+
+    # Create and init vacation
     vac = Vacation.new
     vac.employee = @luke
     vac.start_date = "2018-09-12"
@@ -367,14 +496,12 @@ class VacationTest < ActiveSupport::TestCase
     vac.paid = true
 
     # Count Vac Days/Pay for September
-    sept = Period.new(2018,9)
-    assert_equal(55746, Vacation.pay_earned(@luke, sept), "correct vacation pay for September")
-    assert_equal(13, Vacation.days_used(@luke, sept), "correct number of days in September counted")
+    assert_equal(13, vac.days_in_period(sept), "correct number of days in September counted")
+    assert_equal(79260, vac.pay_per_period(sept), "correct vacation pay for September")
 
     # Count Vac Days/Pay for October
-    oct = Period.new(2018,10)
-    assert_equal(47170, Vacation.pay_earned(@luke, oct), "correct vacation pay for October")
-    assert_equal(11, Vacation.days_used(@luke, oct), "correct number of days in October counted")
+    assert_equal(11, vac.days_in_period(oct), "correct number of days in October counted")
+    assert_equal(67066, vac.pay_per_period(oct), "correct vacation pay for October")
   end
 
   test "printing makes paid and saves vacation pay total" do
@@ -382,19 +509,49 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(0, @lukes_vacation.changes.size, "nothing to be saved to the DB")
 
     @lukes_vacation.prep_print
-    assert_equal(2, @lukes_vacation.changes.size, "vacation pay and paid to be saved to the DB #{@lukes_vacation.changes.inspect}")
+    assert(@lukes_vacation.vacation_pay, "has vacation pay")
     assert(@lukes_vacation.paid?, "paid now")
   end
 
-  # test "Missed Days and Hours" do
-  #   june = Period.new(2017, 6)
-  #   assert_equal 5, Vacation.missed_days(@anakin, june)
-  #   assert_equal 40, Vacation.missed_hours(@anakin, june)
-  #   Date.stub :today, Date.new(2017, 6, 7) do
-  #     assert_equal 2, Vacation.missed_days_so_far(@anakin)
-  #     assert_equal 16, Vacation.missed_hours_so_far(@anakin)
-  #   end
-  # end
+  test "Supplemental Days" do
+    # You get your supplemental days on your anniversary.
+    # All at once.
+    on_sep_5 do #2017
+      employee = return_valid_employee()
+      employee.contract_start = "1990-09-02"
+
+      period = Period.current
+      assert_equal(10, Vacation.supplemental_days(employee, period), "Correct Suppl Days")
+    end
+
+    # Other months you get nothing.
+    on_sep_5 do #2017
+      employee = return_valid_employee()
+      employee.contract_start = "1990-05-02"
+
+      period = Period.current
+      assert_equal(0, Vacation.supplemental_days(employee, period), "Correct Suppl Days")
+    end
+  end
+
+  test "mom_supplemental_days and period_supplemental_days" do
+    Date.stub :today, Date.new(2018, 5, 18) do
+      employee = return_valid_employee()
+      employee.contract_start = "2008-07-28"
+      employee.person.gender = "female"
+      child = Child.new
+      child.birth_date = "2013-01-13"
+      child.first_name = "Bob"
+      child.last_name = "Hob"
+      employee.person.children << child
+      assert(child.valid?)
+      assert(employee.valid?)
+
+      msd = Vacation.mom_supplemental_days(employee)
+      assert_equal(2, msd, "should get 2 days")
+      assert_equal(0.5, Vacation.period_supplemental_days(employee, Period.new(2018,1)))
+    end
+  end
 
   def end_of_aug_vacay
     @luke.vacations.new(start_date: '2017-08-31', end_date: '2017-09-01')

@@ -2,6 +2,7 @@ class Payslip < ApplicationRecord
 
   VACATION_PAY = "Salaire de congé"
   LOCATION_TRANSFER = "Salary Transfer to Other Office Location"
+  STANDARD_DAYS_EARNED = SystemVariable.value(:vacation_days).fdiv(Vacation::MONTHLY)
 
   has_many :earnings
   has_many :deductions
@@ -42,23 +43,6 @@ class Payslip < ApplicationRecord
     payslip.period_year = period.year
     payslip.period_month = period.month
     return payslip
-  end
-
-  def self.find_pay(employee, period=Period.current)
-    # Create a dummy payslip
-    payslip = Payslip.new(period_year: period.year, period_month: period.month)
-    payslip.employee = employee
-    payslip.store_employee_attributes
-    # Compute pay
-    payslip.process_taxable_wage(true)
-    wage = payslip.cnpswage
-
-#    Rails.logger.error(payslip.inspect)
-
-    # Delete it.
-    payslip.delete
-
-    wage
   end
 
   def self.process(employee, period=Period.current)
@@ -155,11 +139,11 @@ class Payslip < ApplicationRecord
   end
 
   def first_page_deductions_sum
-    total_tax.to_i + union_dues.to_i + salary_advance.to_i
+    total_tax.to_i + + salary_advance.to_i
   end
 
   def total_pay
-    taxable - (total_tax + union_dues + salary_advance)
+    taxable - (total_tax + salary_advance)
   end
 
   def period
@@ -170,7 +154,7 @@ class Payslip < ApplicationRecord
     end
   end
 
-  def base_pay(override = false)
+  def base_pay
     # If we have a bonus base, we've already run
     if (self[:bonusbase])
       return self[:basepay]
@@ -185,7 +169,7 @@ class Payslip < ApplicationRecord
 
     earning = Earning.new
 
-    if (override || (worked_full_month? && employee.paid_monthly?))
+    if (worked_full_month? && employee.paid_monthly?)
       earning.description = "Monthly Wages"
       earning.amount = employee.wage
     elsif (employee.paid_monthly? && days > 0)
@@ -288,16 +272,16 @@ class Payslip < ApplicationRecord
     self[:overtime_earnings] = ot1_earnings + ot2_earnings + ot3_earnings
   end
 
-  def compute_bonusbase(override = false)
-    self[:bonusbase] = ( base_pay(override) + overtime_earnings ).ceil
+  def compute_bonusbase
+    self[:bonusbase] = ( base_pay + overtime_earnings ).ceil
   end
 
-  def compute_caissebase(override = false)
-    self[:caissebase] = ( compute_bonusbase(override) + seniority_bonus ).ceil
+  def compute_caissebase
+    self[:caissebase] = ( compute_bonusbase + seniority_bonus ).ceil
   end
 
-  def compute_cnpswage(override = false)
-    self[:cnpswage] = ( compute_caissebase(override) + process_bonuses + misc_pay ).ceil
+  def compute_cnpswage
+    self[:cnpswage] = ( compute_caissebase + process_bonuses + misc_pay ).ceil
 
     # NOTE: this previously used the Format(value, "0") VBA function, which I
     # intepreted as integer truncation.
@@ -313,11 +297,11 @@ class Payslip < ApplicationRecord
     self[:cnpswage]
   end
 
-  def process_taxable_wage(override = false)
+  def process_taxable_wage
     transportation = employee.transportation ? employee.transportation : 0
     transportation = 0 if on_vacation_entire_period?
 
-    self[:taxable] = ( compute_cnpswage(override) + transportation ).ceil
+    self[:taxable] = ( compute_cnpswage + transportation ).ceil
 
     # NOTE: this previously used the Format(value, "0") VBA function, which I
     # intepreted as integer truncation.
@@ -347,7 +331,11 @@ class Payslip < ApplicationRecord
     self[:cac2] = tax.cac2
     self[:communal] = tax.communal
 
-    self[:total_tax] = tax.total_tax
+    if (tax.total_tax > 0)
+      self[:total_tax] = tax.total_tax + employee.union_dues_amount
+    else
+      self[:total_tax] = tax.total_tax
+    end
   end
 
   # After all calculations, compute net pay from gross pay
@@ -487,6 +475,18 @@ class Payslip < ApplicationRecord
     end
   end
 
+  # Daily rate to be applied to figure vacation pay
+  # (daily_rate * no_vacation_days)
+  def vacation_daily_rate
+    return 0 if (vacation_balance == 0)
+    vacation_pay_balance.fdiv(vacation_balance.to_f)
+  end
+
+  def calc_vacation_pay_earned
+    # TODO/FIXME, incorporate supplemental pay?
+    taxable.fdiv(SystemVariable.value(:vacation_pay_factor)).ceil
+  end
+
   private
 
   def on_vacation_entire_period?
@@ -523,8 +523,8 @@ class Payslip < ApplicationRecord
       payslip.reset_payslip
       payslip.store_employee_attributes
 
-      self.process_vacation(payslip, employee, period)
       self.process_earnings_and_taxes(payslip, employee, period)
+      self.process_vacation(payslip, employee, period)
 
       self.process_charges(payslip, employee)
       payslip.process_employee_deductions()
@@ -627,22 +627,25 @@ class Payslip < ApplicationRecord
   end
 
   def self.process_vacation(payslip, employee, period)
-    payslip.vacation_earned = Vacation.days_earned(employee, period)
-    payslip.vacation_used = Vacation.days_used(employee, period)
-    payslip.vacation_balance = Vacation.balance(employee, period)
-    payslip.vacation_pay_balance = Vacation.pay_earned_with_days(employee, period, payslip.vacation_balance)
+    # Current vacation balances should be kept as a running total in order
+    # to determine the correct "rate" to be used as vacation pay.
+    # Additionally, the 'accum' values as kept as accumulated vacation to
+    # give the correct rate for supplemental days, at which point they are
+    # cleared and reset.
+    #   See: accum_reg_days
+    #        accum_reg_pay
+    #        accum_suppl_days
+    #        accum_suppl_pay
+    #        accum_suppl_pay
+    # And `period_suppl_days` is supplemental days that are received for this
+    # period only
+    # For many of these items, they must be kept in the db for ease of reporting.
+    previous_payslip = payslip.previous
 
-    payslip.vacation_pay_used = Vacation.pay_earned(employee, period)
-    payslip.vacation_pay_earned = Vacation.pay_earned_with_days(employee, period, payslip.vacation_earned)
-
-    # payslip.vacation_pay_used = payslip.calculate_vacation_pay_used
-    # payslip.vacation_pay_balance = payslip.calculate_vacation_pay_balance
-
-    last_vacation = employee.vacations.where('end_date <= ?', period.finish).last
-    unless last_vacation.nil?
-      payslip.last_vacation_start = last_vacation.start_date
-      payslip.last_vacation_end = last_vacation.end_date
-    end
+    compute_new_days_and_new_pay(payslip)
+    accumulate_days(previous_payslip, payslip)
+    compute_days_used_and_current_balance(previous_payslip, payslip)
+    store_last_vacation(payslip)
   end
 
   def self.process_loans(payslip, employee, period)
@@ -678,6 +681,111 @@ class Payslip < ApplicationRecord
       end
     end
   end
+
+  ### BEGIN NEW VACATION METHODS
+
+  def self.compute_new_days_and_new_pay(payslip)
+    # Compute New Days Earned (1.5)
+    # Compute New Pay Earned (taxable / 16)
+
+    # Number of days earned.
+    # NOTE: Do not earn days if no days worked this month. Need to verify.
+    unless (payslip.days == 0)
+
+      # FIXME: Check for supplemental days.
+
+      payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
+      # Pay Earned based on 16th of salary.
+      # TODO, supplemental days and supplemental pay.
+      payslip.vacation_pay_earned = payslip.calc_vacation_pay_earned
+    else
+      payslip.vacation_earned = 0
+      payslip.vacation_pay_earned = 0
+    end
+  end
+
+  def self.accumulate_days(previous_payslip, payslip)
+    # Take old values and add new values on.
+    prev_reg_days = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_days || 0
+    prev_reg_pay = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_pay || 0
+    prev_vac_earned = previous_payslip.nil? ? 0 : previous_payslip.vacation_earned || 0
+    prev_vac_pay_earned = previous_payslip.nil? ? 0 : previous_payslip.vacation_pay_earned || 0
+    prev_sup_days = previous_payslip.nil? ? 0 : previous_payslip.accum_suppl_days || 0
+    prev_sup_pay = previous_payslip.nil? ? 0 : previous_payslip.accum_suppl_pay || 0
+
+    # FIXME: This is dumb we don't know what we have until we add them together from last month.
+    payslip.accum_reg_days = prev_reg_days + prev_vac_earned
+    payslip.accum_reg_pay = prev_reg_pay + prev_vac_pay_earned
+
+    # No supplemental days accumulation if you don't earn normal days.
+    # otherwise, you divide by zero and the world explodes.
+    if (prev_reg_days == 0)
+      payslip.accum_suppl_days = 0
+      payslip.accum_suppl_pay = 0
+    else
+      # Take what the accumulated supplemental days are worth right now, based on VP "rate" per day.
+      prev_period_suppl_days = previous_payslip.nil? ? 0 : previous_payslip.period_suppl_days || 0
+      payslip.accum_suppl_days = prev_sup_days + prev_period_suppl_days
+      payslip.accum_suppl_pay = (prev_reg_pay.fdiv(prev_reg_days) * payslip.accum_suppl_days).ceil
+    end
+
+    # How many supplemental days this employee gets this period, likely < 1
+    payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
+  end
+
+  def self.compute_days_used_and_current_balance(previous_payslip, payslip)
+    #Compute Days Used (this month) Vacation.days_used
+    #Compute Pay Used (pay_balance / days_balance * days_used)
+
+    #Get Previous Vacation Balance (last month's payslip or 0)
+    #Get Previous Vacation Pay Balance (last month's payslip or 0)
+    # TODO, pull from member variables from previous_payslip?
+    # We can get the balance of days, but not easily the balance of pay.
+    prev_balance = previous_payslip.nil? ? Vacation.balance(payslip.employee, payslip.period.previous) : previous_payslip.vacation_balance || 0
+    prev_pay = previous_payslip.nil? ? 0 : previous_payslip.vacation_pay_balance || 0
+
+    # TODO How does this work with Vacation Vouchers.
+    # Figure out days used this period.
+    # Accumulated vac Pay / Accumulated vacdays * Days used
+    # TODO repetition
+    vacation_days_used = Vacation.days_used(payslip.employee, payslip.period)
+    payslip.vacation_used = vacation_days_used
+
+    cur_balance = prev_balance + payslip.vacation_earned
+    cur_pay_balance = prev_pay + payslip.vacation_pay_earned
+
+    if (cur_balance == 0)
+      vacation_pay_used = 0
+    else
+      vacation_pay_used = ((cur_pay_balance.fdiv(cur_balance.to_f)) * vacation_days_used).round
+    end
+
+    payslip.vacation_pay_used = vacation_pay_used
+
+    cur_pay_balance = 0 if (cur_pay_balance.nil?)
+
+    payslip.vacation_balance = cur_balance - vacation_days_used
+    payslip.vacation_pay_balance = cur_pay_balance - vacation_pay_used
+
+    if (payslip.vacation_earned > STANDARD_DAYS_EARNED)
+      # Reset accumulation if earned supplemental days
+      # after computing the pay.
+      payslip.accum_reg_days = 0
+      payslip.accum_reg_pay = 0
+      payslip.accum_suppl_days = 0
+      payslip.accum_suppl_pay = 0
+    end
+  end
+
+  def self.store_last_vacation(payslip)
+    last_vacation = payslip.employee.vacations.where('end_date <= ?', payslip.period.finish).last
+    unless last_vacation.nil?
+      payslip.last_vacation_start = last_vacation.start_date
+      payslip.last_vacation_end = last_vacation.end_date
+    end
+  end
+
+  ### END NEW VACATION METHODS
 
   # Round to the next 5
   def self.cfa_round(input)

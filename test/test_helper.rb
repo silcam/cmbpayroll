@@ -74,12 +74,14 @@ class ActiveSupport::TestCase
     return employee
   end
 
-  def create_and_return_payslip(employee)
+  def create_and_return_payslip(employee, period=nil)
     # check posted period
-    period = LastPostedPeriod.get
-    period = Period.current if period.nil?
-    period = period.next
-    refute(LastPostedPeriod.posted?(period))
+    if (period.nil?)
+      period = LastPostedPeriod.get
+      period = Period.current if period.nil?
+      period = period.next
+      refute(LastPostedPeriod.posted?(period))
+    end
 
     # work hours
     generate_work_hours(employee, period)
@@ -102,6 +104,17 @@ class ActiveSupport::TestCase
     earnings.rate = 1
 
     payslip.earnings << earnings
+  end
+
+  def set_previous_vacation_balances(employee, period, pay, days)
+    previous_period = period.previous
+    previous_payslip = Payslip.process(employee, previous_period)
+    assert(previous_payslip.valid?)
+
+    previous_payslip.vacation_balance = days
+    previous_payslip.vacation_pay_balance = pay
+
+    assert(previous_payslip.save)
   end
 
   def random_string(length=10)

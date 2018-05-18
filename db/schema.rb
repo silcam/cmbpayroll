@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180307173616) do
+ActiveRecord::Schema.define(version: 20180511104019) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -283,6 +283,11 @@ ActiveRecord::Schema.define(version: 20180307173616) do
     t.integer "dept_vacation_pay"
     t.integer "department_severance"
     t.decimal "raw_net_pay"
+    t.decimal "accum_reg_days"
+    t.decimal "accum_reg_pay"
+    t.decimal "accum_suppl_days"
+    t.decimal "accum_suppl_pay"
+    t.decimal "period_suppl_days"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
     t.index ["period_year", "period_month"], name: "ps_date_idx"
   end

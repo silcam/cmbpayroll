@@ -36,18 +36,29 @@ class Vacation < ApplicationRecord
   end
 
   def days
-    tmp_start_date = start_date.clone
-    holidays = Holiday.days_hash(start_date, end_date)
+    number_of_days(start_date, end_date)
+  end
 
-    count = 0
-    while (tmp_start_date <= end_date)
-      unless (is_off_day?(tmp_start_date) || holidays.has_key?(tmp_start_date))
-        count += 1
-      end
-      tmp_start_date += 1
+  # NOTE: This only figures days used in period
+  # for *this* vacation, not all vacations in
+  # the period
+  def days_in_period(period)
+    return 0 if (end_date < period.start)
+    return 0 if (start_date > period.finish)
+
+    tmp_start_date = period.start
+    tmp_end_date = period.finish
+
+    # We overlap in some way, figure out which
+    if (start_date > period.start)
+      tmp_start_date = start_date
     end
 
-    count
+    if (end_date < period.finish)
+      tmp_end_date = end_date
+    end
+
+    number_of_days(tmp_start_date, tmp_end_date)
   end
 
   def overlaps_work_hours?
@@ -81,22 +92,28 @@ class Vacation < ApplicationRecord
     Vacation.where(overlap_clause(period.start, period.finish))
   end
 
+  def self.for_period_for_employee(employee, period = Period.current)
+    Vacation.where(overlap_clause(period.start, period.finish)).where("employee_id = ?", employee.id)
+  end
+
   def self.upcoming_vacations
     Vacation.all.where("start_date > ?", Period.current.finish)
   end
 
   def self.days_earned(employee, period)
     return 0 if period.finish < employee.first_day
-    earned = SystemVariable.value(:vacation_days) / 12.0
+    earned = SystemVariable.value(:vacation_days).fdiv(MONTHLY)
     earned + supplemental_days(employee, period)
+  end
+
+  def self.period_supplemental_days(employee, period)
+    earned = earned_supplemental_days(employee, period)
+    earned.fdiv(MONTHLY.to_f)
   end
 
   def self.supplemental_days(employee, period)
     if period.month == employee.contract_start.try(:month)
-      years = period.year - employee.contract_start.year
-      multiple = years / SystemVariable.value(:supplemental_days_period) # Integer division intentional
-      earned = multiple * SystemVariable.value(:supplemental_days)
-      earned + mom_supplemental_days(employee)
+      earned_supplemental_days(employee, period)
     else
       0
     end
@@ -122,16 +139,10 @@ class Vacation < ApplicationRecord
     used
   end
 
-  def self.pay_earned(employee, period)
-    period_days = days_used(employee, period)
-    pay_earned_with_days(employee, period, period_days)
-  end
-
-  def self.pay_earned_with_days(employee, period, days)
-    pay = Payslip.find_pay(employee)
-    vacation_pay = (Vacation.vacation_daily_rate(pay) * days).ceil
-  end
-
+  # FIXME: move?
+  # If the period is posted, look in the payslip.
+  # Otherwise, guess -- since things are going
+  # change anyways.
   def self.balance(employee, period)
     if LastPostedPeriod.posted? period
       payslip = employee.payslip_for period
@@ -172,16 +183,34 @@ class Vacation < ApplicationRecord
     self[:paid] = true
   end
 
-  # Compute vacation pay for this vacation based on who took
-  # it and how long it is.
+  # Compute vacation pay for this vacation based on balances
+  # in employee's payslip.
   def vacation_pay
     if (self[:vacation_pay].nil?)
-      pay = Payslip.find_pay(employee)
-      vacation_pay = (Vacation.vacation_daily_rate(pay) * days).ceil
-      self[:vacation_pay] = vacation_pay
-    end
+      period = Period.from_date(start_date)
+      payslip = employee.payslip_for(period)
 
-    self[:vacation_pay]
+      return 0 if payslip.nil?
+      return 0 if payslip.vacation_balance == 0
+      return 0 if payslip.vacation_pay_balance.nil?
+
+      self[:vacation_pay] = (
+          payslip.vacation_pay_balance.fdiv(payslip.vacation_balance.to_f) * days
+            ).ceil
+    else
+      self[:vacation_pay]
+    end
+  end
+
+  def pay_per_period(period)
+    ps = employee.payslip_for(Period.from_date(start_date))
+
+    if (ps.nil? || ps.vacation_balance == 0)
+      0
+    else
+      period_days = days_in_period(period)
+      (ps.vacation_daily_rate * period_days).round
+    end
   end
 
   def get_tax
@@ -190,50 +219,6 @@ class Vacation < ApplicationRecord
     else
       @tax
     end
-  end
-
-  # def self.missed_days(employee, period=Period.current)
-  #   missed_days_for employee, period.start, period.finish
-  # end
-  #
-  # def self.missed_hours(employee, period=Period.current)
-  #   missed_days(employee, period) * WorkHour.workday
-  # end
-
-  # def self.missed_days_so_far(employee)
-  #   missed_days_for employee, Period.current.start, yesterday
-  # end
-  #
-  # def self.missed_hours_so_far(employee)
-  #   Vacation.missed_days_so_far(employee) * WorkHour.workday
-  # end
-
-  # def prev_vacation_pay_balance
-  #   previous_slip = previous
-  #   previous_slip.nil? ? 0 : previous_slip.vacation_pay_balance
-  # end
-
-  # def calculate_vacation_pay_used
-  #   days_used = Vacation.days_used employee, period
-  #   previous_days_balance = Vacation.balance(employee, period.previous)
-  #   previous_pay_balance = prev_vacation_pay_balance
-  #   ((previous_pay_balance * days_used) / previous_days_balance).to_i
-  # end
-
-  # def calculate_vacation_pay_balance
-  #   prev_vacation_pay_balance +
-  #     calculate_vacation_pay -
-  #     calculate_vacation_pay_used
-  # end
-
-  # def calculate_vacation_pay(cnpswage, vacation_used)
-  #   (vacation_daily_rate(cnpswage) * vacation_used).ceil
-  # end
-
-  def self.vacation_daily_rate(cnpswage)
-    days_earned = SystemVariable.value(:vacation_days) / MONTHLY
-    vpay_factor = SystemVariable.value(:vacation_pay_factor)
-    per_day = (cnpswage / days_earned) / vpay_factor
   end
 
   def get_vacation_pay
@@ -245,19 +230,37 @@ class Vacation < ApplicationRecord
     end
   end
 
+  # FIXME: these go away
   def process_vacation_pay
     pay = calculate_vacation_pay(cnpswage, vacation_used)
     if pay > 0
-
-      # TODO: is this right?
-      #self[:taxable] += pay
-      #self[:gross_pay] += pay
-
       earnings << Earning.new(description: VACATION_PAY, amount: pay)
     end
   end
 
   private
+
+  def self.earned_supplemental_days(employee, period)
+    years = period.year - employee.contract_start.year
+    multiple = years.div(SystemVariable.value(:supplemental_days_period))
+    earned = multiple * SystemVariable.value(:supplemental_days)
+    earned += mom_supplemental_days(employee)
+  end
+
+  def number_of_days(start_date, end_date)
+    tmp_start_date = start_date.clone
+    holidays = Holiday.days_hash(start_date, end_date)
+
+    count = 0
+    while (tmp_start_date <= end_date)
+      unless (is_off_day?(tmp_start_date) || holidays.has_key?(tmp_start_date))
+        count += 1
+      end
+      tmp_start_date += 1
+    end
+
+    count
+  end
 
   def end_date_after_start
     return if end_date.blank? or start_date.blank?
@@ -306,22 +309,6 @@ class Vacation < ApplicationRecord
       end
     end
   end
-
-  # def self.missed_days_for(employee, start_date, end_date)
-  #   vacations = employee
-  #                   .vacations
-  #                   .where(overlap_clause(start_date, end_date))
-  #   missed = 0
-  #   vacations.each do |vacation|
-  #     (vacation.start_date .. vacation.end_date).each do |day|
-  #       if( is_weekday?(day) and
-  #           (start_date .. end_date) === day )
-  #         missed += 1
-  #       end
-  #     end
-  #   end
-  #   missed
-  # end
 
   def self.overlap_clause(start_date, end_date)
     ["(start_date BETWEEN :start AND :end) OR

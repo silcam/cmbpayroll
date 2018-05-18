@@ -18,14 +18,40 @@ SELECT
   ps.cnpswage + ps.department_credit_foncier as dept_taxes,
   ps.department_severance as dept_severance,
   ps.vacation_earned as vacation_days,
-  ps.vacation_pay_earned as vacation_pay,
+  CASE WHEN ps.accum_reg_pay = 0
+    THEN
+      CEILING(
+        ps.vacation_pay_earned * c.department_charge_percent
+      )
+    ELSE
+      CEILING(
+        (
+          ps.vacation_pay_earned + ps.period_suppl_days * (
+            ps.accum_reg_pay / ps.accum_reg_days
+          )
+        ) * c.department_charge_percent
+      )
+  END as vacation_pay,
   ps.employee_fund,
   ps.employee_contribution,
   COALESCE(ps.taxable,0) +
       COALESCE(b.add_pay,0) +
       COALESCE(ps.department_cnps,0) +
       COALESCE(ps.department_credit_foncier,0) +
-      COALESCE(ps.vacation_pay_earned,0) +
+      COALESCE(CASE WHEN ps.accum_reg_pay = 0
+        THEN
+          CEILING(
+            ps.vacation_pay_earned * c.department_charge_percent
+          )
+        ELSE
+          CEILING(
+            (
+              ps.vacation_pay_earned + ps.period_suppl_days * (
+                ps.accum_reg_pay / ps.accum_reg_days
+              )
+            ) * c.department_charge_percent
+          )
+      END,0) +
       COALESCE(ps.employee_fund,0) +
       COALESCE(ps.employee_contribution,0) as total_charge,
   wlp.percentage as dept_percentage,
@@ -33,9 +59,26 @@ SELECT
       COALESCE(b.add_pay,0) +
       COALESCE(ps.department_cnps,0) +
       COALESCE(ps.department_credit_foncier,0) +
-      COALESCE(ps.vacation_pay_earned,0) +
+      COALESCE(CASE WHEN ps.accum_reg_pay = 0
+        THEN
+          CEILING(
+            ps.vacation_pay_earned * c.department_charge_percent
+          )
+        ELSE
+          CEILING(
+            (
+              ps.vacation_pay_earned + ps.period_suppl_days * (
+                ps.accum_reg_pay / ps.accum_reg_days
+              )
+            ) * c.department_charge_percent
+          )
+      END,0) +
       COALESCE(ps.employee_fund,0) +
-      COALESCE(ps.employee_contribution,0)) * wlp.percentage) as dept_charge
+      COALESCE(ps.employee_contribution,0)) * wlp.percentage) as dept_charge,
+  ps.accum_reg_days,
+  ps.accum_reg_pay,
+  ps.accum_suppl_days,
+  ps.period_suppl_days
 FROM
   employees e
     INNER JOIN people p ON e.person_id = p.id
@@ -50,7 +93,10 @@ FROM
         ps.id = b.id
     INNER JOIN work_loan_percentages wlp ON ps.id = wlp.payslip_id
     INNER JOIN departments d ON wlp.department_id = d.id
-    INNER JOIN departments ed ON e.department_id = ed.id
+    INNER JOIN departments ed ON e.department_id = ed.id,
+    (
+      SELECT #{SystemVariable.value(:dept_charge_percent)} as department_charge_percent
+    ) c
 WHERE
   e.employment_status in :employment_status AND
   ps.period_year = :year AND

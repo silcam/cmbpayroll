@@ -310,7 +310,7 @@ fr:
   Logout: Déconnexion
   Failed_login: Désolé, mais les parametres donnés ne sont pas corrects.
   New_user_account: Nouveau compte utilisateur
-  Confirm_passwoerd: Confirmer mot de passe
+  Confirm_password: Confirmer mot de passe
   Users: Utilisateurs
   User: Utilisateur
   Role: &Role Rôle

@@ -18,9 +18,7 @@ end
 # 1st page
 report.list("employee_dept_list") do |list|
 
-
   @report.results.body.each do |t|
-
     x_employee_name = t[0].to_s
     x_employee_id = t[1].to_s
     x_department_name = t[2].to_s
@@ -35,6 +33,12 @@ report.list("employee_dept_list") do |list|
     x_m_c = t[11].to_s
     x_children = t[12].to_s
     x_gender = t[13].to_s
+
+    unless (@current_department == nil || @current_department == x_department_name)
+      add_summary(list)
+      @current_department = x_department_name
+      @dept_employee_count = 0
+    end
 
     list.add_row(
       employee_name: x_employee_name,
@@ -54,16 +58,13 @@ report.list("employee_dept_list") do |list|
     )
 
     @current_department = x_department_name if @current_department.nil?
+
     @dept_employee_count += 1
-
-    unless (@current_department == x_department_name)
-      add_summary(list)
-      @current_department = x_department_name
-      @dept_employee_count = 0
-    end
-
     @employee_count += 1
   end
+
+  # add summary for the last item shown.
+  add_summary(list)
 
   list.on_footer_insert do |footer|
     footer.item(:employee_count).value(@employee_count)

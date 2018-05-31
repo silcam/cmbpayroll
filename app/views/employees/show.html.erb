@@ -25,6 +25,13 @@
     <% end %>
   </li>
   <li>
+    <label><%= t(:Work_loans) %>:</label>
+    <%= link_to t(:View), employee_work_loans_path(@employee) %>
+    <% if can? :create, WorkLoan %>
+       | <%= link_to t(:Add), new_employee_work_loan_path(@employee, referred_by: request.path), id: 'add-work-loan-link' %>
+    <% end %>
+  </li>
+  <li>
     <label><%= :Hours %>:</label>
     <%= link_to t(:View), employee_work_hours_path(@employee) %>
     <% if can? :update, WorkHour %>

@@ -22,6 +22,13 @@ class WorkLoansControllerTest < ActionDispatch::IntegrationTest
     assert_select "a#work-loans-link", false
   end
 
+  test "USER: can't see add charge link on employee#show" do
+    login(:Luke, "user")
+    get employee_url(employees(:Luke))
+
+    assert_select "a#add-work-loan-link", false
+  end
+
   test "Work Loans: Supervisor"  do
     login_supervisor(:Quigon)
     luke_emp = employees(:Luke)

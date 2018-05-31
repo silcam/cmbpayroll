@@ -1,0 +1,30 @@
+<%= link_to "<< #{@employee.full_name}", employee_path(@employee) %>
+
+<h2>
+  <%= t :Work_loans_for %> <%= @employee.full_name %>
+</h2>
+
+<% if can? :create, WorkLoan %>
+  <p>
+    <%= link_to t(:Add_work_loan), new_employee_work_loan_path(@employee), class: 'btn btn-primary' %>
+  </p>
+<% end %>
+
+<table class="table">
+  <tr>
+    <th><%= t :Period %></th>
+    <th><%= t :Hours %></th>
+    <th><%= t :Department_or_person  %></th>
+    <th><%= t :Date  %></th>
+    <th></th>
+  </tr>
+  <% @work_loans.each do |loan| %>
+    <tr>
+      <td><%= loan.employee.full_name %></td>
+      <td><%= loan.hours %></td>
+      <td><%= loan.department&.name %></td>
+      <td><%= loan.date %></td>
+      <td><%= link_to t(:Destroy), loan, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>
+    </tr>
+  <% end %>
+</table>

@@ -15,10 +15,15 @@
     <br />
 
     <%= form_for [@employee, @work_loan] do |f| %>
+
+      <% unless @employee %>
       <div class="form-group">
         <%= f.label t(:Employee) %>
         <%= f.select :employee_id, options_from_collection_for_select(@employees, 'id', 'full_name_rev', @work_loan.employee_id), { prompt: 'Select an Employee' }, class: 'form-control' %>
       </div>
+      <% else %>
+        <%= f.hidden_field :employee_id, :value => @employee.id %>
+      <% end %>
       <div class="form-group">
         <%= f.label :department_id, t(:Department_or_person) %>
         <a href="#" title="<%= t('WL_Department_person', scope: 'tool-tips') %>">

@@ -35,6 +35,7 @@ Rails.application.routes.draw do
           patch 'assign'
         end
       end
+      resources :work_loans, only: [ :index, :new, :create, :destroy ]
       resources :charges, except: [:edit, :update, :show]
       resources :misc_payments, except: [:edit, :update, :show]
       resources :vacations, except: :show do

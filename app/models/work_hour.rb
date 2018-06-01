@@ -199,16 +199,16 @@ class WorkHour < ApplicationRecord
     date = period.start
     while date <= period.finish
       if days[date]
-        if days[date][:hours] > 0 or days[date][:excused_hours] > 0
+        if days[date][:holiday]
+          days_worked += 1
+          hours_worked += NUMBER_OF_HOURS_IN_A_WORKDAY
+        elsif days[date][:hours] > 0 or days[date][:excused_hours] > 0
           hours_worked_that_day = days[date][:hours] + days[date][:excused_hours]
           hours_worked += hours_worked_that_day
 
-          if hours_worked_that_day.to_i >= WorkHour.workday or is_off_day?(date, days[date][:holiday])
+          if !is_off_day?(date, days[date][:holiday]) && hours_worked_that_day.to_i >= WorkHour.workday
             days_worked += 1
           end
-        elsif days[date][:holiday]
-          days_worked += 1
-          hours_worked += NUMBER_OF_HOURS_IN_A_WORKDAY
         end
       end
 

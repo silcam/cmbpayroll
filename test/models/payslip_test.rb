@@ -911,7 +911,8 @@ class PayslipTest < ActiveSupport::TestCase
 
     period = Period.new(2017,12)
 
-    Holiday.new(name: "Christmas", date: "2017-12-25")
+    hl = Holiday.new(name: "Christmas", date: "2017-12-25")
+    assert(hl.save)
 
     # work some of the month
     hours = {
@@ -937,16 +938,19 @@ class PayslipTest < ActiveSupport::TestCase
     )
 
     # Work the whole month
-    hours = {
-      "2017-12-01" => {hours: 8},
-      "2017-12-25" => {hours: 0}
-    }
-    WorkHour.update(employee, hours)
+    #hours = {
+    #  "2017-12-01" => {hours: 8},
+    #  "2017-12-25" => {hours: 0}
+    #}
+    #WorkHour.update(employee, hours)
     generate_work_hours employee, period
     payslip = Payslip.process(employee, period)
 
     assert(employee.paid_monthly?, "emp is monthly")
     assert(payslip.employee.paid_monthly?, "pemp is monthly")
+
+    assert_equal(21, employee.workdays_per_month(period))
+    assert_equal(21, WorkHour.days_worked(employee, period))
 
     assert(payslip.worked_full_month?, "now has worked whole month")
     assert_equal(employee.wage, payslip.base_pay)

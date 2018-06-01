@@ -219,6 +219,7 @@ class WorkHourTest < ActiveSupport::TestCase
   test "Worked Full Month by days" do
     dec = Period.new(2017,12)
     @luke.days_week = "five"
+    @luke.wage_period = "monthly"
 
     luke_days_hash = WorkHour.days_hash(@luke, dec.start, dec.finish)
     assert_equal(0, luke_days_hash.keys.size, "should not have worked in dec yet")
@@ -255,29 +256,47 @@ class WorkHourTest < ActiveSupport::TestCase
       "2017-12-14" => {hours: 8},
       "2017-12-15" => {hours: 8},
 
-      "2017-12-16" => {hours: 8},
-      "2017-12-17" => {hours: 8},
       "2017-12-18" => {hours: 8},
       "2017-12-19" => {hours: 8},
       "2017-12-20" => {hours: 8},
+      "2017-12-21" => {hours: 8},
+      "2017-12-22" => {hours: 8},
 
-      "2017-12-23" => {hours: 8},
-      "2017-12-24" => {hours: 8},
-      #"2017-12-24" => 8 #Holiday
+      #"2017-12-25" => 8 #Holiday
       "2017-12-26" => {hours: 8},
       "2017-12-27" => {hours: 8},
-
-      "2017-12-30" => {hours: 8},
-      "2017-12-31" => {hours: 8}
+      "2017-12-28" => {hours: 8},
+      "2017-12-29" => {hours: 8}
     }
     success, errors = WorkHour.update(@luke, hours)
     assert(success, "should not have produced these errors: #{errors.inspect}")
 
-    # plus 12/25
-    assert_equal(23, WorkHour.days_worked(@luke, dec))
+    # plus 12/25 (only 21 working days and holidays in December)
+    assert_equal(21, WorkHour.days_worked(@luke, dec))
+    assert_equal(21, @luke.workdays_per_month(dec), "correct number of days in Dec")
 
     # by days
+    assert(@luke.paid_monthly?)
     assert(WorkHour.worked_full_month(@luke, dec))
+  end
+
+  test "Days Worked should only include work week (Overtime on Saturday is just overtime)" do
+    period= Period.new(2018,2)
+    @luke.days_week = "five"
+
+    generate_work_hours(@luke, period)
+
+    # 20 working days, plus 2 16 hour Saturdays
+    hours = {
+      "2018-02-03" => {hours: 16},
+      "2018-02-10" => {hours: 16},
+    }
+
+    success, errors = WorkHour.update(@luke, hours)
+    assert(success, "should not have produced these errors: #{errors.inspect}")
+
+    assert_equal(20, WorkHour.days_worked(@luke, period))
+    assert(WorkHour.worked_full_month(@luke, period))
   end
 
   test "Employees Lacking Work Hours" do

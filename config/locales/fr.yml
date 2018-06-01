@@ -71,6 +71,7 @@ fr:
   You_must_select: D'abord, Il faut choisir un employée
 
   # Alerts
+  Alerts: Avertissements
   never_had_raise: "%{name} a commencé le %{date} et n'a jamais reçu une augmentation."
   no_raise_since: "%{name} n'a pas reçu une augmentation depuis le %{date}."
 
@@ -189,6 +190,7 @@ fr:
   post_success_message: Mois finalisé.
   post_failure_message: Des erreurs ont bloqué la finalisation de ce mois.
   Net_pay_error: Le salaire net était calculé d'être moins de zéro. Veuillez evaluer les charges et les paiements de prêt et exécuter encore le bulletin de paie.
+  Employee_reprocess: Rexécuter ce-mois-ci
 
   # Payslip Corrections
   Payslip_corrections: Corrections de paie

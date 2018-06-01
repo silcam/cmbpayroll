@@ -33,6 +33,13 @@ class PayslipsControllerTest < ActionDispatch::IntegrationTest
     refute_user_permission(payslip_unpost_period_url(), "post", params: { commit: "Submit" }) # unpost period
   end
 
+  test "User cannot see reprocess button on employee page" do
+    login_user(:Luke)
+
+    get employee_payslips_url(@luke)
+    assert_select "input#employee-reprocess", false
+  end
+
   test "Payslips Pages : Supervisor" do
     login_supervisor(:Quigon)
 
@@ -70,6 +77,13 @@ class PayslipsControllerTest < ActionDispatch::IntegrationTest
     assert_admin_permission(payslip_process_all_url(), "post", params: { commit: "Submit" }) # process all
     assert_admin_permission(payslip_post_period_url(), "post", params: { commit: "Submit" }) # post period
     assert_admin_permission(payslip_unpost_period_url(), "post", params: { commit: "Submit" }) # unpost period
+  end
+
+  test "Admin can see reprocess button on employee page" do
+    login_admin(:MaceWindu)
+
+    get employee_payslips_url(@luke)
+    assert_select "#employee-reprocess"
   end
 
 end

@@ -71,6 +71,7 @@ en:
   You_must_select: You Must Select an Employee First
 
   # Alerts
+  Alerts: Alerts
   never_had_raise: "%{name} started %{date} and has never had a raise."
   no_raise_since: "%{name} has not received a raise since %{date}."
 
@@ -184,6 +185,7 @@ en:
   post_success_message: Pay period successfully posted.
   post_failure_message: Errors prevented this pay period from being posted.
   Net_pay_error: Net Pay Computed to be less than Zero, Please investigate Charges and Loan Payments and reprocess.
+  Employee_reprocess: Reprocess This Month
 
   # Payslip Corrections
   Payslip_corrections: Payslip Corrections

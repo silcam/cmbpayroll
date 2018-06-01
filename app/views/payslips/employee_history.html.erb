@@ -4,6 +4,13 @@
 
     <h2>View Payroll History for <%= @employee.full_name %></h2>
 
+    <% if can? :update, Payslip %>
+    <%= form_tag("/payslips/process", method: "post") do %>
+      <%= hidden_field_tag("employee[id]", @employee.id) %>
+      <%= submit_tag(t(:Employee_reprocess), class: 'btn btn-primary', id: 'employee-reprocess') %>
+    <% end %>
+    <% end %>
+
     <table class="table">
       <thead>
         <th>Pay Period</th>

@@ -1571,16 +1571,16 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # Verify that I have work loan percentages now.
-    # January 18 has 23 working days (or 184 hours).
-    # 40 / 184 is 21.739%
+    # 173.333 avg hours per month 
+    # 40 / 173.333 is 23.08%
     count = 0
     payslip.work_loan_percentages.all.each do |wlp|
       if (wlp.department_id == admin_dept.id)
-        assert_equal(21.74, (wlp.percentage * 100).round(2))
+        assert_equal(23.08, (wlp.percentage * 100).round(2))
         count += 1
       else
         # the rest of the month
-        assert_equal(78.26, (wlp.percentage * 100).round(2))
+        assert_equal(76.92, (wlp.percentage * 100).round(2))
         count += 1
       end
     end
@@ -1599,8 +1599,6 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # Verify that I have work loan percentages now.
-    # January 18 has 23 working days (or 184 hours).
-    # 40 / 184 is 21.739%
     assert_equal(1, payslip.work_loan_percentages.size, "should have exactly 1")
     assert_equal(1, payslip.work_loan_percentages.first.percentage, "should be 100%")
     assert_equal(employee.department_id, payslip.work_loan_percentages.first.department_id,
@@ -1634,8 +1632,6 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # Verify that I have work loan percentages now.
-    # January 18 has 23 working days (or 184 hours).
-    # 40 / 184 is 21.739%
     count = 0
     assert_equal(1, payslip.work_loan_percentages.size, "should only be one")
     assert_equal(1, payslip.work_loan_percentages.first.percentage, "should be for 100%")
@@ -1668,8 +1664,6 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # Verify that I have work loan percentages now.
-    # January 18 has 23 working days (or 184 hours).
-    # 40 / 184 is 21.739%
     count = 0
     assert_equal(1, payslip.work_loan_percentages.size, "should only be one")
     assert_equal(1, payslip.work_loan_percentages.first.percentage, "should be for 100%")
@@ -1677,8 +1671,80 @@ class PayslipTest < ActiveSupport::TestCase
         "should be for admin dept")
   end
 
-  test "Test Many Departments" do
+  test "Worked partial month computes work loans properly" do
+    # Basically
+    #  work 15 days in a month.
+    #  the work loan percentage should be based off
+    #  that 15 days * 8 hours.
+    #  not the 173 hours.
+    #  Verify that.
+    #  Just like the other tests.
 
+    # config employee
+    lss_dept = departments :LSS
+    admin_dept = departments :Admin
+
+    employee = return_valid_employee()
+    employee.department_id = lss_dept.id
+
+    period = Period.new(2018,1)
+    start_date = period.start
+    finish_date = period.finish
+
+    # Loan 2 days
+    wl = WorkLoan.new
+    wl.date = "2018-01-15"
+    wl.department = departments :Admin
+    wl.hours = 8
+    employee.work_loans << wl
+    wl = WorkLoan.new
+    wl.date = "2018-01-16"
+    wl.department = departments :Admin
+    wl.hours = 8
+    employee.work_loans << wl
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+
+    # remove working time for vacation period
+    employee.work_hours.where(date: "2018-01-22").first.delete
+    employee.work_hours.where(date: "2018-01-23").first.delete
+    employee.work_hours.where(date: "2018-01-24").first.delete
+    employee.work_hours.where(date: "2018-01-25").first.delete
+    employee.work_hours.where(date: "2018-01-26").first.delete
+    employee.work_hours.where(date: "2018-01-29").first.delete
+    employee.work_hours.where(date: "2018-01-30").first.delete
+    employee.work_hours.where(date: "2018-01-31").first.delete
+
+    vac = Vacation.new(start_date: '2018-01-22', end_date: '2018-01-31')
+    employee.vacations << vac
+    assert_equal(8, vac.days, "should be 30 days between 22/1/18 and 3/3/18")
+    employee.vacations << vac
+
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(15, payslip.days_worked, "worked 15 days")
+
+    # Verify that I have work loan percentages now.
+    # Worked 15 days (15 * 8 = 120 hours).
+    # 16 / 120 hours is 13.33%, then the rest is for lss
+    count = 0
+    payslip.work_loan_percentages.all.each do |wlp|
+      if (wlp.department_id == admin_dept.id)
+        assert_equal(13.33, (wlp.percentage * 100).round(2))
+        count += 1
+      elsif (wlp.department_id == lss_dept.id)
+        assert_equal(86.67, (wlp.percentage * 100).round(2))
+        count += 1
+      else
+        # we shouldn't find any others
+        count += 1
+      end
+    end
+    assert_equal(2, count, "found two items")
+  end
+
+  test "Test Many Departments" do
     admin_dept = departments :Admin
     av_dept = departments :Aviation
     ctc_dept = departments :CTC
@@ -1686,14 +1752,15 @@ class PayslipTest < ActiveSupport::TestCase
     cam_dept = departments :Cam
     lss_dept = departments :LSS
 
+    # out of 173.33 hours
     to_create = {
-      admin_dept => 16, #  8.695%
-      av_dept => 40,    # 21.739%
-      ctc_dept => 32,   # 17.391%
-      rfis_dept => 8,   #  4.347%
-      cam_dept => 64,   # 34.780%
+      admin_dept => 16, #  9.231%
+      av_dept => 40,    # 23.077%
+      ctc_dept => 32,   # 18.462%
+      rfis_dept => 8,   #  4.615%
+      cam_dept => 64,   # 36.923%
     }
-    # total: 152 hours | 86.956%
+    # total: 162 hours | 92.308%
 
     # config employee
     employee = return_valid_employee()
@@ -1730,23 +1797,23 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip.work_loan_percentages.all.each do |wlp|
       if (wlp.department_id == admin_dept.id)
-        assert_equal(8.70, (wlp.percentage * 100).round(2))
+        assert_equal(9.23, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == av_dept.id)
-        assert_equal(21.74, (wlp.percentage * 100).round(2))
+        assert_equal(23.08, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == ctc_dept.id)
-        assert_equal(17.39, (wlp.percentage * 100).round(2))
+        assert_equal(18.46, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == rfis_dept.id)
-        assert_equal(4.35, (wlp.percentage * 100).round(2))
+        assert_equal(4.62, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == cam_dept.id)
-        assert_equal(34.78, (wlp.percentage * 100).round(2))
+        assert_equal(36.92, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == lss_dept.id)
         # the leftovers
-        assert_equal(13.04, (wlp.percentage * 100).round(2))
+        assert_equal(7.69, (wlp.percentage * 100).round(2))
         count += 1
       end
     end

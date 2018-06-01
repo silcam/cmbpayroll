@@ -374,7 +374,15 @@ class Payslip < ApplicationRecord
     percentage_so_far = 0
 
     if (work_loans_by_dept.size > 0)
-      hours_worked_this_month = WorkHour.hours_worked(employee, period)
+      hours_worked_this_month = 0
+      if worked_full_month?
+        # NOTE: this is not the actual number of hours worked
+        # but based on the "standard number of hours worked".
+        # basically, overtime is not counted.
+        hours_worked_this_month = employee.hours_per_month
+      else
+        hours_worked_this_month = employee.hours_day * self[:days]
+      end
 
       work_loans_by_dept.each do |dept,hours|
         wlp = WorkLoanPercentage.new

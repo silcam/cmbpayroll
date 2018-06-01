@@ -51,7 +51,7 @@ report.list("department_charges") do |list|
     x_employee_fund = t[15].to_i
     x_employee_contribution = t[16].to_i
     x_total_charge = t[17].to_i
-    x_dept_percentage = t[18].to_i
+    x_dept_percentage = t[18].to_f
     x_dept_charge = t[19].to_i
 
     unless (@current_department == x_department)

@@ -203,14 +203,17 @@ class Payslip < ApplicationRecord
   end
 
   def daily_earnings
-    daily_earnings = ( employee.daily_rate * self[:days] ).round
+    # Daily Earnings will use the employee's wage less the number
+    # of days not worked times the employee's daily rate.
+    days_not_worked = employee.workdays_per_month(period) - self[:days]
+    daily_earnings = ( wage - ( employee.daily_rate * days_not_worked ))
 
-    # In the case that they work 22 days in a 23 day month, they
-    # won't be able to make *more* than their monthly salary. It's
-    # still odd that you take a whole day off and get your whole
-    # monthly salary, but at least you're not #winning.
-    if (daily_earnings > wage)
-      wage
+    # In the case that the employee doesn't work 22 days in a 23 day
+    # month, he/she should not be able to make *less* than zero pay.
+    # It's still odd that it is possible for that to happen, but
+    # nevertheless, it shouldn't happen.
+    if (daily_earnings < 0)
+      0
     else
       daily_earnings
     end

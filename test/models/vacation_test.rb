@@ -371,6 +371,39 @@ class VacationTest < ActiveSupport::TestCase
     refute(vac.destroy, "cannot delete a paid vacation")
   end
 
+  test "Month with Most Days Off, Single Month" do
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-12"
+    vac.end_date = "2018-09-14"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+
+    assert_equal(Period.new(2018,9), vac.apply_to_period())
+  end
+
+  test "Month with Most Days Off, Two Months" do
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-22"
+    vac.end_date = "2018-10-31"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+
+    assert_equal(Period.new(2018,10), vac.apply_to_period())
+  end
+
+  test "Month with Most Days Off, Three Months" do
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-22"
+    vac.end_date = "2018-11-02"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+
+    assert_equal(Period.new(2018,10), vac.apply_to_period())
+  end
+
   test "Days in Period" do
     aug = Period.new(2018,8)
     sept = Period.new(2018,9)
@@ -552,6 +585,7 @@ class VacationTest < ActiveSupport::TestCase
       assert_equal(0.5, Vacation.period_supplemental_days(employee, Period.new(2018,1)))
     end
   end
+
 
   def end_of_aug_vacay
     @luke.vacations.new(start_date: '2017-08-31', end_date: '2017-09-01')

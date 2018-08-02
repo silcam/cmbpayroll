@@ -45,6 +45,10 @@ class Payslip < ApplicationRecord
     return payslip
   end
 
+  def self.most_recent(employee)
+    employee.payslips.order(period_year: :desc, period_month: :desc).first
+  end
+
   def self.process(employee, period=Period.current)
     return self.process_payslip(employee, period, false)
   end
@@ -696,23 +700,11 @@ class Payslip < ApplicationRecord
   ### BEGIN NEW VACATION METHODS
 
   def self.compute_new_days_and_new_pay(payslip)
-    # Compute New Days Earned (1.5)
-    # Compute New Pay Earned (taxable / 16)
-
-    # Number of days earned.
-    # NOTE: Do not earn days if no days worked this month. Need to verify.
-    unless (payslip.days == 0)
-
-      # FIXME: Check for supplemental days.
-
-      payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
-      # Pay Earned based on 16th of salary.
-      # TODO, supplemental days and supplemental pay.
-      payslip.vacation_pay_earned = payslip.calc_vacation_pay_earned
-    else
-      payslip.vacation_earned = 0
-      payslip.vacation_pay_earned = 0
-    end
+    # NOTE: Vacation always accrues, even if no days are worked in a
+    # month. (per conversation with Georges 17-July-18).
+    payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
+    # TODO, supplemental days and supplemental pay.
+    payslip.vacation_pay_earned = payslip.calc_vacation_pay_earned
   end
 
   def self.accumulate_days(previous_payslip, payslip)
@@ -758,7 +750,7 @@ class Payslip < ApplicationRecord
     # TODO How does this work with Vacation Vouchers.
     # Figure out days used this period.
     # Accumulated vac Pay / Accumulated vacdays * Days used
-    # TODO repetition
+    # TODO fix repetition
     vacation_days_used = Vacation.days_used(payslip.employee, payslip.period)
     payslip.vacation_used = vacation_days_used
 
@@ -768,7 +760,16 @@ class Payslip < ApplicationRecord
     if (cur_balance == 0)
       vacation_pay_used = 0
     else
-      vacation_pay_used = ((cur_pay_balance.fdiv(cur_balance.to_f)) * vacation_days_used).round
+      vacation_pay_used = 0
+
+      vacations = Vacation.for_period_for_employee(payslip.employee, payslip.period)
+      vacations.each do |vac_in_period|
+        if (vac_in_period.apply_to_period() == payslip.period)
+          #vacation_pay_used += ((cur_pay_balance.fdiv(cur_balance.to_f)) * vac_in_period.days).round
+          vacation_pay_used += vac_in_period.net_pay
+        end
+      end
+
     end
 
     payslip.vacation_pay_used = vacation_pay_used

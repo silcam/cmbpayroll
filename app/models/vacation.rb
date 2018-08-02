@@ -39,6 +39,34 @@ class Vacation < ApplicationRecord
     number_of_days(start_date, end_date)
   end
 
+  # NB. If two period have the same number of vacation
+  # days, the earlier month will be returned.
+  def apply_to_period
+    start_period = Period.from_date(start_date)
+    end_period = Period.from_date(end_date)
+
+    if (start_period == end_period)
+      return start_period
+    end
+
+    tmp_period = start_period
+    period_with_most_days = tmp_period
+    most_days = 0
+
+    while (tmp_period <= end_period)
+      tmp_period_days = days_in_period(tmp_period)
+
+      if (tmp_period_days > most_days)
+        most_days = tmp_period_days
+        period_with_most_days = tmp_period
+      end
+
+      tmp_period = tmp_period.next
+    end
+
+    period_with_most_days
+  end
+
   # NOTE: This only figures days used in period
   # for *this* vacation, not all vacations in
   # the period
@@ -178,6 +206,18 @@ class Vacation < ApplicationRecord
     vdays
   end
 
+  # Only the payslip knows
+  def self.vacation_daily_rate(employee)
+    # Previous algorithm just used cnps wage as paramter
+    # then figured out how much vacation pay is for that
+    # (1/16th), per day.
+
+    # This will look at the most recent payslip for this user.
+    # and determine a few things from there.
+    payslip = Payslip.most_recent(employee)
+    payslip.vacation_daily_rate
+  end
+
   def prep_print
     vacation_pay
     self[:paid] = true
@@ -190,6 +230,12 @@ class Vacation < ApplicationRecord
       period = Period.from_date(start_date)
       payslip = employee.payslip_for(period)
 
+      # attempt to find the previous payslip in the system.
+      if (payslip.nil?)
+        period = period.previous
+        payslip = employee.payslip_for(period)
+      end
+
       return 0 if payslip.nil?
       return 0 if payslip.vacation_balance == 0
       return 0 if payslip.vacation_pay_balance.nil?
@@ -200,6 +246,10 @@ class Vacation < ApplicationRecord
     else
       self[:vacation_pay]
     end
+  end
+
+  def net_pay
+    vacation_pay - (get_tax().total_tax())
   end
 
   def pay_per_period(period)

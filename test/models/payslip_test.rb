@@ -1722,7 +1722,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     vac = Vacation.new(start_date: '2018-01-22', end_date: '2018-01-31')
     employee.vacations << vac
-    assert_equal(8, vac.days, "should be 30 days between 22/1/18 and 3/3/18")
+    assert_equal(8, vac.days, "should be 8 days between 22/1/18 and 13/1/18")
     employee.vacations << vac
 
     payslip = Payslip.process(employee, period)
@@ -1911,15 +1911,16 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.gross_pay, "gross should be zero")
     assert_equal(0, payslip.net_pay, "net should be zero")
 
-    # Is this correct??? FIXME XXX TODO NOTE
-    # I am not sure, but I will leave it as is for now
-    assert_equal(0, payslip.vacation_earned, "correct days earned")
+    # You always accrue vacation when you are working.
+    assert_equal(1.5, payslip.vacation_earned, "correct days earned")
     assert_equal(0, payslip.vacation_pay_earned, "correct pay earned")
 
     # although it should track the vacation pay and days used for reporting.
     assert_equal(23, payslip.vacation_used, "correct days used")
-    assert_equal(373750, payslip.vacation_pay_used, "correct pay used")
-    assert_equal((payslip.vacation_daily_rate * 23).round, payslip.vacation_pay_used)
+    assert_equal(325551, payslip.vacation_pay_used, "correct pay used")
+
+    assert_equal(69324, payslip.vacation_pay_balance, "correct balance after usage")
+    assert_equal(2.8, payslip.vacation_balance, "correct balance after usage")
   end
 
   test "Test Vacation Pay and Balance Calculations" do
@@ -1963,6 +1964,12 @@ class PayslipTest < ActiveSupport::TestCase
   # Could this test *be* any more complicated?
   # Basically let's run a vacation that spans 3 months
   # and ensure each slip along the way is copacetic.
+  #
+  # Summary:
+  # Vacataion between Jan 22 and March 03 2018, inclusive (30 days)
+  # January: 8 days
+  # February: 20 days
+  # March: 2 days
   test "Les grandes grandes vacances" do
     dec_starting_vacation_days = 35
 
@@ -2026,6 +2033,8 @@ class PayslipTest < ActiveSupport::TestCase
     jan_days_used = payslip.vacation_used
     assert_equal(8, jan_days_used, "8 vac days in Jan")
 
+    assert_equal(0, payslip.vacation_pay_used, "no vacation pay used in Jan")
+
     jan_days_balance = payslip.vacation_balance
     jan_balance = dec_starting_vacation_days + jan_days_earned - jan_days_used
     assert_equal(jan_balance, jan_days_balance,
@@ -2053,8 +2062,13 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.net_pay, "not paid for February")
 
     # Verify payslip vacation totals are correct for Feb
+    # Wage: 73565
+    # 73565 * 12 / 16 * 18
+    assert_equal(2750, payslip.vacation_pay_used, "all pay received in Feb")
+
     feb_days_earned = payslip.vacation_earned
-    assert_equal(0, feb_days_earned, "no days earned in Feb, off whole month, is correct")
+    assert_equal(1.5, feb_days_earned,
+        "Standard days earned in Feb, even if off whole month is correct")
 
     feb_days_used = payslip.vacation_used
     assert_equal(20, feb_days_used, "20 vac days in Feb")
@@ -2074,9 +2088,11 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(employee.workdays_per_month(period) - 2, payslip.days,
         "not paid for 2 vacation days in March")
 
-    # Verify payslip vacation totals are correct for Feb
+    # Verify payslip vacation totals are correct for Mar
+    assert_equal(0, payslip.vacation_pay_used, "no pay received in Mar")
+
     mar_days_earned = payslip.vacation_earned
-    assert_equal(1.5, mar_days_earned, "earning is correct")
+    assert_equal(1.5, mar_days_earned, "earning is correct") 
 
     mar_days_used = payslip.vacation_used
     assert_equal(2, mar_days_used, "2 vac days in Mar")
@@ -2420,7 +2436,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     # Test pay
     assert_equal(3851, payslip.vacation_pay_earned, "pay balance is correct")
-    assert_equal(60219, payslip.vacation_pay_used, "pay balance is correct")
+    assert_equal(55008, payslip.vacation_pay_used, "pay balance is correct")
     assert_equal(pre_pay_balance + payslip.vacation_pay_earned - payslip.vacation_pay_used,
         payslip.vacation_pay_balance, "pay balance is correct")
   end

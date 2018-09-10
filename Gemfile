@@ -67,6 +67,8 @@ gem 'loofah', '~> 2.2.1'
 gem 'rails-html-sanitizer', '~>1.0.4'
 # 3.7.2 is a fixed version (CVE-2018-3760)
 gem 'sprockets', '~>3.7.2'
+# 1.2.2 is a fixed version (CVE-2018-1000544)
+gem 'rubyzip', '~>1.2.2'
 
 group :development, :test do
   # Use Puma as the app server in development

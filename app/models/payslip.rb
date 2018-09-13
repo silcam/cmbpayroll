@@ -728,12 +728,11 @@ class Payslip < ApplicationRecord
     else
       # Take what the accumulated supplemental days are worth right now, based on VP "rate" per day.
       prev_period_suppl_days = previous_payslip.nil? ? 0 : previous_payslip.period_suppl_days || 0
-      payslip.accum_suppl_days = prev_sup_days + prev_period_suppl_days
+      # How many supplemental days this employee gets this period, likely < 1
+      payslip.accum_suppl_days = prev_sup_days + prev_period_suppl_days + 
+          Vacation.period_supplemental_days(payslip.employee, payslip.period)
       payslip.accum_suppl_pay = (prev_reg_pay.fdiv(prev_reg_days) * payslip.accum_suppl_days).ceil
     end
-
-    # How many supplemental days this employee gets this period, likely < 1
-    payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
   end
 
   def self.compute_days_used_and_current_balance(previous_payslip, payslip)
@@ -757,6 +756,19 @@ class Payslip < ApplicationRecord
     cur_balance = prev_balance + payslip.vacation_earned
     cur_pay_balance = prev_pay + payslip.vacation_pay_earned
 
+    if (cur_balance - vacation_days_used < 0)
+      if (cur_balance + payslip.accum_suppl_days - vacation_days_used >= 0)
+        # Check for and apply supplemental days
+        cur_balance += payslip.accum_suppl_days
+        cur_pay_balance += payslip.accum_suppl_pay
+        payslip.vacation_earned += payslip.accum_suppl_days
+        payslip.vacation_pay_earned += payslip.accum_suppl_pay
+      else
+        # or error.
+        payslip.errors.add(:vacation_balance, "Not sufficient days to take this month's vacation, please correct.")
+      end
+    end
+
     if (cur_balance == 0)
       vacation_pay_used = 0
     else
@@ -764,17 +776,19 @@ class Payslip < ApplicationRecord
 
       vacations = Vacation.for_period_for_employee(payslip.employee, payslip.period)
       vacations.each do |vac_in_period|
-        if (vac_in_period.apply_to_period() == payslip.period)
-          #vacation_pay_used += ((cur_pay_balance.fdiv(cur_balance.to_f)) * vac_in_period.days).round
-          vacation_pay_used += vac_in_period.net_pay
-        end
+        #if (vac_in_period.apply_to_period() == payslip.period)
+          if (cur_balance == 0)
+            vacation_pay_used += 0
+          else
+            vacation_pay_used += (
+                cur_pay_balance.fdiv(cur_balance.to_f) * vac_in_period.days_in_period(payslip.period)
+            ).round
+          end
+        #end
       end
-
     end
 
     payslip.vacation_pay_used = vacation_pay_used
-
-    cur_pay_balance = 0 if (cur_pay_balance.nil?)
 
     payslip.vacation_balance = cur_balance - vacation_days_used
     payslip.vacation_pay_balance = cur_pay_balance - vacation_pay_used

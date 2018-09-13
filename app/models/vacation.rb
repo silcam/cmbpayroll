@@ -225,24 +225,31 @@ class Vacation < ApplicationRecord
 
   # Compute vacation pay for this vacation based on balances
   # in employee's payslip.
+
   def vacation_pay
     if (self[:vacation_pay].nil?)
       period = Period.from_date(start_date)
       payslip = employee.payslip_for(period)
 
+      return 0 if payslip.nil?
+
       # attempt to find the previous payslip in the system.
       if (payslip.nil?)
-        period = period.previous
-        payslip = employee.payslip_for(period)
+        payslip = employee.payslip_for(period.previous)
       end
 
-      return 0 if payslip.nil?
       return 0 if payslip.vacation_balance == 0
       return 0 if payslip.vacation_pay_balance.nil?
 
-      self[:vacation_pay] = (
-          payslip.vacation_pay_balance.fdiv(payslip.vacation_balance.to_f) * days
-            ).ceil
+      if (payslip.accum_reg_days.nil? || payslip.accum_reg_days == 0)
+        self[:vacation_pay] = 0
+      else
+        self[:vacation_pay] = (
+          payslip.accum_reg_pay.fdiv(
+              payslip.accum_reg_days.to_f
+          ) * days
+        ).ceil
+      end
     else
       self[:vacation_pay]
     end

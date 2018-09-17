@@ -199,7 +199,7 @@ class WorkHour < ApplicationRecord
     date = period.start
     while date <= period.finish
       if days[date]
-        if days[date][:holiday]
+        if days[date][:holiday] && is_weekday?(date)
           days_worked += 1
           hours_worked += NUMBER_OF_HOURS_IN_A_WORKDAY
         elsif days[date][:hours] > 0 or days[date][:excused_hours] > 0

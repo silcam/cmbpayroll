@@ -131,7 +131,7 @@ class Vacation < ApplicationRecord
   def self.days_earned(employee, period)
     return 0 if period.finish < employee.first_day
     earned = SystemVariable.value(:vacation_days).fdiv(MONTHLY)
-    earned + supplemental_days(employee, period)
+    #earned + supplemental_days(employee, period)
   end
 
   def self.period_supplemental_days(employee, period)

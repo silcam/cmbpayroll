@@ -434,6 +434,36 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal(exp, WorkHour.total_hours(@luke, jan))
   end
 
+  test "Sunday holidays don't count as working days with vacation" do
+    employee = return_valid_employee()
+    period = Period.new(2018,2)
+
+    Holiday.all.delete_all
+    holiday = Holiday.create!(name: 'Youth Day', date: '2018-02-18', observed: '2018-02-19')
+    assert(holiday)
+    vacation = Vacation.create(start_date: '2018-02-01', end_date: '2018-02-28', employee: employee)
+    assert(vacation)
+
+    assert_equal(1, WorkHour.days_worked(employee, period), "should have worked one day")
+  end
+
+  test "Sunday holidays don't count as working days without vacation" do
+    employee = return_valid_employee()
+    period = Period.new(2018,2)
+
+    Holiday.all.delete_all
+    holiday = Holiday.create!(name: 'Youth Day', date: '2018-02-18', observed: '2018-02-19')
+    assert(holiday)
+
+    generate_work_hours(employee, period)
+
+    hours = {
+      "2018-02-19" => {hours:0} # didn't work on Youth day, slacker.
+    }
+
+    assert_equal(20, WorkHour.days_worked(employee, period), "should have worked full month")
+  end
+
   def some_valid_params
     {employee: @luke, date: '2017-08-09', hours: 9}
   end

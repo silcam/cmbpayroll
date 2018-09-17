@@ -725,12 +725,11 @@ class Payslip < ApplicationRecord
     if (prev_reg_days == 0)
       payslip.accum_suppl_days = 0
       payslip.accum_suppl_pay = 0
+      payslip.period_suppl_days = 0
     else
-      # Take what the accumulated supplemental days are worth right now, based on VP "rate" per day.
-      prev_period_suppl_days = previous_payslip.nil? ? 0 : previous_payslip.period_suppl_days || 0
       # How many supplemental days this employee gets this period, likely < 1
-      payslip.accum_suppl_days = prev_sup_days + prev_period_suppl_days + 
-          Vacation.period_supplemental_days(payslip.employee, payslip.period)
+      payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
+      payslip.accum_suppl_days = prev_sup_days + payslip.period_suppl_days
       payslip.accum_suppl_pay = (prev_reg_pay.fdiv(prev_reg_days) * payslip.accum_suppl_days).ceil
     end
   end
@@ -761,7 +760,7 @@ class Payslip < ApplicationRecord
         # Check for and apply supplemental days
         cur_balance += payslip.accum_suppl_days
         cur_pay_balance += payslip.accum_suppl_pay
-        payslip.vacation_earned += payslip.accum_suppl_days
+        payslip.vacation_earned += payslip.accum_suppl_days #(NOTE: This is already accounted for in the earning computation, so this was adding twice)
         payslip.vacation_pay_earned += payslip.accum_suppl_pay
       else
         # or error.

@@ -143,11 +143,11 @@ class Payslip < ApplicationRecord
   end
 
   def first_page_deductions_sum
-    total_tax.to_i + + salary_advance.to_i
+    total_tax.to_i + union_dues.to_i + salary_advance.to_i
   end
 
   def total_pay
-    taxable - (total_tax + salary_advance)
+    taxable - (total_tax + union_dues + salary_advance)
   end
 
   def period
@@ -338,11 +338,7 @@ class Payslip < ApplicationRecord
     self[:cac2] = tax.cac2
     self[:communal] = tax.communal
 
-    if (tax.total_tax > 0)
-      self[:total_tax] = tax.total_tax + employee.union_dues_amount
-    else
-      self[:total_tax] = tax.total_tax
-    end
+    self[:total_tax] = tax.total_tax
   end
 
   # After all calculations, compute net pay from gross pay

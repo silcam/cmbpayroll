@@ -147,7 +147,7 @@ class PayslipPdf < CmbPayrollPdf
 
       data = [
           ["<b>Salaire Net (arrondi)</b>", "", "",
-          { :content => "#{Payslip.cfa_round(payslip.taxable - ( payslip.total_tax + payslip.union_dues.to_i + payslip.salary_advance.to_i ))}", :align => :right }]
+          { :content => "#{Payslip.cfa_round(payslip.total_pay)}", :align => :right }]
       ]
 
       payslip.deductions.second_page.each do |d|

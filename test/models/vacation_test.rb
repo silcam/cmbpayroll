@@ -205,11 +205,12 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2017, 1))
 
     # Supp Days
+    # FIXME:PS:
     assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2021, 1))
-    assert_equal 3.5, Vacation.days_earned(@luke, Period.new(2022, 1))
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2022, 1)) # no automatic suppl days anymore
     assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2022, 2))
-    assert_equal 3.5, Vacation.days_earned(@luke, Period.new(2026, 1))
-    assert_equal 5.5, Vacation.days_earned(@luke, Period.new(2027, 1))
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2026, 1)) # no automatic suplp days anymore
+    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2027, 1)) # new algorithm tbd.
   end
 
   test "Days Used" do

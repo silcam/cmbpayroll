@@ -24,13 +24,18 @@ SELECT
         ps.vacation_pay_earned * c.department_charge_percent
       )
     ELSE
-      CEILING(
-        (
-          ps.vacation_pay_earned + ps.period_suppl_days * (
-            ps.accum_reg_pay / ps.accum_reg_days
+      CASE WHEN ps.accum_reg_days = 0
+        THEN
+          0
+        ELSE
+          CEILING(
+            (
+              ps.vacation_pay_earned + ps.period_suppl_days * (
+                ps.accum_reg_pay / ps.accum_reg_days
+              )
+            ) * c.department_charge_percent
           )
-        ) * c.department_charge_percent
-      )
+      END
   END as vacation_pay,
   ps.employee_fund,
   ps.employee_contribution,
@@ -44,13 +49,18 @@ SELECT
             ps.vacation_pay_earned * c.department_charge_percent
           )
         ELSE
-          CEILING(
-            (
-              ps.vacation_pay_earned + ps.period_suppl_days * (
-                ps.accum_reg_pay / ps.accum_reg_days
+          CASE WHEN ps.accum_reg_days = 0
+            THEN
+              0
+            ELSE
+              CEILING(
+                (
+                  ps.vacation_pay_earned + ps.period_suppl_days * (
+                    ps.accum_reg_pay / ps.accum_reg_days
+                  )
+                ) * c.department_charge_percent
               )
-            ) * c.department_charge_percent
-          )
+          END
       END,0) +
       COALESCE(ps.employee_fund,0) +
       COALESCE(ps.employee_contribution,0) as total_charge,
@@ -65,13 +75,18 @@ SELECT
             ps.vacation_pay_earned * c.department_charge_percent
           )
         ELSE
-          CEILING(
-            (
-              ps.vacation_pay_earned + ps.period_suppl_days * (
-                ps.accum_reg_pay / ps.accum_reg_days
+          CASE WHEN ps.accum_reg_days = 0
+            THEN
+              0
+            ELSE
+              CEILING(
+                (
+                  ps.vacation_pay_earned + ps.period_suppl_days * (
+                    ps.accum_reg_pay / ps.accum_reg_days
+                  )
+                ) * c.department_charge_percent
               )
-            ) * c.department_charge_percent
-          )
+          END
       END,0) +
       COALESCE(ps.employee_fund,0) +
       COALESCE(ps.employee_contribution,0)) * wlp.percentage) as dept_charge,

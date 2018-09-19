@@ -1,7 +1,6 @@
 class DipesInternalReport < CMBReport
 
   def sql
-
     select =<<-SELECTSTATEMENT
 SELECT
   CASE
@@ -41,8 +40,9 @@ FROM
     INNER JOIN employees e ON ps.employee_id = e.id
     INNER JOIN people p ON p.id = e.person_id
 WHERE
-  ps.period_year = '2018' AND
-  ps.period_month = '01'
+  e.employment_status IN :employment_status AND
+  ps.period_year = :year AND
+  ps.period_month = :month
 ORDER BY
   dipeno, cnpsno, employee_name ASC
     SELECTSTATEMENT

@@ -4275,7 +4275,7 @@
       ]
     },
     {
-      "id": "report_period",
+      "id": "report_month",
       "type": "text-block",
       "display": true,
       "description": "",

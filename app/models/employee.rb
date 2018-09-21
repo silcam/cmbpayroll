@@ -22,6 +22,7 @@ class Employee < ApplicationRecord
   has_many :payslips
   has_many :loans
   has_many :raises
+  has_many :supplemental_transfers
   has_many :payslip_corrections, through: :payslips
 
   has_and_belongs_to_many :bonuses
@@ -253,6 +254,23 @@ class Employee < ApplicationRecord
     end
 
     return count
+  end
+
+  def last_supplemental_transfer(period=Period.current)
+    tx_collection = supplemental_transfers.order(transfer_date: :desc)
+    recent_tx = tx_collection.first
+
+    return nil unless recent_tx
+
+    if (Period.from_date(recent_tx.transfer_date) == period)
+      return tx_collection.second.try(:transfer_date)
+    else
+      return recent_tx.try(:transfer_date)
+    end
+  end
+
+  def last_supplemental_transfer=(date)
+    supplemental_transfers.create!(transfer_date: date)
   end
 
   def payslip_for(period)

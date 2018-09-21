@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180511104019) do
+ActiveRecord::Schema.define(version: 20180920135922) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -179,15 +179,7 @@ ActiveRecord::Schema.define(version: 20180511104019) do
     t.datetime "date"
     t.boolean "cash_payment", default: false, null: false
     t.index ["amount"], name: "index_loan_payments_on_amount"
-    t.index ["date"], name: "loan_payments_date_idx"
     t.index ["loan_id"], name: "index_loan_payments_on_loan_id"
-  end
-
-  create_table "loan_percentages", id: :integer, default: nil, force: :cascade do |t|
-    t.integer "employee_id"
-    t.integer "payslip_id"
-    t.integer "department_id"
-    t.float "percentage"
   end
 
   create_table "loans", force: :cascade do |t|
@@ -289,7 +281,6 @@ ActiveRecord::Schema.define(version: 20180511104019) do
     t.decimal "accum_suppl_pay"
     t.decimal "period_suppl_days"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
-    t.index ["period_year", "period_month"], name: "ps_date_idx"
   end
 
   create_table "people", force: :cascade do |t|
@@ -325,6 +316,14 @@ ActiveRecord::Schema.define(version: 20180511104019) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["person_id"], name: "index_supervisors_on_person_id"
+  end
+
+  create_table "supplemental_transfers", force: :cascade do |t|
+    t.date "transfer_date"
+    t.bigint "employee_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_supplemental_transfers_on_employee_id"
   end
 
   create_table "system_variables", force: :cascade do |t|

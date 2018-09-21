@@ -1,31 +1,40 @@
-CMB Payroll
+CMB New Payroll System
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Dependencies
 
-Things you may want to cover:
+* Ruby 2.4.1 (use rbenv)
+* Postgres (9.5)
+* Bundler
 
-* Ruby version
+Note: This application was developed on Linux or Mac. It has not been tested for development on Windows, although you will probably be able to make it work.
 
-* System dependencies
+## Initial Setup
 
-* Configuration
+* Install dependencies locally.
+* Clone repo
+* bundle update
+* Create/seed database
+* Run tests
+* Start server (if desired)
 
-* Database creation
+## Database Initialization
 
-* Database initialization
+Use normal rails commands to create the database. Keep in mind that the database must be seeded with `rails db:seed` after creation and migration. The wages table requires a wages.sql file which is stored on the server. It is not committed to this repo.
 
-* How to run the test suite
+## Running Tests
 
-* Services (job queues, cache servers, search engines, etc.)
+Run `rails test`. This uses minitest.
 
-* Deployment instructions
+## Reports
 
-* ...
-
-Reports
-
-The PDF reports use [Thinreports](http://www.thinreports.org) to help organize and create the reports.
+Generally the reports output a PDF. Finance's desire was to have the reports be printable. Creation of the PDF reports uses [Thinreports](http://www.thinreports.org) to help organize and create the reports.
 
 You should use the [Thinreports Editor](http://www.thinreports.org/features/editor/) to edit these reports. The reports can be edited in a text editor as well, but it's helpful to use the GUI editor. There are versions for all platforms.
 
+## Branching
+
+Features should be built on a feature branch from the develop branch. When complete and tested, merge into the develop branch.
+
+## Deployment
+
+Production deployment requires merging the develop branch into the master branch and pushing to Github. After this, run `cap production deploy` to deploy to the production server. This requires passwordless SSH to the production server to complete.

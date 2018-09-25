@@ -184,6 +184,33 @@
   </tbody>
 </table>
 
+<% vac_summary = @employee.vacation_summary %>
+
+<h3>
+  <%= t :Vacation_balance %> (<%= t :as_of %> <%= l(vac_summary[:period]&.finish, format: :short, default: '') %>)
+</h3>
+
+<table class="table table-striped">
+  <tbody>
+    <tr>
+      <th scope="row"><%= t :Vacation_balance %>:</th>
+      <td><%= vac_summary[:balance]&.round(2) %></td>
+      <th scope="row"><%= t :Supplemental_balance %>:</th>
+      <td><%= vac_summary[:supplemental_balance]&.round(2) %></td>
+      <th scope="row"><%= t :Last_supplemental_transfer %>:</th>
+      <td><%= l(vac_summary[:last_supplemental_transfer], format: :short, default: '') %></td>
+    </tr>
+    <tr>
+      <th scope="row"><%= t :Vacation_pay_balance %>:</th>
+      <td><%= number_to_currency(vac_summary[:pay_balance], locale: :cm) %></td>
+      <th scope="row"><%= t :Supplemental_pay_balance %>: </th>
+      <td><%= number_to_currency(vac_summary[:supplemental_pay_balance] , locale: :cm) %>
+      <th scope="row"></th>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
 <h3>
   <%= t :Children %>
   <% if can? :create, Child %>

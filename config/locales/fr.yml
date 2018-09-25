@@ -61,6 +61,7 @@ fr:
   No_results_found: Aucun employé trouvé par «%{query}»
   Days: jours
   Submit: Envoyer
+  as_of: au
 
   # Error messages
   cant_be_in_future: ne peut pas être au futur.
@@ -276,6 +277,11 @@ fr:
   Paid?: Payée?
   Voucher: Coupon
   Print_voucher: Imprimer le coupon
+  Vacation_balance: Solde de vacances
+  Vacation_pay_balance: Solde de paye de vacances
+  Supplemental_balance: Solde de vacances supplémentaire
+  Supplemental_pay_balance: Solde de paye de vacances supplémentaire
+  Last_supplemental_transfer: Dernier transfert supplémentaire
 
   # Bonuses
   Bonuses: Primes

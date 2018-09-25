@@ -712,6 +712,74 @@ class EmployeeTest < ActiveSupport::TestCase
     end
   end
 
+  test "Employee Vacation Balances Summaries Are Sourced from Last Posted Period" do
+    employee = return_valid_employee()
+    employee.first_day = "2010-02-01"
+    employee.contract_start = "2010-02-01"
+
+    # Process.
+    period = Period.new(2018,2)
+    employee.last_supplemental_transfer = Date.parse("2017-02-01")
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+    vac_balance_posted = payslip.vacation_balance
+    vac_pay_balance_posted = payslip.vacation_pay_balance
+    sup_balance_posted = payslip.accum_suppl_days
+    sup_pay_balance_posted = payslip.accum_suppl_pay
+
+    # Force Set last posted period.
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update year: period.year, month: period.month
+    lpp.save!
+
+    # Process + 1
+    period = period.next
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+    vac_balance_plus_1 = payslip.vacation_balance
+
+    # Process + 2
+    period = period.next
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+    vac_balance_plus_2 = payslip.vacation_balance
+
+    # check balances of future slips
+    # verify employee balances are for
+    # last posted period despite things moving forward.
+    vac_summary = employee.vacation_summary
+    assert(vac_summary, "returns something")
+    assert(vac_summary[:supplemental_balance], "returns something")
+    assert(vac_summary[:supplemental_pay_balance], "returns something")
+    assert(vac_summary[:balance], "returns something")
+    assert(vac_summary[:pay_balance], "returns something")
+    assert(vac_summary[:last_supplemental_transfer], "returns something")
+    assert(vac_summary[:period], "returns something")
+
+    assert(vac_balance_plus_2 > vac_balance_plus_1, "should augment")
+    assert(vac_balance_plus_1 > vac_balance_posted, "should augment")
+
+    assert_equal(
+        vac_balance_posted,
+        Vacation.balance(employee, LastPostedPeriod.get),
+      "set correctly")
+
+    # verify output of vacation_summary
+    assert_equal(vac_balance_posted, vac_summary[:balance],
+        "balances should be correct")
+    assert_equal(vac_pay_balance_posted, vac_summary[:pay_balance],
+        "balances should be correct")
+    assert_equal(sup_balance_posted, vac_summary[:supplemental_balance],
+        "balances should be correct")
+    assert_equal(sup_pay_balance_posted, vac_summary[:supplemental_pay_balance],
+        "balances should be correct")
+    assert_equal(LastPostedPeriod.get, vac_summary[:period], "correct period")
+    assert_equal(
+          "2017-02-01",
+          vac_summary[:last_supplemental_transfer].strftime("%Y-%m-%d"),
+      "balances should be correct")
+  end
+
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',

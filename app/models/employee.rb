@@ -279,6 +279,20 @@ class Employee < ApplicationRecord
     end
   end
 
+  def vacation_summary
+    period = LastPostedPeriod.get
+    payslip = payslip_for(period)
+
+    summary = {
+      period: period,
+      balance: payslip.nil? ? 0 : payslip.vacation_balance,
+      pay_balance: payslip.nil? ? 0 : payslip.vacation_pay_balance,
+      supplemental_balance: payslip.nil? ?  0 : payslip.accum_suppl_days,
+      supplemental_pay_balance: payslip.nil? ? 0 : payslip.accum_suppl_pay,
+      last_supplemental_transfer: last_supplemental_transfer(LastPostedPeriod.get)
+    }
+  end
+
   def payslip_for(period)
     payslips.for_period(period).first
   end

@@ -61,6 +61,7 @@ en:
   No_results_found: No employees found matching '%{query}'
   Days: Days
   Submit: Submit
+  as_of: as of
 
   # Error messages
   cant_be_in_future: can't be in the future.
@@ -271,6 +272,11 @@ en:
   Paid?: Paid?
   Voucher: Voucher
   Print_voucher: Print Voucher
+  Vacation_balance: Vacation Balance
+  Vacation_pay_balance: Vacation Pay Balance
+  Supplemental_balance: Supplemental Balance
+  Supplemental_pay_balance: Supplemental Pay Balance
+  Last_supplemental_transfer: Last Supplemental Transfer
 
   # Bonuses
   Bonuses: Bonuses

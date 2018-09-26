@@ -257,7 +257,8 @@ class Employee < ApplicationRecord
   end
 
   def last_supplemental_transfer(period=Period.current)
-    tx_collection = supplemental_transfers.order(transfer_date: :desc)
+    tx_collection = supplemental_transfers.where("transfer_date <= ?", period.finish).
+        order(transfer_date: :desc)
     recent_tx = tx_collection.first
 
     return nil unless recent_tx
@@ -270,7 +271,12 @@ class Employee < ApplicationRecord
   end
 
   def last_supplemental_transfer=(date)
-    supplemental_transfers.create!(transfer_date: date)
+    period = Period.from_date(date)
+
+    if (supplemental_transfers.where("transfer_date between ? and ?",
+        period.start, period.finish).size == 0)
+      supplemental_transfers.create!(transfer_date: date)
+    end
   end
 
   def payslip_for(period)

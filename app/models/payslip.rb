@@ -696,30 +696,6 @@ class Payslip < ApplicationRecord
 
   def self.accumulate_days(previous_payslip, payslip)
     # Take old values and add new values on.
-    prev_reg_days = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_days || 0
-    prev_reg_pay = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_pay || 0
-    prev_vac_earned = previous_payslip.nil? ? 0 : previous_payslip.vacation_earned || 0
-    prev_vac_pay_earned = previous_payslip.nil? ? 0 : previous_payslip.vacation_pay_earned || 0
-    prev_sup_days = previous_payslip.nil? ? 0 : previous_payslip.accum_suppl_days || 0
-    prev_sup_pay = previous_payslip.nil? ? 0 : previous_payslip.accum_suppl_pay || 0
-
-    # FIXME: This is dumb we don't know what we have until we
-    # add them together from last month.
-    payslip.accum_reg_days = prev_reg_days + prev_vac_earned
-    payslip.accum_reg_pay = prev_reg_pay + prev_vac_pay_earned
-
-    # No supplemental days accumulation if you don't earn normal days.
-    # otherwise, you divide by zero and the world explodes.
-    if (prev_reg_days == 0)
-      payslip.accum_suppl_days = 0
-      payslip.accum_suppl_pay = 0
-      payslip.period_suppl_days = 0
-    else
-      # How many supplemental days this employee gets this period, likely < 1
-      payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
-      payslip.accum_suppl_days = prev_sup_days + payslip.period_suppl_days
-      payslip.accum_suppl_pay = (prev_reg_pay.fdiv(prev_reg_days) * payslip.accum_suppl_days).ceil
-    end
   end
 
   def self.compute_vacation_balances(previous_payslip, payslip)
@@ -727,36 +703,70 @@ class Payslip < ApplicationRecord
     prev_balance = previous_payslip.nil? ? Vacation.balance(payslip.employee, payslip.period.previous) : previous_payslip.vacation_balance || 0
     prev_pay = previous_payslip.nil? ? 0 : previous_payslip.vacation_pay_balance || 0
 
-    vacation_days_used = Vacation.days_used(payslip.employee, payslip.period)
 
     payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
+    #Rails.logger.error("V-DE: #{payslip.vacation_earned} earned this month")
     payslip.vacation_pay_earned = payslip.calc_vacation_pay_earned
+
+
+    # TMP MOVED
+    prev_reg_days = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_days || 0
+    prev_reg_pay = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_pay || 0
+    prev_vac_earned = previous_payslip.nil? ? 0 : previous_payslip.vacation_earned || 0
+    prev_vac_pay_earned = previous_payslip.nil? ? 0 : previous_payslip.vacation_pay_earned || 0
+    prev_sup_days = previous_payslip.nil? ? 0 : previous_payslip.accum_suppl_days || 0
+    prev_sup_pay = previous_payslip.nil? ? 0 : previous_payslip.accum_suppl_pay || 0
+
+    payslip.accum_reg_days = prev_reg_days + payslip.vacation_earned
+    payslip.accum_reg_pay = prev_reg_pay + payslip.vacation_pay_earned
+
+    #Rails.logger.error("//// PSD: #{prev_sup_days}")
+
+    # No supplemental days accumulation if you don't earn normal days.
+    # otherwise, you divide by zero and the world explodes.
+    if (payslip.accum_reg_days == 0)
+      payslip.accum_suppl_days = 0
+      payslip.accum_suppl_pay = 0
+      payslip.period_suppl_days = 0
+    else
+      # How many supplemental days this employee gets this period, likely < 1
+      payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
+      payslip.accum_suppl_days = prev_sup_days + payslip.period_suppl_days
+      payslip.accum_suppl_pay = (payslip.accum_reg_pay.fdiv(payslip.accum_reg_days) * payslip.accum_suppl_days).ceil
+    end
+
+    # END TMP MOVED
 
     cur_balance = prev_balance + payslip.vacation_earned
     cur_pay_balance = prev_pay + payslip.vacation_pay_earned
 
-    if (cur_balance - vacation_days_used < 0)
-      raise Exception.new("Insufficient vacation balance to take this month's vacation, Please Correct.")
-    end
-
+    vacation_days_used = 0
     if (cur_balance == 0)
       vacation_pay_used = 0
     else
       vacation_pay_used = 0
 
+      # Vacations are applied to the period which has the most days
+      # if the vacation spans more than one period.
       vacations = Vacation.for_period_for_employee(payslip.employee, payslip.period)
       vacations.each do |vac_in_period|
-        # FIXME to fix in the next commit.
-        #if (vac_in_period.apply_to_period() == payslip.period)
+        if (vac_in_period.apply_to_period() == payslip.period)
           if (cur_balance == 0)
             vacation_pay_used += 0
           else
+            vacation_days_used += vac_in_period.days
             vacation_pay_used += (
-                cur_pay_balance.fdiv(cur_balance.to_f) * vac_in_period.days_in_period(payslip.period)
+                cur_pay_balance.fdiv(cur_balance.to_f) *
+                    vacation_days_used
             ).round
           end
-        #end
+        end
       end
+    end
+
+    if (cur_balance - vacation_days_used < 0)
+      Rails.logger.error("CB: #{cur_balance} less #{vacation_days_used} for period #{payslip.period}")
+      raise Exception.new("Insufficient vacation balance to take this month's vacation, Please Correct.")
     end
 
     payslip.vacation_used = vacation_days_used

@@ -21,9 +21,9 @@ class PayslipsController < ApplicationController
   end
 
   def show
-    # TODO: cleanup and fix routes to make this
-    # not necessary
-    if (params[:id] == "process" || params[:id] == "process_complete" || params[:id] == "process_all")
+    # TODO: cleanup and fix routes to make this not necessary
+    if (params[:id] == "process" || params[:id] == "process_complete" ||
+        params[:id] == "process_all" || params[:id] == "post_period")
       redirect_to payslips_url()
     else
       @payslip = Payslip.find(params[:id])

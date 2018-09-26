@@ -121,8 +121,9 @@ class Vacation < ApplicationRecord
     Vacation.where(overlap_clause(period.start, period.finish))
   end
 
-  def self.starts_in(period = Period.current)
-    Vacation.where("start_date BETWEEN ? AND ?", period.start, period.finish)
+  def self.starts_in(employee, period = Period.current)
+    Vacation.where("employee_id = ?", employee&.id).
+        where("start_date BETWEEN ? AND ?", period.start, period.finish)
   end
 
   def self.for_period_for_employee(employee, period = Period.current)
@@ -174,7 +175,7 @@ class Vacation < ApplicationRecord
   end
 
   def self.transfer_supplemental_days?(employee, period)
-    return true if (Vacation.starts_in(period).size > 0)
+    return true if (Vacation.starts_in(employee, period).size > 0)
     return true if period.month == employee.contract_start.try(:month)
     return false
   end

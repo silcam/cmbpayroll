@@ -627,25 +627,40 @@ class EmployeeTest < ActiveSupport::TestCase
   test "Last Transfer for the Employee" do
     luke = employees :Luke
 
-    luke.last_supplemental_transfer = "2018-01-01"
-    luke.last_supplemental_transfer = "2018-03-01"
-    luke.last_supplemental_transfer = "2018-02-01"
-    luke.last_supplemental_transfer = "2017-12-01"
-    luke.last_supplemental_transfer = "2018-09-01"
+    luke.last_supplemental_transfer = Date.parse("2018-01-01")
+    luke.last_supplemental_transfer = Date.parse("2018-03-01")
+    luke.last_supplemental_transfer = Date.parse("2018-02-01")
+    luke.last_supplemental_transfer = Date.parse("2017-12-01")
+    luke.last_supplemental_transfer = Date.parse("2018-09-01")
 
     Date.stub :today, Date.new(2019, 12, 1) do
       assert_equal("2018-09-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
     end
   end
 
+  test "Last Transfer doesn't look at things newer than period" do
+    luke = employees :Luke
+
+    luke.last_supplemental_transfer = Date.parse("2018-01-01")
+    luke.last_supplemental_transfer = Date.parse("2020-03-01")
+    luke.last_supplemental_transfer = Date.parse("2020-04-01")
+    luke.last_supplemental_transfer = Date.parse("2020-05-01")
+    luke.last_supplemental_transfer = Date.parse("2020-06-01")
+
+    # This returns the date before the one at Period.current
+    Date.stub :today, Date.new(2018, 9, 5) do
+      assert_equal("2018-01-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
+    end
+  end
+
   test "Last Transfer doesn't return anything for this period." do
     luke = employees :Luke
 
-    luke.last_supplemental_transfer = "2018-01-01"
-    luke.last_supplemental_transfer = "2018-03-01"
-    luke.last_supplemental_transfer = "2018-02-01"
-    luke.last_supplemental_transfer = "2017-12-01"
-    luke.last_supplemental_transfer = "2018-09-01"
+    luke.last_supplemental_transfer = Date.parse("2018-01-01")
+    luke.last_supplemental_transfer = Date.parse("2018-03-01")
+    luke.last_supplemental_transfer = Date.parse("2018-02-01")
+    luke.last_supplemental_transfer = Date.parse("2017-12-01")
+    luke.last_supplemental_transfer = Date.parse("2018-09-01")
 
     # This returns the date before the one at Period.current
     Date.stub :today, Date.new(2018, 9, 5) do
@@ -658,6 +673,24 @@ class EmployeeTest < ActiveSupport::TestCase
     end
   end
 
+  test "Last Transfer doesn't duplicate" do
+    luke = employees :Luke
+
+    luke.last_supplemental_transfer = Date.parse("2018-01-01")
+    luke.last_supplemental_transfer = Date.parse("2018-01-01")
+    luke.last_supplemental_transfer = Date.parse("2018-01-01")
+    luke.last_supplemental_transfer = Date.parse("2018-01-01")
+    luke.last_supplemental_transfer = Date.parse("2018-01-01")
+
+    # This returns the date before the one at Period.current
+    Date.stub :today, Date.new(2018, 9, 5) do
+      assert_equal("2018-01-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
+    end
+
+    assert_equal(1, luke.supplemental_transfers.size,
+        "should only have 1 transfer if all the same period")
+  end
+
   test "Last Transfer might return null." do
     luke = employees :Luke
 
@@ -666,7 +699,7 @@ class EmployeeTest < ActiveSupport::TestCase
       refute(luke.last_supplemental_transfer)
     end
 
-    luke.last_supplemental_transfer = "2018-09-01"
+    luke.last_supplemental_transfer = Date.parse("2018-09-01")
 
     # since latest is this current period, nil
     Date.stub :today, Date.new(2018, 9, 5) do

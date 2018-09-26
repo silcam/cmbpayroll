@@ -321,9 +321,10 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(3.5, Vacation.days_earned(employee, Period.new(2018, 8)),
         "earned supplemental days sets the transfer date")
 
-    # assert existence
-    assert(employee.last_supplemental_transfer)
-    assert_equal("2018-08-01", employee.last_supplemental_transfer.strftime("%Y-%m-%d"),
+    # assert existence (won't pull from current period)
+    refute(employee.last_supplemental_transfer(Period.new(2018, 8)))
+    assert(employee.last_supplemental_transfer(Period.new(2018, 9)))
+    assert_equal("2018-08-01", employee.last_supplemental_transfer(Period.new(2018,9)).strftime("%Y-%m-%d"),
         "date is now set")
 
     # transfer days
@@ -331,8 +332,18 @@ class VacationTest < ActiveSupport::TestCase
         "earning more days resets the transfer date")
 
     # assert updated
-    assert(employee.last_supplemental_transfer)
-    assert_equal("2019-08-01", employee.last_supplemental_transfer.strftime("%Y-%m-%d"),
+    assert(employee.last_supplemental_transfer(Period.new(2019, 8)))
+    assert_equal("2018-08-01", employee.last_supplemental_transfer(Period.new(2019,8)).strftime("%Y-%m-%d"),
+        "date is updated")
+
+    # won't pull from future
+    assert(employee.last_supplemental_transfer(Period.new(2019, 7)))
+    assert_equal("2018-08-01", employee.last_supplemental_transfer(Period.new(2019,7)).strftime("%Y-%m-%d"),
+        "date is updated")
+
+    # Ahh
+    assert(employee.last_supplemental_transfer(Period.new(2019, 9)))
+    assert_equal("2019-08-01", employee.last_supplemental_transfer(Period.new(2019,9)).strftime("%Y-%m-%d"),
         "date is updated")
   end
 
@@ -341,24 +352,25 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(0, Vacation.all.size, "shouldn't be any")
 
     vac = Vacation.create!(start_date: "2018-11-03", end_date: "2018-12-03", employee: @luke)
-    assert_equal(0, Vacation.starts_in(Period.new(2018,10)).size)
-    assert_equal(1, Vacation.starts_in(Period.new(2018,11)).size)
-    assert_equal(0, Vacation.starts_in(Period.new(2018,12)).size)
+    assert_equal(0, Vacation.starts_in(@luke, Period.new(2018,10)).size)
+    assert_equal(1, Vacation.starts_in(@luke, Period.new(2018,11)).size)
+    assert_equal(0, Vacation.starts_in(@luke, Period.new(2018,12)).size)
 
     vac = Vacation.create!(start_date: "2018-11-02", end_date: "2018-11-02", employee: @luke)
-    assert_equal(0, Vacation.starts_in(Period.new(2018,10)).size)
-    assert_equal(2, Vacation.starts_in(Period.new(2018,11)).size)
-    assert_equal(0, Vacation.starts_in(Period.new(2018,12)).size)
+    assert_equal(0, Vacation.starts_in(@luke, Period.new(2018,10)).size)
+    assert_equal(2, Vacation.starts_in(@luke, Period.new(2018,11)).size)
+    assert_equal(0, Vacation.starts_in(@luke, Period.new(2018,12)).size)
 
     vac = Vacation.create!(start_date: "2018-11-01", end_date: "2018-11-01", employee: @luke)
-    assert_equal(0, Vacation.starts_in(Period.new(2018,10)).size)
-    assert_equal(3, Vacation.starts_in(Period.new(2018,11)).size)
-    assert_equal(0, Vacation.starts_in(Period.new(2018,12)).size)
+    assert_equal(0, Vacation.starts_in(@luke, Period.new(2018,10)).size)
+    assert_equal(3, Vacation.starts_in(@luke, Period.new(2018,11)).size)
+    assert_equal(0, Vacation.starts_in(@luke, Period.new(2018,12)).size)
 
+    vac = Vacation.create!(start_date: "2018-10-02", end_date: "2018-10-11", employee: @anakin)
     vac = Vacation.create!(start_date: "2018-12-31", end_date: "2018-12-31", employee: @luke)
-    assert_equal(0, Vacation.starts_in(Period.new(2018,10)).size)
-    assert_equal(3, Vacation.starts_in(Period.new(2018,11)).size)
-    assert_equal(1, Vacation.starts_in(Period.new(2018,12)).size)
+    assert_equal(0, Vacation.starts_in(@luke, Period.new(2018,10)).size)
+    assert_equal(3, Vacation.starts_in(@luke, Period.new(2018,11)).size)
+    assert_equal(1, Vacation.starts_in(@luke, Period.new(2018,12)).size)
   end
 
   test "Days Used" do
@@ -453,7 +465,7 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(22.5, payslip.vacation_balance)
     assert_equal(148437, payslip.vacation_pay_balance)
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
-    assert_equal(138693, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
+    assert_equal(138542, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
   end
 
   test "Vacation (payslip) can figure how much taxes are for this vacation" do
@@ -477,7 +489,7 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
     assert_equal(6832.810, payslip.vacation_daily_rate.round(3), "can compute vacation rate")
     # FIXME
-    assert_equal(138693, @lukes_vacation.vacation_pay,
+    assert_equal(138542, @lukes_vacation.vacation_pay,
         "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
     #assert_equal((21 * payslip.vacation_daily_rate).ceil, @lukes_vacation.vacation_pay,
     #    "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
@@ -713,7 +725,7 @@ class VacationTest < ActiveSupport::TestCase
       employee = return_valid_employee()
       employee.contract_start = "1990-09-02"
 
-      employee.last_supplemental_transfer = "2016-09-05"
+      employee.last_supplemental_transfer = Date.parse("2016-09-05")
       period = Period.current
       assert_equal(10, Vacation.supplemental_days(employee, period), "Correct Suppl Days")
     end

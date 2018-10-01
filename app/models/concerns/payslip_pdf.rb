@@ -181,10 +181,10 @@ class PayslipPdf < CmbPayrollPdf
             { :content => "CONGE ACCUMULÉ", :colspan => 2 }
           ],
           ["Ce mois-ci",
-            { :content => "#{payslip.vacation_earned} jours", :align => :right }
+            { :content => "#{payslip.vacation_earned&.round(1)} jours", :align => :right }
           ],
           ["Jusqu'aujourd'hui",
-            { :content => "#{payslip.vacation_balance} jours", :align => :right }
+            { :content => "#{payslip.vacation_balance&.round(1)} jours", :align => :right }
           ],
           ["Derner Congé",
             { :content => "#{payslip.last_vacation_start} - #{payslip.last_vacation_end}", :align => :right }

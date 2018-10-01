@@ -75,7 +75,7 @@ class VoucherPdf < CmbPayrollPdf
           { :content => "-#{@vacation.days}", :align => :right }
         ],
         ["Jusqu'aujourd'hui",
-          { :content => "#{Vacation.balance(@vacation.employee, Period.from_date(@vacation.end_date))} jours", :align => :right }
+          { :content => "#{Vacation.balance(@vacation.employee, Period.from_date(@vacation.end_date))&.round(1)} jours", :align => :right }
         ],
         ["Derner Congé",
           { :content => "#{@vacation.start_date} - #{@vacation.end_date}", :align => :right }

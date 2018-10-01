@@ -69,6 +69,8 @@ gem 'rails-html-sanitizer', '~>1.0.4'
 gem 'sprockets', '~>3.7.2'
 # 1.2.2 is a fixed version (CVE-2018-1000544)
 gem 'rubyzip', '~>1.2.2'
+# 1.9.24 is a fixed version (CVE-2018-1000201)
+gem 'ffi', '~>1.9.24'
 
 group :development, :test do
   # Use Puma as the app server in development

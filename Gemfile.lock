@@ -103,7 +103,7 @@ GEM
       responders (>= 1.1)
     erubi (1.7.0)
     execjs (2.7.0)
-    ffi (1.9.18)
+    ffi (1.9.25)
     fixy (0.0.8)
       rake
     globalid (0.4.1)
@@ -287,6 +287,7 @@ DEPENDENCIES
   capistrano-rbenv
   coffee-rails (~> 4.2)
   dossier (~> 2.13, >= 2.13.1)
+  ffi (~> 1.9.24)
   fixy (~> 0.0.8)
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3.1)

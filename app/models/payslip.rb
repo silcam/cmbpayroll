@@ -692,8 +692,8 @@ class Payslip < ApplicationRecord
   end
 
   def self.compute_vacation_balances(previous_payslip, payslip)
-    payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
     payslip.vacation_pay_earned = payslip.calc_vacation_pay_earned
+    payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
 
     accumulate_regular_days(previous_payslip, payslip)
     accumulate_regular_pay(previous_payslip, payslip)
@@ -763,6 +763,9 @@ class Payslip < ApplicationRecord
     else
       vacation_pay_used = 0
 
+      payslip.vacation_balance = cur_balance
+      payslip.vacation_pay_balance = cur_pay_balance
+
       # Vacations are applied to the period which has the most days
       # if the vacation spans more than one period.
       vacations = Vacation.for_period_for_employee(payslip.employee, payslip.period)
@@ -772,11 +775,7 @@ class Payslip < ApplicationRecord
             vacation_pay_used += 0
           else
             vacation_days_used += vac_in_period.days
-            vacation_pay_used += (
-                # Only ever divide by STANDARD DAYS, even if you earn more.
-                cur_pay_balance.fdiv( (prev_balance + STANDARD_DAYS_EARNED).to_f ) *
-                    vacation_days_used
-            ).round
+            vacation_pay_used += vac_in_period.vacation_pay(payslip)
           end
         end
       end

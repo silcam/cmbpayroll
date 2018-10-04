@@ -465,7 +465,7 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(22.5, payslip.vacation_balance)
     assert_equal(148437, payslip.vacation_pay_balance)
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
-    assert_equal(138542, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
+    assert_equal(138541, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
   end
 
   test "Vacation (payslip) can figure how much taxes are for this vacation" do
@@ -489,7 +489,7 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
     assert_equal(6832.810, payslip.vacation_daily_rate.round(3), "can compute vacation rate")
     # FIXME
-    assert_equal(138542, @lukes_vacation.vacation_pay,
+    assert_equal(138541, @lukes_vacation.vacation_pay,
         "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
     #assert_equal((21 * payslip.vacation_daily_rate).ceil, @lukes_vacation.vacation_pay,
     #    "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")

@@ -1999,23 +1999,8 @@ class PayslipTest < ActiveSupport::TestCase
     # init supplemental transfer
     employee.last_supplemental_transfer = Date.parse("2017-01-01")
 
-    dec_payslip = Payslip.new()
-    dec_payslip.employee = employee
-    dec_payslip.period_month = 12
-    dec_payslip.period_year = 2017
-    dec_payslip.vacation_balance = dec_starting_vacation_days
-    dec_payslip.vacation_pay_earned = 222333
-    dec_payslip.net_pay = 333222
-    earning = Earning.new()
-    earning.rate = 1
-    earning.hours = 1
-    dec_payslip.earnings << earning
-    valid = dec_payslip.valid?
-
-    assert(valid)
-    assert(dec_payslip.save)
-
     period = Period.new(2018,1)
+    set_previous_vacation_balances(employee, period, 286978, dec_starting_vacation_days)
 
     # I do what I want!
     lpp = LastPostedPeriod.first_or_initialize
@@ -2053,6 +2038,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     # Verify payslip vacation totals are correct for Jan
     jan_days_earned = payslip.vacation_earned
+    jan_pay_earned = payslip.vacation_pay_earned
     assert_equal(11.5, jan_days_earned, "earning is correct")
 
     jan_days_used = payslip.vacation_used
@@ -2086,14 +2072,19 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.gross_pay, "not paid for February")
     assert_equal(0, payslip.net_pay, "not paid for February")
 
-    # Verify payslip vacation totals are correct for Feb
-    # Wage: 73565
-    # 73565 * 12 / 16 * 18
-    assert_equal(4968, payslip.vacation_pay_used, "all pay received in Feb")
-
     feb_days_earned = payslip.vacation_earned
     assert_equal(1.5, feb_days_earned,
         "Standard days earned in Feb, even if off whole month is correct")
+
+    # Verify payslip vacation totals are correct for Feb
+    # (dec starting balance + jan earned vac pay /
+    #     dec_starting days balance + jan days + feb_days) * days
+    vac_pay_earned = (
+        (286978 + jan_pay_earned).fdiv(
+            (dec_starting_vacation_days + jan_days_earned + feb_days_earned).to_f
+        ) * vac.days
+    ).round
+    assert_equal(vac_pay_earned, payslip.vacation_pay_used, "all pay received in Feb")
 
     feb_days_used = payslip.vacation_used
     assert_equal(30, feb_days_used, "30 vac days in Feb")
@@ -2465,7 +2456,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     # Test pay
     assert_equal(3851, payslip.vacation_pay_earned, "pay balance is correct")
-    assert_equal(84307, payslip.vacation_pay_used, "pay balance is correct")
+    assert_equal(60219, payslip.vacation_pay_used, "pay balance is correct")
     assert_equal(pre_pay_balance + payslip.vacation_pay_earned - payslip.vacation_pay_used,
         payslip.vacation_pay_balance, "pay balance is correct")
   end
@@ -2671,7 +2662,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(maybe_sup_pay, supplemental_vacation_pay, "STANDARD DAYS!!")
   end
 
-  test "Do not divide vacation pay by supplemental days earnings" do
+  test "Vacation Pay Calculation" do
     employee = return_valid_employee
     employee.contract_start = "2008-01-01" # set for supplemental days
     employee.last_supplemental_transfer = Date.parse("2018-01-01")
@@ -2699,14 +2690,15 @@ class PayslipTest < ActiveSupport::TestCase
     # have a vacation that is over the reg days but under reg + suppl
     payslip = Payslip.process(employee, period)
 
-    assert_equal(249924, previous_pay_balance + payslip.calc_vacation_pay_earned, "cur_balance correct")
+    assert_equal(249924, previous_pay_balance + payslip.calc_vacation_pay_earned,
+        "cur_balance correct")
 
     vpu = (
         (previous_pay_balance + payslip.calc_vacation_pay_earned).fdiv(
-            previous_balance + Payslip::STANDARD_DAYS_EARNED
+            (previous_balance + payslip.vacation_earned).to_f
         ) * vacation.days
-    ).ceil
-    assert_equal(vpu, payslip.vacation_pay_used, "Correctly divided by STANDARD DAYS")
+    ).round
+    assert_equal(vpu, payslip.vacation_pay_used, "Correctly Vacation Pay")
   end
 
   test "Payslip will error if not enough days to pay vacaion" do

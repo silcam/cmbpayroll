@@ -25,7 +25,20 @@
               <i><%= day_hash[:holiday] %></i><br>
 
               <% if day_hash[:vacation] %>
-                <h3><%= t :Vacation %></h3>
+                <% if form %>
+                  <% hours = day_hash[:vacation_worked] %>
+                  <% css_class = 'form-control hours-text' %>
+                  <%= text_field_tag "hours[#{date}][vacation_worked]",
+                                       number_to_human(hours),
+                                       class: css_class %>
+                  <h3><%= t :Vacation %></h3>
+                <% else %>
+                  <h3><%= t :Vacation %></h3>
+                  <% if day_hash[:vacation_worked] > 0 %>
+                    <h3><span style="color: green;"><%= number_to_human(day_hash[:vacation_worked]) %>
+                        <small><%= t :Vacation_worked %></small></span></h3>
+                  <% end %>
+                <% end %>
 
               <% else %>
                 <% if form %>

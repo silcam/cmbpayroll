@@ -276,7 +276,15 @@ class Payslip < ApplicationRecord
     earnings << ot2earn
     earnings << ot3earn
 
-    self[:overtime_earnings] = ot1_earnings + ot2_earnings + ot3_earnings
+    vacation_worked = hours[:vacation_worked] || 0
+    vacation_worked_earnings = vacation_worked * employee.hourly_rate
+    vacation_earning = Earning.new(amount: vacation_worked_earnings,
+        description: "Vacation Hours Worked", hours: vacation_worked,
+          rate: employee.hourly_rate, overtime: true)
+    earnings << vacation_earning if vacation_worked_earnings > 0
+
+    self[:overtime_earnings] = ot1_earnings + ot2_earnings +
+        ot3_earnings + vacation_worked_earnings
   end
 
   def compute_bonusbase

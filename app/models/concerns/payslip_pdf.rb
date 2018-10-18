@@ -53,7 +53,11 @@ class PayslipPdf < CmbPayrollPdf
         ["Taux de rémunération (mensuel)",
             { :content => "#{number_to_currency(payslip.employee.wage, locale: :cm)}", :align => :right },
             "",
-            { :content => "#{payslip.employee.wage}", :align => :right }
+            if (payslip.worked_full_month?)
+              { :content => "#{payslip.employee.wage}", :align => :right }
+            else
+              ""
+            end
         ]
       ]
 

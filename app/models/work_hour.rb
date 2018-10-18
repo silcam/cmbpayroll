@@ -10,7 +10,9 @@ class WorkHour < ApplicationRecord
   validates :date, presence: true
   validates :hours, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24}
   validates :excused_hours, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24, allow_blank: true}
-  validate :not_during_vacation
+  validates :vacation_worked, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24, allow_blank: true}
+  validate :hours_not_during_vacation
+  validate :vacation_worked_during_vacation
   validate :not_during_posted_period
 
   default_scope { order(:date) }
@@ -19,6 +21,7 @@ class WorkHour < ApplicationRecord
   def update_with_params(params)
     self.hours = params[:hours].to_f
     self.excused_hours = params[:excused_hours].to_f if params[:excused_hours]
+    self.vacation_worked = params[:vacation_worked].to_f if params[:vacation_worked]
     self.excuse = params[:excuse]
     save
   end
@@ -41,6 +44,7 @@ class WorkHour < ApplicationRecord
     days = {}
     work_hours.each do |work_hour|
       days[work_hour.date] = {hours: work_hour.hours,
+                              vacation_worked: work_hour.vacation_worked,
                               excused_hours: work_hour.excused_hours,
                               excuse: work_hour.excuse }
     end
@@ -80,7 +84,7 @@ class WorkHour < ApplicationRecord
     (start .. finish).each do |day|
       # Ensure that every day has a hash with at least hours and excused_hours defined
       hours_not_entered = days[day].nil? || days[day][:hours].nil?
-      days[day] = {hours: 0, excused_hours: 0}.merge(days[day] || {})
+      days[day] = {hours: 0, vacation_worked: 0, excused_hours: 0}.merge(days[day] || {})
       days[day][:hours_not_entered] = hours_not_entered
     end
     days
@@ -149,11 +153,19 @@ class WorkHour < ApplicationRecord
 
   private
 
-  def not_during_vacation
-    unless employee and employee.vacations.
+  def hours_not_during_vacation
+    if (employee and !employee.vacations.
         where("start_date <= :date AND end_date >= :date", {date: date}).
-        empty?
+        empty?) && (hours > 0 || excused_hours > 0)
       errors.add(:date, I18n.t(:not_during_vacation))
+    end
+  end
+
+  def vacation_worked_during_vacation
+    if (employee and employee.vacations.
+        where("start_date <= :date AND end_date >= :date", {date: date}).
+        empty?) && vacation_worked > 0
+      errors.add(:date, I18n.t(:must_be_during_vacation))
     end
   end
 
@@ -171,17 +183,13 @@ class WorkHour < ApplicationRecord
         hours.merge! calculate_overtime(date, day) do |key, oldval, newval|
           oldval + newval
         end
+      else
+        if (day[:vacation_worked] > 0)
+          hours[:vacation_worked] = 0 if hours[:vacation_worked].nil?
+          hours[:vacation_worked] += day[:vacation_worked]
+        end
       end
     end
-
-    # if (hours[:overtime] && hours[:overtime] > NUMBER_OF_OT1_HOURS)
-    #   hours[:overtime2] = hours[:overtime] - NUMBER_OF_OT1_HOURS
-    #   hours[:overtime] = NUMBER_OF_OT1_HOURS
-    # end
-    # if (hours[:overtime2] && hours[:overtime2] > NUMBER_OF_OT2_HOURS)
-    #   hours[:overtime3] = hours[:overtime2] - NUMBER_OF_OT2_HOURS
-    #   hours[:overtime2] = NUMBER_OF_OT2_HOURS
-    # end
 
     hours
   end

@@ -2790,6 +2790,49 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(days_earned_second_time, days_earned, "reprocessing is the same")
   end
 
+  test "Test payslip with vacation_worked." do
+    employee = return_valid_employee
+    employee.contract_start = "2008-01-01" # set for supplemental days
+    employee.last_supplemental_transfer = Date.parse("2018-01-01")
+
+    period = Period.new(2018,3)
+
+    previous_pay_balance = 245345
+    previous_balance = 33
+    set_previous_vacation_balances(employee, period, previous_pay_balance, previous_balance)
+    generate_work_hours(employee, period)
+
+    # have a vacation that is over the reg days but under reg + suppl
+    vac_hours_worked = 9.0
+    vacation = Vacation.create!(
+        employee: employee,
+        start_date: '2018-03-05', end_date: '2018-03-09')
+    hours = {
+      "2018-03-05" => {hours: 0.0},
+      "2018-03-06" => {hours: 0.0, vacation_worked: vac_hours_worked},
+      "2018-03-07" => {hours: 0.0},
+      "2018-03-08" => {hours: 0.0},
+      "2018-03-09" => {hours: 0.0},
+    }
+    WorkHour.update(employee, hours)
+    assert_equal(5, vacation.days, "should be correct number of days")
+
+    exp = { normal: 136.0, vacation_worked: vac_hours_worked }
+    assert_equal(exp, WorkHour.total_hours(employee, period))
+
+    payslip = Payslip.process(employee, period)
+
+    found = false
+    payslip.earnings.each do |e|
+      if (e.rate == employee.hourly_rate)
+        found = true
+        assert_equal(e.amount,(employee.hourly_rate * vac_hours_worked), "correct earning")
+      end
+    end
+
+    assert(found, "Found earning for vacation worked")
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

@@ -464,6 +464,107 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal(20, WorkHour.days_worked(employee, period), "should have worked full month")
   end
 
+  test "Can Enter Vacation Worked" do
+    employee = return_valid_employee()
+    period = Period.new(2018,1)
+
+    vacation = Vacation.create(
+        start_date: '2018-01-15',
+        end_date: '2018-01-26',
+        employee: employee
+    )
+    assert(vacation)
+
+    hours = {
+      "2018-01-01" => {hours: 8},
+      "2018-01-02" => {hours: 8},
+      "2018-01-03" => {hours: 8},
+      "2018-01-04" => {hours: 8},
+      "2018-01-05" => {hours: 8},
+      "2018-01-08" => {hours: 8},
+      "2018-01-09" => {hours: 8},
+      "2018-01-10" => {hours: 8},
+      "2018-01-11" => {hours: 8},
+      "2018-01-12" => {hours: 8},
+      "2018-01-29" => {hours: 8},
+      "2018-01-30" => {hours: 8},
+      "2018-01-31" => {hours: 8},
+      "2018-01-17" => {vacation_worked: 12} # Vacation (Holiday) Hours Worked.
+    }
+
+    success, errors = WorkHour.update(employee, hours)
+    assert(success, "should have not had errors #{errors.inspect}")
+
+    assert_equal(13, WorkHour.days_worked(employee, period), "should have worked one day")
+
+    exp = {normal: 104.0, vacation_worked: 12.0}
+    assert_equal(exp, WorkHour.total_hours(employee, period))
+  end
+
+  test "Vacation Worked Validations" do
+    employee = return_valid_employee()
+    period = Period.new(2018,1)
+
+    vacation = Vacation.create(
+        start_date: '2018-01-01',
+        end_date: '2018-01-31',
+        employee: employee
+    )
+    assert(vacation)
+
+    hours = {
+      "2018-01-17" => {vacation_worked: -1}
+    }
+
+    success, errors = WorkHour.update(employee, hours)
+    refute(success, "should have been an error")
+
+    hours = {
+      "2018-01-17" => {vacation_worked: 28}
+    }
+
+    success, errors = WorkHour.update(employee, hours)
+    refute(success, "should have been an error")
+
+    hours = {
+      "2018-01-17" => {vacation_worked: 18}
+    }
+
+    success, errors = WorkHour.update(employee, hours)
+    assert(success, "should not have been an error #{errors.inspect}")
+  end
+
+  test "Vacation Worked Must Happen During Vacation" do
+    employee = return_valid_employee()
+    period = Period.new(2018,1)
+
+    vacation = Vacation.create(
+        start_date: '2018-01-15',
+        end_date: '2018-01-26',
+        employee: employee
+    )
+    assert(vacation)
+
+    hours = {
+      "2018-01-01" => {hours: 8},
+      "2018-01-02" => {hours: 8},
+      "2018-01-03" => {hours: 8},
+      "2018-01-04" => {hours: 8, vacation_worked: 5},
+      "2018-01-05" => {hours: 8},
+      "2018-01-08" => {hours: 8},
+      "2018-01-09" => {hours: 8},
+      "2018-01-10" => {hours: 8},
+      "2018-01-11" => {hours: 8},
+      "2018-01-12" => {hours: 8},
+      "2018-01-29" => {hours: 8},
+      "2018-01-30" => {hours: 8},
+      "2018-01-31" => {hours: 8},
+    }
+
+    success, errors = WorkHour.update(employee, hours)
+    refute(success, "should have had errors")
+  end
+
   def some_valid_params
     {employee: @luke, date: '2017-08-09', hours: 9}
   end

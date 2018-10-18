@@ -22,6 +22,10 @@
     <%= number_to_human @hours_worked[:holiday] %>
     <small><%= t :Holiday_overtime_hours %></small>
   <% end %>
+  <% if @hours_worked[:vacation_worked] %>
+    <%= number_to_human @hours_worked[:vacation_worked] %>
+    <small><%= t :Vacation_worked %></small>
+  <% end %>
 </h3>
 
 <%= render 'shared/period_nav', path: employee_work_hours_path(@employee),

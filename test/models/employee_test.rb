@@ -780,6 +780,26 @@ class EmployeeTest < ActiveSupport::TestCase
       "balances should be correct")
   end
 
+  test "Search returns only active employees" do
+    search_string = "EEEE23geirui84DD"
+    employee1 = return_valid_employee()
+    employee2 = return_valid_employee()
+
+    employee1.first_name = search_string
+    employee1.last_name = "ZZZZ"
+    employee2.first_name = search_string
+    employee2.last_name = "YYYY"
+    employee2.employment_status = "inactive"
+
+    assert(employee1.save)
+    assert(employee2.save)
+
+    results = Employee.search(search_string)
+
+    assert_equal(1, results.size(), "search returned one result")
+    assert_equal("ZZZZ", results.first.last_name(), "correct employee returned")
+  end
+
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',

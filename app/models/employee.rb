@@ -330,6 +330,8 @@ class Employee < ApplicationRecord
   end
 
   def self.search(query)
-    joins(:person).where("people.first_name || ' ' || people.last_name ILIKE ?", "%#{query}%")
+    joins(:person).
+        where("people.first_name || ' ' || people.last_name ILIKE ?", "%#{query}%").
+        where(employment_status: Employee.active_status_array)
   end
 end

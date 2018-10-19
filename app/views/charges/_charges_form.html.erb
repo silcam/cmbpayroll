@@ -5,7 +5,8 @@
 <%= form_for @charge, url: employee_charges_path(@employee), html: {class: 'auto-width'} do |form| %>
   <div class='form-group'>
     <%= form.label :amount, t(:Amount) %>
-    <%= form.text_field :amount, placeholder: 'CFA', class: 'form-control' %>
+    <%= form.text_field :amount, placeholder: 'CFA', class: 'form-control', :data => { :commafy => true }, :aria => { :describedby => "amount-helper" } %>
+    <small id="amount-helper" class="text-muted"></small>
   </div>
 
   <div class="form-group">

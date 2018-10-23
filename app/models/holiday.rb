@@ -1,9 +1,7 @@
 class Holiday < ApplicationRecord
-
   validates :name, :date, presence: {message: I18n.t(:Not_blank)}
 
   default_scope { order(:date) }
-
 
   def self.for_year(year)
     Holiday.for(Date.new(year, 1, 1), Date.new(year, 12, 31))

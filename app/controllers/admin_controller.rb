@@ -72,15 +72,12 @@ class AdminController < ApplicationController
     @end_date = period.finish
 
     @announcement = params[:timesheet][:announcement]
-
     @employees = Employee.currently_paid()
-
     @filename = 'eps-timesheet.pdf'
   end
 
   def estimate_pay
     authorize! :read, AdminController
-
   end
 
   def estimate_pay_process
@@ -94,7 +91,6 @@ class AdminController < ApplicationController
         render json: @result, :content_type => "text/json"
       end
     end
-
   end
 
   private

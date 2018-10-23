@@ -118,14 +118,28 @@ class WorkHour < ApplicationRecord
   end
 
   def self.calculate_overtime(date, day_hash)
+    # handle as regular hours
+    if day_hash[:vacation_worked] && day_hash[:vacation_worked] > 0
+      day_hash[:hours] = day_hash[:vacation_worked]
+      day_hash[:vacation_worked] = 0
+    end
+
     return {} if day_hash[:hours].nil? or day_hash[:hours] == 0
     return {holiday: day_hash[:hours]} if holiday_overtime? date, day_hash
     if is_off_day? date
       {overtime: day_hash[:hours]}
     elsif day_hash[:hours] > workday
-      {normal: workday, overtime: (day_hash[:hours]-workday)}
+      if day_hash[:vacation] == true
+        {vacation_worked: workday, overtime: (day_hash[:hours]-workday)}
+      else
+        {normal: workday, overtime: (day_hash[:hours]-workday)}
+      end
     else
-      {normal: day_hash[:hours]}
+      if day_hash[:vacation] == true
+        {vacation_worked: day_hash[:hours]}
+      else
+        {normal: day_hash[:hours]}
+      end
     end
   end
 
@@ -179,15 +193,8 @@ class WorkHour < ApplicationRecord
     hours = {}
     days = complete_days_hash(employee, start, finish)
     days.each do |date, day|
-      unless day[:vacation]
-        hours.merge! calculate_overtime(date, day) do |key, oldval, newval|
-          oldval + newval
-        end
-      else
-        if (day[:vacation_worked] > 0)
-          hours[:vacation_worked] = 0 if hours[:vacation_worked].nil?
-          hours[:vacation_worked] += day[:vacation_worked]
-        end
+      hours.merge! calculate_overtime(date, day) do |key, oldval, newval|
+        oldval + newval
       end
     end
 

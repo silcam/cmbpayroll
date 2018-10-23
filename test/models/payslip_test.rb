@@ -2802,24 +2802,24 @@ class PayslipTest < ActiveSupport::TestCase
     set_previous_vacation_balances(employee, period, previous_pay_balance, previous_balance)
     generate_work_hours(employee, period)
 
-    # have a vacation that is over the reg days but under reg + suppl
-    vac_hours_worked = 9.0
+    vac_hours_worked = 6.0
     vacation = Vacation.create!(
         employee: employee,
-        start_date: '2018-03-05', end_date: '2018-03-09')
+        start_date: '2018-03-05', end_date: '2018-03-11')
     hours = {
       "2018-03-05" => {hours: 0.0},
       "2018-03-06" => {hours: 0.0, vacation_worked: vac_hours_worked},
       "2018-03-07" => {hours: 0.0},
       "2018-03-08" => {hours: 0.0},
       "2018-03-09" => {hours: 0.0},
+      "2018-03-10" => {hours: 0.0},
+      "2018-03-11" => {hours: 0.0},
     }
     WorkHour.update(employee, hours)
     assert_equal(5, vacation.days, "should be correct number of days")
 
     exp = { normal: 136.0, vacation_worked: vac_hours_worked }
     assert_equal(exp, WorkHour.total_hours(employee, period))
-
     payslip = Payslip.process(employee, period)
 
     found = false
@@ -2827,6 +2827,88 @@ class PayslipTest < ActiveSupport::TestCase
       if (e.rate == employee.hourly_rate)
         found = true
         assert_equal(e.amount,(employee.hourly_rate * vac_hours_worked), "correct earning")
+      end
+    end
+
+    assert(found, "Found earning for vacation worked")
+
+    # Vacation weekday overtime
+    vac_hours_worked = 9.0
+    hours = {
+      "2018-03-05" => {hours: 0.0},
+      "2018-03-06" => {hours: 0.0, vacation_worked: vac_hours_worked},
+      "2018-03-07" => {hours: 0.0},
+      "2018-03-08" => {hours: 0.0},
+      "2018-03-09" => {hours: 0.0},
+      "2018-03-10" => {hours: 0.0},
+      "2018-03-11" => {hours: 0.0},
+    }
+    WorkHour.update(employee, hours)
+    assert_equal(5, vacation.days, "should be correct number of days")
+
+    exp = { normal: 136.0, vacation_worked: 8, overtime: 1 }
+    assert_equal(exp, WorkHour.total_hours(employee, period))
+    payslip = Payslip.process(employee, period)
+
+    found1 = false
+    found2 = false
+    payslip.earnings.each do |e|
+      if (e.rate == employee.hourly_rate)
+        found1 = true
+        assert_equal(e.amount,(employee.hourly_rate * 8), "correct earning")
+      end
+      if (e.rate == employee.otrate)
+        found2 = true
+        assert_equal(e.amount,(employee.otrate * 1), "correct earning")
+      end
+    end
+
+    assert(found1, "Found earning for vacation worked")
+    assert(found2, "Found earning for vacation worked")
+
+    # Vacation Saturday Hours
+    hours = {
+      "2018-03-06" => {hours: 0.0, vacation_worked: 0},
+      "2018-03-10" => {hours: 0.0, vacation_worked: vac_hours_worked},
+    }
+    WorkHour.update(employee, hours)
+
+    exp = { normal: 136.0, overtime: vac_hours_worked }
+    assert_equal(exp, WorkHour.total_hours(employee, period))
+    payslip = Payslip.process(employee, period)
+
+    found1 = false
+    found2 = false
+    payslip.earnings.each do |e|
+      if (e.rate == employee.otrate)
+        found1 = true
+        assert_equal(e.amount,(employee.otrate * 8), "correct earning")
+      end
+      if (e.rate == employee.ot2rate)
+        found2 = true
+        assert_equal(e.amount,(employee.ot2rate * 1), "correct earning")
+      end
+    end
+
+    assert(found1, "Found earning for vacation worked")
+    assert(found2, "Found earning for vacation worked")
+
+    # Vacation Sunday(Holiday) Hours
+    hours = {
+      "2018-03-10" => {hours: 0.0, vacation_worked: 0},
+      "2018-03-11" => {hours: 0.0, vacation_worked: vac_hours_worked},
+    }
+    WorkHour.update(employee, hours)
+
+    exp = { normal: 136.0, holiday: vac_hours_worked }
+    assert_equal(exp, WorkHour.total_hours(employee, period))
+    payslip = Payslip.process(employee, period)
+
+    found = false
+    payslip.earnings.each do |e|
+      if (e.rate == employee.ot3rate)
+        found = true
+        assert_equal(e.amount,(employee.ot3rate * vac_hours_worked), "correct earning")
       end
     end
 

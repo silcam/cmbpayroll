@@ -71,6 +71,6 @@ class MiscPaymentsController < ApplicationController
   end
 
   def misc_payment_params
-    params.require(:misc_payment).permit(:amount, :date, :note)
+    params.require(:misc_payment).permit(:amount, :date, :note, :before_tax)
   end
 end

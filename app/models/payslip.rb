@@ -545,7 +545,7 @@ class Payslip < ApplicationRecord
       self.process_earnings_and_taxes(payslip, employee, period)
       self.process_vacation(payslip, employee, period)
 
-      self.process_charges(payslip, employee)
+      self.process_charges_and_payments(payslip, employee)
       payslip.process_employee_deductions()
       self.process_loans(payslip, employee, period)
       self.process_payslip_corrections(payslip, employee, period)
@@ -602,7 +602,7 @@ class Payslip < ApplicationRecord
   def misc_pay
     misc_pay_total = 0
 
-    employee.misc_payments.for_period(period).each do |misc_payment|
+    employee.misc_payments.for_period(period).where(before_tax: true).each do |misc_payment|
       misc_pay_total += misc_payment.amount
       earnings << Earning.new(amount: misc_payment.amount,
           description: "Misc. Payment: #{misc_payment.note}", is_bonus: false)
@@ -622,13 +622,23 @@ class Payslip < ApplicationRecord
     payslip.process_taxes
   end
 
-  def self.process_charges(payslip, employee)
+  def self.process_charges_and_payments(payslip, employee)
     employee.charges.for_period(payslip.period).each do |charge|
       deduction = Deduction.new
 
       deduction.note = charge.note
       deduction.amount = charge.amount
       deduction.date = charge.date
+
+      payslip.deductions << deduction
+    end
+
+    employee.misc_payments.for_period(payslip.period).where(before_tax: false).each do |pmnt|
+      deduction = Deduction.new
+
+      deduction.note = pmnt.note.blank? ? "Misc. Payment" : pmnt.note
+      deduction.amount = pmnt.amount * -1
+      deduction.date = pmnt.date
 
       payslip.deductions << deduction
     end

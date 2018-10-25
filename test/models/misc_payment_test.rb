@@ -62,6 +62,21 @@ class MiscPaymentTest < ActiveSupport::TestCase
     refute_includes MiscPayment.readable_by(all_mps, users(:Quigon)), @lukes_august_bonus
   end
 
+  test "Can be selectable for tax purposes" do
+    employee = return_valid_employee()
+
+    mp = MiscPayment.new
+    mp.date = '2018-03-15'
+    mp.amount = 2345454
+    mp.employee = employee
+    mp.note = "This is a misc payment"
+
+    refute(mp.before_tax, "should be after tax by default")
+
+    mp.before_tax = true
+    assert(mp.before_tax, "but can set to be before tax")
+  end
+
   def some_valid_params
     {amount: 10, employee: @luke, date: '2017-08-15'}
   end

@@ -11,6 +11,7 @@
     <th><%= t :Employee %></th>
     <th><%= t :Period %></th>
     <th><%= t :Amount %></th>
+    <th><%= t :Before_tax %></th>
     <th><%= t :Note %></th>
     <th></th>
   </tr>
@@ -19,6 +20,7 @@
       <td><%= misc_payment.employee.full_name %></td>
       <td><%= Period.from_date(misc_payment.date).short_name %></td>
       <td><%= number_to_currency(misc_payment.amount, locale: :cm) %></td>
+      <td><%= misc_payment.before_tax %></td>
       <td><%= misc_payment.note %></td>
       <td>
         <% if can?(:destroy, misc_payment) and misc_payment.destroyable? %>

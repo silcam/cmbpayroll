@@ -2178,7 +2178,7 @@ class PayslipTest < ActiveSupport::TestCase
     end
   end
 
-  test "Misc Payments are counted" do
+  test "Misc Payments are counted (before tax)" do
     # config employee
     employee = return_valid_employee()
     employee.uniondues = false;
@@ -2190,6 +2190,7 @@ class PayslipTest < ActiveSupport::TestCase
     pmnt.amount = 50000
     pmnt.note = "Testing"
     pmnt.date = "2018-01-15"
+    pmnt.before_tax = true
     employee.misc_payments << pmnt
     assert(pmnt.valid?, "payment should be valid and not with these errors #{pmnt.errors.messages.inspect}")
     assert(pmnt.save, "payment is saved")
@@ -2217,6 +2218,36 @@ class PayslipTest < ActiveSupport::TestCase
 
     # expected value
     net_pay = expected_taxable - payslip.total_tax
+    assert_equal(net_pay, payslip.raw_net_pay)
+    assert_equal(Payslip.cfa_round(net_pay), payslip.net_pay)
+  end
+
+  test "After Tax Misc Payments" do
+    # config employee
+    employee = return_valid_employee()
+    # simply payslip
+    employee.uniondues = false;
+    employee.amical = 0;
+    employee.contract_start = "2017-01-01" # no senior bonus
+
+    period = Period.new(2018,1)
+    bonus = 6000
+
+    # Add a payment to verify is there.
+    pmnt = MiscPayment.new
+    pmnt.amount = bonus
+    pmnt.note = "Testing"
+    pmnt.date = period.start
+    employee.misc_payments << pmnt
+    assert(pmnt.valid?, "payment should be valid and not with these errors #{pmnt.errors.messages.inspect}")
+    assert(pmnt.save, "payment is saved")
+    refute(pmnt.before_tax, "payment is after tax")
+
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    # Figure out if bonus was paid correctly
+    net_pay = payslip.taxable - payslip.total_tax + bonus
     assert_equal(net_pay, payslip.raw_net_pay)
     assert_equal(Payslip.cfa_round(net_pay), payslip.net_pay)
   end

@@ -13,6 +13,11 @@
 </div>
 
 <div class="form-group">
+  <%= form.label :before_tax, t(:Before_tax), style: 'display: block;' %>
+  <%= form.check_box :before_tax %>
+</div>
+
+<div class="form-group">
   <%= form.label :note, t(:Note) %>
   <%= form.text_field :note, class: 'form-control' %>
 </div>

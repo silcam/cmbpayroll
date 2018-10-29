@@ -39,11 +39,13 @@ FROM
     LEFT OUTER JOIN (
       SELECT
         employee_id,
-        amount
+        sum(amount) as amount
       FROM
         loans
       WHERE
         origination BETWEEN :start AND :finish
+      GROUP BY
+        employee_id
     ) nl ON nl.employee_id = e.id
 WHERE
   e.employment_status IN :employment_status AND

@@ -90,11 +90,7 @@ class PayslipsController < ApplicationController
     @employee = Employee.find(employee_id)
     @payslip = nil
 
-    if (params[:advance])
-      @payslip = Payslip.process_with_advance(@employee, @period)
-    else
-      @payslip = Payslip.process(@employee, @period)
-    end
+    @payslip = Payslip.process(@employee, @period)
 
     if (@payslip.errors.size > 0)
       render 'process_employee'

@@ -51,11 +51,7 @@ class Payslip < ApplicationRecord
   end
 
   def self.process(employee, period=Period.current)
-    return self.process_payslip(employee, period, false)
-  end
-
-  def self.process_with_advance(employee, period=Period.current)
-    return self.process_payslip(employee, period, true)
+    return self.process_payslip(employee, period)
   end
 
   def self.process_all(employees, period)
@@ -513,7 +509,7 @@ class Payslip < ApplicationRecord
     Vacation.days_used(employee, period) >= employee.workdays_per_month(period)
   end
 
-  def self.process_payslip(employee, period, with_advance)
+  def self.process_payslip(employee, period)
     employee.save
 
     payslip = Payslip.find_by(
@@ -537,10 +533,6 @@ class Payslip < ApplicationRecord
     end
 
     begin
-
-      if (with_advance)
-        self.process_advance(employee, period)
-      end
 
       payslip.reset_payslip
       payslip.store_employee_attributes
@@ -645,17 +637,6 @@ class Payslip < ApplicationRecord
 
       payslip.deductions << deduction
     end
-  end
-
-  def self.process_advance(employee, period)
-    return if (employee.has_advance_charge(period))
-
-    charge = Charge.new
-    charge.date = period.mid_month()
-    charge.amount = employee.advance_amount()
-    charge.note = Charge::ADVANCE
-
-    employee.charges << charge
   end
 
   def self.process_vacation(payslip, employee, period)

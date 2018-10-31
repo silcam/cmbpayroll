@@ -2,7 +2,6 @@ class SystemVariable < ApplicationRecord
 
   DEFAULTS = {
     vacation_days: 18,
-    advance_amount: 0.5,
     supplemental_days: 2,
     supplemental_days_period: 5, # years
     vacation_pay_factor: 16,

@@ -556,67 +556,6 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, employee3.payslips.size, "employee 3 should not have 1 payslip")
   end
 
-  test "can_create_payslip_advance" do
-    period = Period.new(2017,8)
-
-    # process with flag to handle advance
-    employee = return_valid_employee()
-    generate_work_hours employee, period
-    payslip = Payslip.process(employee, period)
-
-    # advance payslip is created
-    payslip.valid?
-    assert payslip.id
-
-    assert(employee.payslips.find(payslip.id))
-
-    # find charges (check that no advance is created for this month
-    count = employee.count_advance_charge(period)
-    assert_equal(0, count, "should not find a Salary Advance charge")
-
-    count = count_advance_deductions(payslip, period)
-    assert_equal(0, count, "should find a Salary Advance deduction")
-
-    # confirmation happens
-    payslip = Payslip.process_with_advance(employee, period)
-
-    # advance payslip is created
-    payslip.valid?
-    assert(employee.payslips.find(payslip.id))
-
-    # appropriate charges are created for the user to indicate payment has been made
-    count = employee.count_advance_charge(period)
-    assert_equal(1, count, "should find a Salary Advance charge")
-
-    count = count_advance_deductions(payslip, period)
-    assert_equal(1, count, "should find a Salary Advance deduction")
-
-    # it is not in a finalized? state
-    # TODO, this doesn't exist
-
-    # a payslip can be re-created and the advance is still there.
-
-    # let's re-run the payslip (unconfirmed)
-    payslip = Payslip.process(employee, period)
-
-    count = employee.count_advance_charge(period)
-    assert_equal(1, count, "should find a Salary Advance charge")
-
-    count = count_advance_deductions(payslip, period)
-    assert_equal(1, count, "should find a Salary Advance deduction")
-
-    # let's re-run the payslip (confirmed)
-    # it should not recreate another charge for the same peirod
-    payslip = Payslip.process_with_advance(employee, period)
-
-    count = employee.count_advance_charge(period)
-    assert_equal(1, count, "should find a Salary Advance charge")
-
-    count = count_advance_deductions(payslip, period)
-    assert_equal(1, count, "should find a Salary Advance deduction")
-
-  end
-
   test "payslips deduct amical and union dues" do
     # have an employee
     employee = return_valid_employee()
@@ -1855,41 +1794,6 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(55000, earning.amount)
   end
 
-  test "Advances count against net Pay" do
-    # config employee
-    employee = return_valid_employee()
-    employee.uniondues = false;
-    employee.amical = 0;
-    employee.contract_start = "2017-01-01" # no senior bonus
-
-    period = Period.new(2018,1)
-
-    # work the whole month (work hour)
-    generate_work_hours employee, period
-
-    # process payslip with advance
-    payslip = Payslip.process_with_advance(employee, period)
-
-    # compute caissebase
-    wage = employee.wage
-    base_wage = employee.find_base_wage
-    assert_equal(1, employee.years_of_service(period))
-
-    # bonusbase (wage) + (seniority bonus (8 yrs * 0.02) * base_wage)
-    exp_caisse = exp_cnps = wage
-    assert_equal(exp_cnps, payslip.compute_cnpswage, "cnps same as caisse")
-
-    # verify taxable (adds transportation)
-    expected_taxable = exp_cnps + employee.transportation
-    assert_equal(expected_taxable, payslip.process_taxable_wage, "taxable")
-    assert_equal(0, payslip.earnings.where(is_bonus: true).count(), "no bonuses")
-
-    # expected value
-    net_pay = expected_taxable - payslip.total_tax - employee.advance_amount()
-    assert_equal(net_pay, payslip.raw_net_pay)
-    assert_equal(Payslip.cfa_round(net_pay), payslip.net_pay)
-  end
-
   test "If you are on vacation the whole month, you get nothing, not even bonuses" do
     # https://media.giphy.com/media/nygbstO5bEJmE/giphy.gif
     # config employee
@@ -2200,7 +2104,7 @@ class PayslipTest < ActiveSupport::TestCase
     # work the whole month (work hour)
     generate_work_hours employee, period
 
-    # process payslip with advance
+    # process payslip
     payslip = Payslip.process(employee, period)
 
     # compute caissebase

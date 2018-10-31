@@ -228,11 +228,6 @@ class Employee < ApplicationRecord
     WorkHour.total_hours_so_far self
   end
 
-  def advance_amount
-    # TODO verify that this is the correct behavior
-    return (wage * SystemVariable.value(:advance_amount)).round
-  end
-
   def has_advance_charge(period)
     if (count_advance_charge(period) > 0)
       return true

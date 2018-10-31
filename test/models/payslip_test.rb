@@ -2946,6 +2946,86 @@ class PayslipTest < ActiveSupport::TestCase
     assert(found, "Found earning for vacation worked")
   end
 
+  test "Inactive people have their payslip disappear" do
+    # Because they shouldn't be paid.
+
+    employee = return_valid_employee()
+    period = Period.new(2018,8)
+
+    generate_work_hours(employee, period)
+    payslip = Payslip.process(employee, period)
+    assert(payslip, "payslip exists")
+
+    # Find via another means.
+    payslip = employee.payslip_for(period)
+    assert(payslip, "payslip exists")
+
+    employee.employment_status = "inactive"
+
+    payslip = Payslip.process(employee, period)
+    refute(payslip, "payslip should now be nil for this period")
+
+    # Find via another means.
+    payslip = employee.payslip_for(period)
+    refute(payslip, "payslip exists")
+
+    assert_equal(0, employee.payslips.where("period_month = ? AND period_year = ?",
+        period.month, period.year).count(), "should return 0 payslips")
+  end
+
+  test "Missing payslip can compute previous balances correctly" do
+    # Example, someone that is inactive for multiple months,
+    # The system should just pick up based on their prior
+    # payslip (the last one they received) -- even through it
+    # could be many months ago.
+    employee = return_valid_employee()
+    period = Period.new(2018,3)
+
+    generate_work_hours(employee, period)
+
+    # Create a payslip in march
+    payslip = Payslip.process(employee, period)
+    assert(payslip, "march payslip")
+    mar_vac_balance = payslip.vacation_balance
+
+    # Inactive from april -> july
+    period = period.next # april
+    employee.employment_status = "inactive"
+
+    payslip = Payslip.process(employee, period)
+    refute(payslip, "april payslip")
+
+    period = period.next # may
+    payslip = Payslip.process(employee, period)
+    refute(payslip, "may payslip")
+
+    period = period.next # june
+    payslip = Payslip.process(employee, period)
+    refute(payslip, "june payslip")
+
+    period = period.next # july
+    payslip = Payslip.process(employee, period)
+    refute(payslip, "july payslip")
+
+    # Create a payslip in august.
+    period = period.next # august
+    employee.employment_status = "full_time"
+    payslip = Payslip.process(employee, period)
+    assert(payslip, "august payslip")
+
+    previous_payslip = payslip.previous
+    assert(previous_payslip, "previous payslip can be found")
+    assert_equal(3, previous_payslip.period_month, "correct month")
+    assert_equal(2018, previous_payslip.period_year, "correct year")
+    assert_equal(mar_vac_balance, previous_payslip.vacation_balance,
+        "correct vac balance from march")
+
+    assert_equal(
+        payslip.vacation_balance,
+        mar_vac_balance + payslip.vacation_earned,
+          "Balance in August is correct")
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

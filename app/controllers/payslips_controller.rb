@@ -76,7 +76,7 @@ class PayslipsController < ApplicationController
 
   def process_all_employees
     authorize! :update, Payslip
-    process_subset(Employee.currently_paid())
+    process_subset(Employee.all())
   end
 
   def process_employee_complete
@@ -106,7 +106,7 @@ class PayslipsController < ApplicationController
   def post_period
     authorize! :update, Payslip
 
-    @payslips = Payslip.process_all Employee.currently_paid(), LastPostedPeriod.current
+    @payslips = Payslip.process_all Employee.all(), LastPostedPeriod.current
     if @payslips.any?{ |payslip| payslip.errors.any? }
       @post_period_success = false
     else

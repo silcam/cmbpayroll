@@ -4,8 +4,8 @@ class Payslip < ApplicationRecord
   LOCATION_TRANSFER = "Salary Transfer to Other Office Location"
   STANDARD_DAYS_EARNED = SystemVariable.value(:vacation_days).fdiv(Vacation::MONTHLY)
 
-  has_many :earnings
-  has_many :deductions
+  has_many :earnings, dependent: :destroy
+  has_many :deductions, dependent: :destroy
   has_many :payslip_corrections
   has_many :work_loan_percentages
 
@@ -30,8 +30,9 @@ class Payslip < ApplicationRecord
   }
 
   def previous
-    period = Period.new(period_year, period_month).previous
-    Payslip.find_by employee: employee, period_year: period.year, period_month: period.month
+    employee.payslips.
+        where("period_year < :year OR (period_year = :year AND period_month < :month)", {year: period.year, month: period.month}).
+        order(period_year: :desc, period_month: :desc).first
   end
 
   def self.current_period
@@ -513,20 +514,22 @@ class Payslip < ApplicationRecord
   end
 
   def self.process_payslip(employee, period, with_advance)
-    # Do all the stuff that is needed to process a payslip for this user
-    # TODO: more validation
-    # TODO: Are there rules that the period must be
-    #         the current period? (or the previous period)?
-
-    # Is this correct behavior, or throw exception?
-    return nil unless employee.is_currently_paid?
-
     employee.save
 
     payslip = Payslip.find_by(
                   employee_id: employee.id,
                   period_year: period.year,
                   period_month: period.month)
+
+    # If the employee shouldn't get a payslip this month,
+    # and one exists, delete it.
+    unless employee.is_currently_paid?
+      if payslip
+        payslip.destroy
+      end
+
+      return nil
+    end
 
     if (payslip.nil?)
       payslip = employee.payslips.build(period_year: period.year,

@@ -61,8 +61,8 @@ gem 'roman-numerals', '~> 0.3.0'
 # gem 'validates_timeliness', '~>4.0'
 
 # Update verison for security vulnerability
-# 2.2.1 is a fixed version
-gem 'loofah', '~> 2.2.1'
+# 2.2.3 is a fixed version
+gem 'loofah', '>= 2.2.3'
 # 1.0.4 is a fixed version
 gem 'rails-html-sanitizer', '~>1.0.4'
 # 3.7.2 is a fixed version (CVE-2018-3760)

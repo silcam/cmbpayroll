@@ -71,6 +71,8 @@ gem 'sprockets', '~>3.7.2'
 gem 'rubyzip', '~>1.2.2'
 # 1.9.24 is a fixed version (CVE-2018-1000201)
 gem 'ffi', '~>1.9.24'
+# 2.0.6 is a fixed version
+gem 'rack', '~>2.0.6'
 
 group :development, :test do
   # Use Puma as the app server in development

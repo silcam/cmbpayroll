@@ -270,15 +270,7 @@ class Vacation < ApplicationRecord
       return 0 if payslip.vacation_pay_balance.nil?
       return 0 if payslip.vacation_balance == 0
 
-      # if there is vacation used, use that
-      if !payslip.vacation_pay_used.nil? && payslip.vacation_pay_used > 0
-        self[:vacation_pay] = payslip.vacation_pay_used
-        return payslip.vacation_pay_used
-      end
-
-      self[:vacation_pay] = (
-          payslip.vacation_pay_balance.fdiv(payslip.vacation_balance.to_f) * days
-      ).round
+      self[:vacation_pay] = ( payslip.vacation_daily_rate * days ).round
     else
       self[:vacation_pay]
     end
@@ -304,23 +296,6 @@ class Vacation < ApplicationRecord
       @tax = Tax.compute_taxes(employee, vacation_pay, vacation_pay)
     else
       @tax
-    end
-  end
-
-  def get_vacation_pay
-    vac_pay = earnings.where(description: VACATION_PAY)&.take
-    unless (vac_pay.nil?)
-      vac_pay.amount
-    else
-      0
-    end
-  end
-
-  # FIXME: these go away
-  def process_vacation_pay
-    pay = calculate_vacation_pay(cnpswage, vacation_used)
-    if pay > 0
-      earnings << Earning.new(description: VACATION_PAY, amount: pay)
     end
   end
 

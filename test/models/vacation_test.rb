@@ -461,11 +461,17 @@ class VacationTest < ActiveSupport::TestCase
 
     payslip = Payslip.process(@luke, period)
 
-    # Vacation pay is the total pay balance / total days balance * vac days
-    assert_equal(22.5, payslip.vacation_balance)
-    assert_equal(148437, payslip.vacation_pay_balance)
+    payslip.vacation_daily_rate
+
+    # Vacation pay is computed by vacation_daily_rate * days
+    exp = @lukes_vacation.vacation_pay
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
-    assert_equal(138541, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
+    assert_equal(exp, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
+
+    # original balance + normal accrual - vacation days taken
+    assert_equal(42 + 1.5 - 21, payslip.vacation_balance)
+    # original balance - vacation pay
+    assert_equal(286978 - exp, payslip.vacation_pay_balance)
   end
 
   test "Vacation (payslip) can figure how much taxes are for this vacation" do
@@ -487,13 +493,14 @@ class VacationTest < ActiveSupport::TestCase
 
     # Do the test.
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
-    assert_equal(6832.810, payslip.vacation_daily_rate.round(3), "can compute vacation rate")
-    # FIXME
-    assert_equal(138541, @lukes_vacation.vacation_pay,
-        "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
-    #assert_equal((21 * payslip.vacation_daily_rate).ceil, @lukes_vacation.vacation_pay,
-    #    "luke gets his vacation daily rate for each of the 21 days off he went to Kribi")
 
+    exp_rate = payslip.compute_fullcnpswage * 12 / 16.0 / 18.0
+    assert_equal(exp_rate, payslip.vacation_daily_rate, "can compute vacation rate")
+
+    exp_pay = ( exp_rate * @lukes_vacation.days ).round
+    assert_equal(exp_pay, @lukes_vacation.vacation_pay,
+        "luke gets his vacation daily rate for each of the 21 " +
+          "days off he went to Kribi")
     tax = Tax.compute_taxes(@luke, @lukes_vacation.vacation_pay, @lukes_vacation.vacation_pay)
 
     assert_equal(tax.ccf, @lukes_vacation.get_tax.ccf)
@@ -686,7 +693,11 @@ class VacationTest < ActiveSupport::TestCase
 
     sept_ps.vacation_balance = 25
     sept_ps.vacation_pay_balance = 152423
-    assert_equal(6096.92, sept_ps.vacation_daily_rate)
+
+    # This is the vacation calculation
+    exp = sept_ps.compute_fullcnpswage * 12 / 16.0 / 18.0
+
+    assert_equal(exp, sept_ps.vacation_daily_rate)
     assert(sept_ps.valid?)
     assert(sept_ps.save)
 
@@ -702,11 +713,11 @@ class VacationTest < ActiveSupport::TestCase
 
     # Count Vac Days/Pay for September
     assert_equal(13, vac.days_in_period(sept), "correct number of days in September counted")
-    assert_equal(79260, vac.pay_per_period(sept), "correct vacation pay for September")
+    assert_equal((exp * 13).round, vac.pay_per_period(sept), "correct vacation pay for September")
 
     # Count Vac Days/Pay for October
     assert_equal(11, vac.days_in_period(oct), "correct number of days in October counted")
-    assert_equal(67066, vac.pay_per_period(oct), "correct vacation pay for October")
+    assert_equal((exp * 11).round, vac.pay_per_period(oct), "correct vacation pay for October")
   end
 
   test "printing makes paid and saves vacation pay total" do

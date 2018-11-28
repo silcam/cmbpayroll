@@ -1835,7 +1835,7 @@ class PayslipTest < ActiveSupport::TestCase
     cur_bal = prev_payslip.vacation_balance + payslip.vacation_earned
     cur_pay_bal = prev_payslip.vacation_pay_balance + payslip.vacation_pay_earned
 
-    vpu = (cur_pay_bal.fdiv(cur_bal.to_f) * vac.days).round
+    vpu = (payslip.vacation_daily_rate * vac.days).round
 
     assert_equal(vac.days, payslip.vacation_used, "correct days used")
     assert_equal(vpu, payslip.vacation_pay_used, "correct pay used")
@@ -1983,11 +1983,7 @@ class PayslipTest < ActiveSupport::TestCase
     # Verify payslip vacation totals are correct for Feb
     # (dec starting balance + jan earned vac pay /
     #     dec_starting days balance + jan days + feb_days) * days
-    vac_pay_earned = (
-        (286978 + jan_pay_earned).fdiv(
-            (dec_starting_vacation_days + jan_days_earned + feb_days_earned).to_f
-        ) * vac.days
-    ).round
+    vac_pay_earned = ( payslip.vacation_daily_rate * vac.days ).round
     assert_equal(vac_pay_earned, payslip.vacation_pay_used, "all pay received in Feb")
 
     feb_days_used = payslip.vacation_used
@@ -2286,6 +2282,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     daily_rate = employee.daily_rate
 
+    assert_equal(daily_rate, employee.daily_rate)
     assert_equal((employee.wage - (daily_rate * days_not_worked)).round,
         payslip.base_pay)
   end
@@ -2360,15 +2357,15 @@ class PayslipTest < ActiveSupport::TestCase
     # Reconfig for Vacation for 2 days (02 and 03 of oct 18)
     employee.work_hours.where(date: "2018-10-02").first.delete
     employee.work_hours.where(date: "2018-10-03").first.delete
-    vac = Vacation.new(start_date: '2018-10-02', end_date: '2018-10-03')
-    employee.vacations << vac
+    vac1 = Vacation.new(start_date: '2018-10-02', end_date: '2018-10-03')
+    employee.vacations << vac1
 
     # Reconfig for Vacation for 3 days (16,17,18 of oct 18)
     employee.work_hours.where(date: "2018-10-16").first.delete
     employee.work_hours.where(date: "2018-10-17").first.delete
     employee.work_hours.where(date: "2018-10-18").first.delete
-    vac = Vacation.new(start_date: '2018-10-16', end_date: '2018-10-18')
-    employee.vacations << vac
+    vac2 = Vacation.new(start_date: '2018-10-16', end_date: '2018-10-18')
+    employee.vacations << vac2
 
     vacs = Vacation.for_period(period)
     assert_equal(2, vacs.count, "should be 2 vacations")
@@ -2389,9 +2386,13 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(pre_balance - payslip.vacation_used + payslip.vacation_earned,
         payslip.vacation_balance)
 
+    vac1pay = vac1.vacation_pay
+    vac2pay = vac2.vacation_pay
+    expected = vac1pay + vac2pay
+
     # Test pay
     assert_equal(3851, payslip.vacation_pay_earned, "pay balance is correct")
-    assert_equal(60219, payslip.vacation_pay_used, "pay balance is correct")
+    assert_equal(expected, payslip.vacation_pay_used, "pay balance is correct")
     assert_equal(pre_pay_balance + payslip.vacation_pay_earned - payslip.vacation_pay_used,
         payslip.vacation_pay_balance, "pay balance is correct")
   end
@@ -2628,11 +2629,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(249924, previous_pay_balance + payslip.calc_vacation_pay_earned,
         "cur_balance correct")
 
-    vpu = (
-        (previous_pay_balance + payslip.calc_vacation_pay_earned).fdiv(
-            (previous_balance + payslip.vacation_earned).to_f
-        ) * vacation.days
-    ).round
+    vpu = ( payslip.vacation_daily_rate * vacation.days ).round
     assert_equal(vpu, payslip.vacation_pay_used, "Correctly Vacation Pay")
   end
 
@@ -2928,6 +2925,39 @@ class PayslipTest < ActiveSupport::TestCase
         payslip.vacation_balance,
         mar_vac_balance + payslip.vacation_earned,
           "Balance in August is correct")
+  end
+
+  def test_bonuses_applied_once
+    # have employee
+    # have bonuses
+    # payslip process
+    # Do we get two??
+    employee = return_valid_employee()
+    period = Period.new(2018,10)
+
+    assert_equal(0, employee.bonuses.size, "no bonuses")
+
+    bonus = Bonus.new
+    bonus.name = "Test Bonus 1"
+    bonus.bonus_type = "fixed"
+    bonus.quantity = 25000
+    employee.bonuses << bonus
+
+    assert_equal(1, employee.bonuses.size, "no bonuses")
+
+    payslip = Payslip.process(employee, period)
+    assert_equal(1, payslip.earnings.where("is_bonus = ?", true).size)
+
+    newbonus = Bonus.new
+    newbonus.name = "Test Bonus 2"
+    newbonus.bonus_type = "fixed"
+    newbonus.quantity = 15000
+    employee.bonuses << newbonus
+
+    assert_equal(2, employee.bonuses.size, "no bonuses")
+
+    payslip = Payslip.process(employee, period)
+    assert_equal(2, payslip.earnings.where("is_bonus = ?", true).size)
   end
 
   private

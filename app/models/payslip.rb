@@ -155,9 +155,15 @@ class Payslip < ApplicationRecord
     end
   end
 
-  def base_pay
+  # See `compute_fullcnpswage`
+  def full_base_pay
+    base_pay(true)
+  end
+
+  def base_pay(full=false)
     # If we have a bonus base, we've already run
-    if (self[:bonusbase])
+    # Don't return cached version if we're asking for full
+    if (!full && self[:bonusbase])
       return self[:basepay]
     end
 
@@ -170,7 +176,7 @@ class Payslip < ApplicationRecord
 
     earning = Earning.new
 
-    if (worked_full_month? && employee.paid_monthly?)
+    if (full || (worked_full_month? && employee.paid_monthly?))
       earning.description = "Monthly Wages"
       earning.amount = employee.wage
     elsif (employee.paid_monthly? && days > 0)
@@ -184,8 +190,9 @@ class Payslip < ApplicationRecord
     end
 
     if (earning.amount && earning.amount > 0)
-      earnings << earning
-      self[:basepay] = earning.amount
+      earnings << earning unless full
+      self[:basepay] = earning.amount unless full
+      earning.amount
     else
       self[:basepay] = 0
     end
@@ -199,6 +206,10 @@ class Payslip < ApplicationRecord
     WorkHour.days_worked(employee, period)
   end
 
+  def days_not_worked
+    employee.workdays_per_month(period) - self[:days]
+  end
+
   def hours_worked
     WorkHour.hours_worked(employee, period)
   end
@@ -206,7 +217,6 @@ class Payslip < ApplicationRecord
   def daily_earnings
     # Daily Earnings will use the employee's wage less the number
     # of days not worked times the employee's daily rate.
-    days_not_worked = employee.workdays_per_month(period) - self[:days]
     daily_earnings = ( wage - ( employee.daily_rate * days_not_worked ))
 
     # In the case that the employee doesn't work 22 days in a 23 day
@@ -284,12 +294,30 @@ class Payslip < ApplicationRecord
         ot3_earnings + vacation_worked_earnings
   end
 
+  # See `compute_fullcnpswage`
+  def full_bonusbase
+    ( full_base_pay ).ceil
+  end
+
   def compute_bonusbase
     self[:bonusbase] = ( base_pay + overtime_earnings ).ceil
   end
 
+  # See `compute_fullcnpswage`
+  def full_caissebase
+    ( ( full_bonusbase ).ceil + seniority_bonus ).ceil
+  end
+
   def compute_caissebase
     self[:caissebase] = ( compute_bonusbase + seniority_bonus ).ceil
+  end
+
+  # Attempt to figure out, on the fly what the cnpswage will be
+  # assuming full base page. Also attempt to not cache values
+  # that will be used again in the future
+  # Does not include overtime or misc_pay to get "Standard Gross Wage"
+  def compute_fullcnpswage
+    ( full_caissebase + full_process_bonuses ).ceil
   end
 
   def compute_cnpswage
@@ -491,11 +519,12 @@ class Payslip < ApplicationRecord
     end
   end
 
-  # Daily rate to be applied to figure vacation pay
-  # (daily_rate * no_vacation_days)
   def vacation_daily_rate
     return 0 if (vacation_balance == 0)
-    vacation_pay_balance.fdiv(vacation_balance.to_f)
+
+    ( compute_fullcnpswage * Vacation::MONTHLY ).
+        fdiv(SystemVariable.value(:vacation_pay_factor).to_f).
+        fdiv(SystemVariable.value(:vacation_days).to_f)
   end
 
   def calc_vacation_pay_earned
@@ -561,9 +590,14 @@ class Payslip < ApplicationRecord
     return payslip
   end
 
-  def process_bonuses
+  def full_process_bonuses
+    process_bonuses(true)
+  end
+
+  def process_bonuses(full=false)
     # If we have a CNPS wage, we've already done this.
-    if (self[:cnpswage])
+    # Don't return cached version if we're asking for full
+    if (!full && self[:cnpswage])
       return self[:bonuspay]
     end
 
@@ -581,12 +615,17 @@ class Payslip < ApplicationRecord
         earning.percentage = bonus.quantity
       end
 
-      base = bonus.use_caisse ? caissebase : bonusbase
+      base = nil
+      if (bonus.use_caisse)
+        base = full ? full_caissebase : caissebase
+      else
+        base = full ? full_bonusbase : bonusbase
+      end
       earning.amount = bonus.effective_bonus(base).round
 
       earning.is_bonus = true
       earning.is_caisse = true if bonus.use_caisse
-      earnings << earning
+      earnings << earning unless full
 
       bonus_total += earning.amount
     end
@@ -640,6 +679,7 @@ class Payslip < ApplicationRecord
   end
 
   def self.process_vacation(payslip, employee, period)
+    # FIXME: This is no longer true.
     # Current vacation balances should be kept as a running total in order
     # to determine the correct "rate" to be used as vacation pay.
     # Additionally, the 'accum' values as kept as accumulated vacation to

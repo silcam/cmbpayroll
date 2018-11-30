@@ -38,3 +38,11 @@ Features should be built on a feature branch from the develop branch. When compl
 ## Deployment
 
 Production deployment requires merging the develop branch into the master branch and pushing to Github. After this, run `cap production deploy` to deploy to the production server. This requires passwordless SSH to the production server to complete.
+
+## License
+
+This software project is licensed under the MIT License. See LICENSE.md
+
+## Copyright
+
+This software project is Copyright (C) 2018 SIL International. http://www.sil.org/

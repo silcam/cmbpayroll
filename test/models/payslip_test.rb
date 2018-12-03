@@ -2927,7 +2927,7 @@ class PayslipTest < ActiveSupport::TestCase
           "Balance in August is correct")
   end
 
-  def test_bonuses_applied_once
+  test "Test bonuses applied once" do
     # have employee
     # have bonuses
     # payslip process

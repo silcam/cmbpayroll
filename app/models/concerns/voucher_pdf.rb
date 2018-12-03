@@ -7,6 +7,8 @@ class VoucherPdf < CmbPayrollPdf
     Prawn::Font::AFM.hide_m17n_warning = true
     @vacation = vacation
 
+    @payslip = Payslip.for_employee_for_period(@vacation.employee, @vacation.apply_to_period)
+
     @employee = @vacation.employee
     @start_date = @vacation.start_date
     @end_date = @vacation.end_date

@@ -119,10 +119,6 @@ class Employee < ApplicationRecord
     Wage.find_wage(category, "a", wage_scale)
   end
 
-  def category_roman
-    RomanNumerals.to_roman(word_to_int(category))
-  end
-
   def paid_monthly?
     wage_period == "monthly"
   end

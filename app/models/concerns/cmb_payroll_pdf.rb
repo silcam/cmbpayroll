@@ -50,7 +50,7 @@ class CmbPayrollPdf < Prawn::Document
           ["Nom du travailleur", "#{@employee.full_name}", "Matricule No.", "#{@employee.id}" ],
           ["Catégoire professionnelle",
               { :content => "#{@employee.title}", :colspan => 2 },
-           "#{@employee.category_roman}-#{@employee.echelon.upcase}" ],
+           "#{display_category_roman(@payslip.category)}-#{display_echelon(@payslip.echelon)}" ],
       ],
       :cell_style => { :padding => 2, :borders => [] },
       :width => bounds.width )

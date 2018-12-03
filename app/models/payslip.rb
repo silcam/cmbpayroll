@@ -46,6 +46,17 @@ class Payslip < ApplicationRecord
     return payslip
   end
 
+  def self.for_employee_for_period( employee, period)
+    return nil if employee.nil?
+    return nil if period.nil?
+    result = employee.payslips.where("period_month = ? AND period_year = ?", period.month, period.year)
+    if (result.size == 1)
+      return result.first
+    else
+      return nil
+    end
+  end
+
   def self.most_recent(employee)
     employee.payslips.order(period_year: :desc, period_month: :desc).first
   end

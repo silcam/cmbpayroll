@@ -235,4 +235,5 @@ class PayslipPdf < CmbPayrollPdf
     end
 
   end
+
 end

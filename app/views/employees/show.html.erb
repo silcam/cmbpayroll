@@ -133,13 +133,9 @@
   <tbody>
     <tr>
       <th scope="row"><%= t(:Category) %></th>
-      <td><%= word_to_int @employee.category %></td>
+      <td><%= display_category(Employee.categories[@employee.category]) %></td>
       <th scope="row">Echelon:</th>
-      <td>
-        <%= word_to_int(@employee.echelon).nil? ?
-                @employee.echelon.to_s.upcase :
-                word_to_int(@employee.echelon) %>
-      </td>
+      <td><%= display_echelon(Employee.echelons[@employee.echelon]) %></td>
       <th scope="row"><%= t(:Wage_scale) %></th>
       <td><%= @employee.wage_scale.to_s.upcase %></td>
     </tr>

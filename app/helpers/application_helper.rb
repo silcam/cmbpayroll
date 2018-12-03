@@ -44,6 +44,20 @@ module ApplicationHelper
     options_for_select(array, selected)
   end
 
+  def display_category(category)
+    word_to_int(Employee.categories.invert[category])
+  end
+
+  def display_category_roman(category)
+    RomanNumerals.to_roman(word_to_int(Employee.categories.invert[category]))
+  end
+
+  def display_echelon(echelon)
+    word_to_int(Employee.echelons.invert[echelon]).nil? ?
+        Employee.echelons.invert[echelon].to_s.upcase :
+        word_to_int(Employee.echelons.invert[echelon])
+  end
+
   def word_to_int(word)
     lookup = { "one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5,
       "six" => 6, "seven" => 7, "eight" => 8, "nine" => 9, "ten" => 10,

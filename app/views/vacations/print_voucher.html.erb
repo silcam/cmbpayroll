@@ -5,7 +5,7 @@
 Dates exactes de congé: du <%= @vacation.start_date %> au <%= @vacation.end_date %><br />
 Nom du travailleur: <%= @vacation.employee.full_name %><br />
 Matricule No. <%= @vacation.employee.id %><br />
-Catégoire professionnelle: <%= @vacation.employee.category_roman %>-<%= @vacation.employee.echelon.upcase %><br />
+Catégoire professionnelle: <%= display_category_roman(@vacation.employee.category) %>-<%= display_echelon(@vacation.employee.echelon) %><br />
 Nombre de journées: <%= @vacation.days %> @ <%= @vacation.vacation_pay.fdiv(@vacation.days).round(2) %> soit CFA <%= @vacation.vacation_pay.round %><br />
 </p>
 

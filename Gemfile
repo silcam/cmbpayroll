@@ -7,7 +7,7 @@ end
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.2', '< 5.1.3'
+gem 'rails', '~> 5.1', '>= 5.1.6.1'
 # Use postgres as the database for Active Record
 gem 'pg', '~>0.21.0'
 # Use SCSS for stylesheets
@@ -73,6 +73,8 @@ gem 'rubyzip', '~>1.2.2'
 gem 'ffi', '~>1.9.24'
 # 2.0.6 is a fixed version
 gem 'rack', '~>2.0.6'
+# 5.1.6.1 is fixed version (CVE-2018-16476)
+gem 'activejob', '>= 5.1.6.1'
 
 group :development, :test do
   # Use Puma as the app server in development

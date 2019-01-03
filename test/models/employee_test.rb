@@ -594,9 +594,11 @@ class EmployeeTest < ActiveSupport::TestCase
     child.is_student = true
     employee.person.children << child
 
-    assert_equal(1, employee.person.children.size)
-    assert_equal(0, employee.children_under_6)
-    assert_equal(1, employee.children_under_19)
+    Date.stub :today, Date.new(2018, 5, 1) do
+      assert_equal(1, employee.person.children.size)
+      assert_equal(0, employee.children_under_6)
+      assert_equal(1, employee.children_under_19)
+    end
 
     child = Child.new
     child.first_name = "Younger"
@@ -605,9 +607,11 @@ class EmployeeTest < ActiveSupport::TestCase
     child.is_student = false
     employee.person.children << child
 
-    assert_equal(2, employee.person.children.size)
-    assert_equal(1, employee.children_under_6)
-    assert_equal(2, employee.children_under_19)
+    Date.stub :today, Date.new(2018, 5, 1) do
+      assert_equal(2, employee.person.children.size)
+      assert_equal(1, employee.children_under_6)
+      assert_equal(2, employee.children_under_19)
+    end
   end
 
   test "Last Transfer for the Employee" do

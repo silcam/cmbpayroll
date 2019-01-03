@@ -240,7 +240,7 @@ class Vacation < ApplicationRecord
 
   # Only the payslip knows
   def self.vacation_daily_rate(employee)
-    # Previous algorithm just used cnps wage as paramter
+    # Previous algorithm just used cnps wage as parameter
     # then figured out how much vacation pay is for that
     # (1/16th), per day.
 

@@ -3,6 +3,36 @@ require "test_helper"
 class WorkHoursControllerTest < ActionDispatch::IntegrationTest
   include ControllerTestHelper
 
+  test "WorkHours calendar displays all days" do
+    luke_emp = employees(:Luke)
+    login_admin(:MaceWindu)
+
+    set_last_posted_period(2018,3)
+    get employee_work_hours_url(luke_emp)
+    assert_response :success
+    assert_select "h5#1-Apr-18", true
+    assert_select "h5#30-Apr-18", true
+
+    set_last_posted_period(2018,11)
+    get employee_work_hours_url(luke_emp)
+    assert_response :success
+    assert_select "h5#1-Dec-18", true
+    assert_select "h5#31-Dec-18", true
+
+    set_last_posted_period(2018,12)
+    get employee_work_hours_url(luke_emp)
+    assert_response :success
+    assert_select "h5#1-Jan-19", true
+    assert_select "h5#31-Jan-19", true
+
+    set_last_posted_period(2018,9)
+    get employee_work_hours_url(luke_emp)
+    #In order to see the page content.
+    #Rails.logger.error("#{@response.body}")
+    assert_response :success
+    assert_select "h5#1-Oct-18", true
+    assert_select "h5#31-Oct-18", true
+  end
 
   #### USER ####
 

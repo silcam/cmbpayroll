@@ -250,4 +250,13 @@ module ControllerTestHelper
     end
   end
 
+  # When you need to test something in a certain period.
+  # The site will display the *next* period
+  # Thus, with params 2018,11, site will display 2018,12
+  def set_last_posted_period(year, month)
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update year: year, month: month
+    lpp.save!
+  end
+
 end

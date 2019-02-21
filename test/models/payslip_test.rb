@@ -1875,8 +1875,11 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(23, working_days_in_dec)
     assert_equal(3, Vacation.days_used(employee, period))
 
-    #vac_pay = 7923
-    #assert_equal(vac_pay, payslip.get_vacation_pay)
+    vac_pay_earned = ( payslip.vacation_daily_rate * vac.days ).round
+    vac_pay_earned_other = ( Vacation.vacation_daily_rate(employee) * vac.days ).round
+
+    assert_equal(vac_pay_earned, vac_pay_earned_other)
+    assert_equal(vac_pay_earned, payslip.vacation_pay_used)
 
     assert_equal(1.5, payslip.vacation_earned)
     assert_equal(pre_balance - 3 + payslip.vacation_earned, payslip.vacation_balance)
@@ -1984,7 +1987,12 @@ class PayslipTest < ActiveSupport::TestCase
     # (dec starting balance + jan earned vac pay /
     #     dec_starting days balance + jan days + feb_days) * days
     vac_pay_earned = ( payslip.vacation_daily_rate * vac.days ).round
+
     assert_equal(vac_pay_earned, payslip.vacation_pay_used, "all pay received in Feb")
+
+    # There is this other method, which should return the same result.
+    vac_pay_earned_other = ( Vacation.vacation_daily_rate(employee) * vac.days ).round
+    assert_equal(vac_pay_earned, vac_pay_earned_other, "these should be the same")
 
     feb_days_used = payslip.vacation_used
     assert_equal(30, feb_days_used, "30 vac days in Feb")

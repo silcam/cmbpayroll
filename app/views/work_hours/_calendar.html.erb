@@ -7,7 +7,7 @@
         <th><%= l(d, format: "%A") %></th>
     <% end %>
   </tr>
-  <% while date < @period.finish %>
+  <% while date <= @period.finish %>
       <tr>
 
         <!-- Empty boxes until the first -->
@@ -21,7 +21,7 @@
         <% begin %>
             <td class="col-md-1">
               <% day_hash = @days_hash[date] %>
-              <h5><b><%= date.strftime("%-d %b") %></b></h5>
+              <h5 id="<%= date.strftime("%-d-%b-%y") %>"><b><%= date.strftime("%-d %b") %></b></h5>
               <i><%= day_hash[:holiday] %></i><br>
 
               <% if day_hash[:vacation] %>

@@ -395,6 +395,7 @@ class Payslip < ApplicationRecord
 
     if (self[:raw_net_pay] >= -4)
       if (employee.create_location_transfer?)
+        # TODO Should this be added as a charge as well?
         deduction = Deduction.new
         deduction.note = Payslip::LOCATION_TRANSFER
         deduction.amount = Payslip.cfa_round(self[:raw_net_pay])

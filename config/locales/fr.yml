@@ -301,6 +301,9 @@ fr:
   No_bonuses: Aucun Primes
   Must_be_between_zero_and_one_hundred: 'doit être entre 0 et 100'
   Must_be_a_number: doit être un numéro
+  Maximum_must_be_greater: doit être plus grand que minimum
+  Minimum_must_be_less: deoit être moins que maximum
+  Minimum: Minimum
   Maximum: Maximum
   Use_caisse: Utiliser le base de caisse
 

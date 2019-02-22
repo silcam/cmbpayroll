@@ -6,7 +6,6 @@ class BonusTest < ActiveSupport::TestCase
   end
 
   def test_valid
-
     bonus.name = "Test Bonus"
 
     assert_raise(ArgumentError) do
@@ -55,7 +54,7 @@ class BonusTest < ActiveSupport::TestCase
     assert bonus.valid?, "valid input"
   end
 
-  test "Validate Presence of Required Attributes" do
+  def test_validate_presence_of_required_attributes
     model_validation_hack_test Bonus, {
       name: "Test Bonus",
       quantity: 0.201,
@@ -63,7 +62,54 @@ class BonusTest < ActiveSupport::TestCase
     }
   end
 
-  test "can be made to work with CaisseBase" do
+  def test_can_set_a_minimum_bonus
+    bonus.name = "Test with Minimum"
+    bonus.bonus_type = "percentage"
+    bonus.quantity = 0.05
+    bonus.minimum = 7500
+    assert bonus.maximum.nil?
+    assert bonus.valid?
+
+    assert_equal(7500, bonus.effective_bonus(2500))
+    assert_equal(50000, bonus.effective_bonus(1000000))
+  end
+
+  def test_can_set_a_minimum_and_a_maximum
+    bonus.name = "Test with Minimum"
+    bonus.bonus_type = "percentage"
+    bonus.quantity = 0.05
+    bonus.minimum = 7500
+    bonus.maximum = 15000
+    assert bonus.valid?
+
+    assert_equal(7500, bonus.effective_bonus(1500))
+    assert_equal(7500, bonus.effective_bonus(2500))
+    assert_equal(9000, bonus.effective_bonus(180000))
+    assert_equal(15000, bonus.effective_bonus(300000))
+    assert_equal(15000, bonus.effective_bonus(304000))
+    assert_equal(15000, bonus.effective_bonus(1000000))
+  end
+
+  def test_minimum_cannot_be_more_than_maximum
+    bonus.name = "Test with Minimum"
+    bonus.bonus_type = "percentage"
+    bonus.quantity = 0.05
+    bonus.minimum = 10999
+    bonus.maximum = 1000
+    refute bonus.valid?
+  end
+
+  def test_cannot_have_minimum_and_fixed_CFA
+    bonus.name = "Test Bonus"
+    bonus.bonus_type = "percentage"
+    bonus.ext_quantity = 30
+    bonus.valid?
+    assert bonus.valid?, "OK"
+    bonus.minimum = 20000
+    assert bonus.valid?, "cannot have minimum with percentage bonus"
+  end
+
+  def test_can_be_made_to_work_with_CaisseBase
     bonus.name = "Caisse Bonus"
     bonus.bonus_type = "percentage"
     bonus.quantity = 0.30
@@ -78,7 +124,6 @@ class BonusTest < ActiveSupport::TestCase
   end
 
   def test_valid_input_formats
-
     bonus.name = "Test Bonus"
     bonus.bonus_type = "percentage"
     bonus.quantity = "100.1"
@@ -116,8 +161,7 @@ class BonusTest < ActiveSupport::TestCase
     assert bonus.valid?, "OK"
   end
 
-  test "computes effective bonus" do
-
+  def test_computes_effective_bonus
     bonus = Bonus.new
     bonus.name = "Test Bonus"
     bonus.bonus_type = "percentage"
@@ -135,7 +179,6 @@ class BonusTest < ActiveSupport::TestCase
   end
 
   def test_ext_quantity
-
     bonus.name = "Ninety Five Percent"
     bonus.bonus_type = "percentage"
     bonus.ext_quantity = "95"
@@ -187,7 +230,6 @@ class BonusTest < ActiveSupport::TestCase
     bonus.bonus_type = "fixed"
 
     assert_equal("5 236 FCFA", bonus.display_quantity, "cannot have fractional CFA")
-
   end
 
 end

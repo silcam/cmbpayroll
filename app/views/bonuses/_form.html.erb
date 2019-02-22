@@ -18,6 +18,11 @@
   </div>
 
   <div class="form-group">
+    <%= form.label t(:Minimum), style: 'display: block;' %>
+    <%= form.text_field :minimum, id: :minimum, class: 'form-control form-control-inline' %>
+  </div>
+
+  <div class="form-group">
     <%= form.label t(:Maximum), style: 'display: block;' %>
     <%= form.text_field :maximum, id: :maximum, class: 'form-control form-control-inline' %>
   </div>

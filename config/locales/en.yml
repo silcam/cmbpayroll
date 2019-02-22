@@ -294,9 +294,12 @@ en:
   percentage: Percentage
   fixed: Fixed
   No_bonuses: No Bonuses
+  Maximum_must_be_greater: must be greater than minimum
+  Minimum_must_be_less: must be less than maximum
   Must_be_between_zero_and_one_hundred: 'must be between 0 and 100'
   Must_be_a_number: must be a number
   Maximum: Maximum
+  Minimum: Minimum
   Use_caisse: Use Caisse Base
 
   # Raises

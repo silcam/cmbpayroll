@@ -6,8 +6,10 @@ class Bonus < ApplicationRecord
 
   validates :name, :quantity, :bonus_type, presence: {message: I18n.t(:Not_blank)}
   validates :maximum, numericality: { only_integer: true, greater_than: 0, allow_nil: true }
+  validates :minimum, numericality: { only_integer: true, greater_than: 0, allow_nil: true }
   validate :appropriate_quantities_per_type
-  validate :maximum_only_with_percentage
+  validate :min_and_max_only_with_percentage
+  validate :min_less_than_max
 
   def appropriate_quantities_per_type
     if (quantity.nil? || !quantity.is_a?(Numeric) ||
@@ -24,13 +26,18 @@ class Bonus < ApplicationRecord
     end
   end
 
-  def maximum_only_with_percentage
+  def min_and_max_only_with_percentage
     if (maximum && bonus_type == "fixed")
       errors.add(:maximum, I18n.t(:Only_with_percentage))
-    elsif (maximum && bonus_type == "percentage")
-      if (maximum <= 0 || maximum % 1 != 0)
-        errors.add(:maximum, I18n.t(:Must_be_whole_number))
-      end
+    elsif (minimum && bonus_type == "fixed")
+      errors.add(:minimum, I18n.t(:Only_with_percentage))
+    end
+  end
+
+  def min_less_than_max
+    if (maximum && minimum && maximum < minimum)
+      errors.add(:maximum, I18n.t(:Maximum_must_be_greater))
+      errors.add(:minimum, I18n.t(:Minimum_must_be_less))
     end
   end
 
@@ -64,7 +71,9 @@ class Bonus < ApplicationRecord
     if (bonus_type == "percentage")
       result = salary * quantity
 
-      if (maximum && result > maximum)
+      if (minimum && result < minimum)
+        minimum
+      elsif (maximum && result > maximum)
         maximum
       else
         result

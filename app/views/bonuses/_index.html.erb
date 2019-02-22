@@ -7,6 +7,7 @@
       <th><%= t(:Name) %></th>
       <th><%= t(:Quantity) %></th>
       <th><%= t(:Comment) %></th>
+      <th><%= t(:Minimum) %></th>
       <th><%= t(:Maximum) %></th>
       <th><%= t(:Use_caisse) %>?</th>
       <th colspan="2"></th>
@@ -21,9 +22,10 @@
             <%= check_box_tag("bonus[#{bonus.id}]", 1, @employee.bonuses.include?(bonus)) %>
           </td>
         <% end %>
-        <td><%= bonus.name %></td>
+        <td><%= link_to bonus.name, edit_bonus_path(bonus) %></td>
         <td><%= bonus.display_quantity %></td>
         <td><%= bonus.comment %></td>
+        <td><%= bonus.minimum %></td>
         <td><%= bonus.maximum %></td>
         <td><%= bonus.use_caisse == false ? "" : t(:Yes) %></td>
         <% unless @employee %>

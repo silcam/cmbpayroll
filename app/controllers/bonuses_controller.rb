@@ -95,6 +95,7 @@ class BonusesController < ApplicationController
           :name,
           :quantity,
           :bonus_type,
+          :minimum,
           :maximum,
           :comment,
           :ext_quantity,

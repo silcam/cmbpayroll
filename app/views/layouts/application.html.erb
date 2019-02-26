@@ -37,6 +37,11 @@
         <% end %>
       </div>
     </nav>
+    <% if logged_in? %>
+    <div class="container" id="working-period">
+      <%= "#{t(:Current_period)}" %> <%= LastPostedPeriod.current() %>
+    </div>
+    <% end %>
     <div class="container">
 
       <%= render "notice" %>

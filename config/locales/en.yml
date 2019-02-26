@@ -92,6 +92,7 @@ en:
   Days_per_week: Days per week
   hourly: Hourly
   monthly: Monthly
+  Current_period: "Current period:"
 
   # People
   First_name: &First_name First Name

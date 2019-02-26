@@ -92,6 +92,7 @@ fr:
   Days_per_week: Jours par semaine
   hourly: Taux Horaire
   monthly: Mensuel
+  Current_period: "Période actuelle :"
 
   # People
   First_name: &First_name Prénom

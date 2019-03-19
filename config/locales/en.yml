@@ -301,7 +301,7 @@ en:
   Must_be_a_number: must be a number
   Maximum: Maximum
   Minimum: Minimum
-  Use_caisse: Use Caisse Base
+  Use_caisse: Include Seniority Bonus?
 
   # Raises
   New_raise: New Raise

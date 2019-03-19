@@ -306,7 +306,7 @@ fr:
   Minimum_must_be_less: deoit être moins que maximum
   Minimum: Minimum
   Maximum: Maximum
-  Use_caisse: Utiliser le base de caisse
+  Use_caisse: "Inclure le prime d'ancienneté\u00a0?"
 
   # Raises
   New_raise: Nouvelle augmentation

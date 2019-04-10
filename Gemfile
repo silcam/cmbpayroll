@@ -7,13 +7,14 @@ end
 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1', '>= 5.1.6.1'
+gem 'rails', '5.1.6.2'
+gem 'actionview', '5.1.6.2'
 # Use postgres as the database for Active Record
 gem 'pg', '~>0.21.0'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Bootstrap
-gem 'bootstrap-sass', '~>3.3.7'
+gem 'bootstrap-sass', '3.4.1'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes

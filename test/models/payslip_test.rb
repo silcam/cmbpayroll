@@ -898,6 +898,18 @@ class PayslipTest < ActiveSupport::TestCase
         payslip.earnings.where(is_bonus: false).sum(:amount).ceil)
   end
 
+  test "Union dues now in total tax" do
+    period = Period.new(2017,12)
+    employee = return_valid_employee()
+
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    # Note: union_dues in added to total_tax
+    tax = Tax.compute_taxes(employee, payslip.taxable, payslip.cnpswage)
+    assert_equal(payslip.total_tax, tax.total_tax + employee.union_dues_amount)
+  end
+
   test "BonusBase Full Month" do
     # config employee
     employee = return_valid_employee()

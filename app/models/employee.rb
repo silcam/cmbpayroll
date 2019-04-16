@@ -123,6 +123,18 @@ class Employee < ApplicationRecord
     wage_period == "monthly"
   end
 
+  def category_value
+    Employee.categories[category]
+  end
+
+  def echelon_value
+    Employee.echelons[echelon]
+  end
+
+  def wage_scale_value
+    Employee.wage_scales[wage_scale]
+  end
+
   # Time in years between BeginContract and Period.end
   def years_of_service(period=nil)
     # TODO: need a real general purpose date diff by year

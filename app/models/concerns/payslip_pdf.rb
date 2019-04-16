@@ -24,6 +24,9 @@ class PayslipPdf < CmbPayrollPdf
       @salary_advances = @payslip.salary_advance&.to_i
       @is_payslip = true
 
+      @category = @payslip.category
+      @echelon = @payslip.echelon
+
       @total_deductions = @payslip.first_page_deductions_sum()
       @total_pay = @payslip.total_pay()
 

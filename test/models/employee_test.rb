@@ -790,6 +790,20 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal("ZZZZ", results.first.last_name(), "correct employee returned")
   end
 
+  test "Category and Echelon values (from Enums) can be returned as well as id" do
+    employee = return_valid_employee()
+    employee.wage_scale = "a"
+
+    assert_equal("three", employee.category)
+    assert_equal(2, employee.category_value)
+
+    assert_equal("d", employee.echelon)
+    assert_equal(16, employee.echelon_value)
+
+    assert_equal("a", employee.wage_scale)
+    assert_equal(0, employee.wage_scale_value)
+  end
+
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',

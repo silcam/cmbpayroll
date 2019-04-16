@@ -7,7 +7,6 @@ class CmbPayrollPdf < Prawn::Document
   attr_reader :tax
 
   def header
-
       image "#{Rails.root}/app/assets/images/2014_sil_logo.png",
         :width => 42, :height => 50
 
@@ -50,7 +49,7 @@ class CmbPayrollPdf < Prawn::Document
           ["Nom du travailleur", "#{@employee.full_name}", "Matricule No.", "#{@employee.id}" ],
           ["Catégoire professionnelle",
               { :content => "#{@employee.title}", :colspan => 2 },
-           "#{display_category_roman(@payslip.category)}-#{display_echelon(@payslip.echelon)}" ],
+           "#{display_category_roman(@category)}-#{display_echelon(@echelon)}" ],
       ],
       :cell_style => { :padding => 2, :borders => [] },
       :width => bounds.width )

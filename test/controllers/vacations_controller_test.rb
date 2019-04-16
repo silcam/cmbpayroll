@@ -3,9 +3,26 @@ require "test_helper"
 class VacationsControllerTest < ActionDispatch::IntegrationTest
   include ControllerTestHelper
 
+  test "Vacation Voucher Display" do
+    login_admin(:MaceWindu)
+    get root_url()
+    assert_response :success
+
+    luke_emp = employees(:Luke)
+    luke_vacay = luke_emp.vacations.create!(start_date: '2017-10-15', end_date: '2017-10-18')
+
+    get print_voucher_vacation_url(luke_vacay)
+    assert_response :success
+
+    luke_new_vacay = luke_emp.vacations.create!(start_date: '2022-10-15', end_date: '2022-10-18')
+
+    get print_voucher_vacation_url(luke_new_vacay)
+    assert_response :success
+  end
+
   #### USER ####
 
-  test "Vacations : User"  do
+  test "Vacations : User" do
     login_user(:Luke)
 
     luke_emp = employees(:Luke)

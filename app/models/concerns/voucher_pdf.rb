@@ -17,6 +17,14 @@ class VoucherPdf < CmbPayrollPdf
     @salary_advances = 0
     @is_payslip = false
 
+    if (@payslip.nil?)
+      @category = @vacation.employee.category_value
+      @echelon = @vacation.employee.echelon_value
+    else
+      @category = @payslip.category
+      @echelon = @payslip.echelon
+    end
+
     @total_deductions = @tax.total_tax
     @total_pay = (@vacation.vacation_pay - @tax.total_tax).round
   end

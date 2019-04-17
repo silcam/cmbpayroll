@@ -556,7 +556,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, employee3.payslips.size, "employee 3 should not have 1 payslip")
   end
 
-  test "payslips deduct amical and union dues" do
+  test "payslips deduct amical automatically" do
     # have an employee
     employee = return_valid_employee()
 
@@ -564,13 +564,11 @@ class PayslipTest < ActiveSupport::TestCase
     employee.amical = 3000
     employee.uniondues = true
 
-    union_dues = employee.union_dues_amount
-
     # process a payslip
     payslip = Payslip.process(employee, Period.current)
 
     # verify there are deductions for Amical and Union.
-    assert_equal(2, payslip.deductions.size, "payslip should have 2 deductions")
+    assert_equal(1, payslip.deductions.size, "payslip should have 1 deductions")
 
     count = 0
     payslip.deductions.each do |ded|
@@ -579,15 +577,9 @@ class PayslipTest < ActiveSupport::TestCase
          assert_equal(Date.today.beginning_of_month(), ded.date)
          count += 1
       end
-
-      if (/union/i =~ ded.note)
-         assert_equal(union_dues, ded.amount)
-         assert_equal(Date.today.beginning_of_month(), ded.date)
-         count += 1
-      end
     end
 
-    assert_equal(2, count, "found both deductions")
+    assert_equal(1, count, "found both deductions")
   end
 
   test "payslips includes loan payments as deductions" do
@@ -904,6 +896,11 @@ class PayslipTest < ActiveSupport::TestCase
 
     generate_work_hours employee, period
     payslip = Payslip.process(employee, period)
+
+    assert_equal(employee.union_dues_amount, payslip.union_dues)
+
+    refute(payslip.deductions.find_by(note: Employee::UNION),
+        "should not find deduction anymore")
 
     # Note: union_dues in added to total_tax
     tax = Tax.compute_taxes(employee, payslip.taxable, payslip.cnpswage)

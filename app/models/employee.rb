@@ -227,8 +227,7 @@ class Employee < ApplicationRecord
 
   def deductable_expenses
       expense_hash = {
-        AMICAL => :amical,
-        UNION => :union_dues_amount
+        AMICAL => :amical
       }
   end
 

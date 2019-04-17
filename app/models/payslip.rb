@@ -135,11 +135,6 @@ class Payslip < ApplicationRecord
     earnings.where(is_caisse: true, is_bonus: true).take
   end
 
-  def union_dues
-    dues = deductions.where(note: Employee::UNION).take&.amount
-    dues.nil? ? 0 : dues
-  end
-
   def salary_advance
     advance = deductions.advances.sum(:amount)
     advance.nil? ? 0 : advance
@@ -381,11 +376,12 @@ class Payslip < ApplicationRecord
     self[:cac] = tax.cac
     self[:cac2] = tax.cac2
     self[:communal] = tax.communal
+    self[:union_dues] = employee.union_dues_amount
 
     if (taxable == 0)
       self[:total_tax] = tax.total_tax
     else
-      self[:total_tax] = tax.total_tax + employee.union_dues_amount
+      self[:total_tax] = tax.total_tax + union_dues
     end
   end
 

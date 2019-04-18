@@ -115,7 +115,8 @@ class ReportsController < ApplicationController
       if REPORTS[params[:report]][:format] == :pdf
         render @report.report_name, formats: :pdf
       else
-        respond_with(@report)
+        headers["Content-Disposition"] = %[attachment;filename=#{@report.to_s}-#{@report.report_period}.txt]
+        render body: @report.render_txt, content_type: "text/plain"
       end
     else
       redirect_to "/reports/", status: 302

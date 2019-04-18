@@ -2795,25 +2795,18 @@ class PayslipTest < ActiveSupport::TestCase
     WorkHour.update(employee, hours)
     assert_equal(5, vacation.days, "should be correct number of days")
 
-    exp = { normal: 136.0, vacation_worked: 8, overtime: 1 }
+    exp = { normal: 136.0, vacation_worked: 9 }
     assert_equal(exp, WorkHour.total_hours(employee, period))
     payslip = Payslip.process(employee, period)
 
-    found1 = false
-    found2 = false
+    found = false
     payslip.earnings.each do |e|
       if (e.rate == employee.hourly_rate)
-        found1 = true
-        assert_equal(e.amount,(employee.hourly_rate * 8), "correct earning")
-      end
-      if (e.rate == employee.otrate)
-        found2 = true
-        assert_equal(e.amount,(employee.otrate * 1), "correct earning")
+        found = true
+        assert_equal(e.amount,(employee.hourly_rate * 9), "correct earning")
       end
     end
-
-    assert(found1, "Found earning for vacation worked")
-    assert(found2, "Found earning for vacation worked")
+    assert(found, "Found earning for vacation worked")
 
     # Vacation Saturday Hours
     hours = {
@@ -2822,25 +2815,18 @@ class PayslipTest < ActiveSupport::TestCase
     }
     WorkHour.update(employee, hours)
 
-    exp = { normal: 136.0, overtime: vac_hours_worked }
+    exp = { normal: 136.0, vacation_worked: vac_hours_worked }
     assert_equal(exp, WorkHour.total_hours(employee, period))
     payslip = Payslip.process(employee, period)
 
-    found1 = false
-    found2 = false
+    found = false
     payslip.earnings.each do |e|
-      if (e.rate == employee.otrate)
-        found1 = true
-        assert_equal(e.amount,(employee.otrate * 8), "correct earning")
-      end
-      if (e.rate == employee.ot2rate)
-        found2 = true
-        assert_equal(e.amount,(employee.ot2rate * 1), "correct earning")
+      if (e.rate == employee.hourly_rate)
+        found = true
+        assert_equal(e.amount,(employee.hourly_rate * 9), "correct earning")
       end
     end
-
-    assert(found1, "Found earning for vacation worked")
-    assert(found2, "Found earning for vacation worked")
+    assert(found, "Found earning for vacation worked")
 
     # Vacation Sunday(Holiday) Hours
     hours = {
@@ -2849,18 +2835,17 @@ class PayslipTest < ActiveSupport::TestCase
     }
     WorkHour.update(employee, hours)
 
-    exp = { normal: 136.0, holiday: vac_hours_worked }
+    exp = { normal: 136.0, vacation_worked: vac_hours_worked }
     assert_equal(exp, WorkHour.total_hours(employee, period))
     payslip = Payslip.process(employee, period)
 
     found = false
     payslip.earnings.each do |e|
-      if (e.rate == employee.ot3rate)
+      if (e.rate == employee.hourly_rate)
         found = true
-        assert_equal(e.amount,(employee.ot3rate * vac_hours_worked), "correct earning")
+        assert_equal(e.amount,(employee.hourly_rate * vac_hours_worked), "correct earning")
       end
     end
-
     assert(found, "Found earning for vacation worked")
   end
 

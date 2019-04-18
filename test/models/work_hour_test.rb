@@ -565,7 +565,7 @@ class WorkHourTest < ActiveSupport::TestCase
     refute(success, "should have had errors")
   end
 
-  test "Vacation Worked over 8 hours on a week day is Overtime" do
+  test "Vacation Worked over 8 hours is Normal Rate (non Overtime)" do
     employee = return_valid_employee()
     period = Period.new(2018,1)
 
@@ -590,7 +590,7 @@ class WorkHourTest < ActiveSupport::TestCase
       "2018-01-29" => {hours: 8},
       "2018-01-30" => {hours: 8},
       "2018-01-31" => {hours: 8},
-      "2018-01-18" => {vacation_worked: 12} # Saturday
+      "2018-01-18" => {vacation_worked: 12} # Thursday
     }
 
     success, errors = WorkHour.update(employee, hours)
@@ -598,11 +598,11 @@ class WorkHourTest < ActiveSupport::TestCase
 
     assert_equal(13, WorkHour.days_worked(employee, period), "should have worked one day")
 
-    exp = {normal: 104.0, vacation_worked: 8.0, overtime: 4.0}
+    exp = {normal: 104.0, vacation_worked: 12.0}
     assert_equal(exp, WorkHour.total_hours(employee, period))
   end
 
-  test "Vacation Worked that is Overtime is put in the correct category" do
+  test "Vacation Worked is always VW even if Overtime" do
     employee = return_valid_employee()
     period = Period.new(2018,1)
 
@@ -635,7 +635,7 @@ class WorkHourTest < ActiveSupport::TestCase
 
     assert_equal(13, WorkHour.days_worked(employee, period), "should have worked one day")
 
-    exp = {normal: 104.0, overtime: 12.0}
+    exp = {normal: 104.0, vacation_worked: 12.0}
     assert_equal(exp, WorkHour.total_hours(employee, period))
 
     hours = {
@@ -646,7 +646,42 @@ class WorkHourTest < ActiveSupport::TestCase
     success, errors = WorkHour.update(employee, hours)
     assert(success, "should have not had errors #{errors.inspect}")
 
-    exp = {normal: 104.0, holiday: 12.0}
+    exp = {normal: 104.0, vacation_worked: 12.0}
+    assert_equal(exp, WorkHour.total_hours(employee, period))
+
+    # even working tons of hours during vacation
+    # it is always vacation worked time, not overtime
+    hours = {
+      "2018-01-15" => {vacation_worked: 15},
+      "2018-01-16" => {vacation_worked: 15},
+      "2018-01-17" => {vacation_worked: 15},
+      "2018-01-18" => {vacation_worked: 15},
+      "2018-01-19" => {vacation_worked: 15},
+      "2018-01-20" => {vacation_worked: 15}, # Saturday
+      "2018-01-21" => {vacation_worked: 15}, # Sunday
+      "2018-01-22" => {vacation_worked: 15},
+      "2018-01-23" => {vacation_worked: 15},
+      "2018-01-24" => {vacation_worked: 15},
+      "2018-01-25" => {vacation_worked: 15},
+      "2018-01-26" => {vacation_worked: 15}
+    }
+
+    success, errors = WorkHour.update(employee, hours)
+    assert(success, "should have not had errors #{errors.inspect}")
+
+
+    exp = {normal: 104.0, vacation_worked: 180.0}
+    assert_equal(exp, WorkHour.total_hours(employee, period))
+
+    # Add a holiday on 2018-01-22
+    # That should make the time is holiday OT even though there's
+    # And active vacation over that period.
+    Holiday.create!(name: 'The Ides of January', date: '2018-01-15')
+
+    success, errors = WorkHour.update(employee, hours)
+    assert(success, "should have not had errors #{errors.inspect}")
+
+    exp = {normal: 104.0, vacation_worked: 165.0, holiday: 15.0}
     assert_equal(exp, WorkHour.total_hours(employee, period))
   end
 

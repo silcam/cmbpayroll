@@ -125,18 +125,18 @@ class WorkHour < ApplicationRecord
     end
 
     return {} if day_hash[:hours].nil? or day_hash[:hours] == 0
-    return {holiday: day_hash[:hours]} if holiday_overtime? date, day_hash
-    if is_off_day? date
-      {overtime: day_hash[:hours]}
-    elsif day_hash[:hours] > workday
-      if day_hash[:vacation] == true
-        {vacation_worked: workday, overtime: (day_hash[:hours]-workday)}
-      else
-        {normal: workday, overtime: (day_hash[:hours]-workday)}
-      end
+
+    if (day_hash.has_key? :holiday)
+      {holiday: day_hash[:hours]}
+    elsif day_hash[:vacation] == true
+      {vacation_worked: day_hash[:hours]}
     else
-      if day_hash[:vacation] == true
-        {vacation_worked: day_hash[:hours]}
+      if holiday_overtime?(date, day_hash)
+        {holiday: day_hash[:hours]}
+      elsif is_off_day? date
+        {overtime: day_hash[:hours]}
+      elsif day_hash[:hours] > workday
+        {normal: workday, overtime: (day_hash[:hours]-workday)}
       else
         {normal: day_hash[:hours]}
       end

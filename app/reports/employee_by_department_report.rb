@@ -18,7 +18,7 @@ SELECT
       END AS base_wage,
   e.employment_status as per,
   CONCAT(e.category, '-', e.echelon) as cat_ech,
-  to_char(e.last_raise_date, 'DD/MM/YYYY') as last_raise,
+  to_char(r.last_raise, 'DD/MM/YYYY') as last_raise,
   e.marital_status as m_c,
   c.numchildren as children,
   p.gender
@@ -35,15 +35,16 @@ FROM
       el.wages_val = w.echelonalt
     LEFT OUTER JOIN departments d ON
       e.department_id = d.id
-    LEFT OUTER JOIN
-      (SELECT
-        parent_id,
-        count(*) as numchildren
-      FROM
-        children
-      GROUP BY
-        parent_id
-      ) c ON p.id = c.parent_id
+    LEFT OUTER JOIN (
+      SELECT employee_id, max(date) as last_raise
+      FROM raises
+      GROUP BY employee_id
+    ) r ON e.id = r.employee_id
+    LEFT OUTER JOIN (
+      SELECT parent_id, count(*) as numchildren
+      FROM children
+      GROUP BY parent_id
+    ) c ON p.id = c.parent_id
 WHERE
   e.employment_status IN :employment_status
 ORDER BY

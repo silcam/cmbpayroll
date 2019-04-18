@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190418081227) do
+ActiveRecord::Schema.define(version: 20190418142938) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -135,7 +135,6 @@ ActiveRecord::Schema.define(version: 20190418081227) do
     t.integer "echelon"
     t.integer "wage_scale"
     t.integer "wage_period"
-    t.datetime "last_raise_date"
     t.float "taxable_percentage", default: 1.0
     t.integer "transportation"
     t.integer "employment_status"

@@ -10,7 +10,7 @@ SELECT
   e.id as employee_num,
   ps.gross_pay,
   ps.total_tax,
-  ps.raw_net_pay as net_pay,
+  ps.salaire_net as net_pay,
   b.add_pay,
   ps.taxable + b.add_pay as adj_wage,
   ps.department_cnps,
@@ -104,7 +104,7 @@ FROM
       -- divisible by 5 amount.  It does this from
       -- the net pay, but then adds it to the taxable
       -- wage.  Not sure why.
-      SELECT id, (trunc((raw_net_pay + 4) / 5 ) * 5) - raw_net_pay as add_pay from payslips) b ON
+      SELECT id, (trunc((salaire_net + 4) / 5 ) * 5) - salaire_net as add_pay from payslips) b ON
         ps.id = b.id
     INNER JOIN work_loan_percentages wlp ON ps.id = wlp.payslip_id
     INNER JOIN departments d ON wlp.department_id = d.id

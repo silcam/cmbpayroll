@@ -149,9 +149,6 @@ class Payslip < ApplicationRecord
     total_tax.to_i + salary_advance.to_i
   end
 
-  def total_pay
-    taxable - (total_tax + salary_advance)
-  end
 
   def period
     if (period_year && period_month)
@@ -383,6 +380,8 @@ class Payslip < ApplicationRecord
     else
       self[:total_tax] = tax.total_tax + union_dues
     end
+
+    self[:salaire_net] = self[:taxable] - (self[:total_tax] + salary_advance)
   end
 
   # After all calculations, compute net pay from gross pay

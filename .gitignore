@@ -21,6 +21,7 @@
 /yarn-error.log
 
 .byebug_history
+.vscode
 
 config/secrets.yml
 db/wages.sql

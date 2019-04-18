@@ -1423,7 +1423,7 @@ class PayslipTest < ActiveSupport::TestCase
     total_pay = payslip.taxable - (payslip.total_tax) +
         payslip.union_dues +
           payslip.salary_advance
-    assert_equal(total_pay, payslip.total_pay(), "total pay correct")
+    assert_equal(total_pay, payslip.salaire_net, "total pay correct")
   end
 
   test "CFA Round" do

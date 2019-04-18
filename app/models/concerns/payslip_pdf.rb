@@ -28,7 +28,7 @@ class PayslipPdf < CmbPayrollPdf
       @echelon = @payslip.echelon
 
       @total_deductions = @payslip.first_page_deductions_sum()
-      @total_pay = @payslip.total_pay()
+      @total_pay = @payslip.salaire_net
 
       first_page
       second_page
@@ -154,7 +154,7 @@ class PayslipPdf < CmbPayrollPdf
 
       data = [
           ["<b>Salaire Net (arrondi)</b>", "", "",
-          { :content => "#{Payslip.cfa_round(payslip.total_pay)}", :align => :right }]
+          { :content => "#{Payslip.cfa_round(payslip.salaire_net)}", :align => :right }]
       ]
 
       payslip.deductions.second_page.each do |d|

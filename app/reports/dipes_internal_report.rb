@@ -6,7 +6,7 @@ SELECT
   CASE
     WHEN dipe is null OR dipe = '' THEN
       CASE
-        WHEN ps.taxable < 25000 THEN 'A01'
+        WHEN ps.taxable < #{SystemVariable.value(:a01_cutoff)} THEN 'A01'
         ELSE 'A02'
       END
     ELSE dipe
@@ -20,25 +20,26 @@ SELECT
   e.id as EmployeeId,
   DATE_PART('days', DATE_TRUNC('month',concat(ps.period_year,'-',ps.period_month,'-01')::date) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL) as days,
   ps.period_year as year,
-  ps.taxable as SalBrut,
-  ps.taxable as SalTax,
-  ps.cnpswage as montant_total,
+  ps.taxable + COALESCE(v.vacation_pay,0) as SalBrut,
+  ps.taxable + COALESCE(v.vacation_pay,0)  as SalTax,
+  ps.cnpswage + COALESCE(v.vacation_pay,0) as montant_total,
   CASE
-    WHEN ps.cnpswage > 300000 THEN 300000
-    ELSE ps.cnpswage
+    WHEN (ps.cnpswage + COALESCE(v.vacation_pay,0)) > #{SystemVariable.value(:cnps_cutoff)} THEN #{SystemVariable.value(:cnps_cutoff)}
+    ELSE (ps.cnpswage + COALESCE(v.vacation_pay,0))
   END as montant_total_plafonne,
-  ps.proportional as tax_prop,
+  ps.proportional + COALESCE(v.proportional,0) as tax_prop,
   0 as tax_progress,
-  ps.cac as cac,
-  ps.cnps as cnps,
-  ps.communal as tax_common,
-  ps.ccf as credit_foncier,
-  ps.crtv as audio_visual,
-  ps.total_tax as total_taxes
+  ps.cac + COALESCE(v.cac,0) as cac,
+  ps.cnps + COALESCE(v.cnps,0) as cnps,
+  ps.communal + COALESCE(v.communal,0) as tax_common,
+  ps.ccf + COALESCE(v.ccf,0) as credit_foncier,
+  ps.crtv + COALESCE(v.crtv,0) as audio_visual,
+  ps.total_tax + COALESCE(v.total_tax,0) as total_taxes
 FROM
   payslips ps
     INNER JOIN employees e ON ps.employee_id = e.id
     INNER JOIN people p ON p.id = e.person_id
+    LEFT OUTER JOIN vacations v ON ps.employee_id = v.employee_id AND ps.period_year = v.period_year AND ps.period_month = v.period_month
 WHERE
   e.employment_status IN :employment_status AND
   ps.period_year = :year AND
@@ -46,6 +47,11 @@ WHERE
 ORDER BY
   dipeno, cnpsno, employee_name ASC
     SELECTSTATEMENT
+
+
+
+
+
   end
 
   def formatted_title

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190418142938) do
+ActiveRecord::Schema.define(version: 20190418162355) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -371,6 +371,16 @@ ActiveRecord::Schema.define(version: 20190418142938) do
     t.datetime "updated_at", null: false
     t.boolean "paid", default: false, null: false
     t.decimal "vacation_pay"
+    t.integer "period_month"
+    t.integer "period_year"
+    t.integer "total_tax"
+    t.integer "ccf"
+    t.integer "crtv"
+    t.integer "proportional"
+    t.integer "cac"
+    t.integer "cac2"
+    t.integer "communal"
+    t.integer "cnps"
     t.index ["employee_id"], name: "index_vacations_on_employee_id"
   end
 

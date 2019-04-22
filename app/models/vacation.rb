@@ -258,8 +258,12 @@ class Vacation < ApplicationRecord
   # Compute vacation pay for this vacation based on balances
   # in employee's payslip.
   def vacation_pay(payslip=nil)
-    if (self[:vacation_pay].nil? || self[:vacation_pay] == 0)
+    #if (self[:vacation_pay].nil? || self[:vacation_pay] == 0)
       period = Period.from_date(start_date)
+
+      applied_period = apply_to_period
+      self[:period_month] = applied_period.month
+      self[:period_year] = applied_period.year
 
       # if not passed in, attempt to find payslip
       if (payslip.nil?)
@@ -271,9 +275,20 @@ class Vacation < ApplicationRecord
       return 0 if payslip.vacation_balance == 0
 
       self[:vacation_pay] = ( payslip.vacation_daily_rate * days ).round
-    else
-      self[:vacation_pay]
-    end
+
+      # This may need some cleanup
+      tax = Tax.compute_taxes(employee, self[:vacation_pay], self[:vacation_pay])
+      self[:ccf] = tax.ccf
+      self[:crtv] = tax.crtv
+      self[:proportional] = tax.proportional
+      self[:cac] = tax.cac
+      self[:cac2] = tax.cac2
+      self[:communal] = tax.communal
+      self[:cnps] = tax.cnps
+      self[:total_tax] = tax.total_tax
+    #end
+
+    self[:vacation_pay]
   end
 
   def net_pay

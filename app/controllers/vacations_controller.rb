@@ -54,6 +54,7 @@ class VacationsController < ApplicationController
 
     @vacation = Vacation.find params[:id]
     @vacation.prep_print
+    @vacation.save
 
     voucher_generator(@vacation)
   end

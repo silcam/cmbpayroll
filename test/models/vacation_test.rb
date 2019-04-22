@@ -583,6 +583,89 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(Period.new(2018,10), vac.apply_to_period())
   end
 
+  test "Data is Stored in DB" do
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-22"
+    vac.end_date = "2018-11-02"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+
+    assert_equal(Period.new(2018,10), vac.apply_to_period())
+
+    # force the items to get in the DB
+    vac.prep_print
+
+    assert_equal(10, vac.period_month, "correct month")
+    assert_equal(2018, vac.period_year, "correct year")
+  end
+
+  test "Tax is Stored in DB" do
+    vac = Vacation.new
+    vac.employee = @luke
+    vac.start_date = "2018-09-01"
+    vac.end_date = "2018-09-07"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+
+    period = Period.from_date(vac.start_date)
+
+    hours = {
+      "2018-09-10" => {hours: 8},
+      "2018-09-11" => {hours: 8},
+      "2018-09-12" => {hours: 8},
+      "2018-09-13" => {hours: 8},
+      "2018-09-14" => {hours: 8},
+      "2018-09-17" => {hours: 8},
+      "2018-09-18" => {hours: 8},
+      "2018-09-19" => {hours: 8},
+      "2018-09-20" => {hours: 8},
+      "2018-09-21" => {hours: 8},
+      "2018-09-24" => {hours: 8},
+      "2018-09-25" => {hours: 8},
+      "2018-09-26" => {hours: 8},
+      "2018-09-27" => {hours: 8},
+      "2018-09-28" => {hours: 8}
+    }
+
+    success, errors = WorkHour.update(@luke, hours)
+    assert(success, "should not have produced these errors: #{errors.inspect}")
+
+    payslip = Payslip.process(@luke, period)
+    assert(payslip, "payslip exists")
+
+    set_previous_vacation_balances(@luke, period, 286978, 42.0)
+    payslip = Payslip.process(@luke, period)
+
+    # Set up balances.
+    payslip.vacation_balance = 42.0
+    payslip.vacation_pay_balance = 286978
+    assert(payslip.save, "should save properly")
+
+    # Do the test.
+    assert_equal(5, vac.days, "luke 21 days off to go to Kribi")
+
+    # force the items to get in the DB
+    vac.prep_print
+
+    exp_rate = payslip.compute_fullcnpswage * 12 / 16.0 / 18.0
+    assert_equal(exp_rate, payslip.vacation_daily_rate, "can compute vacation rate")
+
+    assert_equal(21441, vac.vacation_pay, "correct vac_pay")
+    assert_equal(3063, vac.total_tax, "correct tax")
+
+    tax_obj = vac.get_tax
+    # verify all tax components are stored.
+    assert_equal(vac.ccf, tax_obj.ccf)
+    assert_equal(vac.crtv, tax_obj.crtv)
+    assert_equal(vac.proportional, tax_obj.proportional)
+    assert_equal(vac.cac, tax_obj.cac)
+    assert_equal(vac.cac2, tax_obj.cac2)
+    assert_equal(vac.communal, tax_obj.communal)
+    assert_equal(vac.cnps, tax_obj.cnps)
+    assert_equal(vac.total_tax, tax_obj.total_tax)
+  end
+
   test "Days in Period" do
     aug = Period.new(2018,8)
     sept = Period.new(2018,9)

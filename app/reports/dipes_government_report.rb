@@ -7,7 +7,7 @@ SELECT
   CASE
     WHEN dipe is null OR dipe = '' THEN
       CASE
-        WHEN ps.taxable < 25000 THEN 'A01'
+        WHEN ps.taxable < #{SystemVariable.value(:a01_cutoff)} THEN 'A01'
         ELSE 'A02'
       END
     ELSE dipe
@@ -22,21 +22,22 @@ SELECT
     ELSE SUBSTR(replace(e.cnps,'-',''),11,11)
   END as cle,
   DATE_PART('days', DATE_TRUNC('month',concat(ps.period_year,'-',ps.period_month,'-01')::date) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL) as nb_jour_2,
-  ps.gross_pay as salaire_brut_3,
+  ps.gross_pay + COALESCE(v.vacation_pay,0) as salaire_brut_3,
   '' as elements_exception_4,
-  ps.taxable as salaire_taxable_5,
-  ps.cnpswage as total_6,
-  CASE WHEN ps.cnpswage > 750000 THEN 750000 ELSE ps.cnpswage END as plafonne_7,
-  ps.proportional as retenue_taxe_prop_8,
+  ps.taxable + COALESCE(v.vacation_pay,0) as salaire_taxable_5,
+  ps.cnpswage + COALESCE(v.vacation_pay,0) as total_6,
+  CASE WHEN (ps.cnpswage + COALESCE(v.vacation_pay,0)) > #{SystemVariable.value(:cnps_ceiling)} THEN #{SystemVariable.value(:cnps_ceiling)} ELSE (ps.cnpswage + COALESCE(v.vacation_pay,0)) END as plafonne_7,
+  ps.proportional + COALESCE(v.proportional) as retenue_taxe_prop_8,
   0 as retenue_surf_prog_9,
-  ps.cac as centime_add_com_10,
-  ps.communal as retenue_taxe_com_11,
+  ps.cac + COALESCE(v.cac,0) as centime_add_com_10,
+  ps.communal + COALESCE(v.communal,0) as retenue_taxe_com_11,
   SUBSTRING(e.dipe from 2 for 3) as ligne,
   e.id as employee_id
 FROM
   payslips ps
     INNER JOIN employees e ON ps.employee_id = e.id
     INNER JOIN people p ON p.id = e.person_id
+    LEFT OUTER JOIN vacations v ON ps.employee_id = v.employee_id AND ps.period_year = v.period_year AND ps.period_month = v.period_month
 WHERE
   ps.period_year = :year AND
   ps.period_month = :month

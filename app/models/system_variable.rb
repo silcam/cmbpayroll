@@ -47,6 +47,8 @@ class SystemVariable < ApplicationRecord
     communal_high: 250,
     raise_interval: 4,
     immatriculation_no: '5087501B',
+    a01_cutoff: 25000,
+    cnps_cutoff: 300000,
     dipe_page_1: '68029-E',
     dipe_page_2: '68030-X',
     dipe_page_3: '68031-P',

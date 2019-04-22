@@ -9,11 +9,11 @@ SELECT
   ps.period_year as year,
   substr(replace(e.cnps,'-',''),1,10) as CNPSNoDashes,
   substr(replace(e.cnps,'-',''),11,11) as CNPSNoDashesKey,
-  ps.taxable as SalBrut,
-  ps.taxable as SalTax,
-  ps.cnpswage as Total,
-  ps.CNPSWage as Plaf,
-  ps.proportional as Reten,
+  ROUND(ps.taxable + COALESCE(v.vacation_pay,0),0) as SalBrut,
+  ROUND(ps.taxable + COALESCE(v.vacation_pay,0),0) as SalTax,
+  ROUND(ps.cnpswage + COALESCE(v.vacation_pay,0),0) as Total,
+  ROUND(ps.CNPSWage + COALESCE(v.vacation_pay,0),0) as Plaf,
+  ROUND(ps.proportional + COALESCE(v.proportional,0),0) as Reten,
   dc.line_number as LineNo,
   e.id as EmployeeId,
   DATE_PART('days', DATE_TRUNC('month',concat(ps.period_year,'-',ps.period_month,'-01')::date) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL)
@@ -22,6 +22,7 @@ FROM
     INNER JOIN employees e ON ps.employee_id = e.id
     INNER JOIN people p ON p.id = e.person_id
     INNER JOIN dipe_codes dc ON e.dipe = dc.line
+    LEFT OUTER JOIN vacations v ON ps.employee_id = v.employee_id AND ps.period_year = v.period_year AND ps.period_month = v.period_month
 WHERE
   ps.period_year = :year AND
   ps.period_month = :month

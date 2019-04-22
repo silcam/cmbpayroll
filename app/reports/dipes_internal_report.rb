@@ -34,7 +34,14 @@ SELECT
   ps.communal + COALESCE(v.communal,0) as tax_common,
   ps.ccf + COALESCE(v.ccf,0) as credit_foncier,
   ps.crtv + COALESCE(v.crtv,0) as audio_visual,
-  ps.total_tax + COALESCE(v.total_tax,0) as total_taxes
+  (ps.proportional + COALESCE(v.proportional,0) +
+   0 +
+   ps.cac + COALESCE(v.cac,0) +
+   ps.cnps + COALESCE(v.cnps,0) +
+   ps.communal + COALESCE(v.communal,0) +
+   ps.ccf + COALESCE(v.ccf,0) +
+   ps.crtv + COALESCE(v.crtv,0)
+  ) as total_taxes
 FROM
   payslips ps
     INNER JOIN employees e ON ps.employee_id = e.id

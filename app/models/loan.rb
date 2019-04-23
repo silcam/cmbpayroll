@@ -25,8 +25,6 @@ class Loan < ApplicationRecord
     total_balance = 0
 
     employee.loans.where("origination <= ?", period.finish).each do |loan|
-      next if loan.is_paid()
-
       loan_sum = loan.amount
       payments_sum = loan.loan_payments.
           where("date <= ?", period.finish).sum(:amount)

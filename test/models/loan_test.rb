@@ -221,47 +221,54 @@ class LoanTest < ActiveSupport::TestCase
     assert_equal(loanamount, Loan.new_loan_amount_this_period(employee, nov17))
   end
 
-  test "previous_loan_balance" do
+  test "Test Total Balance over time" do
+    sept17 = Period.new(2017,9)
+    oct17 = Period.new(2017,10)
+    nov17 = Period.new(2017,11)
+    dec17 = Period.new(2017,12)
+
     employee = return_valid_employee()
 
     assert_equal(0, Loan.unpaid_loans(employee).size)
     assert_equal(0, Loan.paid_loans(employee).size)
+    assert_equal(0, employee.loans.count, "has no loans")
 
-    loanamount = 199333
+    loanamount = 100000
 
-    loan = Loan.new
-
-    loan.origination = Date.today
-    loan.comment = "Test Comment"
-    loan.amount = loanamount
-    loan.origination = "2017-10-22"
-    employee.loans << loan
+    loan = employee.loans.create!(origination: oct17.mid_month,
+        comment: "October Loan", amount: loanamount)
+    assert_equal(1, employee.loans.count, "has one loan now")
+    assert_equal(0, employee.loans.first.loan_payments.count, "has no payments")
     assert(loan.valid?)
-    assert(employee.valid?)
-    assert(loan.save)
-    assert(employee.save)
 
-    assert_equal(loanamount, Loan.total_balance(employee))
+    assert_equal(loanamount, Loan.total_balance(employee),
+        "new loan added to loan balance")
+    assert_equal(0, Loan.total_balance(employee, sept17),
+        "sept loan balance not increased by loan in oct")
+    assert_equal(loanamount, Loan.total_balance(employee, oct17),
+        "oct balance has oct loan")
+    assert_equal(loanamount, Loan.total_balance(employee, nov17),
+        "nov balance has oct loan")
 
-    sept17 = Period.new(2017,9)
-    oct17 = Period.new(2017,10)
-    nov17 = Period.new(2017,11)
-
-    assert_equal(0, Loan.total_balance(employee, sept17))
-    assert_equal(loanamount, Loan.total_balance(employee, oct17))
-    assert_equal(loanamount, Loan.total_balance(employee, nov17))
-
-    paymentamount = 15000
-    pmnt = LoanPayment.new(amount: paymentamount, date: '2017-11-15')
-    loan.loan_payments << pmnt
-    assert(pmnt.save)
-    assert(loan.save)
+    paymentamount = 50000
+    pmnt = loan.loan_payments.create!(amount: paymentamount, date: nov17.mid_month)
+    assert_equal(1, loan.loan_payments.count, "has one payment")
+    refute(loan.is_paid, "loan is not yet paid")
 
     assert_equal(0, Loan.total_balance(employee, sept17))
     assert_equal(loanamount, Loan.total_balance(employee, oct17))
     assert_equal(loanamount - paymentamount, Loan.total_balance(employee, nov17))
-
     assert_equal(loanamount - paymentamount, Loan.total_balance(employee))
+
+    # second 50k payment will pay off loan
+    decpmnt = loan.loan_payments.create!(amount: paymentamount, date: dec17.mid_month)
+    assert(decpmnt)
+    assert(loan.is_paid, "loan is paid now in dec")
+
+    assert_equal(0, Loan.total_balance(employee, sept17))
+    assert_equal(loanamount, Loan.total_balance(employee, oct17))
+    assert_equal(loanamount - paymentamount, Loan.total_balance(employee, nov17))
+    assert_equal(loanamount - paymentamount - paymentamount, Loan.total_balance(employee, dec17))
   end
 
   test "can't add or edit during posted period" do

@@ -4,7 +4,7 @@ class Earning < ApplicationRecord
   validate :has_amount_percentage_or_rate
 
   scope :bonuses, -> { where(is_bonus: true) }
-  scope :bonuses_except_pdc, -> { where(is_bonus: true, is_caisse: false) }
+  scope :bonuses_except_pdc, -> { where(is_bonus: true).where("description not like '%Caisse%'") }
   scope :overtime, -> { where(is_bonus: false, overtime: true) }
   scope :misc_payments, -> { where(overtime: false, is_bonus: false, is_caisse: false).
         where("description LIKE 'Misc. Payment%'") }

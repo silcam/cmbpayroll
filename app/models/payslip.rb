@@ -132,7 +132,7 @@ class Payslip < ApplicationRecord
   end
 
   def prime_de_caisse
-    earnings.where(is_caisse: true, is_bonus: true).take
+    earnings.where(is_caisse: true, is_bonus: true).where("description like '%Caisse%'").take
   end
 
   def salary_advance

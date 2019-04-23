@@ -2962,6 +2962,36 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(2, payslip.earnings.where("is_bonus = ?", true).size)
   end
 
+  test "Payslip Loan Balance isn't always current" do
+    current_period = Period.current
+    jan_18_period = Period.new(2018,1)
+
+    assert(current_period > jan_18_period)
+
+    employee = return_valid_employee
+    generate_work_hours employee, jan_18_period
+
+    cur_bal = Loan.total_balance(employee) # current period
+    assert_equal(0, cur_bal, "jan 18 originally had no loan balance")
+
+    jan_18_payslip = Payslip.process(employee, jan_18_period)
+    assert(jan_18_payslip, "valid")
+    assert_equal(0, jan_18_payslip.loan_balance, "no loan balance in jan 18")
+
+    # create a new loan, verify it doesn't show up in the past
+    loan_amount = 50000
+    new_loan = employee.loans.create(origination: current_period.start, amount: loan_amount)
+    assert(new_loan)
+
+    cur_bal = Loan.total_balance(employee) # current period
+    assert_equal(loan_amount, cur_bal, "yep, worked.")
+
+    # process payslip from jan_18
+    jan_18_payslip = Payslip.process(employee, jan_18_period)
+    assert(jan_18_payslip, "valid")
+    assert_equal(0, jan_18_payslip.loan_balance, "no loan balance in jan 18 after adding future loan")
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

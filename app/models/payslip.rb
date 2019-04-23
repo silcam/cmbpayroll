@@ -725,7 +725,7 @@ class Payslip < ApplicationRecord
       payslip.deductions << deduction
     end
 
-    payslip.loan_balance = Loan.total_balance(employee)
+    payslip.loan_balance = Loan.total_balance(employee, period)
   end
 
   def self.process_payslip_corrections(payslip, employee, period)

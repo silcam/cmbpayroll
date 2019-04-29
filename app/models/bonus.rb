@@ -15,7 +15,7 @@ class Bonus < ApplicationRecord
     if (quantity.nil? || !quantity.is_a?(Numeric) ||
         !ext_quantity.is_a?(Numeric))
       errors.add(:quantity, I18n.t(:Must_be_a_number))
-    elsif (percentage?)
+    elsif (is_percentage_bonus?)
       if (quantity <= 0.0 || quantity > 1.0)
         errors.add(:quantity, I18n.t(:Must_be_between_zero_and_one_hundred))
       end
@@ -41,10 +41,10 @@ class Bonus < ApplicationRecord
     end
   end
 
-  enum bonus_type: { percentage: 0, fixed: 1 }
+  enum bonus_type: { percentage: 0, fixed: 1, base_percentage: 2 }
 
   def ext_quantity
-    if (bonus_type == "percentage")
+    if is_percentage_bonus?
       quantity * 100.0
     else
       quantity.to_i
@@ -52,7 +52,7 @@ class Bonus < ApplicationRecord
   end
 
   def ext_quantity=(qty)
-    if (bonus_type == "percentage")
+    if is_percentage_bonus?
       self.quantity = qty.to_f / 100.0
     else
       self.quantity = qty.to_i
@@ -60,7 +60,7 @@ class Bonus < ApplicationRecord
   end
 
   def display_quantity
-    if (bonus_type == "percentage")
+    if is_percentage_bonus?
        number_to_percentage(quantity * 100, precision: 5, strip_insignificant_zeros: true)
     else
        number_to_currency(quantity, locale: :cm)
@@ -68,7 +68,7 @@ class Bonus < ApplicationRecord
   end
 
   def effective_bonus(salary)
-    if (bonus_type == "percentage")
+    if is_percentage_bonus?
       result = salary * quantity
 
       if (minimum && result < minimum)
@@ -94,6 +94,14 @@ class Bonus < ApplicationRecord
     else
       new_bonuses = Bonus.where(id: bonus_hash.keys)
       employee.bonuses = new_bonuses
+    end
+  end
+
+  def is_percentage_bonus?
+    if bonus_type == "percentage" || bonus_type == "base_percentage"
+      return true
+    else
+      return false
     end
   end
 

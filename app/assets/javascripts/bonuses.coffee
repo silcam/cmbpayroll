@@ -1,5 +1,6 @@
 edit_units = () ->
-  if $('select#bonus_bonus_type').val() == 'percentage'
+  btype = $('select#bonus_bonus_type').val()
+  if btype == 'percentage' || btype == 'base_percentage'
     $('span#quantity-unit').html('%')
   else
     $('span#quantity-unit').html('FCFA')

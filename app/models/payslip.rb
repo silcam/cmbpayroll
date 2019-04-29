@@ -622,17 +622,26 @@ class Payslip < ApplicationRecord
       earning = Earning.new
       earning.description = bonus.name
 
-      if (bonus.percentage?)
+      if bonus.is_percentage_bonus?
         earning.percentage = bonus.quantity
       end
 
       base = nil
-      if (bonus.use_caisse)
-        base = full ? full_caissebase : caissebase
+      if (bonus.base_percentage?)
+        if (bonus.use_caisse)
+          base = employee.wage + seniority_bonus()
+        else
+          base = employee.wage
+        end
+        earning.amount = bonus.effective_bonus(base).floor
       else
-        base = full ? full_bonusbase : bonusbase
+        if (bonus.use_caisse)
+          base = full ? full_caissebase : caissebase
+        else
+          base = full ? full_bonusbase : bonusbase
+        end
+        earning.amount = bonus.effective_bonus(base).round
       end
-      earning.amount = bonus.effective_bonus(base).round
 
       earning.is_bonus = true
       earning.is_caisse = true if bonus.use_caisse

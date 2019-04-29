@@ -232,4 +232,37 @@ class BonusTest < ActiveSupport::TestCase
     assert_equal("5 236 FCFA", bonus.display_quantity, "cannot have fractional CFA")
   end
 
+  def test_bonus_type_has_base
+    bonus.name = "Test Bonus just Base"
+
+    assert_raise(ArgumentError) do
+      bonus.bonus_type = "invalid"
+    end
+
+    assert_nothing_raised do
+      bonus.quantity = 0.202
+      bonus.bonus_type = "base_percentage"
+    end
+    refute bonus.use_caisse, "should be false by default"
+
+    bonus.valid?
+    assert bonus.valid?, "bonus is valid"
+  end
+
+  def test_base_bonus_can_be_seniority
+    bonus.name = "Test Bonus Base and Seniority"
+
+    assert_nothing_raised do
+      bonus.quantity = 0.202
+      bonus.bonus_type = "base_percentage"
+    end
+
+    refute bonus.use_caisse, "should be false by default"
+    bonus.use_caisse = true
+    assert bonus.use_caisse, "using seniority bonus"
+
+    bonus.valid?
+    assert bonus.valid?, "bonus is valid"
+  end
+
 end

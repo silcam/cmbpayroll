@@ -23,7 +23,7 @@
           </td>
         <% end %>
         <td><%= link_to bonus.name, edit_bonus_path(bonus) %></td>
-        <td><%= bonus.display_quantity %></td>
+        <td><%= bonus.display_quantity %> <% if bonus.base_percentage? %> <span style="color:red;">of base</span><% end %></td>
         <td><%= bonus.comment %></td>
         <td><%= bonus.minimum %></td>
         <td><%= bonus.maximum %></td>

@@ -2992,6 +2992,60 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, jan_18_payslip.loan_balance, "no loan balance in jan 18 after adding future loan")
   end
 
+  test "base bonuses can use caisse base or not" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+    assert employee.valid?
+
+    # create bonuses
+    bonus = Bonus.new
+    bonus.name = "First Bonus"
+    bonus.quantity = 0.12
+    bonus.base_percentage!
+    bonus.use_caisse = false
+    assert bonus.valid?
+    bonus.save
+
+    # assign to employee
+    employee.bonuses << bonus
+    assert_equal(1, employee.bonuses.size)
+
+    # give overtime work hours
+    hours = {'2017-08-01' => {hours: 12},
+             '2017-08-02' => {hours: 12},
+             '2017-08-03' => {hours: 12},
+             '2017-08-04' => {hours: 12}
+    }
+
+    WorkHour.update employee, hours
+
+    ### verify hours
+    exp = { normal: 184.0, overtime: 16.0 }
+    assert_equal exp, WorkHour.total_hours(employee, Period.new(2017, 8))
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    # Find specific earnings entries
+    first = payslip.earnings.where(description: "First Bonus").take
+
+    # just uses wage (OT doesn't matter)
+    bonusbase = employee.wage
+    assert_equal(( bonusbase * bonus.quantity ).floor, first.amount,
+        "correct bonus for bonus")
+
+    # Now include seniority bonus.
+    bonus.use_caisse = true
+    assert bonus.valid?
+    bonus.save
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    first = payslip.earnings.where(description: "First Bonus").take
+    bonusbase = employee.wage + payslip.seniority_bonus
+    assert_equal(( bonusbase * bonus.quantity ).floor, first.amount,
+        "correct bonus for bonus")
+  end
+
   private
 
   def count_advance_deductions(payslip, period)

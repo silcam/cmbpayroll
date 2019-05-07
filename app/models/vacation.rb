@@ -141,16 +141,13 @@ class Vacation < ApplicationRecord
   end
 
   def self.period_supplemental_days(employee, period)
-    days = 0
-    days_diff = period.start - first_supplemental_accrual_period(employee).start
+    mom_days = mom_supplemental_days(employee)
 
-    if (days_diff >= 0)
-      multiple = days_diff.div(SystemVariable.value(:supplemental_days_period) * YEAR)
-      earned = multiple * SystemVariable.value(:supplemental_days)
-      earned += mom_supplemental_days(employee)
-      earned += SystemVariable.value(:supplemental_days)
-      days = earned.fdiv(MONTHLY.to_f)
-    end
+    years_diff = (period.finish.year - Period.from_date(employee.contract_start).finish.year)
+    years = (years_diff).div(SystemVariable.value(:supplemental_days_period))
+    days = (years * SystemVariable.value(:supplemental_days).fdiv(MONTHLY.to_f) + mom_days)
+
+    days = 0 if (days < 0)
 
     days
   end
@@ -319,7 +316,7 @@ class Vacation < ApplicationRecord
     earned_days = 0
 
     unless (employee.last_supplemental_transfer(period))
-      start_period = first_supplemental_accrual_period(employee)
+      start_period = Period.new(period.year - 1, period.month)
     else
       start_period = Period.new(
           employee.last_supplemental_transfer(period).try(:year),

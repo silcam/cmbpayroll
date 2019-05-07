@@ -207,6 +207,22 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(Period.new(2016,4), Vacation.first_supplemental_accrual_period(employee))
   end
 
+  test "period_supplemental_days cannot be less than zero" do
+    employee = return_valid_employee()
+    employee.contract_start = "2018-08-01"
+    employee.first_day = "2018-08-01"
+
+    assert_equal(0, Vacation.period_supplemental_days(employee, Period.new(2013, 1)))
+  end
+
+  test "earned supplemental days soon after contract_start" do
+    employee = return_valid_employee()
+    employee.contract_start = "2012-08-01"
+    employee.first_day = "2012-08-01"
+
+    assert_equal(0, Vacation.earned_supplemental_days(employee, Period.new(2013, 1)))
+  end
+
   test "Number of Supplemental Days Earned is correct" do
     @luke.contract_start = "2012-08-01"
     @luke.first_day = "2012-08-01"
@@ -215,11 +231,16 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2017, 1)))
 
     # Anniversary
-    assert_equal(3.5, Vacation.days_earned(@luke, Period.new(2017, 8)))
+    earned_days = 1.5 + ((2/12.0) * 8)
+    assert_equal(earned_days.round(3), Vacation.days_earned(@luke, Period.new(2017, 8)).round(3))
 
     Vacation.create!(start_date: "2017-12-05", end_date: "2017-12-06", employee: @luke)
 
     # month-by-month accrual is correct
+    assert_equal(0, Vacation.period_supplemental_days(@luke, Period.new(2016,12)))
+    assert_equal(2/12.0, Vacation.period_supplemental_days(@luke, Period.new(2017,1)))
+    assert_equal(2/12.0, Vacation.period_supplemental_days(@luke, Period.new(2017,2)))
+    assert_equal(2/12.0, Vacation.period_supplemental_days(@luke, Period.new(2017,3)))
     assert_equal(2/12.0, Vacation.period_supplemental_days(@luke, Period.new(2017,9)))
     assert_equal(2/12.0, Vacation.period_supplemental_days(@luke, Period.new(2017,10)))
     assert_equal(2/12.0, Vacation.period_supplemental_days(@luke, Period.new(2017,11)))
@@ -228,6 +249,17 @@ class VacationTest < ActiveSupport::TestCase
     earned_days = 1.5 + ((2/12.0) * 4)
 
     assert_equal(earned_days, Vacation.days_earned(@luke, Period.new(2017, 12)))
+  end
+
+  test "Period suppl days" do
+    employee = return_valid_employee()
+    employee.contract_start = "2009-10-01"
+    employee.first_day = "1986-05-06"
+
+    assert_equal(0, Vacation.period_supplemental_days(employee, Period.new(2013,12)))
+    assert_equal(0.167, Vacation.period_supplemental_days(employee, Period.new(2014,1)).round(3))
+    assert_equal(0.167, Vacation.period_supplemental_days(employee, Period.new(2014,2)).round(3))
+    assert_equal(0.167, Vacation.period_supplemental_days(employee, Period.new(2015,1)).round(3))
   end
 
   # THIS ISN'T A REAL TEST (FIXME)
@@ -245,6 +277,8 @@ class VacationTest < ActiveSupport::TestCase
   end
 
   test "Supplemental Days Earned due to Anniversary" do
+    # @luke contract_start: 2017-01-01
+
     # Before hire
     assert_equal 0, Vacation.days_earned(@luke, Period.new(2016, 11))
 
@@ -259,14 +293,18 @@ class VacationTest < ActiveSupport::TestCase
     refute(@luke.last_supplemental_transfer)
 
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2021, 12)))
-    assert_equal(3.5, Vacation.days_earned(@luke, Period.new(2022, 1)))
+
+    earned_days = 1.5 + (2/12.0 * 1)
+    assert_equal(earned_days, Vacation.days_earned(@luke, Period.new(2022, 1)))
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2022, 2)))
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2022, 3)))
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2025, 12)))
-    assert_equal(9.5, Vacation.days_earned(@luke, Period.new(2026, 1)).round(2))
+    earned_days = 1.5 + (2/12.0 * (4 * 12))
+    assert_equal(earned_days.round(2), Vacation.days_earned(@luke, Period.new(2026, 1)).round(2))
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2026, 2)))
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2026, 12)))
-    assert_equal(5.5, Vacation.days_earned(@luke, Period.new(2027, 1)).round(2))
+    earned_days = 1.5 + (2/12.0 * 11) + (4/12.0 * 1)
+    assert_equal(earned_days.round(2), Vacation.days_earned(@luke, Period.new(2027, 1)).round(2))
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2027, 2)))
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2027, 3)))
   end
@@ -285,10 +323,15 @@ class VacationTest < ActiveSupport::TestCase
     refute(@luke.last_supplemental_transfer)
 
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2021, 1)))
-    assert_equal(3.5, Vacation.days_earned(@luke, Period.new(2022, 1)))
+
+    earned_days = 1.5 + (2/12.0) * 1
+    assert_equal(earned_days, Vacation.days_earned(@luke, Period.new(2022, 1)))
+
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2022, 2)))
     Vacation.create!(start_date: "2022-03-03", end_date: "2022-03-04", employee: @luke)
-    assert_equal(1.83, Vacation.days_earned(@luke, Period.new(2022, 3)).round(2))
+
+    earned_days = 1.5 + ((2/12.0) * 2)
+    assert_equal(earned_days.round(3), Vacation.days_earned(@luke, Period.new(2022, 3)).round(3))
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2022, 4)))
   end
 
@@ -318,7 +361,9 @@ class VacationTest < ActiveSupport::TestCase
     refute(employee.last_supplemental_transfer, "should not have transfer date")
 
     # transfer days
-    assert_equal(3.5, Vacation.days_earned(employee, Period.new(2018, 8)),
+
+    earned_days = 1.5 + (2/12.0 * 8)
+    assert_equal(earned_days, Vacation.days_earned(employee, Period.new(2018, 8)),
         "earned supplemental days sets the transfer date")
 
     # assert existence (won't pull from current period)
@@ -847,9 +892,11 @@ class VacationTest < ActiveSupport::TestCase
       assert(child.valid?)
       assert(employee.valid?)
 
+      assert_equal(1, employee.children_under_6)
+
       msd = Vacation.mom_supplemental_days(employee)
       assert_equal(2, msd, "should get 2 days")
-      assert_equal(0.5, Vacation.period_supplemental_days(employee, Period.new(2018,1)))
+      assert_equal(2.33, Vacation.period_supplemental_days(employee, Period.new(2018,1)).round(2))
     end
   end
 

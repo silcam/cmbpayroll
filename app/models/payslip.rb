@@ -699,7 +699,6 @@ class Payslip < ApplicationRecord
   end
 
   def self.process_vacation(payslip, employee, period)
-    # FIXME: This is no longer true.
     # Current vacation balances should be kept as a running total in order
     # to determine the correct "rate" to be used as vacation pay.
     # Additionally, the 'accum' values as kept as accumulated vacation to
@@ -810,7 +809,18 @@ class Payslip < ApplicationRecord
     payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
     prev_sup_days = previous_payslip.nil? ? 0 : previous_payslip.accum_suppl_days || 0
     payslip.accum_suppl_days = prev_sup_days + payslip.period_suppl_days
-    payslip.accum_suppl_pay = (payslip.accum_reg_pay.fdiv(payslip.accum_reg_days) * payslip.accum_suppl_days).ceil
+
+    # Note that the supplemental pay calculation is based on all the balances from the
+    # previous payslip.
+    prev_reg_pay = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_pay || 0
+    prev_reg_days = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_days || 0
+    prev_vac_pay = previous_payslip.nil? ? 0 : previous_payslip.vacation_pay_earned || 0
+    prev_period_suppl_days = previous_payslip.nil? ? 0 : previous_payslip.period_suppl_days || 0
+
+    payslip.accum_suppl_pay = (
+        (prev_reg_pay + prev_vac_pay).div((prev_reg_days + STANDARD_DAYS_EARNED)) *
+            (prev_sup_days + prev_period_suppl_days)
+    ).ceil
   end
 
   def self.current_pay_balance(previous_payslip, payslip)

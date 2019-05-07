@@ -1,9 +1,11 @@
 <ul class="list-inline">
   <li>
     <b><%= t :Vacation_balance %>:</b>
-    <% balance = Vacation.balance employee, Period.current %>
+    <% payslip = Payslip.most_recent(employee)%>
+    <% balance = payslip.nil? ? 0 : payslip.vacation_balance %>
+    <% period = payslip.nil? ? nil : payslip.period.to_s %>
     <span <%= 'style="color: red;"'.html_safe if balance < 0 %>>
-        <%= balance %>
+        <%= balance.round(2) %> <% if period %> (as of <%= period %>) <% end %>
     </span>
   </li>
 </ul>

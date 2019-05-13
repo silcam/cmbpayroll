@@ -11,12 +11,12 @@ class VacationsControllerTest < ActionDispatch::IntegrationTest
     luke_emp = employees(:Luke)
     luke_vacay = luke_emp.vacations.create!(start_date: '2017-10-15', end_date: '2017-10-18')
 
-    get print_voucher_vacation_url(luke_vacay)
+    get print_voucher_vacation_url(luke_vacay, :format => :pdf)
     assert_response :success
 
     luke_new_vacay = luke_emp.vacations.create!(start_date: '2022-10-15', end_date: '2022-10-18')
 
-    get print_voucher_vacation_url(luke_new_vacay)
+    get print_voucher_vacation_url(luke_new_vacay, :format => :pdf)
     assert_response :success
   end
 

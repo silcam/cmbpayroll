@@ -15,7 +15,7 @@
         <td><%= std_datestring vacation.end_date %></td>
         <td><%= vacation.days %> <%= t(:Days) %></td>
         <td><%= vacation.paid? ? t(:Yes) : t(:No) %></td>
-        <td><%= link_to t(:Print_voucher),  print_voucher_vacation_path(vacation) %></td>
+        <td><%= link_to t(:Print_voucher),  print_voucher_vacation_path(vacation, :format => :pdf) %></td>
         <% referred_by = request.path %>
         <% referred_by += "?period=#{@period.to_s}" if @period %>
         <td>

@@ -56,7 +56,9 @@ class VacationsController < ApplicationController
     @vacation.prep_print
     @vacation.save
 
-    voucher_generator(@vacation)
+    respond_to do |format|
+      format.pdf { voucher_generator(@vacation) }
+    end
   end
 
   def edit

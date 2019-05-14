@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   resources :vacations, except: [:show] do
     member do
       get 'print_voucher'
+      get 'mark_paid'
     end
   end
   resources :misc_payments

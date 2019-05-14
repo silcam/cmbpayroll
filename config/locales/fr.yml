@@ -277,6 +277,7 @@ fr:
   Remaining_days: Jours qui restent
   Days_per: Montant de chaque vacances
   Paid?: Payée?
+  Mark_paid: Marquer comme Payée?
   Voucher: Coupon
   Print_voucher: Imprimer le coupon
   Vacation_balance: Solde de vacances

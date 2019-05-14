@@ -49,6 +49,17 @@ class VacationsController < ApplicationController
     end
   end
 
+  def mark_paid
+    authorize! :update, Vacation
+
+    @vacation = Vacation.find params[:id]
+    @vacation.mark_paid
+
+    if (@vacation.save)
+      redirect_user
+    end
+  end
+
   def print_voucher
     authorize! :create, Vacation
 

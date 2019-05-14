@@ -848,13 +848,27 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal((exp * 11).round, vac.pay_per_period(oct), "correct vacation pay for October")
   end
 
+
+  test "Mark paid makes paid" do
+    refute(@lukes_vacation.paid?, "not paid yet")
+    assert_equal(0, @lukes_vacation.changes.size, "nothing to be saved to the DB")
+
+    @lukes_vacation.prep_print
+    assert(@lukes_vacation.vacation_pay, "has vacation pay")
+    refute(@lukes_vacation.paid?, "paid now")
+
+    @lukes_vacation.mark_paid
+    assert(@lukes_vacation.vacation_pay, "has vacation pay")
+    assert(@lukes_vacation.paid?, "paid now")
+  end
+
   test "printing makes paid and saves vacation pay total" do
     refute(@lukes_vacation.paid?, "not paid yet")
     assert_equal(0, @lukes_vacation.changes.size, "nothing to be saved to the DB")
 
     @lukes_vacation.prep_print
     assert(@lukes_vacation.vacation_pay, "has vacation pay")
-    assert(@lukes_vacation.paid?, "paid now")
+    refute(@lukes_vacation.paid?, "paid now")
   end
 
   test "Supplemental Days" do

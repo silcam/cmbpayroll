@@ -249,6 +249,10 @@ class Vacation < ApplicationRecord
 
   def prep_print
     vacation_pay
+  end
+
+  def mark_paid
+    prep_print
     self[:paid] = true
   end
 

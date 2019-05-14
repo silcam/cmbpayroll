@@ -6,7 +6,7 @@
     <th><%= t :Days_per %></th>
     <th><%= t :Paid? %></th>
     <th><%= t :Voucher %></th>
-    <th colspan="2"></th>
+    <th colspan="3"></th>
   </tr>
   <% vacations.each do |vacation| %>
       <tr>
@@ -16,6 +16,11 @@
         <td><%= vacation.days %> <%= t(:Days) %></td>
         <td><%= vacation.paid? ? t(:Yes) : t(:No) %></td>
         <td><%= link_to t(:Print_voucher),  print_voucher_vacation_path(vacation, :format => :pdf) %></td>
+        <td>
+          <% if vacation.editable? %>
+            <%= link_to t(:Mark_paid),  mark_paid_vacation_path(vacation) %></td>
+          <% end %>
+        </td>
         <% referred_by = request.path %>
         <% referred_by += "?period=#{@period.to_s}" if @period %>
         <td>

@@ -539,7 +539,7 @@ class VacationTest < ActiveSupport::TestCase
     # Do the test.
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
 
-    exp_rate = payslip.compute_fullcnpswage * 12 / 16.0 / 18.0
+    exp_rate = (payslip.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
     assert_equal(exp_rate, payslip.vacation_daily_rate, "can compute vacation rate")
 
     exp_pay = ( exp_rate * @lukes_vacation.days ).round
@@ -688,16 +688,17 @@ class VacationTest < ActiveSupport::TestCase
     assert(payslip.save, "should save properly")
 
     # Do the test.
-    assert_equal(5, vac.days, "luke 21 days off to go to Kribi")
+    assert_equal(5, vac.days, "luke 5 days off to go to Kribi")
 
     # force the items to get in the DB
     vac.prep_print
 
-    exp_rate = payslip.compute_fullcnpswage * 12 / 16.0 / 18.0
+    exp_rate = (payslip.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
     assert_equal(exp_rate, payslip.vacation_daily_rate, "can compute vacation rate")
 
-    assert_equal(21441, vac.vacation_pay, "correct vac_pay")
-    assert_equal(3063, vac.total_tax, "correct tax")
+    tot_pay = (exp_rate * vac.days).round
+
+    assert_equal(tot_pay, vac.vacation_pay, "correct vac_pay")
 
     tax_obj = vac.get_tax
     # verify all tax components are stored.
@@ -709,6 +710,7 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(vac.communal, tax_obj.communal)
     assert_equal(vac.cnps, tax_obj.cnps)
     assert_equal(vac.total_tax, tax_obj.total_tax)
+    assert_equal(3171, vac.total_tax, "correct tax")
   end
 
   test "Days in Period" do
@@ -822,8 +824,9 @@ class VacationTest < ActiveSupport::TestCase
     sept_ps.vacation_balance = 25
     sept_ps.vacation_pay_balance = 152423
 
+    assert_equal(5000, @luke.transportation)
     # This is the vacation calculation
-    exp = sept_ps.compute_fullcnpswage * 12 / 16.0 / 18.0
+    exp = (sept_ps.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
 
     assert_equal(exp, sept_ps.vacation_daily_rate)
     assert(sept_ps.valid?)

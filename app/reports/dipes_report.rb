@@ -13,15 +13,17 @@ SELECT
   ROUND(ps.taxable + COALESCE(v.vacation_pay,0),0) as SalTax,
   ROUND(ps.cnpswage + COALESCE(v.vacation_pay,0),0) as Total,
   ROUND(ps.CNPSWage + COALESCE(v.vacation_pay,0),0) as Plaf,
-  ROUND(ps.proportional + COALESCE(v.proportional,0),0) as Reten,
+  ROUND(ps.proportional + COALESCE(v.proportional,0),0) as RetenIrpp,
+  ROUND(ps.communal + COALESCE(v.communal,0),0) as RetenCommunale,
   dc.line_number as LineNo,
   e.id as EmployeeId,
-  DATE_PART('days', DATE_TRUNC('month',concat(ps.period_year,'-',ps.period_month,'-01')::date) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL)
+  DATE_PART('days', DATE_TRUNC('month',concat(ps.period_year,'-',ps.period_month,'-01')::date) + '1 MONTH'::INTERVAL - '1 DAY'::INTERVAL),
+  ps.period_month
 FROM
   payslips ps
     INNER JOIN employees e ON ps.employee_id = e.id
     INNER JOIN people p ON p.id = e.person_id
-    INNER JOIN dipe_codes dc ON e.dipe = dc.line
+    LEFT OUTER JOIN dipe_codes dc ON e.dipe = dc.line
     LEFT OUTER JOIN vacations v ON ps.employee_id = v.employee_id AND ps.period_year = v.period_year AND ps.period_month = v.period_month
 WHERE
   ps.period_year = :year AND

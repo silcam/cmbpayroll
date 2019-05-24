@@ -5,12 +5,10 @@ class DipesRecord < Fixy::Record
   CODE_ENREGISTREMENT = "C04"
   CNPS_REGIME = 1
   NUMERO_CONTRIBUABLE = ""
-  NUMERO_DE_FEUILLET = 10
   NUMERO_EMPLOYEUR = "0105087501"
   CLE_NUMERO_EMPLOYEUR = "B"
   REGIME_CNPS = "1"
   SALAIRE_EXCEPTIONNEL = 0
-  RETENUE_TAXE_COMMUNALE = 0
   FILLER = ""
 
   attr_reader :row
@@ -42,7 +40,7 @@ class DipesRecord < Fixy::Record
   field :retenue_irpp,                8,'105-112',:numeric
   field :retenue_taxe_communale,      6,'113-118',:numeric
   field :numero_de_ligne,             2,'119-120',:numeric
-  field :matricule_interne,          14,'121-134',:alphanumeric
+  field :matricule_interne,          14,'121-134',:numeric
   field :filler,                      1,'135-135',:alphanumeric
 
   def initialize(count, row)
@@ -56,11 +54,11 @@ class DipesRecord < Fixy::Record
   end
 
   def numero_dipe
-    @row[0]
+    @row[0] || "00000"
   end
 
   def cle_numero_dipe
-    @row[1]
+    @row[1] || 0
   end
 
   def numero_contribuable
@@ -68,7 +66,7 @@ class DipesRecord < Fixy::Record
   end
 
   def numero_de_feuillet
-    NUMERO_DE_FEUILLET
+    @row[14]
   end
 
   def numero_employeur
@@ -88,15 +86,29 @@ class DipesRecord < Fixy::Record
   end
 
   def numero_assure
-    @row[3]
+    num = @row[3]
+    return 0 if num.nil?
+    Rails.logger.error("X#3: #{num.class}")
+    if (num.length <= 0)
+      "00000"
+    else
+      num
+    end
   end
 
   def cle_numero_assure
-    @row[4]
+    num = @row[4]
+    return 0 if num.nil?
+    Rails.logger.error("X#4: #{num.class}")
+    if (num.length <= 0)
+      "0"
+    else
+      num
+    end
   end
 
   def nombre_de_jours
-    @row[12].to_i
+    @row[13].to_i
   end
 
   def salaire_brut
@@ -124,7 +136,7 @@ class DipesRecord < Fixy::Record
   end
 
   def retenue_taxe_communale
-    RETENUE_TAXE_COMMUNALE
+    @row[10]
   end
 
   def numero_de_ligne
@@ -132,7 +144,7 @@ class DipesRecord < Fixy::Record
   end
 
   def matricule_interne
-    @row[10]
+    @row[12]
   end
 
   def filler

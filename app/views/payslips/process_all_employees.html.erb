@@ -21,8 +21,7 @@
     Processed Payslip ID
       <% if slip.id %>
         <%= slip.id %>
-        <%= link_to "View PDF", payslip_path(slip, :format => :pdf) %>
-        [<%= link_to "HTML", payslip_path(slip.id, :format => :html) %>]
+        <%= link_to "View Payslip", payslip_path(slip, :format => :pdf) %>
       <% else %>
         <span class="bg-danger">ERROR CREATING PAYSLIP</span>
       <% end %>

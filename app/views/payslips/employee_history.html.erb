@@ -20,8 +20,8 @@
 
     <% @employee_payslips.each do |slip| %>
       <tr>
-        <td><%= slip.period.start %> - <%= slip.period.finish %></td>
-        <td><%= link_to("View PDF", payslip_path(slip, :format =>:pdf)) %> (<%= link_to("View HTML", payslip_path(slip, :format=>:html), class: 'small text-muted') %>)</td>
+        <td><%= slip.period.l_name %></td>
+        <td><%= link_to("View Payslip", payslip_path(slip, :format =>:pdf)) %></td>
       </tr>
     <% end %>
 

@@ -70,7 +70,7 @@ class PayslipPdf < CmbPayrollPdf
             { :content => "", :align => :right }]
       else
         data << ["Nombre de journées",
-            { :content => "moins #{payslip.days_not_worked} à franc #{payslip.daily_rate&.round(2)}", :align => :right },
+            { :content => "#{payslip.days_worked} jours à franc #{payslip.daily_rate&.round(2)}", :align => :right },
             { :content => "soit CFA", :align => :center },
             { :content => "#{payslip.salary_earnings&.to_i}", :align => :right }]
       end

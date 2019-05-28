@@ -146,7 +146,7 @@ class Payslip < ApplicationRecord
   end
 
   def first_page_deductions_sum
-    total_tax.to_i + salary_advance.to_i
+    total_tax.to_i
   end
 
 

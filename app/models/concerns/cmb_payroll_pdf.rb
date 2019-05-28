@@ -80,8 +80,6 @@ class CmbPayrollPdf < Prawn::Document
               { :content => "#{@tax.ccf}", :align => :right }, "", "" ],
           ["Audio-visuelle:", "",
               { :content => "#{@tax.crtv}", :align => :right }, "", "" ],
-          ["Acomptes sur salaire:", "",
-              { :content => "#{@salary_advances}", :align => :right }, "", "" ],
           ["<b>MONTANT DES DEDUCTIONS</b>", "",
               { :content => "#{@total_deductions}", :align => :right },
               { :content => "-----", :align => :center },

@@ -20,6 +20,21 @@ class MiscPaymentTest < ActiveSupport::TestCase
     refute mp.valid?
   end
 
+  test "Before tax requires value to ba valid" do
+    mp = MiscPayment.new
+    mp.date = "2018-10-11"
+    mp.amount = 5000
+    mp.employee = @luke
+
+    assert_nil(mp.before_tax)
+    refute mp.valid?
+    assert(mp.errors.has_key?(:before_tax), "should have before tax error")
+    assert_equal(1, mp.errors.size(), "should have before 1 error")
+
+    mp.before_tax = true
+    assert mp.valid?
+  end
+
   test "Invalid Dates" do
     on_sep_5 do
       # Can't add charges during posted pay period
@@ -78,6 +93,6 @@ class MiscPaymentTest < ActiveSupport::TestCase
   end
 
   def some_valid_params
-    {amount: 10, employee: @luke, date: '2017-08-15'}
+    {amount: 10, before_tax: true, employee: @luke, date: '2017-08-15'}
   end
 end

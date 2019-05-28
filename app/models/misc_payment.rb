@@ -3,6 +3,7 @@ class MiscPayment < ApplicationRecord
   belongs_to :employee
 
   validates :amount, numericality: {only_integer: true}
+  validates_inclusion_of :before_tax, :in => [true, false]
   validate :date_in_bounds
 
   default_scope{ order(:date) }

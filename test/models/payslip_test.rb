@@ -2150,6 +2150,7 @@ class PayslipTest < ActiveSupport::TestCase
     pmnt = MiscPayment.new
     pmnt.amount = bonus
     pmnt.note = "Testing"
+    pmnt.before_tax = false
     pmnt.date = period.start
     employee.misc_payments << pmnt
     assert(pmnt.valid?, "payment should be valid and not with these errors #{pmnt.errors.messages.inspect}")

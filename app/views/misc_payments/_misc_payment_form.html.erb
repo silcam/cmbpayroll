@@ -1,6 +1,4 @@
-
 <%= render 'shared/error_messages', errors: @misc_payment.errors %>
-
 
 <div class="form-group">
   <%= form.label :amount, t(:Amount) %>
@@ -15,7 +13,16 @@
 
 <div class="form-group">
   <%= form.label :before_tax, t(:Before_tax), style: 'display: block;' %>
-  <%= form.check_box :before_tax %>
+
+  <div>
+    <%= form.radio_button(:before_tax, "1") %>
+    <%= form.label(:before_tax_1, "Yes") %>
+  </div>
+
+  <div>
+    <%= form.radio_button(:before_tax, "0")  %>
+    <%= form.label(:before_tax_0, "No") %>
+  </div>
 </div>
 
 <div class="form-group">

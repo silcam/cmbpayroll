@@ -862,11 +862,7 @@ class PayslipTest < ActiveSupport::TestCase
 
     # The full-time employee is paid their wage, times
     # the number of days worked times their daily rate
-    assert_equal(
-        (employee.wage - ( (workdays - days_worked) * employee.daily_rate)).round,
-        #(payslip.days * employee.daily_rate).round,
-        payslip.base_pay
-    )
+    assert_equal( (days_worked * employee.daily_rate).round, payslip.base_pay)
 
     # Work the whole month
     #hours = {
@@ -974,7 +970,7 @@ class PayslipTest < ActiveSupport::TestCase
     # compute bonusbase
     assert_equal(79475, employee.wage, "wage is expected")
     assert_equal(3672, employee.daily_rate.round, "daily rate is computed")
-    assert_equal(17051, payslip.compute_bonusbase, "proper bonus base for 6 days")
+    assert_equal(22032, payslip.compute_bonusbase, "proper bonus base for 6 days")
   end
 
   test "BonusBase Hourly Month" do
@@ -2300,8 +2296,7 @@ class PayslipTest < ActiveSupport::TestCase
     daily_rate = employee.daily_rate
 
     assert_equal(daily_rate, employee.daily_rate)
-    assert_equal((employee.wage - (daily_rate * days_not_worked)).round,
-        payslip.base_pay)
+    assert_equal((daily_rate * days_worked).round, payslip.base_pay)
   end
 
   test "1 day in 23 day month is not less than 0" do
@@ -2351,7 +2346,38 @@ class PayslipTest < ActiveSupport::TestCase
 
     assert((employee.wage - (days_not_worked * daily_rate)).round < 0,
         "this employee would've made less than 0")
-    assert_equal(0, payslip.base_pay, "but they didn't")
+    assert_equal(3392, payslip.base_pay, "but they didn't")
+  end
+
+  test "22 days in 23 day month is not greater than wage" do
+    employee = return_valid_employee()
+    period = Period.new(2018,5) # May 2018 has 23 working days.
+    assert_equal(0, WorkHour.days_worked(employee, period))
+
+    generate_work_hours employee, period
+    assert_equal(23, WorkHour.days_worked(employee, period))
+
+    hours = {
+      "2018-05-02" => {hours: 0.0},
+    }
+
+    # Still working the 28th
+    WorkHour.update(employee, hours)
+
+    days_worked = WorkHour.days_worked(employee, period)
+    assert_equal(22, days_worked, "22 days")
+
+    payslip = Payslip.process(employee, period)
+    assert_equal(days_worked, payslip.days)
+    daily_rate = employee.daily_rate
+
+    days_not_worked = employee.workdays_per_month(period) - days_worked
+    assert_equal(1, days_not_worked, "missed 22 days, slacker")
+
+    wage = employee.wage
+    assert((days_worked * daily_rate).round > wage,
+        "this employee would've made more than wage")
+    assert_equal(wage, payslip.base_pay, "but they didn't")
   end
 
   test "multiple vacations compute correctly" do
@@ -2408,7 +2434,7 @@ class PayslipTest < ActiveSupport::TestCase
     expected = vac1pay + vac2pay
 
     # Test pay
-    assert_equal(3851, payslip.vacation_pay_earned, "pay balance is correct")
+    assert_equal(4129, payslip.vacation_pay_earned, "pay balance is correct")
     assert_equal(expected, payslip.vacation_pay_used, "pay balance is correct")
     assert_equal(pre_pay_balance + payslip.vacation_pay_earned - payslip.vacation_pay_used,
         payslip.vacation_pay_balance, "pay balance is correct")
@@ -2452,7 +2478,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(400587, prev_payslip.accum_reg_pay, "should be normal value")
     assert_equal((2/3.0).round(2), prev_payslip.accum_suppl_days.round(2),
         "should be normal value")
-    assert_equal(10242, prev_payslip.accum_suppl_pay, "should be normal value")
+    assert_equal(10238, prev_payslip.accum_suppl_pay, "should be normal value")
     assert_equal(1/3.0, Vacation.period_supplemental_days(employee, prev_period),
         "should be normal value")
 
@@ -2600,7 +2626,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0.0, payslip.accum_reg_pay)
 
     assert_equal(90221, payslip.taxable)
-    assert_equal(13202, payslip.vacation_pay_earned)
+    assert_equal(13193, payslip.vacation_pay_earned)
     assert_equal(3.67, payslip.vacation_earned.round(2))
     assert_equal(0.0, payslip.accum_reg_days)
 
@@ -2649,7 +2675,7 @@ class PayslipTest < ActiveSupport::TestCase
     # have a vacation that is over the reg days but under reg + suppl
     payslip = Payslip.process(employee, period)
 
-    assert_equal(249924, previous_pay_balance + payslip.calc_vacation_pay_earned,
+    assert_equal(249990, previous_pay_balance + payslip.calc_vacation_pay_earned,
         "cur_balance correct")
 
     vpu = ( payslip.vacation_daily_rate * vacation.days ).round
@@ -2675,7 +2701,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(128799, prev_payslip.accum_reg_pay, "should be normal value")
     assert_equal((1/2.0).round(2), prev_payslip.accum_suppl_days.round(2),
         "should be normal value")
-    assert_equal(5536, prev_payslip.accum_suppl_pay, "should be normal value")
+    assert_equal(5530, prev_payslip.accum_suppl_pay.to_i, "should be normal value")
     assert_equal(4/12.0, Vacation.period_supplemental_days(employee, prev_period),
         "should be normal value")
 

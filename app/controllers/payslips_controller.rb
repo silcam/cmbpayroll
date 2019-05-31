@@ -36,6 +36,36 @@ class PayslipsController < ApplicationController
     end
   end
 
+  def view_print_nonrfis
+    authorize! :read, Payslip
+    view_print_subset(Employee.nonrfis())
+  end
+
+  def view_print_rfis
+    authorize! :read, Payslip
+    view_print_subset(Employee.rfis())
+  end
+
+  def view_print_bro
+    authorize! :read, Payslip
+    view_print_subset(Employee.bro())
+  end
+
+  def view_print_gnro
+    authorize! :read, Payslip
+    view_print_subset(Employee.gnro())
+  end
+
+  def view_print_av
+    authorize! :read, Payslip
+    view_print_subset(Employee.aviation())
+  end
+
+  def view_print_all
+    authorize! :read, Payslip
+    view_print_subset(Employee.currently_paid())
+  end
+
   def process_employee
     authorize! :update, Payslip
 
@@ -130,8 +160,25 @@ class PayslipsController < ApplicationController
 
   private
 
+  def view_print_subset(employees)
+
+    @processed = false
+    @payslips = []
+    slip_ids = []
+    employees.each do |e|
+      slip = e.payslip_for(LastPostedPeriod.current)
+      slip_ids.push(slip.id) if (slip)
+      @payslips.push(slip) if (slip)
+    end
+
+    flash[:processed_payslips] = slip_ids
+
+    render 'process_all_employees'
+  end
+
   def process_subset(employees)
     @payslips = Payslip.process_all(employees, LastPostedPeriod.current)
+    @processed = true
 
     slips = []
     @payslips.each do |p|

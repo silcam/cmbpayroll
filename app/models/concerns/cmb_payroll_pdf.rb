@@ -46,7 +46,7 @@ class CmbPayrollPdf < Prawn::Document
       #move_down 10
 
       table([
-          ["Nom du travailleur", "#{@employee.full_name}", "Matricule No.", "#{@employee.id}" ],
+          ["Nom du travailleur", "#{@employee.full_name_rev}", "Matricule No.", "#{@employee.id}" ],
           ["Catégoire professionnelle",
               { :content => "#{@employee.title}", :colspan => 2 },
            "#{display_category_roman(@category)}-#{display_echelon(@echelon)}" ],
@@ -60,7 +60,7 @@ class CmbPayrollPdf < Prawn::Document
   end
 
   def date_and_name
-      text "#{@employee.full_name} -- #{Date.today}", :valign => :bottom, :align => :right
+      text "#{@employee.full_name_rev} -- #{Date.today}", :valign => :bottom, :align => :right
   end
 
   def tax_table
@@ -99,7 +99,7 @@ class CmbPayrollPdf < Prawn::Document
 
     move_down 10
 
-    text "Nom: #{@employee.full_name}"
+    text "Nom: #{@employee.full_name_rev}"
 
     move_down 10
   end

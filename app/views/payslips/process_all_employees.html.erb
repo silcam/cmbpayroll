@@ -1,10 +1,16 @@
 
 <%= link_to "<< #{t(:Back)}", payslips_url %>
 
-<h2>Processed Payslips for <%= @period %></h2>
 
+<% if @processed %>
+<h2>Processed Payslips for <%= LastPostedPeriod.current.l_name %></h2>
 
 <h4>Payslips Processed:</h4>
+<% else %>
+<h2>Viewing Payslips for <%= LastPostedPeriod.current.l_name %></h2>
+
+<h4>Payslips:</h4>
+<% end %>
 
 <% if defined? @post_period_success %>
   <% if @post_period_success %>
@@ -18,7 +24,7 @@
 <% @payslips.each do |slip| %>
 
   <li>
-    Processed Payslip ID
+    <% if @processed %>Processed <% end %>Payslip ID
       <% if slip.id %>
         <%= slip.id %>
         <%= link_to "View Payslip", payslip_path(slip, :format => :pdf) %>

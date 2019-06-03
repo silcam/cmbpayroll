@@ -2,4 +2,5 @@ LukesCoke:
   amount: 300
   employee: Luke
   note: Cokes
+  charge_type: 2
   date: 2017-08-15

@@ -20,6 +20,7 @@
   <tr>
     <th><%= t :Date %></th>
     <th><%= t :Amount %></th>
+    <th><%= t :Type %></th>
     <th><%= t :Note %></th>
     <th></th>
   </tr>
@@ -27,6 +28,7 @@
     <tr>
       <td><%= std_datestring charge.date %></td>
       <td><%= number_to_currency(charge.amount, locale: :cm) %></td>
+      <td><%= t(charge.charge_type) %></td>
       <td><%= charge.note %></td>
       <td>
         <% if charge.destroyable? and can?(:destroy, charge)%>

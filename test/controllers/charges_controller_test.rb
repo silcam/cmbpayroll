@@ -42,7 +42,8 @@ class ChargesControllerTest < ActionDispatch::IntegrationTest
     login_supervisor(:Quigon)
 
     obiwan = employees(:Obiwan)
-    obiwan_charge = obiwan.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
+    obiwan_charge = obiwan.charges.create!(amount: 10, date: '2017-08-15',
+        charge_type: "other", note: 'test')
     assert(obiwan.charges.size >= 1, "obiwan has charges")
 
     refute_supervisor_permission(new_employee_charge_url(employees(:Obiwan)), "get") # new (report)
@@ -79,7 +80,8 @@ class ChargesControllerTest < ActionDispatch::IntegrationTest
     login_admin(:MaceWindu)
 
     luke_emp = employees(:Luke)
-    luke_charge = luke_emp.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
+    luke_charge = luke_emp.charges.create!(amount: 10, date: '2017-08-15',
+        charge_type: "other", note: 'test')
     assert(luke_emp.charges.size >= 1, "luke has charges")
 
     assert_admin_permission(new_employee_charge_url(luke_emp), "get") # new

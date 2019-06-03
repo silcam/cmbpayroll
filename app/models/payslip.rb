@@ -332,7 +332,7 @@ class Payslip < ApplicationRecord
       self[:department_cnps] = ( self[:cnpswage] * SystemVariable.value(:dept_cnps_w_ceil) +
           SystemVariable.value(:dept_cnps_max_base) ).floor
     else
-      self[:department_cnps] = ( self[:cnpswage] * SystemVariable.value(:dept_cnps) ).floor
+      self[:department_cnps] = ( self[:cnpswage] * SystemVariable.value(:dept_cnps) ).round
     end
 
     self[:department_severance] = ( employee.department_severance_rate(period) * self[:cnpswage] ).floor
@@ -349,7 +349,7 @@ class Payslip < ApplicationRecord
     # NOTE: this previously used the Format(value, "0") VBA function, which I
     # intepreted as integer truncation.
     self[:department_credit_foncier] = ( self[:taxable] *
-        SystemVariable.value(:dept_credit_foncier) ).floor
+        SystemVariable.value(:dept_credit_foncier) ).round
 
     if (self[:taxable] > SystemVariable.value(:emp_fund_salary_floor))
       self[:employee_fund] = SystemVariable.value(:emp_fund_amount)
@@ -381,7 +381,6 @@ class Payslip < ApplicationRecord
       self[:total_tax] = tax.total_tax + union_dues
     end
 
-    self[:salaire_net] = self[:taxable] - (self[:total_tax] + salary_advance)
   end
 
   # After all calculations, compute net pay from gross pay
@@ -397,6 +396,7 @@ class Payslip < ApplicationRecord
         # TODO Should this be added as a charge as well?
         deduction = Deduction.new
         deduction.note = Payslip::LOCATION_TRANSFER
+        deduction.deduction_type = Charge.charge_types["location_transfer"]
         deduction.amount = Payslip.cfa_round(self[:raw_net_pay])
         deduction.date = period.finish
 
@@ -413,6 +413,8 @@ class Payslip < ApplicationRecord
       # greater_than_or_equal_to zero.
       self[:net_pay] = self[:raw_net_pay]
     end
+
+    self[:salaire_net] = self[:taxable] - (self[:total_tax] + salary_advance)
   end
 
 
@@ -523,6 +525,7 @@ class Payslip < ApplicationRecord
 
         deduction.note = k
         deduction.amount = amount
+        deduction.deduction_type = Charge.charge_types["other"]
         deduction.date = period.start
 
         deductions << deduction
@@ -588,6 +591,7 @@ class Payslip < ApplicationRecord
 
       payslip.compute_work_loans
       payslip.compute_net_pay
+
 
       payslip.last_processed = DateTime.now
       payslip.save
@@ -683,6 +687,7 @@ class Payslip < ApplicationRecord
 
       deduction.note = charge.note
       deduction.amount = charge.amount
+      deduction.deduction_type = Charge.charge_types[charge.charge_type]
       deduction.date = charge.date
 
       payslip.deductions << deduction
@@ -693,6 +698,7 @@ class Payslip < ApplicationRecord
 
       deduction.note = pmnt.note.blank? ? "Misc. Payment" : pmnt.note
       deduction.amount = pmnt.amount * -1
+      deduction.deduction_type = Charge.charge_types["other"]
       deduction.date = pmnt.date
 
       payslip.deductions << deduction
@@ -729,6 +735,7 @@ class Payslip < ApplicationRecord
 
       deduction.note = LoanPayment::LOAN_PAYMENT_NOTE
       deduction.amount = pmnt.amount
+      deduction.deduction_type = Charge.charge_types["other"]
       deduction.date = pmnt.date
 
       payslip.deductions << deduction
@@ -743,7 +750,7 @@ class Payslip < ApplicationRecord
       if correction.cfa_credit
         payslip.earnings << Earning.new(amount: correction.cfa_credit, description: "Correction pour le bulletin de #{correction.payslip.period} : #{correction.note}")
       elsif correction.cfa_debit
-        payslip.deductions << Deduction.new(amount: correction.cfa_debit, date: period.finish, note: "Correction pour le bulletin de #{correction.payslip.period} : #{correction.note}")
+        payslip.deductions << Deduction.new(amount: correction.cfa_debit, date: period.finish, deduction_type: Charge.other, note: "Correction pour le bulletin de #{correction.payslip.period} : #{correction.note}")
       end
 
       # TODO, What to do with this?

@@ -418,6 +418,7 @@ class PayslipTest < ActiveSupport::TestCase
     charge1.note = "CHARGE1"
     charge1.amount = 1000
     charge1.date = Date.today
+    charge1.charge_type = "other"
     employee.charges << charge1
 
     Rails.logger.debug(charge1.errors.inspect)
@@ -427,6 +428,7 @@ class PayslipTest < ActiveSupport::TestCase
     charge2.note = "CHARGE2"
     charge2.amount = 2000
     charge2.date = Date.today
+    charge2.charge_type = "bank_transfer"
     employee.charges << charge2
 
     Rails.logger.debug(charge2.errors.inspect)
@@ -446,6 +448,7 @@ class PayslipTest < ActiveSupport::TestCase
       if (ded.note == "CHARGE1")
          assert_equal(1000, ded.amount)
          assert_equal(Date.today, ded.date)
+         assert_equal(Charge.charge_types[charge1.charge_type], ded.deduction_type)
          assert(ded.valid?, "should be valid")
          count += 1
       end
@@ -453,6 +456,7 @@ class PayslipTest < ActiveSupport::TestCase
       if (ded.note == "CHARGE2")
          assert_equal(2000, ded.amount)
          assert_equal(Date.today, ded.date)
+         assert_equal(Charge.charge_types[charge2.charge_type], ded.deduction_type)
          assert(ded.valid?, "should be valid")
          count += 1
       end
@@ -2175,7 +2179,8 @@ class PayslipTest < ActiveSupport::TestCase
       employee.amical = 0;
       employee.contract_start = "2017-01-01" # no senior bonus
 
-      employee.charges.create!(amount: 300, note: "Coke", date: "2018-01-15")
+      employee.charges.create!(amount: 300, note: "Coke",
+          charge_type: "other", date: "2018-01-15")
       period = Period.new(2018,1)
 
       # work the whole month (work hour)

@@ -5,15 +5,18 @@ class Deduction < ApplicationRecord
   # :note (String)
   # :amount (decimal)
   # :date (DateTime)
+  # :deduction_type (integer)
 
-  validates :note, :amount, :date, presence: {message: I18n.t(:Not_blank)}
+  validates :note, :deduction_type, :amount, :date, presence: {message: I18n.t(:Not_blank)}
   validate :date_is_valid_for_payslip
 
   scope :second_page, -> { where.not(note: [
       Employee::UNION,
   ])}
-  scope :advances, -> { where(note: [
-      Charge::ADVANCE,
+  scope :advances, -> { where(deduction_type: [
+      Charge.charge_types[:advance],
+      Charge.charge_types[:bank_transfer],
+      Charge.charge_types[:location_transfer]
   ])}
   scope :loan_payments, -> { where(note: LoanPayment::LOAN_PAYMENT_NOTE) }
 

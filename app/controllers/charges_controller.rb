@@ -38,7 +38,7 @@ class ChargesController < ApplicationController
 
   def charge_params
     set_note
-    params.require(:charge).permit(:amount, :note, :date)
+    params.require(:charge).permit(:amount, :note, :charge_type, :date)
   end
 
   def set_note

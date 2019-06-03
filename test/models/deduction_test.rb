@@ -18,6 +18,9 @@ class DeductionTest < ActiveSupport::TestCase
     refute(deduction.valid?)
 
     deduction.amount = 1000
+    refute(deduction.valid?)
+
+    deduction.deduction_type = Charge.charge_types["other"]
     assert(deduction.valid?, "valid when attributes are correct")
 
   end
@@ -30,6 +33,7 @@ class DeductionTest < ActiveSupport::TestCase
     deduction = Deduction.new
     deduction.note = "Cokes and Fantas from the Dining Hall"
     deduction.date = Date.today
+    deduction.deduction_type = Charge.charge_types["other"]
     deduction.amount = 1000
 
     payslip.deductions << deduction

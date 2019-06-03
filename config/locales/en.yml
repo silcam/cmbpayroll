@@ -170,6 +170,10 @@ en:
   Amount: Amount
   Note: Note
   Standard_charge_notes: Standard Charge Notes
+  advance: &advance Advance
+  bank_transfer: &bank_transfer Bank Transfer
+  location_transfer: &location_transfer Location Transfer
+  other: &other Other
 
   # MiscPayments
   Misc_payments: Misc. Payments
@@ -484,6 +488,11 @@ en:
         one: 1st
         two: 2nd
         three: 3rd
+      charge/charge_type:
+        advance: *advance
+        bank_transfer: *bank_transfer
+        location_transfer: *location_transfer
+        other: *other
       bonus:
         name: Name
         quantity: Quantity

@@ -1,11 +1,13 @@
 class Charge < ApplicationRecord
-
   ADVANCE="Salary Advance"
 
   belongs_to :employee
 
   validates :amount, numericality: {only_integer: true, message: I18n.t(:Must_be_whole_number)}
+  validates :charge_type, presence: true
   validate :date_in_bounds
+
+  enum charge_type: { advance: 0, bank_transfer: 1, other: 2, location_transfer: 3 }
 
   default_scope { order(:date) }
 

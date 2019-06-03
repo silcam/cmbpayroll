@@ -47,7 +47,20 @@ class ChargeTest < ActiveSupport::TestCase
     refute_includes Charge.all, @lukes_coke
   end
 
+  test "Must have charge type" do
+    charge = Charge.new
+    charge.amount = 10
+    charge.employee = @luke
+    charge.date = "2018-08-19"
+
+    refute(charge.valid?)
+    assert(charge.errors.has_key?("charge_type"))
+
+    charge.charge_type = "bank_transfer"
+    assert(charge.valid?)
+  end
+
   def some_valid_params
-    {amount: 10, employee: @luke, date: '2017-08-15'}
+    {amount: 10, charge_type: 0, employee: @luke, date: '2017-08-15'}
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190528115848) do
+ActiveRecord::Schema.define(version: 20190605123034) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(version: 20190528115848) do
     t.bigint "employee_id"
     t.string "note"
     t.date "date"
+    t.integer "charge_type"
     t.index ["employee_id"], name: "index_charges_on_employee_id"
   end
 
@@ -88,6 +89,7 @@ ActiveRecord::Schema.define(version: 20190528115848) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "payslip_id"
+    t.integer "deduction_type"
     t.index ["payslip_id"], name: "index_deductions_on_payslip_id"
   end
 

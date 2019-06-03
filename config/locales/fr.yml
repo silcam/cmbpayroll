@@ -175,6 +175,10 @@ fr:
   Amount: Montant
   Note: Note
   Standard_charge_notes: Notes standards pour charges
+  advance: &advance Avance
+  bank_transfer: &bank_transfer Virement Bancaire
+  location_transfer: &location_transfer Transfert régional
+  other: &other Autre
 
   # MiscPayments
   Misc_payments: Versements
@@ -489,6 +493,11 @@ fr:
         one: 1ere
         two: 2eme
         three: 3eme
+      charge/charge_type:
+        advance: *advance
+        bank_transfer: *bank_transfer
+        location_transfer: *location_transfer
+        other: *other
       bonus:
         name: Nom
         quantity: Somme

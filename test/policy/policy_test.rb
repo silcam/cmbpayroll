@@ -132,10 +132,12 @@ class PolicyTest < ActiveSupport::TestCase
 
     refute(policy.can?(:create, Charge), "Quigon can't create Charges")
 
-    obiwan_charge = @obiwan.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
+    obiwan_charge = @obiwan.charges.create!(amount: 10,
+        date: '2017-08-15', note: 'test', charge_type: "other")
     assert(@obiwan.charges.size >= 1, "obiwan has charges")
 
-    chewie_charge = @chewie.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
+    chewie_charge = @chewie.charges.create!(amount: 10,
+        date: '2017-08-15', note: 'test', charge_type: "other")
     assert(@chewie.charges.size >= 1, "chewie has charges")
 
     assert(policy.can?(:read, obiwan_charge), "Quigon can read Charges from Report") # if for a report
@@ -263,8 +265,10 @@ class PolicyTest < ActiveSupport::TestCase
 
     refute(policy.can?(:create, Charge), "Luke can't create Charges")
 
-    luke_charge = @luke_emp.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
-    han_charge = @han.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
+    luke_charge = @luke_emp.charges.create!(amount: 10,
+        date: '2017-08-15', note: 'test', charge_type: "other")
+    han_charge = @han.charges.create!(amount: 10, date: '2017-08-15',
+        note: 'test', charge_type: "other")
     assert(@luke_emp.charges.size >= 1, "luke has charges")
 
     assert(policy.can?(:read, luke_charge), "Luke can see own Charges") # Can see own
@@ -377,7 +381,8 @@ class PolicyTest < ActiveSupport::TestCase
     refute(policy.can?(:destroy, Bonus), "Jar Jar can't destroy Bonuses")
 
     refute(policy.can?(:create, Charge), "Jar Jar can't create Charges")
-    luke_charge = @luke_emp.charges.create!(amount: 10, date: '2017-08-15', note: 'test')
+    luke_charge = @luke_emp.charges.create!(amount: 10,
+        date: '2017-08-15', note: 'test', charge_type: "other")
     refute(policy.can?(:read, luke_charge), "Jar Jar can't see Charges")
     refute(policy.can?(:update, Charge), "Jar Jar can't update Charges")
     refute(policy.can?(:destroy, Charge), "Jar Jar can't destroy Charges")

@@ -27,7 +27,7 @@ SELECT
   ps.taxable + COALESCE(v.vacation_pay,0) as salaire_taxable_5,
   ps.cnpswage + COALESCE(v.vacation_pay,0) as total_6,
   CASE WHEN (ps.cnpswage + COALESCE(v.vacation_pay,0)) > #{SystemVariable.value(:cnps_ceiling)} THEN #{SystemVariable.value(:cnps_ceiling)} ELSE (ps.cnpswage + COALESCE(v.vacation_pay,0)) END as plafonne_7,
-  ps.proportional + COALESCE(v.proportional) as retenue_taxe_prop_8,
+  ps.proportional + COALESCE(v.proportional,0) as retenue_taxe_prop_8,
   0 as retenue_surf_prog_9,
   ps.cac + COALESCE(v.cac,0) as centime_add_com_10,
   ps.communal + COALESCE(v.communal,0) as retenue_taxe_com_11,

@@ -12,7 +12,11 @@ SELECT
   ROUND(ps.taxable + COALESCE(v.vacation_pay,0),0) as SalBrut,
   ROUND(ps.taxable + COALESCE(v.vacation_pay,0),0) as SalTax,
   ROUND(ps.cnpswage + COALESCE(v.vacation_pay,0),0) as Total,
-  ROUND(ps.CNPSWage + COALESCE(v.vacation_pay,0),0) as Plaf,
+  CASE
+    WHEN ROUND(ps.CNPSWage + COALESCE(v.vacation_pay,0),0) > #{SystemVariable.value(:cnps_ceiling)}
+    THEN #{SystemVariable.value(:cnps_ceiling)}
+    ELSE ROUND(ps.CNPSWage + COALESCE(v.vacation_pay,0),0)
+  END as Plaf,
   ROUND(ps.proportional + COALESCE(v.proportional,0),0) as RetenIrpp,
   ROUND(ps.communal + COALESCE(v.communal,0),0) as RetenCommunale,
   dc.line_number as LineNo,

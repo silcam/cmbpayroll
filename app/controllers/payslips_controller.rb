@@ -9,7 +9,16 @@ class PayslipsController < ApplicationController
     if (@employee)
       authorize! :read, @employee
 
-      @employee_payslips = @employee.payslips.order(period_year: :desc, period_month: :desc)
+      @employee_payslips = []
+
+      if (Rails.configuration.try(:starting_period))
+        starting_period = Period.fr_str(Rails.configuration.starting_period)
+        @employee_payslips = @employee.payslips.
+            where("period_year >= ? and period_month >= ?", starting_period.year, starting_period.month).
+              order(period_year: :desc, period_month: :desc)
+      else
+        @employee_payslips = @employee.payslips.order(period_year: :desc, period_month: :desc)
+      end
 
       # show history for single employee
       render "employee_history"

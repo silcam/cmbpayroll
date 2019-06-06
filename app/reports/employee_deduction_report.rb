@@ -42,7 +42,7 @@ FROM
     (SELECT payslip_id, note, amount FROM deductions WHERE note = 'Telephone') dte
     ON dte.payslip_id = ps.id
   LEFT OUTER JOIN
-    (SELECT payslip_id, note, amount FROM deductions WHERE note = '#{Charge::ADVANCE}' OR note = '#{Payslip::LOCATION_TRANSFER}') dsa
+    (SELECT payslip_id, note, amount FROM deductions WHERE deduction_type = #{Charge.charge_types["advance"]} OR deduction_type = #{Charge.charge_types["location_transfer"]}) dsa
     ON dsa.payslip_id = ps.id
 WHERE
   e.employment_status IN :employment_status AND

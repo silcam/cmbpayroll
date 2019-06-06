@@ -1,7 +1,7 @@
 class Payslip < ApplicationRecord
 
   VACATION_PAY = "Salaire de congé"
-  LOCATION_TRANSFER = "Salary Transfer to Other Office Location"
+  LOCATION_TRANSFER = "Salary Transfer to"
   STANDARD_DAYS_EARNED = SystemVariable.value(:vacation_days).fdiv(Vacation::MONTHLY)
 
   has_many :earnings, dependent: :destroy
@@ -395,7 +395,7 @@ class Payslip < ApplicationRecord
       if (employee.create_location_transfer?)
         # TODO Should this be added as a charge as well?
         deduction = Deduction.new
-        deduction.note = Payslip::LOCATION_TRANSFER
+        deduction.note = "#{Payslip::LOCATION_TRANSFER} #{employee.location&.upcase}"
         deduction.deduction_type = Charge.charge_types["location_transfer"]
         deduction.amount = Payslip.cfa_round(self[:raw_net_pay])
         deduction.date = period.finish

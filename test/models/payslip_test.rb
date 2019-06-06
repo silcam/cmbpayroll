@@ -2224,7 +2224,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert(payslip.errors.include?(:net_pay), "should have an error for net pay")
   end
 
-  test "Non-Non-RFIS employees get automatic charge" do
+  test "Non-Non-RFIS employees get automatic deduction" do
     # config employee
     employee = return_valid_employee()
     employee.uniondues = false
@@ -2246,20 +2246,32 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.errors.size, "should not have errors regarding 0 pay")
 
     # Deductions?
-    deduction = payslip.deductions.find_by(note: Payslip::LOCATION_TRANSFER)
+    deduction = payslip.deductions.find_by(deduction_type: Charge.charge_types["location_transfer"])
+    assert_equal("Salary Transfer to BRO", deduction.note)
+    assert(deduction, "should have deduction for transfer")
+    assert_equal(72410, deduction.amount, "should have deduction for transfer")
+
+    # Rerun in GNRO
+    employee.location = "gnro"
+    assert_equal("gnro", employee.location, "employee works in GNRO")
+    payslip = Payslip.process(employee, period)
+
+    # Deductions?
+    deduction = payslip.deductions.find_by(deduction_type: Charge.charge_types["location_transfer"])
+    assert_equal("Salary Transfer to GNRO", deduction.note)
     assert(deduction, "should have deduction for transfer")
     assert_equal(72410, deduction.amount, "should have deduction for transfer")
 
     # Rerun in CTC
     employee.location = "nonrfis"
-    assert_equal("nonrfis", employee.location, "employee works in BRO")
+    assert_equal("nonrfis", employee.location, "employee works at CTC")
     payslip = Payslip.process(employee, period)
 
     # Deductions?
     assert_equal(72410, payslip.net_pay, "net pay should be zero")
     assert_equal(0, payslip.errors.size, "should not have errors regarding 0 pay")
-    refute(payslip.deductions.find_by(note: Payslip::LOCATION_TRANSFER),
-        "should not have deduction for transfer")
+    deduction = payslip.deductions.find_by(deduction_type: Charge.charge_types["location_transfer"])
+    refute(deduction)
   end
 
   test "Figure Pay from Departmental Charge" do

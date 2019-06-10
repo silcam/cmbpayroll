@@ -7,6 +7,10 @@ class Tax < ApplicationRecord
   attr_accessor :employee
 
   def self.compute_taxes(employee, taxable, cnpswage)
+
+    rp_tax = roundpay(taxable)
+#    Rails.logger.error("TAX for #{employee.id}: #{rp_tax}")
+
     tax = Tax.find_by(grosspay: roundpay(taxable))
 
     if (tax.nil?)
@@ -17,6 +21,8 @@ class Tax < ApplicationRecord
     tax.taxable = taxable
     tax.cnpswage = cnpswage
     tax.employee = employee
+#
+#    Rails.logger.error("TAX for #{employee.id}: #{tax.inspect}")
 
     tax
   end
@@ -90,11 +96,14 @@ class Tax < ApplicationRecord
     cac + cac2 + communal + cnps + ccf + crtv + proportional
   end
 
-  # Round pay to the last 250 reached
+  # Round pay to the last 250 reached, not the
+  # nearest 250.
   #  i.e.  952 -> 750
   #    or  99123 -> 99000
   def self.roundpay(grosspay)
-    grosspay / 250 * 250
+    # Must use forced integer division in case
+    # the input is a floating point.
+    grosspay.div(250) * 250
   end
 
 end

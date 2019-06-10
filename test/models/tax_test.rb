@@ -156,4 +156,15 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(935000, Tax.roundpay(935000))
   end
 
+  test "roundpay works with int and floats" do
+
+    pay = 12345
+    assert_instance_of(Integer, pay)
+    assert_equal(12250, Tax.roundpay(pay))
+
+    pay = 12345.0
+    assert_instance_of(Float, pay)
+    assert_equal(12250, Tax.roundpay(pay))
+  end
+
 end

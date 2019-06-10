@@ -543,6 +543,7 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(exp_rate, payslip.vacation_daily_rate, "can compute vacation rate")
 
     exp_pay = ( exp_rate * @lukes_vacation.days ).round
+
     assert_equal(exp_pay, @lukes_vacation.vacation_pay,
         "luke gets his vacation daily rate for each of the 21 " +
           "days off he went to Kribi")
@@ -705,12 +706,14 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(vac.ccf, tax_obj.ccf)
     assert_equal(vac.crtv, tax_obj.crtv)
     assert_equal(vac.proportional, tax_obj.proportional)
+    # From the table
+    assert_equal(1020, tax_obj.proportional)
     assert_equal(vac.cac, tax_obj.cac)
     assert_equal(vac.cac2, tax_obj.cac2)
     assert_equal(vac.communal, tax_obj.communal)
     assert_equal(vac.cnps, tax_obj.cnps)
     assert_equal(vac.total_tax, tax_obj.total_tax)
-    assert_equal(3171, vac.total_tax, "correct tax")
+    assert_equal(2401, vac.total_tax, "correct tax")
   end
 
   test "Days in Period" do

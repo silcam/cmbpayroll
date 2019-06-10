@@ -536,7 +536,8 @@ class Payslip < ApplicationRecord
   def vacation_daily_rate
     return 0 if (vacation_balance == 0)
 
-    transport = employee.transportation ? employee.transportation : 0
+    #transport = employee.transportation ? employee.transportation : 0
+    transport = 0
     (( compute_fullcnpswage + transport ) * Vacation::MONTHLY ).
         fdiv(SystemVariable.value(:vacation_pay_factor).to_f).
         fdiv(SystemVariable.value(:vacation_days).to_f)

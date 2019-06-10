@@ -539,7 +539,7 @@ class VacationTest < ActiveSupport::TestCase
     # Do the test.
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
 
-    exp_rate = (payslip.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
+    exp_rate = (payslip.compute_fullcnpswage) * 12 / 16.0 / 18.0
     assert_equal(exp_rate, payslip.vacation_daily_rate, "can compute vacation rate")
 
     exp_pay = ( exp_rate * @lukes_vacation.days ).round
@@ -694,11 +694,11 @@ class VacationTest < ActiveSupport::TestCase
     # force the items to get in the DB
     vac.prep_print
 
-    exp_rate = (payslip.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
+    #exp_rate = (payslip.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
+    exp_rate = (payslip.compute_fullcnpswage) * 12 / 16.0 / 18.0
     assert_equal(exp_rate, payslip.vacation_daily_rate, "can compute vacation rate")
 
     tot_pay = (exp_rate * vac.days).round
-
     assert_equal(tot_pay, vac.vacation_pay, "correct vac_pay")
 
     tax_obj = vac.get_tax
@@ -829,7 +829,8 @@ class VacationTest < ActiveSupport::TestCase
 
     assert_equal(5000, @luke.transportation)
     # This is the vacation calculation
-    exp = (sept_ps.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
+    #exp = (sept_ps.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
+    exp = (sept_ps.compute_fullcnpswage) * 12 / 16.0 / 18.0
 
     assert_equal(exp, sept_ps.vacation_daily_rate)
     assert(sept_ps.valid?)

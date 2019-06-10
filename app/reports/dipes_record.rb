@@ -19,7 +19,7 @@ class DipesRecord < Fixy::Record
   set_line_ending Fixy::Record::LINE_ENDING_CRLF
 
   # Record Length
-  set_record_length 195
+  set_record_length 194
 
   # Fields
   field :code_enregistrement,         3,    '1-3',:alphanumeric
@@ -42,7 +42,7 @@ class DipesRecord < Fixy::Record
   field :filler,                      7,'105-111',:alphanumeric
   field :numero_de_ligne,             9,'112-120',:alphanumeric
   field :matricule_interne,          14,'121-134',:numeric
-  field :emp_name,                   61,'135-195',:rjust_alpha
+  field :emp_name,                   60,'135-194',:rjust_alpha
 
   def initialize(count, row)
     @row = row

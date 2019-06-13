@@ -1,0 +1,48 @@
+report.set_layout tlf: 'reports/vacation', layout_options: { default: true }
+
+@gross_wage_total = 0
+@total_taxes_total = 0
+@net_wage_total = 0
+@cash_pay_total = 0
+
+report.on_page_create do |page|
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name_shortyear, locale: :fr).upcase)
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
+end
+
+# 1st page
+report.list("vacation") do |list|
+
+  @report.results.body.each do |t|
+
+    x_employee_name = t[0].to_s
+    x_employee_id = t[1].to_i
+    x_gross_pay = t[2].to_f
+    x_net_pay = t[3].to_f
+    x_total_tax = t[4].to_f
+    x_cash_pay = t[5].to_f
+
+    list.add_row(
+      employee_name: x_employee_name,
+      emp_id: x_employee_id,
+      gross_wage: number_to_currency(x_gross_pay, unit: '', locale: :cm),
+      total_taxes: number_to_currency(x_total_tax, unit: '', locale: :cm),
+      net_wage: number_to_currency(Payslip.cfa_round(x_net_pay), unit: '', locale: :cm),
+      cash_pay: number_to_currency(Payslip.cfa_round(x_cash_pay), unit: '', locale: :cm)
+    )
+
+    @gross_wage_total += x_gross_pay
+    @total_taxes_total += x_total_tax
+    @net_wage_total += x_net_pay
+    @cash_pay_total += x_cash_pay
+
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:gross_wage_total).value(number_to_currency(@gross_wage_total, unit: '', locale: :cm))
+    footer.item(:total_taxes_total).value(number_to_currency(@total_taxes_total, unit: '', locale: :cm))
+    footer.item(:net_wage_total).value(number_to_currency(@net_wage_total, unit: '', locale: :cm))
+    footer.item(:cash_pay_total).value(number_to_currency(@cash_pay_total, unit: '', locale: :cm))
+  end
+
+end

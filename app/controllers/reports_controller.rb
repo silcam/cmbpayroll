@@ -96,6 +96,11 @@ class ReportsController < ApplicationController
       name: I18n.t(:Transaction_audit_report_by_type, scope: "reports"),
       instance: Proc.new{|p| TransactionReportByType.new()},
       format: :pdf
+    },
+    'vacation' => {
+      name: I18n.t(:Vacation_report, scope: "reports"),
+      instance: Proc.new{|p| VacationReport.new()},
+      format: :pdf
     }
   }
 
@@ -114,6 +119,8 @@ class ReportsController < ApplicationController
 
       if REPORTS[params[:report]][:format] == :pdf
         render @report.report_name, formats: :pdf
+      elsif REPORTS[params[:report]][:format] == :html
+        render @report.report_name, formats: :html
       else
         headers["Content-Disposition"] = %[attachment;filename=#{@report.to_s}-#{@report.report_period}.txt]
         render body: @report.render_txt, content_type: "text/plain"

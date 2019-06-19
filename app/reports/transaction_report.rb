@@ -19,6 +19,18 @@ FROM
       FROM deductions
       WHERE upper(note) NOT IN ('AMICAL','UNION')
     UNION ALL
+      SELECT ps.id, 'D' as type, 'Loan Payment - Cash' as note, lp.amount, 'CFA' as unit, date
+      FROM loan_payments lp, loans l, employees emp, payslips ps
+      WHERE
+        l.employee_id = emp.id AND
+        lp.loan_id = l.id AND
+        emp.id = ps.employee_id AND
+        ps.period_year = :year AND
+        ps.period_month = :month AND
+        lp.date >= :start AND
+        lp.date <= :finish AND
+        lp.cash_payment = 't'
+    UNION ALL
       SELECT
         payslip_id, 'H' as type, 'Overtime Hours' as description,
         SUM(hours) as hours, 'Hours' as unit, MAX(created_at)

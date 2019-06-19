@@ -2,6 +2,8 @@ report.set_layout tlf: 'reports/employee_deduction', layout_options: { default: 
 
 @gross_pay_total = 0
 @salary_advance_total = 0
+@bank_transfer_total = 0
+@loc_transfer_total = 0
 @total_tax_total = 0
 @union_total = 0
 @loan_payment_total = 0
@@ -26,21 +28,25 @@ report.list("employee_deduction") do |list|
     x_employee_id = t[1].to_s
     x_gross_pay = t[2].to_i
     x_salary_advance = t[3].to_i
-    x_total_tax = t[4].to_i
-    x_union = t[5].to_i
-    x_loan_payment = t[6].to_i
-    x_photocopies = t[7].to_i
-    x_telephone = t[8].to_i
-    x_utilities = t[9].to_i
-    x_amical = t[10].to_i
-    x_other = t[11].to_i
-    x_net_pay = t[12].to_i
+    x_bank_transfer = t[4].to_i
+    x_loc_transfer = t[5].to_i
+    x_total_tax = t[6].to_i
+    x_union = t[7].to_i
+    x_loan_payment = t[8].to_i
+    x_photocopies = t[9].to_i
+    x_telephone = t[10].to_i
+    x_utilities = t[11].to_i
+    x_amical = t[12].to_i
+    x_other = t[13].to_i
+    x_net_pay = t[14].to_i
 
     list.add_row(
       employee_name: x_employee_name,
       employee_id: x_employee_id,
       gross_pay: number_to_currency(x_gross_pay, unit: '', locale: :cm),
       salary_advance: number_to_currency(x_salary_advance, unit: '', locale: :cm),
+      bank_transfer: number_to_currency(x_bank_transfer, unit: '', locale: :cm),
+      loc_transfer: number_to_currency(x_loc_transfer, unit: '', locale: :cm),
       total_tax: number_to_currency(x_total_tax, unit: '', locale: :cm),
       union: number_to_currency(x_union, unit: '', locale: :cm),
       loan_payment: number_to_currency(x_loan_payment, unit: '', locale: :cm),
@@ -54,6 +60,8 @@ report.list("employee_deduction") do |list|
 
     @gross_pay_total += x_gross_pay
     @salary_advance_total += x_salary_advance
+    @bank_transfer_total += x_bank_transfer
+    @loc_transfer_total += x_loc_transfer
     @total_tax_total += x_total_tax
     @union_total += x_union
     @loan_payment_total += x_loan_payment
@@ -69,6 +77,8 @@ report.list("employee_deduction") do |list|
   list.on_footer_insert do |footer|
     footer.item(:gross_pay_total).value( number_to_currency(@gross_pay_total, unit: '', locale: :cm))
     footer.item(:salary_advance_total).value( number_to_currency(@salary_advance_total, unit: '', locale: :cm))
+    footer.item(:bank_transfer_total).value( number_to_currency(@bank_transfer_total, unit: '', locale: :cm))
+    footer.item(:loc_transfer_total).value( number_to_currency(@loc_transfer_total, unit: '', locale: :cm))
     footer.item(:total_tax_total).value( number_to_currency(@total_tax_total, unit: '', locale: :cm))
     footer.item(:union_total).value( number_to_currency(@union_total, unit: '', locale: :cm))
     footer.item(:loan_payment_total).value( number_to_currency(@loan_payment_total, unit: '', locale: :cm))

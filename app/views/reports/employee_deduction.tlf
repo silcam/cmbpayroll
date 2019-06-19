@@ -131,10 +131,10 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 230,
-            "y": 81,
-            "width": 34.4,
-            "height": 18,
+            "x": 343.5,
+            "y": 90,
+            "width": 50.6,
+            "height": 11,
             "style": {
               "font-family": [
                 "Helvetica"
@@ -151,8 +151,7 @@
               ]
             },
             "texts": [
-              "Salary",
-              "Advance"
+              "Loc. Transfer"
             ]
           },
           {
@@ -160,7 +159,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 295,
+            "x": 409.5,
             "y": 90,
             "width": 35,
             "height": 11,
@@ -188,7 +187,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 360,
+            "x": 462,
             "y": 90,
             "width": 23.3,
             "height": 11,
@@ -216,10 +215,10 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 412,
-            "y": 82,
-            "width": 34.2,
-            "height": 18,
+            "x": 497.5,
+            "y": 90,
+            "width": 42.1,
+            "height": 12,
             "style": {
               "font-family": [
                 "Helvetica"
@@ -236,8 +235,7 @@
               ]
             },
             "texts": [
-              "Loan",
-              "Payment"
+              "Loan Pmnt"
             ]
           },
           {
@@ -245,7 +243,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 465,
+            "x": 555,
             "y": 90,
             "width": 48.5,
             "height": 11,
@@ -273,7 +271,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 532,
+            "x": 610.5,
             "y": 90,
             "width": 40.5,
             "height": 11,
@@ -301,7 +299,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 597,
+            "x": 657.5,
             "y": 90,
             "width": 29.9,
             "height": 11,
@@ -329,7 +327,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 655,
+            "x": 694,
             "y": 90,
             "width": 32.2,
             "height": 11,
@@ -357,7 +355,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 721,
+            "x": 738,
             "y": 90,
             "width": 22.2,
             "height": 11,
@@ -402,7 +400,7 @@
             "description": "",
             "x": 773,
             "y": 90,
-            "width": 39.3,
+            "width": 40.7,
             "height": 9,
             "style": {
               "font-family": [
@@ -420,7 +418,7 @@
               ]
             },
             "texts": [
-              "Cash  Pay"
+              "Cash Pay"
             ]
           },
           {
@@ -449,6 +447,62 @@
             },
             "texts": [
               "Gross Pay"
+            ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 284,
+            "y": 90,
+            "width": 53.7,
+            "height": 11.5,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "center",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Bank Transfer"
+            ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 226.5,
+            "y": 90,
+            "width": 48.6,
+            "height": 11.5,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "center",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Sal Advance"
             ]
           }
         ]
@@ -497,8 +551,8 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 119,
-            "y": 183.8,
+            "x": 128.3,
+            "y": 183.1,
             "width": 31.5,
             "height": 9,
             "style": {
@@ -593,8 +647,8 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 290,
-            "y": 183.3,
+            "x": 400,
+            "y": 185.3,
             "width": 45,
             "height": 9,
             "style": {
@@ -625,9 +679,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 350,
-            "y": 183.3,
-            "width": 45,
+            "x": 455,
+            "y": 184.8,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -657,9 +711,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 407,
-            "y": 183.3,
-            "width": 45,
+            "x": 499,
+            "y": 184.3,
+            "width": 40,
             "height": 9,
             "style": {
               "font-family": [
@@ -689,9 +743,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 466,
-            "y": 183.3,
-            "width": 45,
+            "x": 571.5,
+            "y": 183.8,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -721,9 +775,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 530,
-            "y": 183.3,
-            "width": 45,
+            "x": 618,
+            "y": 184.3,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -753,9 +807,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 590,
-            "y": 183.3,
-            "width": 45,
+            "x": 658,
+            "y": 184.8,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -785,9 +839,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 650,
-            "y": 183.3,
-            "width": 45,
+            "x": 693.5,
+            "y": 184.3,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -817,9 +871,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 710,
-            "y": 183.3,
-            "width": 45,
+            "x": 731,
+            "y": 183.8,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -851,6 +905,70 @@
             "description": "",
             "x": 770,
             "y": 183.3,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "bank_transfer",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 289.5,
+            "y": 184.8,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "loc_transfer",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 348.5,
+            "y": 184.8,
             "width": 45,
             "height": 9,
             "style": {
@@ -1028,7 +1146,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 290,
+            "x": 399,
             "y": 354.4,
             "width": 45,
             "height": 9,
@@ -1062,9 +1180,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 350,
+            "x": 454,
             "y": 354.4,
-            "width": 45,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -1096,9 +1214,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 407,
+            "x": 499.5,
             "y": 354.4,
-            "width": 45,
+            "width": 40,
             "height": 9,
             "style": {
               "font-family": [
@@ -1130,9 +1248,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 466,
+            "x": 573,
             "y": 354.4,
-            "width": 45,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -1164,9 +1282,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 530,
+            "x": 620.5,
             "y": 354.4,
-            "width": 45,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -1198,9 +1316,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 590,
+            "x": 658,
             "y": 354.4,
-            "width": 45,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -1232,9 +1350,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 650,
+            "x": 698,
             "y": 354.4,
-            "width": 45,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -1266,9 +1384,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 710,
+            "x": 733,
             "y": 354.4,
-            "width": 45,
+            "width": 30,
             "height": 9,
             "style": {
               "font-family": [
@@ -1301,6 +1419,74 @@
             "display": true,
             "description": "",
             "x": 770,
+            "y": 354.4,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "bank_transfer_total",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 289,
+            "y": 354.4,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "loc_transfer_total",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 344.5,
             "y": 354.4,
             "width": 45,
             "height": 9,

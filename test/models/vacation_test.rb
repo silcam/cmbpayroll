@@ -494,6 +494,11 @@ class VacationTest < ActiveSupport::TestCase
     payslip = @luke.payslip_for(period)
     assert(payslip, "payslip exists")
 
+    # Adjust this so this test can run.
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update year: 2017, month: 1
+    lpp.save!
+
     # make payslip valid.
     payslip.net_pay = 342345
     create_earnings(payslip)
@@ -505,6 +510,7 @@ class VacationTest < ActiveSupport::TestCase
     assert(payslip.save, "should save properly")
 
     payslip = Payslip.process(@luke, period)
+    assert(payslip.on_vacation_entire_period?, "on vaca in Kribi")
 
     payslip.vacation_daily_rate
 
@@ -513,8 +519,8 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
     assert_equal(exp, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
 
-    # original balance + normal accrual - vacation days taken
-    assert_equal(42 + 1.5 - 21, payslip.vacation_balance)
+    # original balance + no accrual because vacation - vacation days taken
+    assert_equal(42 + 0.0 - 21, payslip.vacation_balance)
     # original balance - vacation pay
     assert_equal(286978 - exp, payslip.vacation_pay_balance)
   end
@@ -523,6 +529,11 @@ class VacationTest < ActiveSupport::TestCase
     period = Period.from_date(@lukes_vacation.start_date)
     payslip = @luke.payslip_for(period)
     assert(payslip, "payslip exists")
+
+    # Adjust this so this test can run.
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update year: 2017, month: 1
+    lpp.save!
 
     # make payslip valid.
     payslip.net_pay = 342345
@@ -650,23 +661,13 @@ class VacationTest < ActiveSupport::TestCase
     vac = Vacation.new
     vac.employee = @luke
     vac.start_date = "2018-09-01"
-    vac.end_date = "2018-09-07"
+    vac.end_date = "2018-09-21"
     assert(vac.valid?, "newly created vacation should be valid now")
     assert(vac.save, "newly created vacation saves fine")
 
     period = Period.from_date(vac.start_date)
 
     hours = {
-      "2018-09-10" => {hours: 8},
-      "2018-09-11" => {hours: 8},
-      "2018-09-12" => {hours: 8},
-      "2018-09-13" => {hours: 8},
-      "2018-09-14" => {hours: 8},
-      "2018-09-17" => {hours: 8},
-      "2018-09-18" => {hours: 8},
-      "2018-09-19" => {hours: 8},
-      "2018-09-20" => {hours: 8},
-      "2018-09-21" => {hours: 8},
       "2018-09-24" => {hours: 8},
       "2018-09-25" => {hours: 8},
       "2018-09-26" => {hours: 8},
@@ -677,11 +678,11 @@ class VacationTest < ActiveSupport::TestCase
     success, errors = WorkHour.update(@luke, hours)
     assert(success, "should not have produced these errors: #{errors.inspect}")
 
-    payslip = Payslip.process(@luke, period)
-    assert(payslip, "payslip exists")
+    #payslip = Payslip.process(@luke, period)
 
     set_previous_vacation_balances(@luke, period, 286978, 42.0)
     payslip = Payslip.process(@luke, period)
+    assert(payslip, "payslip exists")
 
     # Set up balances.
     payslip.vacation_balance = 42.0
@@ -689,17 +690,19 @@ class VacationTest < ActiveSupport::TestCase
     assert(payslip.save, "should save properly")
 
     # Do the test.
-    assert_equal(5, vac.days, "luke 5 days off to go to Kribi")
+    assert_equal(15, vac.days, "luke 5 days off to go to Kribi")
 
     # force the items to get in the DB
     vac.prep_print
 
     #exp_rate = (payslip.compute_fullcnpswage + @luke.transportation) * 12 / 16.0 / 18.0
     exp_rate = (payslip.compute_fullcnpswage) * 12 / 16.0 / 18.0
+    assert(exp_rate > 0, "should not be zero")
     assert_equal(exp_rate, payslip.vacation_daily_rate, "can compute vacation rate")
 
     tot_pay = (exp_rate * vac.days).round
     assert_equal(tot_pay, vac.vacation_pay, "correct vac_pay")
+    assert_equal(65608.00, vac.vacation_pay.round(2), "correct absolute val")
 
     tax_obj = vac.get_tax
     # verify all tax components are stored.
@@ -707,13 +710,13 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(vac.crtv, tax_obj.crtv)
     assert_equal(vac.proportional, tax_obj.proportional)
     # From the table
-    assert_equal(1020, tax_obj.proportional)
+    assert_equal(358, tax_obj.proportional)
     assert_equal(vac.cac, tax_obj.cac)
     assert_equal(vac.cac2, tax_obj.cac2)
     assert_equal(vac.communal, tax_obj.communal)
     assert_equal(vac.cnps, tax_obj.cnps)
     assert_equal(vac.total_tax, tax_obj.total_tax)
-    assert_equal(2401, vac.total_tax, "correct tax")
+    assert_equal(4721, vac.total_tax, "correct tax")
   end
 
   test "Days in Period" do

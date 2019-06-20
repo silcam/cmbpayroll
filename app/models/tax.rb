@@ -9,7 +9,6 @@ class Tax < ApplicationRecord
   def self.compute_taxes(employee, taxable, cnpswage)
 
     rp_tax = roundpay(taxable)
-#    Rails.logger.error("TAX for #{employee.id}: #{rp_tax}")
 
     tax = Tax.find_by(grosspay: roundpay(taxable))
 
@@ -21,8 +20,6 @@ class Tax < ApplicationRecord
     tax.taxable = taxable
     tax.cnpswage = cnpswage
     tax.employee = employee
-#
-#    Rails.logger.error("TAX for #{employee.id}: #{tax.inspect}")
 
     tax
   end

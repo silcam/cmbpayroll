@@ -89,7 +89,7 @@ class Payslip < ApplicationRecord
           SystemVariable.value(:dept_cnps_w_ceil))
     end
 
-    wage = result * 0.72
+    wage = result * 0.72 # MAGIC!
     wage.floor
   end
 
@@ -171,11 +171,9 @@ class Payslip < ApplicationRecord
     end
 
     days_in_month = employee.workdays_per_month(period)
-    days_worked = WorkHour.days_worked(employee, period)
-    hours_worked = WorkHour.hours_worked(employee, period)
 
-    self[:days] = days_worked
-    self[:hours] = hours_worked
+    self[:days] = days_worked()
+    self[:hours] = hours_worked()
 
     earning = Earning.new
 
@@ -192,7 +190,7 @@ class Payslip < ApplicationRecord
       earning.amount = hourly_earnings
     end
 
-    if (earning.amount && earning.amount > 0)
+    if (full || (!on_vacation_entire_period? && earning.amount && earning.amount > 0))
       earnings << earning unless full
       self[:basepay] = earning.amount unless full
       earning.amount
@@ -206,7 +204,7 @@ class Payslip < ApplicationRecord
   end
 
   def days_worked
-    WorkHour.days_worked(employee, period)
+    on_vacation_entire_period? ? 0 : WorkHour.days_worked(employee, period)
   end
 
   def days_not_worked
@@ -214,7 +212,7 @@ class Payslip < ApplicationRecord
   end
 
   def hours_worked
-    WorkHour.hours_worked(employee, period)
+    on_vacation_entire_period? ? 0 : WorkHour.hours_worked(employee, period)
   end
 
   def daily_earnings
@@ -308,7 +306,7 @@ class Payslip < ApplicationRecord
 
   # See `compute_fullcnpswage`
   def full_caissebase
-    ( ( full_bonusbase ).ceil + seniority_bonus ).ceil
+    ( ( full_bonusbase ).ceil + seniority_bonus(true) ).ceil
   end
 
   def compute_caissebase
@@ -316,7 +314,7 @@ class Payslip < ApplicationRecord
   end
 
   # Attempt to figure out, on the fly what the cnpswage will be
-  # assuming full base page. Also attempt to not cache values
+  # assuming full base pay. Also attempt to not cache values
   # that will be used again in the future
   # Does not include overtime or misc_pay to get "Standard Gross Wage"
   def compute_fullcnpswage
@@ -373,7 +371,7 @@ class Payslip < ApplicationRecord
     self[:cac] = tax.cac
     self[:cac2] = tax.cac2
     self[:communal] = tax.communal
-    self[:union_dues] = employee.union_dues_amount
+    self[:union_dues] = on_vacation_entire_period? ? 0 : employee.union_dues_amount
 
     if (taxable == 0)
       self[:total_tax] = tax.total_tax
@@ -462,7 +460,7 @@ class Payslip < ApplicationRecord
   def store_employee_attributes
     self[:wage] = employee.wage
     self[:basewage] = employee.find_base_wage
-    self[:transportation] = employee.transportation
+    self[:transportation] = on_vacation_entire_period? ? 0 : employee.transportation
 
     self[:category] = Employee.categories[employee.category]
     self[:echelon] = Employee.echelons[employee.echelon]
@@ -497,19 +495,21 @@ class Payslip < ApplicationRecord
     deductions.delete_all
   end
 
-  def seniority_bonus
+  def seniority_bonus(full=false)
     self[:years_of_service] = employee.years_of_service(period)
     self[:seniority_benefit] = SystemVariable.value(:seniority_benefit)
 
-    if (employee_eligible_for_seniority_bonus? && !on_vacation_entire_period?)
+    if (full || (employee_eligible_for_seniority_bonus? && !on_vacation_entire_period?))
       bonus = ( employee.find_base_wage() *
           ( self[:seniority_benefit] * self[:years_of_service] )).round
     else
       bonus = 0
-      self[:seniority_benefit] = 0
+      #self[:seniority_benefit] = 0
     end
 
-    self[:seniority_bonus_amount] = bonus
+    self[:seniority_bonus_amount] = bonus if !full
+
+    bonus
   end
 
   def process_employee_deductions()
@@ -534,11 +534,9 @@ class Payslip < ApplicationRecord
   end
 
   def vacation_daily_rate
-    return 0 if (vacation_balance == 0)
+    #return 0 if (vacation_balance == 0)
 
-    #transport = employee.transportation ? employee.transportation : 0
-    transport = 0
-    (( compute_fullcnpswage + transport ) * Vacation::MONTHLY ).
+    (( compute_fullcnpswage ) * Vacation::MONTHLY ).
         fdiv(SystemVariable.value(:vacation_pay_factor).to_f).
         fdiv(SystemVariable.value(:vacation_days).to_f)
   end
@@ -548,11 +546,12 @@ class Payslip < ApplicationRecord
     taxable.fdiv(SystemVariable.value(:vacation_pay_factor)).ceil
   end
 
-  private
-
   def on_vacation_entire_period?
-    Vacation.days_used(employee, period) >= employee.workdays_per_month(period)
+    (Vacation.days_used(employee, period) >= employee.workdays_per_month(period)) ||
+        WorkHour.only_worked_holidays?(employee, period)
   end
+
+  private
 
   def self.process_payslip(employee, period)
     employee.save
@@ -618,7 +617,7 @@ class Payslip < ApplicationRecord
       return self[:bonuspay]
     end
 
-    if (on_vacation_entire_period?)
+    if (!full && on_vacation_entire_period?)
       return self[:bonuspay] = 0
     end
 
@@ -635,7 +634,7 @@ class Payslip < ApplicationRecord
       base = nil
       if (bonus.base_percentage?)
         if (bonus.use_caisse)
-          base = employee.wage + seniority_bonus()
+          base = employee.wage + seniority_bonus(full)
         else
           base = employee.wage
         end
@@ -763,12 +762,35 @@ class Payslip < ApplicationRecord
 
   def self.compute_vacation_balances(previous_payslip, payslip)
     payslip.vacation_pay_earned = payslip.calc_vacation_pay_earned
-    payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
 
-    accumulate_regular_days(previous_payslip, payslip)
-    accumulate_regular_pay(previous_payslip, payslip)
+    # This is changed to just look at prior records instead of
+    # the days_earned calculation which was based on timestamps.
+    # much simpler. The refactoring needs to be finished, thus
+    # it's left in a comment.
+    # payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
+    unless (payslip.on_vacation_entire_period?)
+      payslip.vacation_earned = Payslip::STANDARD_DAYS_EARNED
+    else
+      payslip.vacation_earned = 0
+    end
+
+    if (Vacation.transfer_supplemental_days?(payslip.employee, payslip.period))
+      if (previous_payslip && previous_payslip.accum_suppl_days > 0)
+        # do the transfer
+        payslip.vacation_earned += previous_payslip.accum_suppl_days
+        payslip.vacation_pay_earned += ((previous_payslip.accum_reg_pay.fdiv(previous_payslip.accum_reg_days)) * previous_payslip.accum_suppl_days).ceil
+        payslip.accum_reg_days = 0
+        payslip.accum_reg_pay = 0
+        payslip.accum_suppl_days = 0
+        payslip.accum_suppl_pay = 0
+      end
+    else
+      accumulate_regular_days(previous_payslip, payslip)
+      accumulate_regular_pay(previous_payslip, payslip)
+    end
 
     if (payslip.accum_reg_days == 0)
+      #Rails.logger.error("XXX1: No accumulation of sppl")
       # No supplemental days accumulation if you don't earn normal days. Prevents division by 0.
       payslip.accum_suppl_days = 0
       payslip.accum_suppl_pay = 0
@@ -806,7 +828,12 @@ class Payslip < ApplicationRecord
   # You only ever accumulate STANDARD_DAYS, even if you earn more.
   def self.accumulate_regular_days(previous_payslip, payslip)
     prev_reg_days = previous_payslip.nil? ? 0 : previous_payslip.accum_reg_days || 0
-    payslip.accum_reg_days = prev_reg_days + STANDARD_DAYS_EARNED
+
+    unless (payslip.on_vacation_entire_period?)
+      payslip.accum_reg_days = prev_reg_days + STANDARD_DAYS_EARNED
+    else
+      payslip.accum_reg_days = prev_reg_days
+    end
   end
 
   def self.accumulate_regular_pay(previous_payslip, payslip)
@@ -826,10 +853,26 @@ class Payslip < ApplicationRecord
     prev_vac_pay = previous_payslip.nil? ? 0 : previous_payslip.vacation_pay_earned || 0
     prev_period_suppl_days = previous_payslip.nil? ? 0 : previous_payslip.period_suppl_days || 0
 
-    payslip.accum_suppl_pay = (
-        (prev_reg_pay + prev_vac_pay).div((prev_reg_days + STANDARD_DAYS_EARNED)) *
-            (prev_sup_days + prev_period_suppl_days)
-    ).ceil
+    # The else contains the original computation. However, if you received a zero payslip
+    # this couldn't be used to start up the calculations again. Thus the alternate
+    # calculation.
+    if ((prev_reg_pay + prev_vac_pay) == 0 || (prev_reg_days + prev_period_suppl_days) == 0)
+      reg_pay = payslip.accum_reg_pay.nil? ? 0 : payslip.accum_reg_pay || 0
+      reg_days = payslip.accum_reg_days.nil? ? 0 : payslip.accum_reg_days || 0
+
+      if (reg_days == 0)
+        payslip.accum_suppl_pay = 0
+      else
+        payslip.accum_suppl_pay = (
+            reg_pay.div(reg_days) * payslip.period_suppl_days
+        ).ceil
+      end
+    else
+      payslip.accum_suppl_pay = (
+          (prev_reg_pay + prev_vac_pay).div((prev_reg_days + STANDARD_DAYS_EARNED)) *
+              (prev_sup_days + prev_period_suppl_days)
+      ).ceil
+    end
   end
 
   def self.current_pay_balance(previous_payslip, payslip)

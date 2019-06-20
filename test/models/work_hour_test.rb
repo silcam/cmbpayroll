@@ -499,6 +499,8 @@ class WorkHourTest < ActiveSupport::TestCase
 
     exp = {normal: 104.0, vacation_worked: 7.0}
     assert_equal(exp, WorkHour.total_hours(employee, period))
+
+    assert_equal(1, WorkHour.vac_days_worked_in_period(employee, period))
   end
 
   test "Vacation Worked Validations" do
@@ -532,6 +534,41 @@ class WorkHourTest < ActiveSupport::TestCase
 
     success, errors = WorkHour.update(employee, hours)
     assert(success, "should not have been an error #{errors.inspect}")
+  end
+
+  test "only worked holidays" do
+    employee = return_valid_employee()
+    period = Period.new(2018,5)
+
+    Holiday.create!(name: 'National Day', date: '2018-05-20', observed: '2018-05-21')
+    Holiday.create!(name: 'Ascension', date: '2018-05-30')
+    Holiday.create!(name: 'Labor Day', date: '2018-05-01')
+
+    vacation = Vacation.create(
+        start_date: '2018-05-02',
+        end_date: '2018-05-31',
+        employee: employee
+    )
+    assert(vacation)
+
+    assert_equal(3, WorkHour.days_worked(employee, period))
+    assert_equal(3, WorkHour.holiday_days_in_period(employee, period))
+
+    assert(WorkHour.only_worked_holidays?(employee, period))
+
+    # Do Vacation Worked
+    hours = {
+      "2018-05-02" => {vacation_worked: 5}
+    }
+
+    success, errors = WorkHour.update(employee, hours)
+    assert(success)
+
+    assert_equal(3, WorkHour.days_worked(employee, period))
+    assert_equal(1, WorkHour.vac_days_worked_in_period(employee, period))
+    assert_equal(3, WorkHour.holiday_days_in_period(employee, period))
+
+    refute(WorkHour.only_worked_holidays?(employee, period))
   end
 
   test "Vacation Worked Must Happen During Vacation" do

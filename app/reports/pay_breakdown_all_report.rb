@@ -14,9 +14,8 @@ FROM
         SELECT employee_id, net_pay as pay, 'REGULAR' as type, period_year, period_month
         FROM payslips
       UNION ALL
-        SELECT employee_id, vacation_pay_used as pay, 'VACATION' as type, period_year, period_month
-        FROM payslips
-        WHERE vacation_pay_used > 0
+        SELECT employee_id, (vacation_pay - total_tax) as pay, 'VACATION' as type, period_year, period_month
+        FROM vacations
     ) as all_pay ON e.id = all_pay.employee_id
     LEFT OUTER JOIN departments d ON e.department_id = d.id
 WHERE

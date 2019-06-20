@@ -11,3 +11,20 @@ two:
   quantity: 9.99
   bonus_type: fixed
   comment: MyString
+
+primeex:
+  name: Prime Exceptionelle
+  quantity: .30
+  bonus_type: percentage
+
+primedr20k:
+  name: Prime de Responsibilité 20k
+  quantity: 20000
+  bonus_type: fixed
+
+logementpercent:
+  name: Logement
+  quantity: .25
+  bonus_type: base_percentage
+  minimum: 25000
+  use_caisse: true

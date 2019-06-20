@@ -108,6 +108,8 @@ class ActiveSupport::TestCase
 
   def set_previous_vacation_balances(employee, period, pay, days)
     previous_period = period.previous
+
+    generate_work_hours(employee, previous_period)
     previous_payslip = Payslip.process(employee, previous_period)
     assert(previous_payslip.valid?)
 

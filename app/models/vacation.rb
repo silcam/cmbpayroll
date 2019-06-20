@@ -134,6 +134,7 @@ class Vacation < ApplicationRecord
     Vacation.all.where("start_date > ?", Period.current.finish)
   end
 
+  # This isn't correct and needs to be fixed.
   def self.days_earned(employee, period)
     return 0 if period.finish < employee.first_day
     earned = SystemVariable.value(:vacation_days).fdiv(MONTHLY)
@@ -307,7 +308,8 @@ class Vacation < ApplicationRecord
 
   def get_tax
     if @tax.nil?
-      @tax = Tax.compute_taxes(employee, vacation_pay, vacation_pay)
+      vac_pay = vacation_pay()
+      @tax = Tax.compute_taxes(employee, vac_pay, vac_pay)
     else
       @tax
     end
@@ -315,6 +317,8 @@ class Vacation < ApplicationRecord
 
   private
 
+  # This pays no attention to what is in the payslips.
+  # Should be fixed.
   def self.earned_supplemental_days(employee, period)
     start_period = nil
     earned_days = 0

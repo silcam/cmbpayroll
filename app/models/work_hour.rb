@@ -52,13 +52,23 @@ class WorkHour < ApplicationRecord
   end
 
   def self.days_worked(employee, period)
-    hours_worked, days_worked = self.compute_hours_and_days(employee, period)
+    hours_worked, days_worked, holiday_days, vac_days_worked = self.compute_hours_and_days(employee, period)
     days_worked
   end
 
   def self.hours_worked(employee, period)
-    hours_worked, days_worked = self.compute_hours_and_days(employee, period)
+    hours_worked, days_worked, holiday_days, vac_days_worked = self.compute_hours_and_days(employee, period)
     hours_worked
+  end
+
+  def self.holiday_days_in_period(employee, period)
+    hours_worked, days_worked, holiday_days, vac_days_worked = self.compute_hours_and_days(employee, period)
+    holiday_days
+  end
+
+  def self.vac_days_worked_in_period(employee, period)
+    hours_worked, days_worked, holiday_days, vac_days_worked = self.compute_hours_and_days(employee, period)
+    vac_days_worked
   end
 
   def self.worked_full_month(employee, period)
@@ -75,6 +85,15 @@ class WorkHour < ApplicationRecord
 
       hours_worked >= hours_per_month
     end
+  end
+
+  # FIXME, these might not be the same exact days?
+  # but the holidays would also appear in the days
+  # worked ??
+  def self.only_worked_holidays?(employee, period)
+    return (holiday_days_in_period(employee, period) ==
+        ( days_worked(employee, period) +
+          vac_days_worked_in_period(employee, period) ) )
   end
 
   def self.complete_days_hash(employee, start, finish)
@@ -208,6 +227,8 @@ class WorkHour < ApplicationRecord
   def self.compute_hours_and_days(employee, period)
     days_worked = 0
     hours_worked = 0
+    holiday_days = 0
+    vac_days_worked = 0
 
     days = WorkHour.complete_days_hash(employee, period.start, period.finish)
 
@@ -215,6 +236,7 @@ class WorkHour < ApplicationRecord
     while date <= period.finish
       if days[date]
         if days[date][:holiday] && is_weekday?(date)
+          holiday_days += 1
           days_worked += 1
           hours_worked += NUMBER_OF_HOURS_IN_A_WORKDAY
         elsif days[date][:hours] > 0 or days[date][:excused_hours] > 0
@@ -224,13 +246,15 @@ class WorkHour < ApplicationRecord
           if !is_off_day?(date, days[date][:holiday]) && hours_worked_that_day.to_i >= WorkHour.workday
             days_worked += 1
           end
+        elsif days[date][:vacation] && days[date][:vacation_worked] > 0
+          vac_days_worked += 1
         end
       end
 
       date += 1
     end
 
-    return hours_worked, days_worked
+    return hours_worked, days_worked, holiday_days, vac_days_worked
   end
 end
 

@@ -272,12 +272,10 @@ report.list("dipes_group") do |list|
     footer.item(:total_surtax_progressive).value(number_to_currency(@tax_prog_grand_total, unit: '', locale: :cm))
     footer.item(:total_cac_10).value(number_to_currency((@tax_prog_grand_total * SystemVariable.value(:cac)).round, unit: '', locale: :cm))
     footer.item(:total_tax_proportional).value(number_to_currency(@tax_prop_grand_total, unit: '', locale: :cm))
-    footer.item(:total_cac_10_2).value(number_to_currency((@tax_prop_grand_total * SystemVariable.value(:cac)).round, unit: '', locale: :cm))
+    footer.item(:total_cac_10_2).value(number_to_currency((@tax_cac_grand_total), unit: '', locale: :cm))
     footer.item(:total_tax_communal).value(number_to_currency(@tax_common_grand_total, unit: '', locale: :cm))
 
-    this_tax_total = @tax_prop_grand_total + (@tax_prop_grand_total * SystemVariable.value(:cac)).round +
-                     @tax_prog_grand_total + (@tax_prog_grand_total * SystemVariable.value(:cac)).round +
-                     @tax_common_grand_total
+    this_tax_total = @tax_prop_grand_total + @tax_cac_grand_total + @tax_prog_grand_total + @tax_common_grand_total
     versement_tresor = 0
 
     footer.item(:total_total).value(number_to_currency(this_tax_total, unit: '', locale: :cm))

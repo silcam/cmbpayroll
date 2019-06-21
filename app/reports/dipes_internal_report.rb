@@ -53,11 +53,6 @@ WHERE
 ORDER BY
   dipeno, cnpsno, employee_name ASC
     SELECTSTATEMENT
-
-
-
-
-
   end
 
   def formatted_title

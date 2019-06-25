@@ -4,6 +4,9 @@ report.set_layout tlf: 'reports/vacation', layout_options: { default: true }
 @total_taxes_total = 0
 @net_wage_total = 0
 @cash_pay_total = 0
+@dept_cnps_total = 0
+@dept_credit_foncier_total = 0
+@total_charge_total = 0
 
 report.on_page_create do |page|
   page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name_shortyear, locale: :fr).upcase)
@@ -21,6 +24,9 @@ report.list("vacation") do |list|
     x_net_pay = t[3].to_f
     x_total_tax = t[4].to_f
     x_cash_pay = t[5].to_f
+    x_dept_cnps = t[6].to_f
+    x_dept_cf = t[7].to_f
+    x_total_charge = t[8].to_f
 
     list.add_row(
       employee_name: x_employee_name,
@@ -28,13 +34,19 @@ report.list("vacation") do |list|
       gross_wage: number_to_currency(x_gross_pay, unit: '', locale: :cm),
       total_taxes: number_to_currency(x_total_tax, unit: '', locale: :cm),
       net_wage: number_to_currency(Payslip.cfa_round(x_net_pay), unit: '', locale: :cm),
-      cash_pay: number_to_currency(Payslip.cfa_round(x_cash_pay), unit: '', locale: :cm)
+      cash_pay: number_to_currency(Payslip.cfa_round(x_cash_pay), unit: '', locale: :cm),
+      dept_cnps: number_to_currency(Payslip.cfa_round(x_dept_cnps), unit: '', locale: :cm),
+      dept_credit_foncier: number_to_currency(Payslip.cfa_round(x_dept_cf), unit: '', locale: :cm),
+      total_charge: number_to_currency(Payslip.cfa_round(x_total_charge), unit: '', locale: :cm)
     )
 
     @gross_wage_total += x_gross_pay
     @total_taxes_total += x_total_tax
     @net_wage_total += x_net_pay
     @cash_pay_total += x_cash_pay
+    @dept_cnps_total += x_dept_cnps
+    @dept_credit_foncier_total += x_dept_cf
+    @total_charge_total += x_total_charge
 
   end
 
@@ -43,6 +55,9 @@ report.list("vacation") do |list|
     footer.item(:total_taxes_total).value(number_to_currency(@total_taxes_total, unit: '', locale: :cm))
     footer.item(:net_wage_total).value(number_to_currency(@net_wage_total, unit: '', locale: :cm))
     footer.item(:cash_pay_total).value(number_to_currency(@cash_pay_total, unit: '', locale: :cm))
+    footer.item(:dept_cnps_total).value(number_to_currency(@dept_cnps_total, unit: '', locale: :cm))
+    footer.item(:dept_credit_foncier_total).value(number_to_currency(@dept_credit_foncier_total, unit: '', locale: :cm))
+    footer.item(:total_charge_total).value(number_to_currency(@total_charge_total, unit: '', locale: :cm))
   end
 
 end

@@ -8,7 +8,22 @@ SELECT
   v.vacation_pay as gross_pay,
   (v.vacation_pay - v.total_tax) as net_pay,
   v.total_tax as total_tax,
-  (v.vacation_pay - v.total_tax) as cash_pay
+  (v.vacation_pay - v.total_tax) as cash_pay,
+  CASE
+    WHEN v.vacation_pay > #{SystemVariable.value(:cnps_ceiling)}
+    THEN ROUND(v.vacation_pay * #{SystemVariable.value(:dept_cnps_w_ceiling)} +
+        #{SystemVariable.value(:dept_cnps_max_base)})
+    ELSE ROUND(v.vacation_pay * #{SystemVariable.value(:dept_cnps)})
+  END as dept_cnps,
+  ROUND(v.vacation_pay * #{SystemVariable.value(:dept_credit_foncier)}) as dept_credit_foncier,
+  v.vacation_pay +
+    CASE
+      WHEN v.vacation_pay > #{SystemVariable.value(:cnps_ceiling)}
+      THEN ROUND(v.vacation_pay * #{SystemVariable.value(:dept_cnps_w_ceiling)} +
+          #{SystemVariable.value(:dept_cnps_max_base)})
+      ELSE ROUND(v.vacation_pay * #{SystemVariable.value(:dept_cnps)})
+    END +
+    ROUND(v.vacation_pay * #{SystemVariable.value(:dept_credit_foncier)}) as total_charge
 FROM
   employees e
     JOIN people p ON e.person_id = p.id

@@ -103,9 +103,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 271,
+            "x": 224,
             "y": 89,
-            "width": 47.9,
+            "width": 48.8,
             "height": 11,
             "style": {
               "font-family": [
@@ -131,9 +131,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 401,
+            "x": 299.5,
             "y": 89,
-            "width": 101.3,
+            "width": 52,
             "height": 11,
             "style": {
               "font-family": [
@@ -159,9 +159,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 496,
+            "x": 361.5,
             "y": 89,
-            "width": 117.5,
+            "width": 80.5,
             "height": 11,
             "style": {
               "font-family": [
@@ -202,9 +202,9 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 689,
+            "x": 753.4,
             "y": 89,
-            "width": 70.9,
+            "width": 47.1,
             "height": 9,
             "style": {
               "font-family": [
@@ -224,6 +224,91 @@
             "texts": [
               "Cash Pay"
             ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 453,
+            "y": 89,
+            "width": 50,
+            "height": 11,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Dept CNPS"
+            ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 515.5,
+            "y": 82,
+            "width": 50,
+            "height": 18,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Credit",
+              "Foncer"
+            ]
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 582.5,
+            "y": 89,
+            "width": 50,
+            "height": 11,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "left",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ]
+            },
+            "texts": [
+              "Dept Charge"
+            ]
           }
         ]
       },
@@ -241,7 +326,7 @@
             "description": "",
             "x": 20,
             "y": 183.8,
-            "width": 160,
+            "width": 143.5,
             "height": 9,
             "style": {
               "font-family": [
@@ -271,7 +356,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 275.5,
+            "x": 225,
             "y": 183.8,
             "width": 45,
             "height": 9,
@@ -303,7 +388,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 400,
+            "x": 300,
             "y": 183.8,
             "width": 45,
             "height": 9,
@@ -335,7 +420,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 530,
+            "x": 376,
             "y": 183.8,
             "width": 45,
             "height": 9,
@@ -367,7 +452,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 680,
+            "x": 752,
             "y": 183.8,
             "width": 45,
             "height": 9,
@@ -399,7 +484,103 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 191.5,
+            "x": 172,
+            "y": 183.8,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "dept_cnps",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 454,
+            "y": 183.8,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "dept_credit_foncier",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 516,
+            "y": 183.8,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "total_charge",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 584,
             "y": 183.8,
             "width": 45,
             "height": 9,
@@ -481,7 +662,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 221,
+            "x": 182,
             "y": 354.4,
             "width": 35,
             "height": 9,
@@ -491,7 +672,7 @@
               ],
               "font-size": 8,
               "color": "#000000",
-              "text-align": "left",
+              "text-align": "right",
               "vertical-align": "top",
               "line-height": "",
               "line-height-ratio": "",
@@ -510,8 +691,8 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 275.5,
-            "y": 352.7,
+            "x": 225,
+            "y": 354.4,
             "width": 45,
             "height": 9,
             "style": {
@@ -544,8 +725,8 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 400,
-            "y": 352.7,
+            "x": 300,
+            "y": 354.4,
             "width": 45,
             "height": 9,
             "style": {
@@ -578,8 +759,8 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 530,
-            "y": 352.7,
+            "x": 376,
+            "y": 354.4,
             "width": 45,
             "height": 9,
             "style": {
@@ -612,8 +793,8 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 680,
-            "y": 352.7,
+            "x": 752,
+            "y": 354.4,
             "width": 45,
             "height": 9,
             "style": {
@@ -640,6 +821,137 @@
               "base": "",
               "type": ""
             }
+          },
+          {
+            "id": "dept_cnps_total",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 454,
+            "y": 354.4,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "dept_credit_foncier_total",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 516,
+            "y": 354.4,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "total_charge_total",
+            "type": "text-block",
+            "display": true,
+            "description": "",
+            "x": 584,
+            "y": 354.4,
+            "width": 45,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold"
+              ],
+              "overflow": "truncate",
+              "word-wrap": "break-word"
+            },
+            "reference-id": "",
+            "value": "",
+            "multiple-line": false,
+            "format": {
+              "base": "",
+              "type": ""
+            }
+          },
+          {
+            "id": "",
+            "type": "text",
+            "display": true,
+            "description": "",
+            "x": 638,
+            "y": 354.4,
+            "width": 49.1,
+            "height": 9,
+            "style": {
+              "font-family": [
+                "Helvetica"
+              ],
+              "font-size": 8,
+              "color": "#000000",
+              "text-align": "right",
+              "vertical-align": "top",
+              "line-height": "",
+              "line-height-ratio": "",
+              "letter-spacing": "",
+              "font-style": [
+                "bold",
+                "italic"
+              ]
+            },
+            "texts": [
+              "Total Charge"
+            ]
           }
         ]
       },

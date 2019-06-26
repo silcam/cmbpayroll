@@ -12,14 +12,10 @@ class PayBreakdownRfisReport < PayBreakdownAllReport
     I18n::t(:Pay_breakdown_rfis_report, scope: [:reports])
   end
 
-  def dept
-    ids = []
-
-    Department.where("name like ?", "%RFIS%").each do |dept|
-      ids << dept.id
-    end
-
-    ids
+  def location
+    locations = []
+    locations << Employee.locations["rfis"]
+    locations
   end
 
 end

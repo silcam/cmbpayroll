@@ -22,7 +22,7 @@ WHERE
   e.employment_status IN :employment_status AND
   all_pay.period_year = :year AND
   all_pay.period_month = :month AND
-  e.department_id IN :dept
+  e.location IN :location
 ORDER BY
   type, employee_name ASC
     SELECTSTATEMENT
@@ -50,12 +50,14 @@ ORDER BY
     "all"
   end
 
-  def dept
-    ids = []
-
-    Department.all.each do |dept|
-      ids << dept.id
-    end
+  def location
+    locations = []
+    locations << Employee.locations["nonrfis"]
+    locations << Employee.locations["rfis"]
+    locations << Employee.locations["bro"]
+    locations << Employee.locations["gnro"]
+    locations << Employee.locations["aviation"]
+    locations
   end
 
   set_callback :execute, :after do

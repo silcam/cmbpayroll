@@ -13,6 +13,14 @@ class EmployeeTest < ActiveSupport::TestCase
     t = Employee.reflect_on_association(:charges).macro == :has_many
   end
 
+  test "Employee Fund" do
+    employee = return_valid_employee()
+    assert(employee.employee_fund, "employees have it by default")
+
+    employee.employee_fund = false
+    refute(employee.employee_fund, "can be set to false")
+  end
+
   test "Locations" do
     assert(@luke.valid?, "luke defaults to bro")
     assert_equal("bro", @luke.location, "luke defaults to bro")

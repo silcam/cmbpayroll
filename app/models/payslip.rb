@@ -349,7 +349,7 @@ class Payslip < ApplicationRecord
     self[:department_credit_foncier] = ( self[:taxable] *
         SystemVariable.value(:dept_credit_foncier) ).round
 
-    if (self[:taxable] > SystemVariable.value(:emp_fund_salary_floor))
+    if (self[:taxable] > SystemVariable.value(:emp_fund_salary_floor) && employee.employee_fund)
       self[:employee_fund] = SystemVariable.value(:emp_fund_amount)
     else
       self[:employee_fund] = 0

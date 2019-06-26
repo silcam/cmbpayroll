@@ -175,7 +175,8 @@
               number_to_currency(@employee.union_dues_amount, locale: :cm) :
               t(:No)  %>
       </td>
-      <th></th><td></td>
+      <th scope="row"><%= t(:Employee_fund) %></th>
+      <td><%= @employee.employee_fund ? t(:Yes) : t(:No) %></td>
     </tr>
   </tbody>
 </table>

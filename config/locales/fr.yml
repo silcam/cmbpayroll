@@ -145,6 +145,7 @@ fr:
   spouse_employed_m: Épouse est employée
   spouse_employed_f: Époux est employé
   Location: &Location Lieu
+  Employee_fund: Employee Fund
 
   # Supervisors
   Supervisors: Superviseurs

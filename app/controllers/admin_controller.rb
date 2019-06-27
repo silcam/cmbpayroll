@@ -1,5 +1,4 @@
 class AdminController < ApplicationController
-
   respond_to :html, :json
 
   def index
@@ -49,6 +48,7 @@ class AdminController < ApplicationController
     period = @current.next.next
     @employees = Employee.currently_paid()
 
+    # TODO CHANGE TO get_periods_list() ????
     (0..12).each do
       @periods << period
       period = period.previous
@@ -102,6 +102,33 @@ class AdminController < ApplicationController
         render json: @result, :content_type => "text/json"
       end
     end
+  end
+
+  def journal_report
+    authorize! :read, AdminController
+    period_param = params[:period]
+
+    begin
+      period_year, period_month = period_param.split('-')
+      @period = Period.new(period_year.to_i, period_month.to_i)
+    rescue
+      @period = LastPostedPeriod.get
+    end
+
+    report = JournalReport.new
+    @report_data = report.produce_report(@period)
+
+    @total_debit = 0
+    @total_credit = 0
+
+    @report_data.each do |line|
+      @total_debit += line[:debit].to_f
+      @total_credit += line[:credit].to_f
+    end
+
+    @periods = get_periods_list()
+
+    render "journal_report"
   end
 
   private

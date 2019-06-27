@@ -11,7 +11,6 @@ class ReportsController < ApplicationController
 
   respond_to :html, :json, :csv, :xls, :txt, :pdf
 
-  NUMBER_OF_MONTHS_SHOWN=24
   REPORTS = {
     'cnps' => {
       name: I18n.t(:Cnps_report, scope: "reports"),
@@ -138,20 +137,7 @@ class ReportsController < ApplicationController
       @report_options[v[:name]] = k
     }
 
-    @periods = {}
-    period = Period.current()
-
-
-    starting_period = nil
-    if (Rails.configuration.try(:starting_period))
-      starting_period = Period.fr_str(Rails.configuration.starting_period)
-    end
-
-    (0..NUMBER_OF_MONTHS_SHOWN).each do |x|
-      @periods[period.name] = period.to_s
-      period = period.previous
-      break if starting_period && period < starting_period
-    end
+    @periods = get_periods_list()
   end
 
 end

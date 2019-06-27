@@ -90,6 +90,7 @@ Rails.application.routes.draw do
   get 'admin/manage_variables'
   get 'admin/manage_wages'
   get 'admin/manage_wage_show'
+  get 'admin/journal_report'
   post 'admin/manage_wage_show', to: 'admin#manage_wage_update'
   get 'admin/timesheet', to: 'admin#timesheet', as: :generate_timesheets
   get 'admin/timesheets', to: 'admin#timesheets', as: :timesheet_pdf

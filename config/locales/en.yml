@@ -372,6 +372,8 @@ en:
   Estimate: Estimate
   How_it_works: How It Works
   Continue: Continue
+  journal_report: '340 Journal Report'
+  Journal_report_description: Report to Assist Completing the 340 Journal
 
   # Admin Descriptions
   Payslips_admin_description: Post Payslips and Pay Periods for Employees

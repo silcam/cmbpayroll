@@ -11,7 +11,7 @@ SELECT
   (v.vacation_pay - v.total_tax) as cash_pay,
   CASE
     WHEN v.vacation_pay > #{SystemVariable.value(:cnps_ceiling)}
-    THEN ROUND(v.vacation_pay * #{SystemVariable.value(:dept_cnps_w_ceiling)} +
+    THEN ROUND((v.vacation_pay * #{SystemVariable.value(:dept_cnps_w_ceil)}) +
         #{SystemVariable.value(:dept_cnps_max_base)})
     ELSE ROUND(v.vacation_pay * #{SystemVariable.value(:dept_cnps)})
   END as dept_cnps,
@@ -19,7 +19,7 @@ SELECT
   v.vacation_pay +
     CASE
       WHEN v.vacation_pay > #{SystemVariable.value(:cnps_ceiling)}
-      THEN ROUND(v.vacation_pay * #{SystemVariable.value(:dept_cnps_w_ceiling)} +
+      THEN ROUND((v.vacation_pay * #{SystemVariable.value(:dept_cnps_w_ceil)}) +
           #{SystemVariable.value(:dept_cnps_max_base)})
       ELSE ROUND(v.vacation_pay * #{SystemVariable.value(:dept_cnps)})
     END +

@@ -8,7 +8,7 @@ class Alert
 
   def self.get_all
     alerts = []
-    Employee.active.each do |employee|
+    Employee.currently_paid.each do |employee|
       alerts += get_for_employee(employee)
     end
     alerts

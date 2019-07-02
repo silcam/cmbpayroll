@@ -770,14 +770,16 @@ class Payslip < ApplicationRecord
     # payslip.vacation_earned = Vacation.days_earned(payslip.employee, payslip.period)
     unless (payslip.on_vacation_entire_period?)
       payslip.vacation_earned = Payslip::STANDARD_DAYS_EARNED
+      payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
     else
       payslip.vacation_earned = 0
+      payslip.period_suppl_days = 0
     end
 
     if (Vacation.transfer_supplemental_days?(payslip.employee, payslip.period))
       if (previous_payslip && previous_payslip.accum_suppl_days > 0)
         # do the transfer
-        payslip.vacation_earned += previous_payslip.accum_suppl_days
+        payslip.vacation_earned += ( previous_payslip.accum_suppl_days + payslip.period_suppl_days )
         payslip.vacation_pay_earned += ((previous_payslip.accum_reg_pay.fdiv(previous_payslip.accum_reg_days)) * previous_payslip.accum_suppl_days).ceil
         payslip.accum_reg_days = 0
         payslip.accum_reg_pay = 0
@@ -790,11 +792,9 @@ class Payslip < ApplicationRecord
     end
 
     if (payslip.accum_reg_days == 0)
-      #Rails.logger.error("XXX1: No accumulation of sppl")
       # No supplemental days accumulation if you don't earn normal days. Prevents division by 0.
       payslip.accum_suppl_days = 0
       payslip.accum_suppl_pay = 0
-      payslip.period_suppl_days = 0
     else
       accumulate_supplemental_days(previous_payslip, payslip)
     end
@@ -842,7 +842,6 @@ class Payslip < ApplicationRecord
   end
 
   def self.accumulate_supplemental_days(previous_payslip, payslip)
-    payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
     prev_sup_days = previous_payslip.nil? ? 0 : previous_payslip.accum_suppl_days || 0
     payslip.accum_suppl_days = prev_sup_days + payslip.period_suppl_days
 

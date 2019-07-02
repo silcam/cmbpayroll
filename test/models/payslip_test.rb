@@ -1956,7 +1956,10 @@ class PayslipTest < ActiveSupport::TestCase
     jan_pay_earned = payslip.vacation_pay_earned
 
     assert_equal(
-        (payslip.previous.accum_suppl_days + Payslip::STANDARD_DAYS_EARNED).round(2),
+        (payslip.previous.accum_suppl_days +
+         payslip.period_suppl_days +
+         Payslip::STANDARD_DAYS_EARNED
+        ).round(2),
         jan_days_earned.round(2), "earning is correct during transer")
 
     jan_days_used = payslip.vacation_used
@@ -2531,15 +2534,17 @@ class PayslipTest < ActiveSupport::TestCase
     #    employee.supplemental_transfers.first.transfer_date.strftime("%Y-%m-%d"),
     #    "should have transferred this period")
 
-    # Previous payslip had .667 days accumulated + 1.5 standard accrual
+    # Previous payslip: .667 days accumulated + this month's suppl (0.333) + 1.5 standard accrual
+    # which is 2.833 days.
     assert(payslip.vacation_earned > 1.5, "earned more than the standard number of days")
 
-    assert_equal(2.167, payslip.vacation_earned.round(3), "should be normal")
+    assert_equal((1/3.0).round(2), payslip.period_suppl_days.round(2),
+        "should be normal value")
+    assert_equal(2.500, payslip.vacation_earned.round(3), "should be normal")
     assert_equal(0, payslip.accum_reg_days, "should be cleared")
     assert_equal(0, payslip.accum_reg_pay, "should be cleared")
     assert_equal(0, payslip.accum_suppl_days, "should be cleared")
     assert_equal(0, payslip.accum_suppl_pay, "should be cleared")
-    assert_equal(0, payslip.period_suppl_days, "should be cleared")
 
     prev_reg_pay = payslip.accum_reg_pay
     prev_reg_days = payslip.accum_reg_days
@@ -2557,9 +2562,11 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(1.5, payslip.accum_reg_days, "normal")
     assert_equal(vac_pay + prev_reg_pay, payslip.accum_reg_pay, "normal")
     assert_equal(0.333, payslip.accum_suppl_days.round(3), "normal")
+    assert_equal((1/3.0).round(2), payslip.period_suppl_days.round(2),
+        "should be normal value")
     #assert_equal((((prev_reg_pay + prev_vac_pay) / (prev_reg_days + 1.5)) * 0.3333).ceil,
     #    payslip.accum_suppl_pay.round(3), "normal")
-    assert_equal(1286, payslip.accum_suppl_pay.round(3), "normal")
+    assert_equal(3586, payslip.accum_suppl_pay.round(3), "normal")
   end
 
   test "Vacation will attempt to use Supplemental Days" do
@@ -2614,16 +2621,16 @@ class PayslipTest < ActiveSupport::TestCase
     # process payslip
     payslip = Payslip.process(employee, period)
 
-    # Previous slip balance:    7.5
-    # This slip earned:       + 5.5 (prev sup 4 and 1.5)
-    # This slip vac:          -11.0
+    # Previous slip balance:    7.50
+    # This slip earned:       + 5.83 (prev sup 4 + 1.5 + 0.33 (period suppl))
+    # This slip vac:          -11.00
     #                        ======
     # This slip suppl earned: = 3.833
-    assert_equal(5.5, payslip.vacation_earned.round(3), "correct days earned")
+    assert_equal(5.833, payslip.vacation_earned.round(3), "correct days earned")
 
     # process deux fois
     payslip = Payslip.process(employee, period)
-    assert_equal(5.5, payslip.vacation_earned.round(3), "correct days earned (still!)")
+    assert_equal(5.833, payslip.vacation_earned.round(3), "correct days earned (still!)")
 
     # verify no error produced
     assert(payslip.errors.empty?, "yep, no errors")
@@ -2663,8 +2670,10 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0.0, payslip.accum_reg_days)
     assert_equal(0.0, payslip.accum_reg_pay)
 
+    assert_equal((1/3.0).round(2), payslip.period_suppl_days.round(2))
+
     assert_equal(90221, payslip.taxable)
-    assert_equal(1.667, payslip.vacation_earned.round(3))
+    assert_equal(2.000, payslip.vacation_earned.round(3))
     #assert_equal(13477, payslip.vacation_pay_earned)
     assert_equal(0.0, payslip.accum_reg_days)
 
@@ -3182,7 +3191,7 @@ class PayslipTest < ActiveSupport::TestCase
     prev_payslip_vac_balance = previous_payslip.vacation_balance
     prev_payslip_vac_pay_balance = previous_payslip.vacation_pay_balance
 
-    # This month he didn't
+    # This month he didn't work
     v = Vacation.create!(employee: employee,
         start_date: "2018-05-01", end_date: "2018-07-12")
 
@@ -3207,7 +3216,8 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0.17, prev_payslip_accum_sup_days.round(2), "prev suppl balance")
     assert_equal(
         prev_payslip_accum_sup_days.round(2),
-        payslip.vacation_earned.round(2), "prev suppl balance")
+        (payslip.vacation_earned).round(2),
+        "prev suppl balance plus this month's suppl")
 
     assert_equal(1.5, previous_payslip.accum_reg_days, "prev accum bal correct")
     assert_equal(0, payslip.accum_reg_days, "Don't accumulate")

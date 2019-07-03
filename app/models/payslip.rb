@@ -748,9 +748,9 @@ class Payslip < ApplicationRecord
     corrections = employee.payslip_corrections.for_period(period)
     corrections.each do |correction|
       if correction.cfa_credit
-        payslip.earnings << Earning.new(amount: correction.cfa_credit, description: "Correction pour le bulletin de #{correction.payslip.period} : #{correction.note}")
+        payslip.deductions << Deduction.new(amount: (correction.cfa_credit * -1), date: period.finish, deduction_type: Charge.charge_types["other"], note: "Correction, #{correction.payslip.period} : #{correction.note}")
       elsif correction.cfa_debit
-        payslip.deductions << Deduction.new(amount: correction.cfa_debit, date: period.finish, deduction_type: Charge.other, note: "Correction pour le bulletin de #{correction.payslip.period} : #{correction.note}")
+        payslip.deductions << Deduction.new(amount: correction.cfa_debit, date: period.finish, deduction_type: Charge.charge_types["other"], note: "Correction, #{correction.payslip.period} : #{correction.note}")
       end
 
       # TODO, What to do with this?

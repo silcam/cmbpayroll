@@ -33,7 +33,8 @@ FROM
     LEFT OUTER JOIN vacations v ON e.id = v.employee_id AND v.period_year = :year AND v.period_month = :month
     JOIN (SELECT id, :month AS ps_month, :year AS ps_year FROM employees) as m ON m.id = e.id
 WHERE
-  e.employment_status IN :employment_status
+  e.employment_status IN :employment_status AND
+  ROUND(COALESCE(ps.taxable,0) + COALESCE(v.vacation_pay,0),0) > 0
 ORDER BY
   e.id ASC
     SELECTSTATEMENT

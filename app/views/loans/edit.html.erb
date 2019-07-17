@@ -3,7 +3,7 @@
 <h1><%= t(:Editing_loan) %></h1>
 
 <%= form_for(@loan) do |form| %>
-  <%= render 'form', form: form, loan: @loan %>
+  <%= render 'form', form: form, loan: @loan, submit_caption: :Update_loan %>
 <% end %>
 
 <%= link_to t(:Back), employee_loans_path(@employee), class: 'btn btn-default' %>

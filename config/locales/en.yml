@@ -257,9 +257,10 @@ en:
   New_payment_for_loan: New Payment for Loan
   On_date: on
   Create_a_new_loan: Create a New Loan
+  Update_loan: Update Loan
   Create_a_new_payment: Create a New Payment
   Editing_payment_for_loan: Editing Payment for Loan
-  Editing_loan: Modifiant un prêt
+  Editing_loan: Editing Loan
   This_is_a_cash_payment: This is a Cash Payment
   Cash_payment_help_text: "Please Note: Cash Payments are for loan payments which are provided to the finance department in cash. Cash Payments will not be deducted from the employee's next payslip."
   Show_hide_payments: Show/Hide Payments

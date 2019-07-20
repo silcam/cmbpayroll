@@ -32,7 +32,8 @@
   </div>
 
   <div class="form-group">
-    <%= form.submit t(:Create_a_new_loan), :class => 'btn btn-primary' %>
+    <% submit_caption ||= :Create_a_new_loan %>
+    <%= form.submit t(submit_caption), :class => 'btn btn-primary' %>
   </div>
 
   <script>

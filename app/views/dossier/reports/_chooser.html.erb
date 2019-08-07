@@ -11,7 +11,7 @@
     <%= select_tag 'options[period]',
                    options_for_select(@periods), { prompt: t(:Select_a_period, scope: :reports), class: 'form-control' } %>
   </div>
-  <%= submit_tag t(:Display), { class: 'btn btn-primary' } %>
+  <%= submit_tag t(:Display), { class: 'btn btn-primary', data: {disable_with: false} } %>
 
 </form>
 

@@ -76,6 +76,8 @@ gem 'ffi', '~>1.9.24'
 gem 'rack', '~>2.0.6'
 # 5.1.6.1 is fixed version (CVE-2018-16476)
 gem 'activejob', '>= 5.1.6.1'
+# 1.10.4 is fixed (CVE-2019-5477)
+gem 'nokogiri', '>= 1.10.4'
 
 group :development, :test do
   # Use Puma as the app server in development

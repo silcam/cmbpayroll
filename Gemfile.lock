@@ -159,7 +159,7 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (4.1.0)
     nio4r (2.3.1)
-    nokogiri (1.10.2)
+    nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
     pdf-core (0.7.0)
     pg (0.21.0)
@@ -301,6 +301,7 @@ DEPENDENCIES
   minitest-rails-capybara
   minitest-reporters
   momentjs-rails (>= 2.9.0)
+  nokogiri (>= 1.10.4)
   pg (~> 0.21.0)
   prawn (~> 2.1)
   prawn-rails (~> 0.1.1)
@@ -324,4 +325,4 @@ DEPENDENCIES
   web-console (>= 3.3.0)
 
 BUNDLED WITH
-   1.17.1
+   2.0.1

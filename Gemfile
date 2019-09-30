@@ -69,7 +69,8 @@ gem 'rails-html-sanitizer', '~>1.0.4'
 # 3.7.2 is a fixed version (CVE-2018-3760)
 gem 'sprockets', '~>3.7.2'
 # 1.2.2 is a fixed version (CVE-2018-1000544)
-gem 'rubyzip', '~>1.2.2'
+# 1.3.0 is a fixed version (CVE-2019-16892)
+gem 'rubyzip', '~>1.3.0'
 # 1.9.24 is a fixed version (CVE-2018-1000201)
 gem 'ffi', '~>1.9.24'
 # 2.0.6 is a fixed version

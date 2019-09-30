@@ -1422,8 +1422,37 @@ class PayslipTest < ActiveSupport::TestCase
 
     # Total Pay
     total_pay = payslip.taxable - (payslip.total_tax) +
-        payslip.union_dues +
-          payslip.salary_advance
+        payslip.union_dues
+    assert_equal(total_pay, payslip.salaire_net, "total pay correct")
+  end
+
+  test "Salaire Net" do
+    advance_amt = 30000
+
+    # config employee
+    employee = return_valid_employee()
+    period = Period.new(2018,1)
+
+    assert_equal(0, employee.charges.count, "no charges")
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    orig_total_pay = payslip.taxable - (payslip.total_tax)
+    assert_equal(orig_total_pay, payslip.salaire_net, "total pay correct")
+
+    # sal advance
+    Charge.create!(employee: employee, amount: advance_amt, charge_type: Charge.charge_types[:advance], date: "2018-01-15", note: "Salary Advance")
+    assert_equal(1, employee.charges.count, "now has charge")
+
+    # Re process
+    payslip = Payslip.process(employee, period)
+    assert_equal(advance_amt, payslip.salary_advance, "correctly set");
+
+    # Total Pay
+    total_pay = payslip.taxable - (payslip.total_tax)
+    assert_equal(orig_total_pay, total_pay, "total pay did not change")
     assert_equal(total_pay, payslip.salaire_net, "total pay correct")
   end
 

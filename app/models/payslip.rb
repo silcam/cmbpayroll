@@ -412,7 +412,7 @@ class Payslip < ApplicationRecord
       self[:net_pay] = self[:raw_net_pay]
     end
 
-    self[:salaire_net] = self[:taxable] - (self[:total_tax] + salary_advance)
+    self[:salaire_net] = self[:taxable] - self[:total_tax]
   end
 
 

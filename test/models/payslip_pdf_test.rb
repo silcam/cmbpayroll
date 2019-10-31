@@ -2,6 +2,12 @@ require "test_helper"
 
 class PayslipPdfTest < ActiveSupport::TestCase
 
+  def setup
+    # Since I do some migration "magic" in other tests
+    # there will be errors unless this is done.
+    Payslip.reset_column_information
+  end
+
   test "Categories and Echelons Are Historical and Display Properly" do
     employee = return_valid_employee()
     employee.category = "seven"

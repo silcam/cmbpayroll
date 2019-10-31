@@ -22,7 +22,6 @@ class Employee < ApplicationRecord
   has_many :payslips
   has_many :loans
   has_many :raises
-  has_many :supplemental_transfers
   has_many :payslip_corrections, through: :payslips
 
   has_and_belongs_to_many :bonuses
@@ -258,29 +257,6 @@ class Employee < ApplicationRecord
     return count
   end
 
-  def last_supplemental_transfer(period=Period.current)
-    tx_collection = supplemental_transfers.where("transfer_date <= ?", period.finish).
-        order(transfer_date: :desc)
-    recent_tx = tx_collection.first
-
-    return nil unless recent_tx
-
-    if (Period.from_date(recent_tx.transfer_date) == period)
-      return tx_collection.second.try(:transfer_date)
-    else
-      return recent_tx.try(:transfer_date)
-    end
-  end
-
-  def last_supplemental_transfer=(date)
-    period = Period.from_date(date)
-
-    if (supplemental_transfers.where("transfer_date between ? and ?",
-        period.start, period.finish).size == 0)
-      supplemental_transfers.create!(transfer_date: date)
-    end
-  end
-
   def vacation_summary
     period = LastPostedPeriod.get
     payslip = payslip_for(period)
@@ -289,9 +265,6 @@ class Employee < ApplicationRecord
       period: period,
       balance: payslip.nil? ? 0 : payslip.vacation_balance,
       pay_balance: payslip.nil? ? 0 : payslip.vacation_pay_balance,
-      supplemental_balance: payslip.nil? ?  0 : payslip.accum_suppl_days,
-      supplemental_pay_balance: payslip.nil? ? 0 : payslip.accum_suppl_pay,
-      last_supplemental_transfer: last_supplemental_transfer(LastPostedPeriod.get)
     }
   end
 

@@ -192,16 +192,16 @@
     <tr>
       <th scope="row"><%= t :Vacation_balance %>:</th>
       <td><%= vac_summary[:balance]&.round(2) %></td>
-      <th scope="row"><%= t :Supplemental_balance %>:</th>
-      <td><%= vac_summary[:supplemental_balance]&.round(2) %></td>
-      <th scope="row"><%= t :Last_supplemental_transfer %>:</th>
-      <td><%= l(vac_summary[:last_supplemental_transfer], format: :short, default: '') %></td>
+      <th scope="row"></th>
+      <td></td>
+      <th scope="row"></th>
+      <td></td>
     </tr>
     <tr>
       <th scope="row"><%= t :Vacation_pay_balance %>:</th>
       <td><%= number_to_currency(vac_summary[:pay_balance], locale: :cm) %></td>
-      <th scope="row"><%= t :Supplemental_pay_balance %>: </th>
-      <td><%= number_to_currency(vac_summary[:supplemental_pay_balance] , locale: :cm) %>
+      <th scope="row"></th>
+      <td></td>
       <th scope="row"></th>
       <td></td>
     </tr>

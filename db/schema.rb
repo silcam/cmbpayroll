@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190626143506) do
+ActiveRecord::Schema.define(version: 20191030200444) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -279,10 +279,6 @@ ActiveRecord::Schema.define(version: 20190626143506) do
     t.integer "dept_vacation_pay"
     t.integer "department_severance"
     t.decimal "raw_net_pay"
-    t.decimal "accum_reg_days"
-    t.decimal "accum_reg_pay"
-    t.decimal "accum_suppl_days"
-    t.decimal "accum_suppl_pay"
     t.decimal "period_suppl_days"
     t.integer "union_dues", default: 0, null: false
     t.integer "salaire_net", default: 0, null: false
@@ -322,14 +318,6 @@ ActiveRecord::Schema.define(version: 20190626143506) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["person_id"], name: "index_supervisors_on_person_id"
-  end
-
-  create_table "supplemental_transfers", force: :cascade do |t|
-    t.date "transfer_date"
-    t.bigint "employee_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["employee_id"], name: "index_supplemental_transfers_on_employee_id"
   end
 
   create_table "system_variables", force: :cascade do |t|

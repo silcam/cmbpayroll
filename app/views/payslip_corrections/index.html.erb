@@ -19,7 +19,7 @@
     <% @corrections.each do |correction| %>
       <tr>
         <td><%= correction.employee.full_name %></td>
-        <td><%= link_to correction.payslip.period.short_name, correction.payslip %></td>
+        <td><%= link_to(correction.payslip.period.short_name, payslip_path(correction.payslip, :format => :pdf), target: "_blank") %></td>
         <td><%= correction.cfa_credit %></td>
         <td><%= correction.cfa_debit %></td>
         <td><%= correction.vacation_days_credit %></td>

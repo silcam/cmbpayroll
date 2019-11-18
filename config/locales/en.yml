@@ -227,6 +227,10 @@ en:
   Excused_hours: Excused Hours
   Reason: 'Reason:'
   hours_excused: hours excused.
+  Fill_hours: Fill Hours Automatically
+  Fill_hours_for_all: Automatically fill default hours for employees who need them
+  fill_hours_for_all_desc: "This option will automatically fill default hours for those employees whose hours have not yet been entered. This will not fill hours for holidays, weekends, or vacation days. Please verify the employee's hours against the employee's timesheet before processing payroll."
+  Enter_hours_for_all_desc: "This option will take you each employee's page one after the other where you can enter hours for each employee one after the other."
 
   # WorkLoans
   Work_loans: Work Loans

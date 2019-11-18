@@ -15,5 +15,27 @@
     </small>
   </h3>
 
-  <%= link_to t(:Enter_hours), edit_employee_work_hours_path(@employees_needing_entry.first, enter_all: true), class: 'btn btn-primary' %>
+  <div class="panel panel-default">
+    <div class="panel-heading"><%= t :Enter_hours_for_all %></div>
+    <div class="panel-body">
+      <%= link_to t(:Enter_hours), edit_employee_work_hours_path(@employees_needing_entry.first, enter_all: true), class: 'btn btn-primary' %>
+      <p class="help-block">
+        <%= t :Enter_hours_for_all_desc %><br />
+      </p>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading"><%= t :Fill_hours_for_all %></div>
+    <div class="panel-body">
+      <%= button_to(fill_all_employees_work_hours_path(fill_all: true), class: 'btn btn-warning', id: 'fill-all-btn') do %>
+        <%= t(:Fill_hours) %>
+      <% end %>
+      <br />
+      <p class="help-block">
+        <%= t :fill_hours_for_all_desc %><br />
+      </p>
+    </div>
+  </div>
+
 <% end %>

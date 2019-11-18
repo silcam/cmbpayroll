@@ -232,6 +232,11 @@ fr:
   Excused_hours: Heures excusés
   Reason: 'Raison :'
   hours_excused: heures excusés.
+  Fill_hours: Remplir les heures
+  Fill_hours_for_all: Remplir les heures par défaut automatiquement.
+  fill_hours_for_all_desc: "Cette option va remplir les heures par défaut pour chaque employé qui manquent des heures. Cette option ne va pas remplir des heures pour les jours fériés, les week-ends, ou les congés. Veuillez vérifier les heures de l'employé avec les feuilles de temps de chaque employé avant de créer les bulletins de paie."
+  Enter_hours_for_all: Saisir les heures employé par employé
+  Enter_hours_for_all_desc: Cette option va vous présenter la page des heures pour chaque employé qui manquent des heures. Vous devez vérifier chaque employé et taper le bouton avant de continuer au prochain.
 
   # WorkLoans
   Work_loans: Prêts de Travail

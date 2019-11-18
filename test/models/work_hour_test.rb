@@ -464,6 +464,73 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal(20, WorkHour.days_worked(employee, period), "should have worked full month")
   end
 
+  test "Fill Work Hours" do
+    employee = return_valid_employee()
+
+    period = LastPostedPeriod.current
+    refute(LastPostedPeriod.posted?(period), "should not be posted")
+
+    employees_list = WorkHour.employees_lacking_work_hours(period)
+    assert(employees_list.include?(employee), "should not have hours")
+    refute(WorkHour.worked_full_month(employee, period), "didn't work yet")
+
+    WorkHour.fill_default_hours(employee, period)
+
+    employees_list = WorkHour.employees_lacking_work_hours(period)
+    refute(employees_list.include?(employee), "should have hours now")
+    assert(WorkHour.worked_full_month(employee, period), "now worked")
+  end
+
+  test "Fill work hours with no unfilled days does nothing" do
+    employee = return_valid_employee()
+    period = LastPostedPeriod.current
+
+    employees_list = WorkHour.employees_lacking_work_hours(period)
+    assert(employees_list.include?(employee), "should not have hours")
+
+    WorkHour.fill_default_hours(employee, period)
+
+    employees_list = WorkHour.employees_lacking_work_hours(period)
+    refute(employees_list.include?(employee), "should have hours now")
+    assert(WorkHour.worked_full_month(employee, period), "now worked")
+
+    WorkHour.fill_default_hours(employee, period)
+
+    employees_list = WorkHour.employees_lacking_work_hours(period)
+    refute(employees_list.include?(employee), "should have hours now")
+    assert(WorkHour.worked_full_month(employee, period), "now worked")
+  end
+
+  test "Fill work hours with vacation is fine" do
+    employee = return_valid_employee()
+    period = LastPostedPeriod.current
+
+    vacation = Vacation.create(
+        start_date: period.start,
+        end_date: period.mid_month,
+        employee: employee
+    )
+    assert(vacation)
+
+    WorkHour.fill_default_hours(employee, period)
+
+    # verify no vacation days have hours
+    (period.start .. period.mid_month).each do |vac_day|
+      next if (vac_day.saturday? || vac_day.sunday?)
+
+      assert(Vacation.on_vacation_during(employee, vac_day, vac_day), "vacation day")
+      assert(WorkHour.total_hours_for(employee, vac_day, vac_day).empty?, "#{vac_day} contains no hours")
+    end
+
+    # verify days worked
+    days_count = 0
+    ((period.mid_month + 1) .. period.finish).each do |d|
+      next if (d.saturday? || d.sunday?)
+      days_count += 1
+    end
+    assert_equal(days_count, WorkHour.days_worked(employee, period), "now has worked")
+  end
+
   test "Can Enter Vacation Worked" do
     employee = return_valid_employee()
     period = Period.new(2018,1)

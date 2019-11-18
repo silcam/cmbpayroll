@@ -49,6 +49,18 @@ class WorkHoursController < ApplicationController
     end
   end
 
+  def update_all
+    authorize! :admin, Employee
+
+    if params[:fill_all] == 'true'
+      WorkHour.employees_lacking_work_hours(LastPostedPeriod.current).each do |e|
+        WorkHour.fill_default_hours(e, LastPostedPeriod.current)
+      end
+
+      redirect_to work_hours_path()
+    end
+  end
+
   private
 
   def hour_params

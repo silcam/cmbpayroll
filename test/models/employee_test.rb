@@ -620,94 +620,6 @@ class EmployeeTest < ActiveSupport::TestCase
     end
   end
 
-  test "Last Transfer for the Employee" do
-    luke = employees :Luke
-
-    luke.last_supplemental_transfer = Date.parse("2018-01-01")
-    luke.last_supplemental_transfer = Date.parse("2018-03-01")
-    luke.last_supplemental_transfer = Date.parse("2018-02-01")
-    luke.last_supplemental_transfer = Date.parse("2017-12-01")
-    luke.last_supplemental_transfer = Date.parse("2018-09-01")
-
-    Date.stub :today, Date.new(2019, 12, 1) do
-      assert_equal("2018-09-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
-    end
-  end
-
-  test "Last Transfer doesn't look at things newer than period" do
-    luke = employees :Luke
-
-    luke.last_supplemental_transfer = Date.parse("2018-01-01")
-    luke.last_supplemental_transfer = Date.parse("2020-03-01")
-    luke.last_supplemental_transfer = Date.parse("2020-04-01")
-    luke.last_supplemental_transfer = Date.parse("2020-05-01")
-    luke.last_supplemental_transfer = Date.parse("2020-06-01")
-
-    # This returns the date before the one at Period.current
-    Date.stub :today, Date.new(2018, 9, 5) do
-      assert_equal("2018-01-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
-    end
-  end
-
-  test "Last Transfer doesn't return anything for this period." do
-    luke = employees :Luke
-
-    luke.last_supplemental_transfer = Date.parse("2018-01-01")
-    luke.last_supplemental_transfer = Date.parse("2018-03-01")
-    luke.last_supplemental_transfer = Date.parse("2018-02-01")
-    luke.last_supplemental_transfer = Date.parse("2017-12-01")
-    luke.last_supplemental_transfer = Date.parse("2018-09-01")
-
-    # This returns the date before the one at Period.current
-    Date.stub :today, Date.new(2018, 9, 5) do
-      assert_equal("2018-03-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
-    end
-
-    # No longer at Period.current, the most recent will be returned
-    Date.stub :today, Date.new(2018, 10, 5) do
-      assert_equal("2018-09-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
-    end
-  end
-
-  test "Last Transfer doesn't duplicate" do
-    luke = employees :Luke
-
-    luke.last_supplemental_transfer = Date.parse("2018-01-01")
-    luke.last_supplemental_transfer = Date.parse("2018-01-01")
-    luke.last_supplemental_transfer = Date.parse("2018-01-01")
-    luke.last_supplemental_transfer = Date.parse("2018-01-01")
-    luke.last_supplemental_transfer = Date.parse("2018-01-01")
-
-    # This returns the date before the one at Period.current
-    Date.stub :today, Date.new(2018, 9, 5) do
-      assert_equal("2018-01-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
-    end
-
-    assert_equal(1, luke.supplemental_transfers.size,
-        "should only have 1 transfer if all the same period")
-  end
-
-  test "Last Transfer might return null." do
-    luke = employees :Luke
-
-    # nil
-    Date.stub :today, Date.new(2018, 9, 5) do
-      refute(luke.last_supplemental_transfer)
-    end
-
-    luke.last_supplemental_transfer = Date.parse("2018-09-01")
-
-    # since latest is this current period, nil
-    Date.stub :today, Date.new(2018, 9, 5) do
-      refute(luke.last_supplemental_transfer)
-    end
-
-    # something
-    Date.stub :today, Date.new(2018, 10, 5) do
-      assert_equal("2018-09-01", luke.last_supplemental_transfer.strftime("%Y-%m-%d"))
-    end
-  end
-
   test "Employee Vacation Balances Summaries Are Sourced from Last Posted Period" do
     employee = return_valid_employee()
     employee.first_day = "2010-02-01"
@@ -715,13 +627,10 @@ class EmployeeTest < ActiveSupport::TestCase
 
     # Process.
     period = Period.new(2018,2)
-    employee.last_supplemental_transfer = Date.parse("2017-02-01")
     generate_work_hours employee, period
     payslip = Payslip.process(employee, period)
     vac_balance_posted = payslip.vacation_balance
     vac_pay_balance_posted = payslip.vacation_pay_balance
-    sup_balance_posted = payslip.accum_suppl_days
-    sup_pay_balance_posted = payslip.accum_suppl_pay
 
     # Force Set last posted period.
     lpp = LastPostedPeriod.first_or_initialize
@@ -745,11 +654,8 @@ class EmployeeTest < ActiveSupport::TestCase
     # last posted period despite things moving forward.
     vac_summary = employee.vacation_summary
     assert(vac_summary, "returns something")
-    assert(vac_summary[:supplemental_balance], "returns something")
-    assert(vac_summary[:supplemental_pay_balance], "returns something")
     assert(vac_summary[:balance], "returns something")
     assert(vac_summary[:pay_balance], "returns something")
-    assert(vac_summary[:last_supplemental_transfer], "returns something")
     assert(vac_summary[:period], "returns something")
 
     assert(vac_balance_plus_2 > vac_balance_plus_1, "should augment")
@@ -765,15 +671,7 @@ class EmployeeTest < ActiveSupport::TestCase
         "balances should be correct")
     assert_equal(vac_pay_balance_posted, vac_summary[:pay_balance],
         "balances should be correct")
-    assert_equal(sup_balance_posted, vac_summary[:supplemental_balance],
-        "balances should be correct")
-    assert_equal(sup_pay_balance_posted, vac_summary[:supplemental_pay_balance],
-        "balances should be correct")
     assert_equal(LastPostedPeriod.get, vac_summary[:period], "correct period")
-    assert_equal(
-          "2017-02-01",
-          vac_summary[:last_supplemental_transfer].strftime("%Y-%m-%d"),
-      "balances should be correct")
   end
 
   test "Search returns only active employees" do

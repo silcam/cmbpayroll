@@ -220,7 +220,7 @@ class VacationTest < ActiveSupport::TestCase
     employee.contract_start = "2012-08-01"
     employee.first_day = "2012-08-01"
 
-    assert_equal(0, Vacation.earned_supplemental_days(employee, Period.new(2013, 1)))
+    assert_equal(0, Vacation.period_supplemental_days(employee, Period.new(2013, 1)))
   end
 
   test "Number of Supplemental Days Earned is correct" do
@@ -228,10 +228,12 @@ class VacationTest < ActiveSupport::TestCase
     @luke.first_day = "2012-08-01"
 
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2013, 1)))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2017, 1)))
 
-    # Anniversary
-    earned_days = 1.5 + ((2/12.0) * 8)
+    earned_days = 1.5 + ((2/12.0) * 1)
+    assert_equal(earned_days, Vacation.days_earned(@luke, Period.new(2017, 1)))
+
+    # Anniversaries aren't special at all, normal months like everything else.
+    earned_days = 1.5 + ((2/12.0) * 1)
     assert_equal(earned_days.round(3), Vacation.days_earned(@luke, Period.new(2017, 8)).round(3))
 
     Vacation.create!(start_date: "2017-12-05", end_date: "2017-12-06", employee: @luke)
@@ -246,8 +248,7 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(2/12.0, Vacation.period_supplemental_days(@luke, Period.new(2017,11)))
     assert_equal(2/12.0, Vacation.period_supplemental_days(@luke, Period.new(2017,12)))
 
-    earned_days = 1.5 + ((2/12.0) * 4)
-
+    # one period at a time is given out by suppl days.
     assert_equal(earned_days, Vacation.days_earned(@luke, Period.new(2017, 12)))
   end
 
@@ -276,120 +277,28 @@ class VacationTest < ActiveSupport::TestCase
     end
   end
 
-  test "Supplemental Days Earned due to Anniversary" do
+  test "Supplemental Days Are Earned Each Month With Normal Days" do
     # @luke contract_start: 2017-01-01
+    @luke.first_day = "2017-01-01"
+    @luke.save
 
-    # Before hire
-    assert_equal 0, Vacation.days_earned(@luke, Period.new(2016, 11))
+    # Before hire, no days earned.
+    assert_equal(0, Vacation.days_earned(@luke, Period.new(2016, 12)))
 
-    # Normal month
-    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2017, 1))
-
-    # Supp Days
-    assert_equal 1.5, Vacation.days_earned(@luke, Period.new(2021, 1))
-
-    # Clear transfers
-    @luke.supplemental_transfers.delete_all
-    refute(@luke.last_supplemental_transfer)
-
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2021, 12)))
-
-    earned_days = 1.5 + (2/12.0 * 1)
-    assert_equal(earned_days, Vacation.days_earned(@luke, Period.new(2022, 1)))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2022, 2)))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2022, 3)))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2025, 12)))
-    earned_days = 1.5 + (2/12.0 * (4 * 12))
-    assert_equal(earned_days.round(2), Vacation.days_earned(@luke, Period.new(2026, 1)).round(2))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2026, 2)))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2026, 12)))
-    earned_days = 1.5 + (2/12.0 * 11) + (4/12.0 * 1)
-    assert_equal(earned_days.round(2), Vacation.days_earned(@luke, Period.new(2027, 1)).round(2))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2027, 2)))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2027, 3)))
-  end
-
-  test "Supplemental Days Earned due to Vacation" do
-    # @luke contract_start: 2017-01-01
-
-    # Before hire
-    assert_equal(0, Vacation.days_earned(@luke, Period.new(2016, 11)))
-
-    # Normal month
+    # Normal months
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2017, 1)))
-
-    # Clear transfers
-    @luke.supplemental_transfers.delete_all
-    refute(@luke.last_supplemental_transfer)
-
     assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2021, 1)))
 
+    assert_equal((2/12.0) * 1, Vacation.period_supplemental_days(@luke, Period.new(2022, 1)))
+
+    # First month of extra supplemental days
     earned_days = 1.5 + (2/12.0) * 1
-    assert_equal(earned_days, Vacation.days_earned(@luke, Period.new(2022, 1)))
 
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2022, 2)))
+    assert_equal(earned_days.round(3), Vacation.days_earned(@luke, Period.new(2022, 1)).round(3))
+    assert_equal(earned_days.round(3), Vacation.days_earned(@luke, Period.new(2022, 2)).round(3))
     Vacation.create!(start_date: "2022-03-03", end_date: "2022-03-04", employee: @luke)
-
-    earned_days = 1.5 + ((2/12.0) * 2)
     assert_equal(earned_days.round(3), Vacation.days_earned(@luke, Period.new(2022, 3)).round(3))
-    assert_equal(1.5, Vacation.days_earned(@luke, Period.new(2022, 4)))
-  end
-
-  test "Supplemental Transfer should happen when vacations happen" do
-    # Create a vacation that starts in a certain period.
-    Vacation.create!(start_date: "2018-11-03", end_date: "2018-12-03", employee: @luke)
-
-    refute(Vacation.transfer_supplemental_days?(@luke, Period.new(2018,10)), "shouldn't transfer")
-    assert(Vacation.transfer_supplemental_days?(@luke, Period.new(2018,11)), "should transfer")
-    refute(Vacation.transfer_supplemental_days?(@luke, Period.new(2018,12)), "shouldn't transfer")
-  end
-
-  test "Supplemental Transfer should happen when anniversary (contract start) happens" do
-    assert_equal(0, Vacation.for_period(Period.new(2020,1)).size,
-        "there should not be vacations during this period")
-
-    refute(Vacation.transfer_supplemental_days?(@luke, Period.new(2019,12)), "shouldn't transfer")
-    assert(Vacation.transfer_supplemental_days?(@luke, Period.new(2020,1)), "should transfer")
-    refute(Vacation.transfer_supplemental_days?(@luke, Period.new(2020,2)), "shouldn't transfer")
-  end
-
-  test "Supplemental Transfer sets last_supplemental_transfer employee attribute" do
-    employee = return_valid_employee()
-    employee.contract_start = "2013-08-01"
-    employee.first_day = "2013-08-01"
-
-    refute(employee.last_supplemental_transfer, "should not have transfer date")
-
-    # transfer days
-
-    earned_days = 1.5 + (2/12.0 * 8)
-    assert_equal(earned_days, Vacation.days_earned(employee, Period.new(2018, 8)),
-        "earned supplemental days sets the transfer date")
-
-    # assert existence (won't pull from current period)
-    refute(employee.last_supplemental_transfer(Period.new(2018, 8)))
-    assert(employee.last_supplemental_transfer(Period.new(2018, 9)))
-    assert_equal("2018-08-01", employee.last_supplemental_transfer(Period.new(2018,9)).strftime("%Y-%m-%d"),
-        "date is now set")
-
-    # transfer days
-    assert_equal(3.5, Vacation.days_earned(employee, Period.new(2019, 8)),
-        "earning more days resets the transfer date")
-
-    # assert updated
-    assert(employee.last_supplemental_transfer(Period.new(2019, 8)))
-    assert_equal("2018-08-01", employee.last_supplemental_transfer(Period.new(2019,8)).strftime("%Y-%m-%d"),
-        "date is updated")
-
-    # won't pull from future
-    assert(employee.last_supplemental_transfer(Period.new(2019, 7)))
-    assert_equal("2018-08-01", employee.last_supplemental_transfer(Period.new(2019,7)).strftime("%Y-%m-%d"),
-        "date is updated")
-
-    # Ahh
-    assert(employee.last_supplemental_transfer(Period.new(2019, 9)))
-    assert_equal("2019-08-01", employee.last_supplemental_transfer(Period.new(2019,9)).strftime("%Y-%m-%d"),
-        "date is updated")
+    assert_equal(earned_days.round(3), Vacation.days_earned(@luke, Period.new(2022, 4)).round(3))
   end
 
   test "Starts In" do
@@ -502,27 +411,39 @@ class VacationTest < ActiveSupport::TestCase
     # make payslip valid.
     payslip.net_pay = 342345
     create_earnings(payslip)
-    set_previous_vacation_balances(@luke, period, 286978, 42.0)
+
+    original_days_balance = 32.0
+    original_pay_balance = 286978
+    set_previous_vacation_balances(@luke, period, original_pay_balance, original_days_balance)
 
     # Set up balances.
-    payslip.vacation_balance = 42.0
-    payslip.vacation_pay_balance = 286978
+    payslip.vacation_balance = original_days_balance
+    payslip.vacation_pay_balance = original_pay_balance
     assert(payslip.save, "should save properly")
 
     payslip = Payslip.process(@luke, period)
     assert(payslip.on_vacation_entire_period?, "on vaca in Kribi")
 
-    payslip.vacation_daily_rate
-
     # Vacation pay is computed by vacation_daily_rate * days
-    exp = @lukes_vacation.vacation_pay
-    assert_equal(21, @lukes_vacation.days, "luke 21 days off to go to Kribi")
+    daily_rate = payslip.vacation_daily_rate
+    # TODO how is this computed?
+    assert_equal(4288.125, daily_rate, "daily rate is correct")
+
+    days = @lukes_vacation.days
+    assert_equal(21, days, "luke 21 days off to go to Kribi")
+
+    exp = (days * daily_rate).round
     assert_equal(exp, @lukes_vacation.vacation_pay, "vacation pay is correct for vacation")
 
-    # original balance + no accrual because vacation - vacation days taken
-    assert_equal(42 + 0.0 - 21, payslip.vacation_balance)
-    # original balance - vacation pay
-    assert_equal(286978 - exp, payslip.vacation_pay_balance)
+    # original balance + no accrual because on vacation whole period.
+    new_days_bal = original_days_balance + 0.0 - 21
+    assert_equal(new_days_bal, payslip.vacation_balance)
+
+    # NB. Vacation pay balance is just what would be paid out if the employee
+    #     Took all their vacation at once. It is not a running balance from a
+    #     total just a indication of the liability each employee has in their
+    #     vacation total. It is recomputed each month from scratch.
+    assert_equal((new_days_bal * daily_rate).round, payslip.vacation_pay_balance)
   end
 
   test "Vacation (payslip) can figure how much taxes are for this vacation" do
@@ -882,24 +803,28 @@ class VacationTest < ActiveSupport::TestCase
   end
 
   test "Supplemental Days" do
-    # You get your supplemental days on your anniversary.
-    # All at once.
+    # You get supplemental days each month, no longer on your anniversary.
+    # or when you take vacation.
+    # for 27 years, this is 2 days per each 5 years of service (or 10 days)
     on_sep_5 do #2017
       employee = return_valid_employee()
       employee.contract_start = "1990-09-02"
 
-      employee.last_supplemental_transfer = Date.parse("2016-09-05")
       period = Period.current
-      assert_equal(10, Vacation.supplemental_days(employee, period), "Correct Suppl Days")
+      assert_equal(
+          ((10/12.0) * 1).round(3),
+          Vacation.period_supplemental_days(employee, period).round(3), "Correct Suppl Days")
     end
 
-    # Other months you get nothing.
+    # Still given out (1 month's worth) even though it is not an anniversary
     on_sep_5 do #2017
       employee = return_valid_employee()
       employee.contract_start = "1990-05-02"
 
       period = Period.current
-      assert_equal(0, Vacation.supplemental_days(employee, period), "Correct Suppl Days")
+      assert_equal(
+          ((10/12.0) * 1).round(3),
+          Vacation.period_supplemental_days(employee, period).round(3), "Correct Suppl Days")
     end
   end
 

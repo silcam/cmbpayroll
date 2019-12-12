@@ -134,11 +134,11 @@ class Vacation < ApplicationRecord
     Vacation.all.where("start_date > ?", Period.current.finish)
   end
 
-  # This isn't correct and needs to be fixed.
+  # FIXME : Verify algorithm.
   def self.days_earned(employee, period)
     return 0 if period.finish < employee.first_day
     earned = SystemVariable.value(:vacation_days).fdiv(MONTHLY)
-    earned + supplemental_days(employee, period)
+    earned + period_supplemental_days(employee, period)
   end
 
   def self.period_supplemental_days(employee, period)
@@ -153,28 +153,12 @@ class Vacation < ApplicationRecord
     days
   end
 
-  def self.supplemental_days(employee, period)
-    if transfer_supplemental_days?(employee, period)
-      sup_days = earned_supplemental_days(employee, period)
-      set_transfer_date(employee, period)
-      return sup_days
-    else
-      0
-    end
-  end
-
   def self.first_supplemental_accrual_period(employee)
     # The period after the 4th anniversary
     anniv = (employee.contract_start.to_datetime >> (
         (SystemVariable.value(:supplemental_days_period) - 1) * MONTHLY
     )).next_month
     Period.new(anniv.year, anniv.month)
-  end
-
-  def self.transfer_supplemental_days?(employee, period)
-    return true if (Vacation.starts_in(employee, period).size > 0)
-    return true if period.month == employee.contract_start.try(:month)
-    return false
   end
 
   def self.mom_supplemental_days(employee)
@@ -275,6 +259,7 @@ class Vacation < ApplicationRecord
     return 0 if payslip.vacation_pay_balance.nil?
     return 0 if payslip.vacation_balance == 0
 
+    # FIXME similar to payslip line 794
     self[:vacation_pay] = ( payslip.vacation_daily_rate * days ).round
 
     # This may need some cleanup
@@ -316,32 +301,6 @@ class Vacation < ApplicationRecord
   end
 
   private
-
-  # This pays no attention to what is in the payslips.
-  # Should be fixed.
-  def self.earned_supplemental_days(employee, period)
-    start_period = nil
-    earned_days = 0
-
-    unless (employee.last_supplemental_transfer(period))
-      start_period = Period.new(period.year - 1, period.month)
-    else
-      start_period = Period.new(
-          employee.last_supplemental_transfer(period).try(:year),
-            employee.last_supplemental_transfer(period).try(:month)).next
-    end
-
-    (start_period .. period).each do |p|
-      tmp_ed = period_supplemental_days(employee, p)
-      earned_days += tmp_ed
-    end
-
-    earned_days
-  end
-
-  def self.set_transfer_date(employee, period)
-    employee.last_supplemental_transfer = period.start
-  end
 
   def number_of_days(start_date, end_date)
     tmp_start_date = start_date.clone

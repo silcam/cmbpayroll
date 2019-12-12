@@ -116,9 +116,6 @@ class ActiveSupport::TestCase
     previous_payslip.vacation_balance = days
     previous_payslip.vacation_pay_balance = pay
 
-    previous_payslip.accum_reg_days = days
-    previous_payslip.accum_reg_pay = pay
-
     assert(previous_payslip.save)
   end
 

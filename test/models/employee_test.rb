@@ -3,6 +3,8 @@ require "test_helper"
 class EmployeeTest < ActiveSupport::TestCase
 
   def setup
+    Payslip.reset_column_information
+
     @luke = employees :Luke
     @yoda = supervisors :Yoda
     @admin = departments :Admin

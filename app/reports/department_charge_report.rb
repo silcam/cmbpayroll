@@ -18,50 +18,16 @@ SELECT
   ps.cnpswage + ps.department_credit_foncier as dept_taxes,
   ps.department_severance as dept_severance,
   ps.vacation_earned as vacation_days,
-  CASE WHEN ps.accum_reg_pay = 0
-    THEN
-      CEILING(
-        ps.vacation_pay_earned * c.department_charge_percent
-      )
-    ELSE
-      CASE WHEN ps.accum_reg_days = 0
-        THEN
-          0
-        ELSE
-          CEILING(
-            (
-              ps.vacation_pay_earned + ps.period_suppl_days * (
-                ps.accum_reg_pay / ps.accum_reg_days
-              )
-            ) * c.department_charge_percent
-          )
-      END
-  END as vacation_pay,
+  CEILING(ps.vacation_pay_earned * c.department_charge_percent) as vacation_pay,
   ps.employee_fund,
   ps.employee_contribution,
   COALESCE(ps.taxable,0) +
       COALESCE(b.add_pay,0) +
       COALESCE(ps.department_cnps,0) +
       COALESCE(ps.department_credit_foncier,0) +
-      COALESCE(CASE WHEN ps.accum_reg_pay = 0
-        THEN
-          CEILING(
-            ps.vacation_pay_earned * c.department_charge_percent
-          )
-        ELSE
-          CASE WHEN ps.accum_reg_days = 0
-            THEN
-              0
-            ELSE
-              CEILING(
-                (
-                  ps.vacation_pay_earned + ps.period_suppl_days * (
-                    ps.accum_reg_pay / ps.accum_reg_days
-                  )
-                ) * c.department_charge_percent
-              )
-          END
-      END,0) +
+      COALESCE(CEILING(
+          ps.vacation_pay_earned * c.department_charge_percent
+      ),0) +
       COALESCE(ps.employee_fund,0) +
       COALESCE(ps.employee_contribution,0) as total_charge,
   wlp.percentage as dept_percentage,
@@ -69,30 +35,11 @@ SELECT
       COALESCE(b.add_pay,0) +
       COALESCE(ps.department_cnps,0) +
       COALESCE(ps.department_credit_foncier,0) +
-      COALESCE(CASE WHEN ps.accum_reg_pay = 0
-        THEN
-          CEILING(
-            ps.vacation_pay_earned * c.department_charge_percent
-          )
-        ELSE
-          CASE WHEN ps.accum_reg_days = 0
-            THEN
-              0
-            ELSE
-              CEILING(
-                (
-                  ps.vacation_pay_earned + ps.period_suppl_days * (
-                    ps.accum_reg_pay / ps.accum_reg_days
-                  )
-                ) * c.department_charge_percent
-              )
-          END
-      END,0) +
+      COALESCE(CEILING(
+          ps.vacation_pay_earned * c.department_charge_percent
+      ),0) +
       COALESCE(ps.employee_fund,0) +
       COALESCE(ps.employee_contribution,0)) * wlp.percentage) as dept_charge,
-  ps.accum_reg_days,
-  ps.accum_reg_pay,
-  ps.accum_suppl_days,
   ps.period_suppl_days
 FROM
   employees e

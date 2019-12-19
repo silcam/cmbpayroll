@@ -170,21 +170,32 @@ class WorkHour < ApplicationRecord
     NUMBER_OF_HOURS_IN_A_WORKDAY
   end
 
+
+  # Differs from below method in that it can only be used for one employee, and
+  # for only the current open period, not any arbitrary end date
+  def self.fill_default_hours(employee, period)
+    fill_hours(employee, period.start, period.finish)
+  end
+
   # Developer helper method. Call from the Rails console to populate some WorkHours
   # Comment out this line before running: validate :not_during_posted_period
   def self.fill_in_workhours(end_date)
-    holidays = Holiday.days_hash(Date.new(2016, 1, 1), end_date)
     Employee.all.each do |emp|
-      (emp.first_day .. end_date).each do |d|
-        if emp.work_hours.find_by(date: d).nil?
-          hours = is_off_day?(d, holidays[d]) ? 0 : 8
-          emp.work_hours << WorkHour.new(date: d, hours: hours)
-        end
-      end
+      fill_hours(emp, emp.first_day, end_date, holidays)
     end
   end
 
   private
+
+  def self.fill_hours(employee, start_date, end_date)
+    holidays = Holiday.days_hash(start_date, end_date)
+    (start_date .. end_date).each do |d|
+      if employee.work_hours.find_by(date: d).nil?
+        hours = is_off_day?(d, holidays[d]) ? 0 : 8
+        employee.work_hours << WorkHour.new(date: d, hours: hours)
+      end
+    end
+  end
 
   def hours_not_during_vacation
     if (employee and !employee.vacations.

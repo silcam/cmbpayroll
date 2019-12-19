@@ -70,6 +70,8 @@ fr:
   cant_change_paid_record: ne peut pas être changé, les vacances sont déjà payées.
   is_invalid: n'est pas valide.
   You_must_select: D'abord, Il faut choisir un employée
+  You_must_select_one: Il faut choisir au moins qu’un employé
+  You_must_a_period: Il faut choisir une période
 
   # Alerts
   Alerts: Avertissements
@@ -232,6 +234,11 @@ fr:
   Excused_hours: Heures excusés
   Reason: 'Raison :'
   hours_excused: heures excusés.
+  Fill_hours: Remplir les heures
+  Fill_hours_for_all: Remplir les heures par défaut automatiquement.
+  fill_hours_for_all_desc: "Cette option va remplir les heures par défaut pour chaque employé qui manquent des heures. Cette option ne va pas remplir des heures pour les jours fériés, les week-ends, ou les congés. Veuillez vérifier les heures de l'employé avec les feuilles de temps de chaque employé avant de créer les bulletins de paie."
+  Enter_hours_for_all: Saisir les heures employé par employé
+  Enter_hours_for_all_desc: Cette option va vous présenter la page des heures pour chaque employé qui manquent des heures. Vous devez vérifier chaque employé et taper le bouton avant de continuer au prochain.
 
   # WorkLoans
   Work_loans: Prêts de Travail

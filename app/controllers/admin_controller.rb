@@ -47,6 +47,7 @@ class AdminController < ApplicationController
     @periods = []
     @current = Period.current()
     period = @current.next.next
+    @employees = Employee.currently_paid()
 
     (0..12).each do
       @periods << period
@@ -60,6 +61,17 @@ class AdminController < ApplicationController
     @today = Date.today
 
     period_param = params[:period]
+    @selected_employees = params[:employees]
+
+    if @selected_employees.nil?
+      redirect_to generate_timesheets_path, :notice => t(:You_must_select_one)
+      return
+    end
+
+    if period_param.nil? || period_param.length == 0
+      redirect_to generate_timesheets_path, :notice => t(:You_must_a_period)
+      return
+    end
 
     begin
       period_year, period_month = period_param.split('-')
@@ -72,7 +84,6 @@ class AdminController < ApplicationController
     @end_date = period.finish
 
     @announcement = params[:timesheet][:announcement]
-    @employees = Employee.currently_paid()
     @filename = 'eps-timesheet.pdf'
   end
 

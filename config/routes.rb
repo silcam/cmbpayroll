@@ -83,6 +83,7 @@ Rails.application.routes.draw do
   get 'employees/:employee_id/work_hours',      to: 'work_hours#index', as: :employee_work_hours
   get 'employees/:employee_id/work_hours/edit', to: 'work_hours#edit',  as: :edit_employee_work_hours
   post 'employees/:employee_id/work_hours',    to: 'work_hours#update', as: :update_employee_work_hours
+  post 'employees/work_hours_fill_all', to: 'work_hours#update_all', as: :fill_all_employees_work_hours
 
   # Administration
   get 'admin/index'

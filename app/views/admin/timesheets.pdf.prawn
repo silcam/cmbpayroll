@@ -7,7 +7,9 @@ prawn_document(page_layout: :landscape) do |pdf|
 
   holidays_hash = Holiday.days_hash(@start_date, @end_date)
 
-  @employees.each do |employee|
+  @selected_employees.each do |eid|
+
+    employee = Employee.find(eid)
 
     # Header
     pdf.text "SIL EMPLOYEE TIMESHEET", :align => :center, :style => :bold
@@ -105,11 +107,6 @@ prawn_document(page_layout: :landscape) do |pdf|
       pdf.font("Helvetica", :style => :italic, :size => 10) do
         pdf.text "Announcements: #{@announcement}"
       end
-    end
-
-    # Don't make an empty, blank page after the last employee
-    unless employee == @employees.last
-      pdf.start_new_page
     end
   end
 end

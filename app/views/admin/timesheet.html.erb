@@ -16,6 +16,12 @@
   </div>
 
   <div class="form-group">
+    <label><%= t :Employee %></label>
+    <%= select_tag 'employees',
+                    options_from_collection_for_select(@employees, 'id', 'full_name_rev', @employees.map(&:id)), { multiple: true, size: 10, class: 'form-control' } %>
+  </div>
+
+  <div class="form-group">
     <label><%= t :Announcements %></label>
     <%= text_area(:timesheet, :announcement, class: 'form-control') %>
   </div>

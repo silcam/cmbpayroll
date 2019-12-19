@@ -8,3 +8,8 @@ $(document).on "turbolinks:load", ->
       excuse_section.slideUp('fast')
       excuse_section.find('input.excused-hours-excuse').prop('disabled', true)
       excuse_section.find('input.excused-hours').val(0)
+
+$ ->
+  $('body').on 'click', '#fill-all-btn', ->
+    $('#fill-all-btn').html('Working...')
+    true

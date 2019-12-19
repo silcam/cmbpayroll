@@ -4,6 +4,8 @@ class PayslipsControllerTest < ActionDispatch::IntegrationTest
   include ControllerTestHelper
 
   def setup
+    Payslip.reset_column_information
+
     @luke = employees(:Luke)
     @han = employees(:Han)
     @obiwan = employees(:Obiwan)

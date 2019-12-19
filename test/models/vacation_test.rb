@@ -2,6 +2,8 @@ require "test_helper"
 
 class VacationTest < ActiveSupport::TestCase
   def setup
+    Payslip.reset_column_information
+
     @luke = employees :Luke
     @anakin = employees :Anakin
     @lukes_vacation = vacations :LukeInKribi

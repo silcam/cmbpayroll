@@ -70,6 +70,8 @@ en:
   cant_change_paid_record: is in a vacation that is already paid.
   is_invalid: is invalid.
   You_must_select: You Must Select an Employee First
+  You_must_select_one: You must select at least one employee
+  You_must_a_period: You must select a period
 
   # Alerts
   Alerts: Alerts

@@ -5,12 +5,16 @@
 <table class="table">
   <tr>
     <th><%= t :User %></th>
+    <th><%= t :Username %></th>
     <th><%= t :Role %></th>
   </tr>
   <% @users.each do |user| %>
     <tr>
       <td>
         <%= link_to user.full_name_rev, edit_user_path(user) %>
+      </td>
+      <td>
+        <%= user.username %>
       </td>
       <td>
         <%= user.role.humanize %>

@@ -378,6 +378,8 @@ fr:
   Estimate: L'estimation
   How_it_works: Comment ça marche?
   Continue: Continuer
+  journal_report: 'Rapport de 340'
+  Journal_report_description: Rapport pour aider à compléter le journal de 340
 
   # Admin Descriptions
   Payslips_admin_description: Création des bulletins de paie et finalisation des mois

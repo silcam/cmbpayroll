@@ -1,0 +1,55 @@
+<% provide :title,  t(:Administration) %>
+
+<h2><%= t(:Journal_report) %> : <%= @period.name %></h2>
+
+<div class="col-md-6">
+  <code>
+    Total Debits: <%= number_to_currency(@total_debit, unit: 'CFA', locale: :cm) %><br />
+    Total Credits: <%= number_to_currency(@total_credit, unit: 'CFA', locale: :cm) %><br />
+    Difference: <%= number_to_currency((@total_debit - @total_credit), unit: '', locale: :cm) %><br />
+  </code>
+</div>
+
+<div class="col-md-6 text-right">
+  <div class="alert alert-info">
+
+    <%= form_tag(admin_journal_report_path(), method: 'get', class: 'form-inline') %>
+      <div class="form-group">
+        <label><%= t :Period %></label>
+        <%= select_tag 'period',
+                       options_for_select(@periods), { prompt: t(:Select_a_period, scope: :reports), class: 'form-control' } %>
+      </div>
+      <%= submit_tag t(:Display), { class: 'btn btn-primary', data: {disable_with: false} } %>
+    </form>
+
+    <em>All data is for the period: <%= @period %></em>
+  </div>
+</div>
+
+<table class="table journal-table table-condensed table-bordered table-hover">
+<tr>
+  <th class="col-sm-2">Account Number</th>
+  <th class="col-sm-4">Account Name</th>
+  <th class="col-sm-4">Description</th>
+  <th class="col-sm-1 text-nowrap" align="right">DEBIT</th>
+  <th class="col-sm-1 text-nowrap" align="right">CREDIT</th>
+  <th class="col-sm-1 text-nowrap" align="right">Balance</th>
+</tr>
+<tr>
+
+<% balance = 0 %>
+
+<% @report_data.each do |line| %>
+
+  <% balance -= line[:debit] %>
+  <% balance += line[:credit] %>
+<tr>
+  <td><%= line[:dept_account] %></td>
+  <td><%= line[:dept_name] %></td>
+  <td><%= line[:dept_note] %></td>
+  <td class="text-nowrap" align="right"><%= number_to_currency(line[:debit], unit: '', locale: :cm) %></td>
+  <td class="text-nowrap" align="right"><%= number_to_currency(line[:credit], unit: '', locale: :cm) %></td>
+  <td class="text-nowrap" align="right"><%= number_to_currency(balance, unit: '', locale: :cm) %></td>
+</tr>
+<% end %>
+</table>

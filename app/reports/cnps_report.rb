@@ -15,12 +15,15 @@ SELECT
   p.gender
 FROM
   employees e,
+  payslips ps,
   people p LEFT OUTER JOIN
   (select parent_id, count(*) as numchildren from children GROUP BY parent_id) c ON
     p.id = c.parent_id
 WHERE
+  e.id = ps.employee_id AND
   e.person_id = p.id AND
-  e.employment_status IN :employment_status
+  ps.period_year = :year AND
+  ps.period_month = :month
 ORDER BY
   name ASC
     SELECTSTATEMENT

@@ -298,9 +298,7 @@ class Employee < ApplicationRecord
 
   def self.active_status_array
     statuses = []
-    statuses << Employee.employment_statuses['full_time']
-    statuses << Employee.employment_statuses['part_time']
-    statuses << Employee.employment_statuses['temporary']
+    ['full_time','part_time','temporary'].map { |item| statuses.push(Employee.employment_statuses[item]) }
     statuses
   end
 

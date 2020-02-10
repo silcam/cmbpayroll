@@ -710,6 +710,12 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(0, employee.wage_scale_value)
   end
 
+  test "Active Status Array Works" do
+    exp = [0,1,2]
+    ary = Employee.active_status_array
+    assert_equal(exp, ary, "yep it's good")
+  end
+
   def some_valid_params(params={})
     {first_name: 'Joe',
      last_name: 'Shmoe',

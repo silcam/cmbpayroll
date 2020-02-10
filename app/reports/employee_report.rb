@@ -1,5 +1,7 @@
 class EmployeeReport < CMBReport
 
+  # FIXME: this report is always current, or a reflection of the status in this period?
+
   def sql
 
     select =<<-SELECTSTATEMENT

@@ -60,7 +60,6 @@ FROM
       SELECT #{SystemVariable.value(:dept_charge_percent)} as department_charge_percent
     ) c
 WHERE
-  e.employment_status in :employment_status AND
   ps.period_year = :year AND
   ps.period_month = :month
 ORDER BY

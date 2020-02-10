@@ -75,6 +75,10 @@ class Employee < ApplicationRecord
           employment_status == "temporary"
   end
 
+  def is_on_leave?
+    employment_status == "leave"
+  end
+
   def supervised_by? possible_sup
     my_sup = supervisor
     until my_sup.nil?

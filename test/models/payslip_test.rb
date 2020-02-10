@@ -505,7 +505,7 @@ class PayslipTest < ActiveSupport::TestCase
     employee3.last_name = "Three"
     employee3.category_one!
     employee3.echelon_f!
-    employee3.employment_status = "leave"
+    employee3.employment_status = "inactive"
     employee3.save
     generate_work_hours employee3, period
     assert(employee3.valid?, "employee 3 should be valid")
@@ -782,15 +782,15 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal((loan.amount + loan_other.amount) - (pay.amount + pay_other.amount), payslip.loan_balance)
   end
 
-  test "payslips cannot be run non F,P,or T employees" do
+  test "payslips only run for full, part, or temp employees (and leave)" do
     employee = return_valid_employee()
-    employee.employment_status = "leave"
+    employee.employment_status = "inactive"
 
     jan = Period.new(2018,1)
     generate_work_hours employee, Period.new(2018, 1)
 
     nil_payslip = Payslip.process(employee, jan)
-    assert_nil(nil_payslip, "should not process anything for a leave employee")
+    refute(nil_payslip, "should not process anything for a leave employee")
   end
 
   test "payslip with paid loan" do
@@ -3231,6 +3231,23 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(1.5, payslip.vacation_earned)
     assert_equal(payslip.taxable.fdiv(16).ceil, payslip.vacation_pay_earned)
     assert_equal(0, payslip.period_suppl_days)
+  end
+
+  test "Leave Produces a Payslip which is 0" do
+    dec19 = Period.new(2019,12)
+    employee = return_valid_employee()
+    generate_work_hours(employee, dec19)
+
+    payslip = Payslip.process(employee, dec19)
+    assert(payslip, "should receive payslip in dec19")
+    assert(payslip.salaire_net > 0, "should be paid in dec19")
+
+    employee.employment_status = "leave"
+    employee.save
+
+    payslip = Payslip.process(employee, dec19)
+    assert(payslip, "should receive payslip in dec19")
+    assert(payslip.salaire_net == 0, "should be paid in dec19")
   end
 
   # These don't exist anymore

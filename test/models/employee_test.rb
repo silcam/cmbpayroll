@@ -163,6 +163,28 @@ class EmployeeTest < ActiveSupport::TestCase
     refute(employee.is_currently_paid?, "inactive is not currently_paid")
   end
 
+  test "is_on_leave" do
+    employee = return_valid_employee()
+
+    employee.employment_status = "full_time"
+    refute(employee.is_on_leave?, "full time is not on_leave")
+
+    employee.employment_status = "part_time"
+    refute(employee.is_on_leave?, "part time is not on_leave")
+
+    employee.employment_status = "temporary"
+    refute(employee.is_on_leave?, "temporary is not on_leave")
+
+    employee.employment_status = "leave"
+    assert(employee.is_on_leave?, "leave is on_leave")
+
+    employee.employment_status = "terminated_to_year_end"
+    refute(employee.is_on_leave?, "TTYE is not on_leave")
+
+    employee.employment_status = "inactive"
+    refute(employee.is_on_leave?, "inactive is not on_leave")
+  end
+
   test "echelon enums" do
     employee = return_valid_employee()
 

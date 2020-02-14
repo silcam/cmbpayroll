@@ -5,32 +5,22 @@ class EmployeeVacationReport < CMBReport
 SELECT DISTINCT ON (e.id)
   CONCAT(p.first_name, ' ', p.last_name) as employee_name,
   e.id,
-  a.vacation_balance,
-  a.vacation_pay_earned,
-  a.vacation_earned,
-  a.last_vacation_end
+  ps.vacation_balance,
+  ps.vacation_pay_earned,
+  ps.vacation_earned,
+  ps.last_vacation_end
 FROM
   employees e
+    LEFT JOIN payslips ps ON ps.employee_id = e.id
     LEFT JOIN people p ON e.person_id = p.id
-    LEFT JOIN (
-      select
-        employee_id,
-        period_month,
-        period_year,
-        last_processed,
-        last_vacation_end,
-        vacation_balance,
-        vacation_pay_earned,
-        vacation_earned
-      from
-        payslips
-    ) a ON a.employee_id = e.id
 WHERE
-  e.employment_status IN :employment_status
+  e.employment_status IN :employment_status AND
+  ps.period_month = :month AND
+  ps.period_year = :year
 ORDER BY
   e.id desc,
-  a.period_year desc,
-  a.period_month desc;
+  ps.period_year desc,
+  ps.period_month desc;
     SELECTSTATEMENT
   end
 

@@ -190,7 +190,7 @@ class Payslip < ApplicationRecord
       earning.amount = hourly_earnings
     end
 
-    if (full || (!on_vacation_entire_period? && earning.amount && earning.amount > 0))
+    if (full || (!receives_no_pay? && earning.amount && earning.amount > 0))
       earnings << earning unless full
       self[:basepay] = earning.amount unless full
       earning.amount
@@ -204,7 +204,7 @@ class Payslip < ApplicationRecord
   end
 
   def days_worked
-    on_vacation_entire_period? ? 0 : WorkHour.days_worked(employee, period)
+    receives_no_pay? ? 0 : WorkHour.days_worked(employee, period)
   end
 
   def days_not_worked
@@ -212,7 +212,7 @@ class Payslip < ApplicationRecord
   end
 
   def hours_worked
-    on_vacation_entire_period? ? 0 : WorkHour.hours_worked(employee, period)
+    receives_no_pay? ? 0 : WorkHour.hours_worked(employee, period)
   end
 
   def daily_earnings
@@ -340,7 +340,7 @@ class Payslip < ApplicationRecord
 
   def process_taxable_wage
     transportation = employee.transportation ? employee.transportation : 0
-    transportation = 0 if on_vacation_entire_period?
+    transportation = 0 if receives_no_pay?
 
     self[:taxable] = ( compute_cnpswage + transportation ).ceil
 
@@ -371,7 +371,7 @@ class Payslip < ApplicationRecord
     self[:cac] = tax.cac
     self[:cac2] = tax.cac2
     self[:communal] = tax.communal
-    self[:union_dues] = on_vacation_entire_period? ? 0 : employee.union_dues_amount
+    self[:union_dues] = receives_no_pay? ? 0 : employee.union_dues_amount
 
     if (taxable == 0)
       self[:total_tax] = tax.total_tax
@@ -460,7 +460,7 @@ class Payslip < ApplicationRecord
   def store_employee_attributes
     self[:wage] = employee.wage
     self[:basewage] = employee.find_base_wage
-    self[:transportation] = on_vacation_entire_period? ? 0 : employee.transportation
+    self[:transportation] = receives_no_pay? ? 0 : employee.transportation
 
     self[:category] = Employee.categories[employee.category]
     self[:echelon] = Employee.echelons[employee.echelon]
@@ -499,7 +499,7 @@ class Payslip < ApplicationRecord
     self[:years_of_service] = employee.years_of_service(period)
     self[:seniority_benefit] = SystemVariable.value(:seniority_benefit)
 
-    if (full || (employee_eligible_for_seniority_bonus? && !on_vacation_entire_period?))
+    if (full || (employee_eligible_for_seniority_bonus? && !receives_no_pay?))
       bonus = ( employee.find_base_wage() *
           ( self[:seniority_benefit] * self[:years_of_service] )).round
     else
@@ -513,7 +513,7 @@ class Payslip < ApplicationRecord
   end
 
   def process_employee_deductions()
-    return if on_vacation_entire_period?
+    return if receives_no_pay?
 
     expenses_hash = employee.deductable_expenses()
 
@@ -546,6 +546,10 @@ class Payslip < ApplicationRecord
     taxable.fdiv(SystemVariable.value(:vacation_pay_factor)).ceil
   end
 
+  def receives_no_pay?
+    on_vacation_entire_period? || employee.is_on_leave?
+  end
+
   def on_vacation_entire_period?
     (Vacation.days_used(employee, period) >= employee.workdays_per_month(period)) ||
         WorkHour.only_worked_holidays?(employee, period)
@@ -563,7 +567,7 @@ class Payslip < ApplicationRecord
 
     # If the employee shouldn't get a payslip this month,
     # and one exists, delete it.
-    unless employee.is_currently_paid?
+    unless employee.is_currently_paid? || employee.is_on_leave?
       if payslip
         payslip.destroy
       end
@@ -617,7 +621,7 @@ class Payslip < ApplicationRecord
       return self[:bonuspay]
     end
 
-    if (!full && on_vacation_entire_period?)
+    if (!full && receives_no_pay?)
       return self[:bonuspay] = 0
     end
 
@@ -757,7 +761,7 @@ class Payslip < ApplicationRecord
 
     # This is changed to just look at prior records instead of
     # anything else.
-    if (payslip.on_vacation_entire_period?)
+    if payslip.receives_no_pay?
       payslip.vacation_earned = 0
       payslip.period_suppl_days = 0
     else

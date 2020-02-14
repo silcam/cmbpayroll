@@ -75,6 +75,10 @@ class Employee < ApplicationRecord
           employment_status == "temporary"
   end
 
+  def is_on_leave?
+    employment_status == "leave"
+  end
+
   def supervised_by? possible_sup
     my_sup = supervisor
     until my_sup.nil?
@@ -298,9 +302,7 @@ class Employee < ApplicationRecord
 
   def self.active_status_array
     statuses = []
-    statuses << Employee.employment_statuses['full_time']
-    statuses << Employee.employment_statuses['part_time']
-    statuses << Employee.employment_statuses['temporary']
+    ['full_time','part_time','temporary'].map { |item| statuses.push(Employee.employment_statuses[item]) }
     statuses
   end
 

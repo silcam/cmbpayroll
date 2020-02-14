@@ -36,9 +36,9 @@ report.list("employee_vacation") do |list|
   end
 
   list.on_footer_insert do |footer|
-    footer.item(:reg_vacation_balance_to_date_total).value( @reg_vacation_balance_to_date_total )
+    footer.item(:reg_vacation_balance_to_date_total).value( @reg_vacation_balance_to_date_total.round(2) )
     footer.item(:reg_vacation_pay_to_date_total).value( number_to_currency(@reg_vacation_pay_to_date_total, unit: '', locale: :cm))
-    footer.item(:reg_vac_days_current_period_total).value( @reg_vac_days_current_period_total )
+    footer.item(:reg_vac_days_current_period_total).value( @reg_vac_days_current_period_total.round(2) )
   end
 
 end

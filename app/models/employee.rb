@@ -301,9 +301,7 @@ class Employee < ApplicationRecord
   end
 
   def self.active_status_array
-    statuses = []
-    ['full_time','part_time','temporary'].map { |item| statuses.push(Employee.employment_statuses[item]) }
-    statuses
+    %w(full_time part_time temporary).map { |item| Employee.employment_statuses[item] }
   end
 
   def self.search(query)

@@ -8,7 +8,7 @@ set :deploy_via, :remote_cache
 append :linked_files, "config/secrets.yml"
 
 set :branch, 'master'
-set :deploy_to, "/var/www/payroll"
+# set :deploy_to, "/var/www/cmbpayroll"
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 

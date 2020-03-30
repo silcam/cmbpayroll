@@ -789,6 +789,55 @@ class WorkHourTest < ActiveSupport::TestCase
     assert_equal(exp, WorkHour.total_hours(employee, period))
   end
 
+ test "Worked Full Month in Leap Year" do
+    # Feb '20 has 29 days
+    feb20 = Period.new(2020,2)
+    @luke.days_week = "five"
+    @luke.wage_period = "monthly"
+
+    luke_days_hash = WorkHour.days_hash(@luke, feb20.start, feb20.finish)
+    assert_equal(0, luke_days_hash.keys.size, "should not have worked in Feb 20 yet")
+    assert_equal(0, WorkHour.days_worked(@luke, feb20))
+    assert_equal(20, @luke.workdays_per_month(feb20))
+    refute(WorkHour.worked_full_month(@luke, feb20))
+
+    hours = {
+      "2020-02-03" => {hours: 8},
+      "2020-02-04" => {hours: 8},
+      "2020-02-05" => {hours: 8},
+      "2020-02-06" => {hours: 8},
+      "2020-02-07" => {hours: 8},
+
+      "2020-02-10" => {hours: 8},
+      "2020-02-11" => {hours: 8},
+      "2020-02-12" => {hours: 8},
+      "2020-02-13" => {hours: 8},
+      "2020-02-14" => {hours: 8},
+
+      "2020-02-17" => {hours: 8},
+      "2020-02-18" => {hours: 8},
+      "2020-02-19" => {hours: 8},
+      "2020-02-20" => {hours: 8},
+      "2020-02-21" => {hours: 8},
+
+      "2020-02-24" => {hours: 8},
+      "2020-02-25" => {hours: 8},
+      "2020-02-26" => {hours: 8},
+      "2020-02-27" => {hours: 8},
+      "2020-02-28" => {hours: 8}
+    }
+
+    success, errors = WorkHour.update(@luke, hours)
+    assert(success, "should not have produced these errors: #{errors.inspect}")
+    assert_equal(20, WorkHour.days_worked(@luke, feb20))
+    assert_equal(20, @luke.workdays_per_month(feb20))
+    assert(WorkHour.worked_full_month(@luke, feb20))
+
+    payslip = Payslip.process(@luke, feb20)
+    assert(payslip.days)
+    assert(payslip.worked_full_month?)
+  end
+
   def some_valid_params
     {employee: @luke, date: '2017-08-09', hours: 9}
   end

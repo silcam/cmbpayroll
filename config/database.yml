@@ -28,5 +28,5 @@ test: &TEST
 production:
   adapter: postgresql
   encoding: utf8
-  database: payroll
+  database: cmbpayroll
   pool: 5

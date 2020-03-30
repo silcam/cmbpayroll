@@ -7,7 +7,7 @@ prawn_document(page_layout: :landscape) do |pdf|
 
   holidays_hash = Holiday.days_hash(@start_date, @end_date)
 
-  @selected_employees.each do |eid|
+  @selected_employees.each_with_index do |eid,index|
 
     employee = Employee.find(eid)
 
@@ -72,7 +72,7 @@ prawn_document(page_layout: :landscape) do |pdf|
     pdf.move_down 15
 
     pdf.font("Helvetica", :style => :bold) do
-      pdf.text "Due date: #{@end_date + 1}"
+      pdf.text "Due date: #{@end_date - 4}"
     end
 
     pdf.move_down @@box_gutter
@@ -108,5 +108,7 @@ prawn_document(page_layout: :landscape) do |pdf|
         pdf.text "Announcements: #{@announcement}"
       end
     end
+
+    pdf.start_new_page unless index == (@selected_employees.length - 1)
   end
 end

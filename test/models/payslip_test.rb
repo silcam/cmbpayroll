@@ -3250,6 +3250,22 @@ class PayslipTest < ActiveSupport::TestCase
     assert(payslip.salaire_net == 0, "should be paid in dec19")
   end
 
+  test "Feb 20 leap year" do
+    employee = return_valid_employee()
+
+    period = Period.new(2020,2)
+    generate_work_hours(employee, period)
+    payslip = Payslip.process(employee, period)
+    assert(payslip)
+    assert(payslip.worked_full_month?)
+
+    found_monthly = false
+    payslip.earnings.each do |e|
+      found_monthly = true if e.description == "Monthly Wages"
+    end
+    assert(found_monthly)
+  end
+
   # These don't exist anymore
   test "Supplemental Transfers" do
     employee = return_valid_employee()

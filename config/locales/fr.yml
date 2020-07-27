@@ -148,6 +148,7 @@ fr:
   spouse_employed_f: Époux est employé
   Location: &Location Lieu
   Employee_fund: Employee Fund
+  Employee_wage_period_always_monthly: Le salaire pour les employés est toujours mensuel
 
   # Supervisors
   Supervisors: Superviseurs

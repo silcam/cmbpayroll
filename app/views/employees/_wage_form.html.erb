@@ -16,7 +16,7 @@
                       {},
                       class: 'form-control' %>
     </div>
-    
+
     <div class="form-group">
       <%= form.label :echelon %>
       <%= form.select :echelon,
@@ -25,12 +25,12 @@
                       class: 'form-control',
                       data: {'echelon'=>'1'} %>
     </div>
-    
+
     <div class="form-group" style="display: none;">
       <%= form.label :wage %>
       <%= form.text_field :wage, class: 'form-control', data: {'wage'=>'1'} %>
     </div>
-    
+
     <div class="form-group">
       <%= form.label :wage_scale %>
       <%= form.select :wage_scale,
@@ -38,11 +38,9 @@
                       {},
                       class: 'form-control' %>
     </div>
-    
-    <div class="form-group">
-      <%= form.label :wage_period %>
-      <%= form.select :wage_period,
-                      Employee.wage_periods.keys.collect{ |k| [t(k), k]},
-                      {},
-                      class: 'form-control' %>
-    </div>
+
+    <%= t('Employee_wage_period_always_monthly') %>
+    <%= hidden_field_tag 'employee[wage_period]', Employee.wage_periods.key(1), { class: 'form-control' } %>
+
+    <br />
+    <br />

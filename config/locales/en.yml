@@ -143,6 +143,7 @@ en:
   spouse_employed: Spouse Employed
   Location: &Location Location
   Employee_fund: Employee Fund
+  Employee_wage_period_always_monthly: Employee Wage Period is Always Monthly
 
   # Supervisors
   Supervisors: Supervisors

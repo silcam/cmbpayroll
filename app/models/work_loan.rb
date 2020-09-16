@@ -5,7 +5,7 @@ class WorkLoan < ApplicationRecord
   belongs_to :department
 
   validates :date, presence: true
-  validates :hours, numericality: {greater_than_or_equal_to: 0, less_than_or_equal_to: 24}
+  validates :hours, numericality: {greater_than: 0}
 
   def self.for_period(period = Period.current)
     WorkLoan.where(date: period.to_range())

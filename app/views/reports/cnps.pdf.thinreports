@@ -1,7 +1,8 @@
 report.set_layout tlf: 'reports/cnps', layout_options: { default: true }
 
 report.on_page_create do |page|
-    page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name_shortyear, locale: :fr))
+  page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name_shortyear, locale: :fr))
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
 end
 
 # 1st page

@@ -90,8 +90,8 @@ class JournalReport
         where("location = ? and deduction_type = ? and employee_id = ? and period_month = ? and period_year = ?",
             Employee.locations[:bro], Charge.charge_types[:location_transfer], @kain, period.month, period.year).sum("amount")
 
-    record_line("P/R EMPLOYEES - A/R MISC", "Employee payroll charges - #{period.short_name} - GNRO", "1140011PREM", @report_data, 0, @bro_pay_total)
-    record_line("LS BDA REG OFF - SUSPENSE CFA", "Employee payroll charges - #{period.short_name} - BRO", "190501LSB13", @report_data, 0, @gnro_pay_total)
+    record_line("P/R EMPLOYEES - A/R MISC", "Employee payroll charges - #{period.short_name} - GNRO", "1140011PREM", @report_data, 0, @gnro_pay_total)
+    record_line("LS BDA REG OFF - SUSPENSE CFA", "Employee payroll charges - #{period.short_name} - BRO", "190501LSB13", @report_data, 0, @bro_pay_total)
     record_line("#4418.2 KOM EDUCATION PILOT-EMPLOYEE SALARY", "Employee payroll charges - #{period.short_name} - BRO Kain", "612001KEP55", @report_data, 0, @kain_pay_total)
 
     ####  6. Salary Advances Totaled (This is also bank transfers) LESS KIMBI

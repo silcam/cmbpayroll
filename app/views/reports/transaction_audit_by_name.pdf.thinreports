@@ -3,6 +3,7 @@ report.set_layout tlf: 'reports/transaction_audit_by_name', layout_options: { de
 @current_employee = nil
 
 report.on_page_create do |page|
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
   page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name, locale: :fr).upcase)
 end
 

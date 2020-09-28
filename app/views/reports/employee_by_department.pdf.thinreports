@@ -15,6 +15,10 @@ def add_summary(list)
 
 end
 
+report.on_page_create do |page|
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
+end
+
 # 1st page
 report.list("employee_dept_list") do |list|
 

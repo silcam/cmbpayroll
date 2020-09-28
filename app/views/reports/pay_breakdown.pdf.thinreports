@@ -15,6 +15,7 @@ report.set_layout tlf: 'reports/pay_breakdown', layout_options: { default: true 
 @c_5_total = 0
 
 report.on_page_create do |page|
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
   page.item(:report_month).value(I18n.l(@report.report_period.start, format: :name).upcase)
   page.item(:report_type).value(@report.segment.upcase)
 end

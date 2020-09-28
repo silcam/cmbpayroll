@@ -1,5 +1,9 @@
 report.set_layout tlf: 'reports/employee', layout_options: { default: true }
 
+report.on_page_create do |page|
+  page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
+end
+
 @employee_count = 0
 
 # 1st page

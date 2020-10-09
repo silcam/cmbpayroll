@@ -29,6 +29,8 @@ report.on_page_create do |page|
   page.item(:date_generated).value(I18n.l(Date.today, format: :long, locale: :fr))
 end
 
+@users = {}
+
 # 1st page
 report.list("department_charges") do |list|
 
@@ -93,21 +95,30 @@ report.list("department_charges") do |list|
       department_charge: number_to_currency(x_dept_charge, unit: '', locale: :cm)
     )
 
-    @gross_salary_total += x_gross_pay
-    @total_taxes_total += x_total_tax
-    @net_salary_total += x_net_pay
-    @add_total += x_add_pay
-    @adj_wage_total += x_adj_wage
-    @dept_cnps_total += x_department_cnps
-    @credit_foncier_total += x_credit_foncier
-    @vacation_pay_total += x_vacation_pay
-    @vacation_days_total += x_vacation_days
-    @employee_fund_total += x_employee_fund
-    @contrib_consens_total += x_employee_contribution
-    @total_charges_total += x_total_charge
-    @department_total_charge += x_dept_charge
-    @department_charge_grand_total += x_dept_charge
+    # Note, do not add if this user has already appeared in the report.
+    unless (@users.has_key?(x_employee_id))
+      @gross_salary_total += x_gross_pay
+      @total_taxes_total += x_total_tax
+      @net_salary_total += x_net_pay
+      @add_total += x_add_pay
+      @adj_wage_total += x_adj_wage
+      @dept_cnps_total += x_department_cnps
+      @credit_foncier_total += x_credit_foncier
+      @vacation_pay_total += x_vacation_pay
+      @vacation_days_total += x_vacation_days
+      @employee_fund_total += x_employee_fund
+      @contrib_consens_total += x_employee_contribution
+      @total_charges_total += x_total_charge
+      @department_total_charge += x_dept_charge
 
+      # mark the user as seen
+      @users[x_employee_id] = 1;
+    else
+      # mark the user as seen
+      @users[x_employee_id] += 1;
+    end
+
+    @department_charge_grand_total += x_dept_charge
   end
 
   list.add_row() do |row|

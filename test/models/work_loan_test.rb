@@ -72,6 +72,54 @@ class WorkLoanTest < ActiveSupport::TestCase
     assert(WorkLoan.has_hours_for_period?(period))
   end
 
+  test "WorkLoans hours cannot be zero" do
+    employee1 = return_valid_employee()
+    period = Period.new(2017,8)
+
+    # Next period #1
+    wl1 = create_and_assign_loan(employee1, period, 0, @admin)
+    assert(wl1.errors.messages.include?(:hours))
+
+    wl1 = create_and_assign_loan(employee1, period, 0.1, @admin)
+    refute(wl1.errors.messages.include?(:hours))
+  end
+
+  test "WorkLoans for_period can have more than 8 hours" do
+    employee1 = return_valid_employee()
+    employee2 = return_valid_employee()
+
+    period = Period.new(2017,8)
+
+    # This period
+    create_and_assign_loan(employee1, period, 1, @admin)
+
+    # Next period #1
+    wl1 = create_and_assign_loan(employee1, period.next, 100, @admin)
+    wl2 = create_and_assign_loan(employee2, period.next, 2, @admin)
+
+    # 100 hours is okay
+    refute(wl1.errors.messages.include?(:hours))
+
+    current_period_loans = WorkLoan.for_period(period)
+    assert_equal(1, current_period_loans.size)
+    assert_equal(1, current_period_loans.first.hours)
+    this_period_total_hours = WorkLoan.total_hours_for_period(period)
+    assert_equal(1, this_period_total_hours)
+
+    next_period_loans = WorkLoan.for_period(period.next)
+    assert_equal(2, next_period_loans.size)
+    next_period_total_hours = WorkLoan.total_hours_for_period(period.next)
+    assert_equal(102, next_period_total_hours)
+
+    emp1_next_period_hours = WorkLoan.total_hours(employee1, period.next)
+    assert_equal(100, emp1_next_period_hours)
+    emp2_next_period_hours = WorkLoan.total_hours(employee2, period.next)
+    assert_equal(2, emp2_next_period_hours)
+
+    previous_period_loans = WorkLoan.for_period(period.previous)
+    assert_equal(0, previous_period_loans.size)
+  end
+
   def some_valid_params
     {employee: @luke, date: '2017-08-09', hours: 9, department: @admin}
   end

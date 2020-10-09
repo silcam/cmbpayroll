@@ -1564,11 +1564,11 @@ class PayslipTest < ActiveSupport::TestCase
     count = 0
     payslip.work_loan_percentages.all.each do |wlp|
       if (wlp.department_id == admin_dept.id)
-        assert_equal(23.08, (wlp.percentage * 100).round(2))
+        assert_equal(21.74, (wlp.percentage * 100).round(2))
         count += 1
       else
         # the rest of the month
-        assert_equal(76.92, (wlp.percentage * 100).round(2))
+        assert_equal(78.26, (wlp.percentage * 100).round(2))
         count += 1
       end
     end
@@ -1785,23 +1785,23 @@ class PayslipTest < ActiveSupport::TestCase
 
     payslip.work_loan_percentages.all.each do |wlp|
       if (wlp.department_id == admin_dept.id)
-        assert_equal(9.23, (wlp.percentage * 100).round(2))
+        assert_equal(8.7, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == av_dept.id)
-        assert_equal(23.08, (wlp.percentage * 100).round(2))
+        assert_equal(21.74, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == ctc_dept.id)
-        assert_equal(18.46, (wlp.percentage * 100).round(2))
+        assert_equal(17.39, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == rfis_dept.id)
-        assert_equal(4.62, (wlp.percentage * 100).round(2))
+        assert_equal(4.35, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == cam_dept.id)
-        assert_equal(36.92, (wlp.percentage * 100).round(2))
+        assert_equal(34.78, (wlp.percentage * 100).round(2))
         count += 1
       elsif (wlp.department_id == lss_dept.id)
         # the leftovers
-        assert_equal(7.69, (wlp.percentage * 100).round(2))
+        assert_equal(13.04, (wlp.percentage * 100).round(2))
         count += 1
       end
     end

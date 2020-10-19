@@ -109,7 +109,6 @@ report.list("department_charges") do |list|
       @employee_fund_total += x_employee_fund
       @contrib_consens_total += x_employee_contribution
       @total_charges_total += x_total_charge
-      @department_total_charge += x_dept_charge
 
       # mark the user as seen
       @users[x_employee_id] = 1;
@@ -118,6 +117,8 @@ report.list("department_charges") do |list|
       @users[x_employee_id] += 1;
     end
 
+    # these get added regardless.
+    @department_total_charge += x_dept_charge
     @department_charge_grand_total += x_dept_charge
   end
 

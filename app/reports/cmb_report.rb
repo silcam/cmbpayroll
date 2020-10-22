@@ -45,7 +45,9 @@ class CMBReport < Dossier::Report
   end
 
   def employment_status
-    Employee.active_status_array
+    statuses = []
+    Employee.employment_statuses.map { |k,v| statuses.push(v) }
+    statuses
   end
 
   # Options selector

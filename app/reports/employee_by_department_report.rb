@@ -28,6 +28,8 @@ FROM
   employees e
     INNER JOIN people p ON
       e.person_id = p.id
+    INNER JOIN payslips ps ON
+      ps.employee_id = e.id
     INNER JOIN category_lookup cl ON
       e.category = cl.emp_val
     INNER JOIN echelon_lookup el ON
@@ -48,7 +50,9 @@ FROM
       GROUP BY parent_id
     ) c ON p.id = c.parent_id
 WHERE
-  e.employment_status IN :employment_status
+  e.employment_status IN :employment_status AND
+  ps.period_year = :year AND
+  ps.period_month = :month
 ORDER BY
   department, employee_name ASC
     SELECTSTATEMENT

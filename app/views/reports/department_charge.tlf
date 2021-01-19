@@ -307,7 +307,7 @@
             "description": "",
             "x": 425,
             "y": 81,
-            "width": 30.8,
+            "width": 31.7,
             "height": 18,
             "style": {
               "font-family": [
@@ -1478,9 +1478,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 464,
+            "x": 500,
             "y": 361.7,
-            "width": 51,
+            "width": 45,
             "height": 9,
             "style": {
               "font-family": [
@@ -1510,7 +1510,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 522,
+            "x": 477,
             "y": 361.7,
             "width": 20,
             "height": 9,

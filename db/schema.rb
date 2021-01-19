@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191030200444) do
+ActiveRecord::Schema.define(version: 20210119130750) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -153,6 +153,7 @@ ActiveRecord::Schema.define(version: 20191030200444) do
     t.boolean "spouse_employed", default: false, null: false
     t.integer "location"
     t.boolean "employee_fund", default: true, null: false
+    t.boolean "accrue_vacation", default: true, null: false
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
     t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"
@@ -282,6 +283,7 @@ ActiveRecord::Schema.define(version: 20191030200444) do
     t.decimal "period_suppl_days"
     t.integer "union_dues", default: 0, null: false
     t.integer "salaire_net", default: 0, null: false
+    t.boolean "vac_accrue", default: true, null: false
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 

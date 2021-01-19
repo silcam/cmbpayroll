@@ -65,6 +65,7 @@ class ActiveSupport::TestCase
     employee.contract_start = '2010-07-11'
     employee.amical = 3000
     employee.uniondues = true
+    employee.marital_status = "single"
 
     employee.category_three!
     employee.echelon_d!

@@ -79,6 +79,10 @@ class Employee < ApplicationRecord
     employment_status == "leave"
   end
 
+  def accrues_vacation?
+    accrue_vacation == true
+  end
+
   def supervised_by? possible_sup
     my_sup = supervisor
     until my_sup.nil?

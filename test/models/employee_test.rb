@@ -428,7 +428,7 @@ class EmployeeTest < ActiveSupport::TestCase
 
   test "union dues" do
     employee = return_valid_employee()
-    employee.uniondues = false;
+    employee.uniondues = false
     assert_equal(0, employee.union_dues_amount)
 
     employee.category_one!
@@ -442,6 +442,28 @@ class EmployeeTest < ActiveSupport::TestCase
     SystemVariable.create!(key: 'union_dues', value: new_union_dues)
     new_exp_dues = ( employee.find_base_wage * new_union_dues ).floor
     assert_equal(new_exp_dues, employee.union_dues_amount)
+  end
+
+  test "vacation accrual can be toggled" do
+    employee = return_valid_employee()
+    assert(employee.accrue_vacation, "default state is true")
+
+    employee.accrue_vacation = false
+    employee.save
+
+    assert(employee.errors.empty?, "no errors on save")
+    refute(employee.accrue_vacation, "employee no longer accrues vacation")
+  end
+
+  test "Accrue vacation helper" do
+    employee = return_valid_employee()
+    assert(employee.accrues_vacation?)
+
+    employee.accrue_vacation = false
+    employee.save
+    assert(employee.errors.empty?, "no errors on save")
+
+    refute(employee.accrues_vacation?)
   end
 
   test "deductable_expenses (only AMICAL)" do

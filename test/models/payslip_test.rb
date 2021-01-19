@@ -2120,6 +2120,76 @@ class PayslipTest < ActiveSupport::TestCase
     end
   end
 
+  test "Employee who doesn't accrue vacation doesn't accrue vacation" do
+    employee = return_valid_employee()
+    employee.accrue_vacation = false
+    employee.save
+    refute(employee.accrue_vacation)
+
+    period = Period.new(2018,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+
+    # process payslip
+    payslip = Payslip.process(employee, period)
+    assert_equal(0.00, payslip.vacation_balance.round(2), "no vacation balance")
+    assert_equal(0.00, payslip.vacation_pay_balance.round(2), "no vacation balance")
+  end
+
+  test "Employee not accruing vacation who has balance will show 0 on payslips" do
+    employee = return_valid_employee
+    employee.accrue_vacation = false
+    employee.contract_start = "2008-01-01" # set for supplemental days
+    employee.save
+    refute(employee.accrue_vacation)
+
+    period = Period.new(2018,3)
+
+    previous_pay_balance = 245345
+    previous_balance = 33
+    set_previous_vacation_balances(employee, period, previous_pay_balance, previous_balance)
+    generate_work_hours(employee, period)
+
+    payslip = Payslip.process(employee, period)
+
+    # Don't earn vacation now.
+    assert_equal(0, payslip.calc_vacation_pay_earned, "no vac earned")
+    assert_equal(0, payslip.vacation_pay_earned, "no vac earned")
+    assert_equal(0, payslip.vacation_earned, "no vac days earned")
+  end
+
+  test "Employee who didn't accrue vacation starts to accrue" do
+    employee = return_valid_employee
+    employee.accrue_vacation = false
+    employee.contract_start = "2018-03-01" # new employee
+    employee.first_day = "2018-03-01" # new employee
+    employee.save
+    refute(employee.accrue_vacation)
+
+    period = Period.new(2018,3) # first month of work
+    generate_work_hours(employee, period)
+    payslip = Payslip.process(employee, period)
+
+    refute(payslip.vac_accrue, "the ps knows if vac was accrued this period")
+    assert_equal(0, payslip.vacation_earned)
+    assert_equal(0, payslip.vacation_balance)
+    assert_equal(0, payslip.vacation_pay_earned)
+    assert_equal(0, payslip.vacation_pay_balance)
+
+    employee.accrue_vacation = true;
+    employee.save;
+
+    next_period = period.next
+    generate_work_hours(employee, next_period)
+    payslip = Payslip.process(employee, next_period)
+
+    assert(payslip.vac_accrue, "the ps knows if vac was accrued this period")
+    assert_equal(1.5, payslip.vacation_earned)
+    assert_equal(1.5, payslip.vacation_balance)
+    assert(payslip.vacation_pay_balance > 0, "what you earn is the balance")
+  end
+
   test "Loans and payments count against net Pay" do
     Date.stub :today, Date.new(2018, 2, 5) do
 

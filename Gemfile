@@ -91,6 +91,8 @@ group :development, :test do
   gem 'minitest-reporters'
   # Checks for security holes in the code
   gem 'brakeman', require: false
+  # PDF Testing
+  gem 'pdf-inspector'
 end
 
 group :development do

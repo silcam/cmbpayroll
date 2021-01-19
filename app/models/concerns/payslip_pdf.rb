@@ -183,22 +183,30 @@ class PayslipPdf < CmbPayrollPdf
 
       move_down 10
 
-      table([
-          [
-            { :content => "CONGE ACCUMULÉ", :colspan => 2 }
-          ],
-          ["Ce mois-ci",
-            { :content => "#{payslip.vacation_earned&.round(1)} jours", :align => :right }
-          ],
-          ["Jusqu'aujourd'hui",
-            { :content => "#{payslip.vacation_balance&.round(1)} jours", :align => :right }
-          ],
-          ["Derner Congé",
-            { :content => "#{payslip.last_vacation_start} - #{payslip.last_vacation_end}", :align => :right }
-          ],
-      ],
-      :cell_style => { :padding => 2, :inline_format => true, :border_width => 1, :border_color => "BBBBBB", :borders => [ :bottom ] },
-      :position => :left )
+      if (payslip.vac_accrue)
+        table([
+            [
+              { :content => "CONGE ACCUMULÉ", :colspan => 2 }
+            ],
+            ["Ce mois-ci",
+              { :content => "#{payslip.vacation_earned&.round(1)} jours", :align => :right }
+            ],
+            ["Jusqu'aujourd'hui",
+              { :content => "#{payslip.vacation_balance&.round(1)} jours", :align => :right }
+            ],
+            ["Derner Congé",
+              { :content => "#{payslip.last_vacation_start} - #{payslip.last_vacation_end}", :align => :right }
+            ],
+        ],
+        :cell_style => { :padding => 2, :inline_format => true, :border_width => 1, :border_color => "BBBBBB", :borders => [ :bottom ] },
+        :position => :left )
+      else
+        move_down 20
+        font_size(10) do
+          text "CONGÉ N'EST PAS ACCUMULÉ"
+        end
+        move_down 20
+      end
 
       move_down 10
       table([

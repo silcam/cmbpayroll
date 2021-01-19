@@ -460,6 +460,8 @@ class Payslip < ApplicationRecord
     self[:echelon] = Employee.echelons[employee.echelon]
     self[:wagescale] = Employee.wage_scales[employee.wage_scale]
 
+    self[:vac_accrue] = employee.accrues_vacation?
+
     self[:hourly_rate] = employee.hourly_rate
     self[:daily_rate] = employee.daily_rate
   end
@@ -536,6 +538,7 @@ class Payslip < ApplicationRecord
   end
 
   def calc_vacation_pay_earned
+    return 0 unless employee.accrues_vacation?
     # TODO/FIXME, incorporate supplemental pay?
     taxable.fdiv(SystemVariable.value(:vacation_pay_factor)).ceil
   end

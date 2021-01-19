@@ -135,7 +135,7 @@ report.list("department_charges") do |list|
     footer.item(:dept_cnps_total).value(number_to_currency(@dept_cnps_total, unit: '', locale: :cm))
     footer.item(:credit_foncier_total).value(number_to_currency(@credit_foncier_total, unit: '', locale: :cm))
     footer.item(:vacation_pay_total).value(number_to_currency(@vacation_pay_total, unit: '', locale: :cm))
-    footer.item(:vacation_days_total).value(number_to_currency(@vacation_days_total, unit: '', locale: :cm))
+    footer.item(:vacation_days_total).value(@vacation_days_total)
     footer.item(:employee_fund_total).value(number_to_currency(@employee_fund_total, unit: '', locale: :cm))
     footer.item(:contrib_consens_total).value(number_to_currency(@contrib_consens_total, unit: '', locale: :cm))
     footer.item(:total_charges_total).value(number_to_currency(@total_charges_total, unit: '', locale: :cm))

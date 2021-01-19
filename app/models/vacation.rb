@@ -137,11 +137,14 @@ class Vacation < ApplicationRecord
   # FIXME : Verify algorithm.
   def self.days_earned(employee, period)
     return 0 if period.finish < employee.first_day
+    return 0 unless employee.accrues_vacation?
     earned = SystemVariable.value(:vacation_days).fdiv(MONTHLY)
     earned + period_supplemental_days(employee, period)
   end
 
   def self.period_supplemental_days(employee, period)
+    return 0 unless employee.accrues_vacation?
+
     mom_days = mom_supplemental_days(employee)
 
     years_diff = (period.finish.year - Period.from_date(employee.contract_start).finish.year)

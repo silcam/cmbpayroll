@@ -144,6 +144,9 @@ en:
   Location: &Location Location
   Employee_fund: Employee Fund
   Employee_wage_period_always_monthly: Employee Wage Period is Always Monthly
+  accrue_vacation: Does this employee accrue vacation monthly?
+  accrue_yes: This employee accrues vacation each month
+  accrue_no: This employee does not accrue vacation each month
 
   # Supervisors
   Supervisors: Supervisors

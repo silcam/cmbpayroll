@@ -149,6 +149,9 @@ fr:
   Location: &Location Lieu
   Employee_fund: Employee Fund
   Employee_wage_period_always_monthly: Le salaire pour les employés est toujours mensuel
+  accrue_vacation: Est-ce que cet employé(e) accumule des jours de congé chaque mois?
+  accrue_yes: Oui, cet employé accumule des jours de congé
+  accrue_no: Non, cet employé n'accumule pas des jours de congé
 
   # Supervisors
   Supervisors: Superviseurs

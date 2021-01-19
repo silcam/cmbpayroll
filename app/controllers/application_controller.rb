@@ -37,6 +37,8 @@ class ApplicationController < ActionController::Base
     end
 
     period = Period.current()
+    # if you posted the app into the future, display properly
+    period = LastPostedPeriod.current if (LastPostedPeriod.current > period)
 
     (0..NUMBER_OF_MONTHS_SHOWN).each do |x|
       periods_list[period.name] = period.to_s

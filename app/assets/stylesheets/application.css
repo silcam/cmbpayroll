@@ -88,3 +88,7 @@
   margin-bottom:10px;
   text-align:right;
 }
+
+.not-bold {
+  font-weight: normal !important;
+}

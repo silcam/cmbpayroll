@@ -1,11 +1,39 @@
 require "test_helper"
+require 'payslip_generator'
 
 class PayslipPdfTest < ActiveSupport::TestCase
+  include PayslipGenerator
 
   def setup
     # Since I do some migration "magic" in other tests
     # there will be errors unless this is done.
     Payslip.reset_column_information
+  end
+
+  test "Vacation information is not displayed on pdf payslip for non-accruers" do
+    employee = return_valid_employee()
+    employee.accrue_vacation = false
+    employee.category = "seven"
+    employee.echelon = "b"
+    period = Period.new(2018,10)
+
+    generate_work_hours employee, period
+    oct_payslip = Payslip.process(employee, period)
+    pdf = pdf_generator(oct_payslip)
+
+    pdf_analysis = PDF::Inspector::Text.analyze(pdf)
+    refute(pdf_analysis.strings.include?('CONGE ACCUMULÉ'),
+        "should not display vacation if not accruing")
+
+    employee.accrue_vacation = true
+    employee.save
+
+    oct_payslip = Payslip.process(employee, period)
+    pdf = pdf_generator(oct_payslip)
+
+    pdf_analysis = PDF::Inspector::Text.analyze(pdf)
+    assert(pdf_analysis.strings.include?('CONGE ACCUMULÉ'),
+        "should display vacation totals")
   end
 
   test "Categories and Echelons Are Historical and Display Properly" do
@@ -16,7 +44,6 @@ class PayslipPdfTest < ActiveSupport::TestCase
 
     generate_work_hours employee, period
     oct_payslip = Payslip.process(employee, period)
-
 
     assert_equal(6, oct_payslip.category)
     assert_equal(7, display_category(oct_payslip.category))
@@ -38,4 +65,9 @@ class PayslipPdfTest < ActiveSupport::TestCase
     assert_equal(15, nov_payslip.echelon)
     assert_equal("C", display_echelon(nov_payslip.echelon))
   end
+
+  def send_data(data, other = {})
+    return data
+  end
+
 end

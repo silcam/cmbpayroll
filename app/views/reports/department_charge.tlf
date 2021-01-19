@@ -1510,9 +1510,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 477,
+            "x": 466.5,
             "y": 361.7,
-            "width": 20,
+            "width": 30.5,
             "height": 9,
             "style": {
               "font-family": [

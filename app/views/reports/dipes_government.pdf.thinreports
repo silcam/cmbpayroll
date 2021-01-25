@@ -1,7 +1,7 @@
 report.set_layout tlf: 'reports/dipes_government', layout_options: { default: true }
 
 @count = 0
-dipe_page = [
+@dipe_page = [
   SystemVariable.value(:dipe_page_1),
   SystemVariable.value(:dipe_page_2),
   SystemVariable.value(:dipe_page_3),
@@ -11,7 +11,7 @@ dipe_page = [
 
 report.on_page_create do |page|
   if page.layout.default?
-    page.item(:dipe_header).value = dipe_page[@count]
+    page.item(:dipe_header).value = @dipe_page[@count]
     page.item(:feuille_header).value(@report.feuille)
     page.item(:report_month).value(I18n.l(@report.report_period.start, format: :monthname_abbrev, locale: :fr))
     page.item(:report_year).value(I18n.l(@report.report_period.start, format: :year, locale: :fr))
@@ -72,7 +72,7 @@ def add_summary(list, new_page=true)
 
   # Rapport
   list.add_row(
-        dipe_rapport: @report.dipe_by_page(@page_no - 1)
+        dipe_rapport: @dipe_page[(@page_no - 1)]
       ) do |row|
     if @salaire_taxable_last_total > 0
       row.item(:salaire_taxable).show

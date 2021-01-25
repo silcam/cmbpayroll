@@ -846,8 +846,54 @@ class VacationTest < ActiveSupport::TestCase
       assert_equal(1, employee.children_under_6)
 
       msd = Vacation.mom_supplemental_days(employee)
-      assert_equal(2, msd, "should get 2 days")
-      assert_equal(2.33, Vacation.period_supplemental_days(employee, Period.new(2018,1)).round(2))
+      assert_equal(0.17, msd.round(2), "should get 2 days per year, so 0.167 monthly")
+      assert_equal(0.50, Vacation.period_supplemental_days(employee, Period.new(2018,1)).round(2))
+    end
+  end
+
+  test "Supplemental Mom Days" do
+    Date.stub :today, Date.new(2021, 1, 22) do
+      employee = return_valid_employee()
+      employee.contract_start = "2018-12-10"
+      employee.first_day = "2018-12-10"
+      employee.person.gender = "female"
+
+      employee.person.children << Child.create(birth_date: "2016-04-13",
+          first_name: "C", last_name: "One")
+      employee.person.children << Child.create(birth_date: "2017-11-09",
+          first_name: "C", last_name: "Two")
+      employee.person.children << Child.create(birth_date: "2010-03-21",
+          first_name: "C", last_name: "Three")
+
+      assert_equal(2, employee.children_under_6)
+      assert_equal(3, employee.children_under_19)
+
+      msd = Vacation.mom_supplemental_days(employee)
+      assert_equal(0.33, msd.round(2), "should get 2 days per child per year")
+      assert_equal(0.33, Vacation.period_supplemental_days(employee, Period.new(2018,1)).round(2))
+    end
+  end
+
+  test "Supplemental Mom Days Not If Male" do
+    Date.stub :today, Date.new(2021, 1, 22) do
+      employee = return_valid_employee()
+      employee.contract_start = "2018-12-10"
+      employee.first_day = "2018-12-10"
+      employee.person.gender = "male"
+
+      employee.person.children << Child.create(birth_date: "2016-04-13",
+          first_name: "C", last_name: "One")
+      employee.person.children << Child.create(birth_date: "2017-11-09",
+          first_name: "C", last_name: "Two")
+      employee.person.children << Child.create(birth_date: "2010-03-21",
+          first_name: "C", last_name: "Three")
+
+      assert_equal(2, employee.children_under_6)
+      assert_equal(3, employee.children_under_19)
+
+      msd = Vacation.mom_supplemental_days(employee)
+      assert_equal(0.00, msd.round(2), "should get 0")
+      assert_equal(0.00, Vacation.period_supplemental_days(employee, Period.new(2018,1)).round(2))
     end
   end
 

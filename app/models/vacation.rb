@@ -166,7 +166,7 @@ class Vacation < ApplicationRecord
 
   def self.mom_supplemental_days(employee)
     if employee.female?
-      2 * employee.children_under_6
+      ( 2 * employee.children_under_6 ).fdiv(MONTHLY)
     else
       0
     end

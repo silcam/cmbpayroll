@@ -49,11 +49,11 @@ class SystemVariable < ApplicationRecord
     immatriculation_no: '5087501B',
     a01_cutoff: 25000,
     cnps_cutoff: 300000,
-    dipe_page_1: '69647-T',
-    dipe_page_2: '69648-D',
-    dipe_page_3: '69649-V',
-    dipe_page_4: '70667-U',
-    dipe_page_5: '70668-G'
+    dipe_page_1: '69647',
+    dipe_page_2: '69648',
+    dipe_page_3: '69649',
+    dipe_page_4: '70667',
+    dipe_page_5: '70668'
   }
 
   def self.value(key)

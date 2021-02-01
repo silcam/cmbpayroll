@@ -42,7 +42,7 @@ FROM
 WHERE
   e.employment_status IN :employment_status
 ORDER BY
-  dipeno,matricule_cnps ASC
+  employee_id ASC
     SELECTSTATEMENT
   end
 

@@ -1,25 +1,27 @@
 report.set_layout tlf: 'reports/dipes_government', layout_options: { default: true }
 
-@count = 0
+@page_no = 0
+@page_count = 0
+@total_count = 0
+@expected_count = 0
 @dipe_page = [
   SystemVariable.value(:dipe_page_1),
   SystemVariable.value(:dipe_page_2),
   SystemVariable.value(:dipe_page_3),
   SystemVariable.value(:dipe_page_4),
   SystemVariable.value(:dipe_page_5),
+  SystemVariable.value(:dipe_page_6)
 ]
+@dipe_per_page = SystemVariable.value(:per_dipe_page)
 
 report.on_page_create do |page|
   if page.layout.default?
-    page.item(:dipe_header).value = @dipe_page[@count]
+    page.item(:dipe_header).value = @dipe_page[@page_no]
     page.item(:feuille_header).value(@report.feuille)
     page.item(:report_month).value(I18n.l(@report.report_period.start, format: :monthname_abbrev, locale: :fr))
     page.item(:report_year).value(I18n.l(@report.report_period.start, format: :year, locale: :fr))
   end
 end
-
-@item_page = nil
-@page_no = 1
 
 @salaire_taxable_total = 0
 @salaire_cotisable_total = 0
@@ -55,7 +57,7 @@ def summary_vertical_rows(row)
   row.item(:vertical_line_14).hide
 end
 
-def add_summary(list, new_page=true)
+def add_summary(list)
   # Totaux
   list.add_row(
         salaire_taxable: number_to_currency(@salaire_taxable_total, unit: '', locale: :cm),
@@ -72,7 +74,7 @@ def add_summary(list, new_page=true)
 
   # Rapport
   list.add_row(
-        dipe_rapport: @dipe_page[(@page_no - 1)]
+        dipe_rapport: (@page_no == 0 ? "" : @dipe_page[(@page_no - 1)])
       ) do |row|
     if @salaire_taxable_last_total > 0
       row.item(:salaire_taxable).show
@@ -110,12 +112,11 @@ def add_summary(list, new_page=true)
   end
 end
 
-
 # 1st page
 report.list("dipes_group") do |list|
 
-  @report.results.body.each do |t|
-
+  @expected_count = @report.results.body.count
+  @report.results.body.each_with_index do |t,num|
     x_dipes_no = t[0].to_s
     x_group = t[1].to_s
     x_matricule_cnps = t[2].to_s
@@ -132,8 +133,6 @@ report.list("dipes_group") do |list|
     x_retenue_taxe_com = t[13].to_i
     x_ligne = t[14].to_i
     x_matricule_intern = t[15].to_i
-
-    @item_page = x_group if @item_page.nil?
 
     list.add_row(
       matricule_cnps: x_matricule_cnps,
@@ -168,17 +167,12 @@ report.list("dipes_group") do |list|
     @centime_add_com_grand_total += x_centime_add_com
     @retenue_taxe_com_grand_total += x_retenue_taxe_com
 
-    if x_group.nil?
-      @item_page = "X"
-    end
+    @page_count += 1
+    @total_count += 1
 
-    unless @item_page == x_group
-      @item_page = x_group
-
+    # end the page and move on
+    if (@page_count >= @dipe_per_page || @total_count == @expected_count)
       add_summary(list)
-
-      @count += 1
-      list.page_break
 
       @salaire_taxable_total = 0
       @salaire_cotisable_total = 0
@@ -195,13 +189,16 @@ report.list("dipes_group") do |list|
       @retenue_surt_prog_last_total = @retenue_surt_prog_grand_total
       @centime_add_com_last_total = @centime_add_com_grand_total
       @retenue_taxe_com_last_total = @retenue_taxe_com_grand_total
+
+      if ((num + 1) < @expected_count)
+        list.page_break
+      end
+
+      @page_count = 0
     end
   end
 
-  add_summary(list)
-
-
-  # Switch to new layout for last page which is compltely different
+  # Switch to new layout for last page which is completely different
   report.use_layout 'app/views/reports/dipes_government_footer.tlf', id: :lp
   report.start_new_page layout: :lp do |page|
 

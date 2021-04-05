@@ -36,11 +36,12 @@ SELECT
 FROM
   employees e
     INNER JOIN people p ON p.id = e.person_id
-    INNER JOIN payslips ps ON ps.employee_id = e.id AND ps.period_year = :year AND ps.period_month = :month
+    LEFT OUTER JOIN payslips ps ON ps.employee_id = e.id AND ps.period_year = :year AND ps.period_month = :month
     LEFT OUTER JOIN vacations v ON v.employee_id = e.id AND v.period_year = :year AND v.period_month = :month
     JOIN (SELECT id, :month AS ps_month, :year AS ps_year FROM employees) as m ON m.id = e.id
 WHERE
-  e.employment_status IN :employment_status
+  e.employment_status IN :employment_status AND
+  (COALESCE(ps.taxable,0) + COALESCE(v.vacation_pay,0) > 0)
 ORDER BY
   employee_id ASC
     SELECTSTATEMENT

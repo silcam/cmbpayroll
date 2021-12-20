@@ -198,9 +198,10 @@ class JournalReport
     var_results = {}
 
     results = report_obj.results.hashes
-    results.each do |r|
-      requested_vars.each do |v|
-        var_results[v] = 0 unless var_results[v]
+
+    requested_vars.each do |v|
+      var_results[v] = 0
+      results.each do |r|
         var_results[v] += r[v].to_f
       end
     end

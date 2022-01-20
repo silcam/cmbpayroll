@@ -897,6 +897,42 @@ class VacationTest < ActiveSupport::TestCase
     end
   end
 
+  test "Days balance rounded if necessary during payslip calc" do
+    sept = Period.new(2018,9)
+    oct = Period.new(2018,10)
+
+    # Need to have a payslip in the start_date Period
+    employee = return_valid_employee()
+    employee.first_day = '2018-01-01'
+    employee.save
+
+    sept_ps = employee.payslip_for(sept)
+    sept_ps = create_and_return_payslip(employee, sept) if (sept_ps.nil?)
+
+    # This will round up to 20, else it will be an error.
+    sept_ps.vacation_balance = 19.9999999999996
+    sept_ps.vacation_pay_balance = 152423
+    sept_ps.save
+
+    # Create and init vacation
+    vac = Vacation.new
+    vac.employee = employee
+    vac.start_date = "2018-10-01"
+    vac.end_date = "2018-10-26"
+    assert(vac.valid?, "newly created vacation should be valid now")
+    assert(vac.save, "newly created vacation saves fine")
+    assert(vac.destroyable?)
+    vac.paid = true
+
+    assert_equal(20, vac.days, "should be 20 days")
+
+    # Process october payslip, during which employee is on vacation for 20 days.
+    payslip = Payslip.process(employee, oct)
+    assert(payslip)
+    # If insufficient balance, payslip will not be valid.
+    assert(payslip.valid?, "should have no errors when processing")
+  end
+
   def end_of_aug_vacay
     @luke.vacations.new(start_date: '2017-08-31', end_date: '2017-09-01')
   end

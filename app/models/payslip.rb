@@ -820,7 +820,7 @@ class Payslip < ApplicationRecord
       end
     end
 
-    if (cur_balance - vacation_days_used < 0)
+    if ((cur_balance.round(2) - vacation_days_used) < 0)
       Rails.logger.error("CB: #{cur_balance} less #{vacation_days_used} for period #{payslip.period}")
       raise Exception.new("Insufficient vacation balance to take this month's vacation, Please Correct.")
     end

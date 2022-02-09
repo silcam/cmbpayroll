@@ -50,12 +50,12 @@ class SystemVariable < ApplicationRecord
     a01_cutoff: 25000,
     cnps_cutoff: 300000,
     per_dipe_page: 15,
-    dipe_page_1: '69647',
-    dipe_page_2: '69648',
-    dipe_page_3: '69649',
-    dipe_page_4: '70667',
-    dipe_page_5: '70668',
-    dipe_page_6: '70669'
+    dipe_page_1: '9222N',
+    dipe_page_2: '9223G',
+    dipe_page_3: '9224K',
+    dipe_page_4: '9225Z',
+    dipe_page_5: '9401X',
+    dipe_page_6: '9402J'
   }
 
   def self.value(key)

@@ -65,7 +65,7 @@ gem 'roman-numerals', '~> 0.3.0'
 # 2.2.3 is a fixed version
 gem 'loofah', '>= 2.2.3'
 # 1.0.4 is a fixed version
-gem 'rails-html-sanitizer', '~>1.0.4'
+gem 'rails-html-sanitizer', '~>1.4.3'
 # 3.7.2 is a fixed version (CVE-2018-3760)
 gem 'sprockets', '~>3.7.2'
 # 1.2.2 is a fixed version (CVE-2018-1000544)

@@ -35,7 +35,7 @@ class Wage < ApplicationRecord
     return INVALID_WAGE if (wage.nil?)
 
     scaled_wage = wage.send(@wage_by_scale[input_scale])
-    return INVAILD_WAGE if (scaled_wage <= 0)
+    return INVALID_WAGE if (scaled_wage <= 0) # FIXME
 
     scaled_wage
   end

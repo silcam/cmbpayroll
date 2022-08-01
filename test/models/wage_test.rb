@@ -71,6 +71,19 @@ class WageTest < ActiveSupport::TestCase
     assert_equal(4, echelonalt)
   end
 
+  test "Can return wage with wagescale c and d" do
+    # This should not throw an exception, i.e. return a valid object
+    # this is exhibiting a case where the site would throw an
+    # exception if these options were entered.
+    emp = return_valid_employee
+
+    emp.category_eight!
+    emp.echelon_a!
+    emp.wage_scale_d!
+
+    assert(emp.wage)
+  end
+
   test "Can retrieve record" do
     wage = Wage.find_by(category: 1, echelon: 'd', echelonalt: 4)
 

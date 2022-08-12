@@ -17,7 +17,11 @@ FROM
   LEFT OUTER JOIN (
       SELECT payslip_id, 'D' as type, note, amount, 'CFA' as unit, date
       FROM deductions
-      WHERE upper(note) NOT IN ('AMICAL','UNION')
+      WHERE upper(note) NOT IN ('AMICAL','UNION') AND deduction_type <> 1
+    UNION ALL
+      SELECT payslip_id, 'B' as type, note, amount, 'CFA' as unit, date
+      FROM deductions
+      WHERE upper(note) NOT IN ('AMICAL','UNION') AND deduction_type = 1
     UNION ALL
       SELECT ps.id, 'D' as type, 'Loan Payment - Cash' as note, lp.amount, 'CFA' as unit, date
       FROM loan_payments lp, loans l, employees emp, payslips ps

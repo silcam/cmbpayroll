@@ -57,10 +57,6 @@ report.list("transaction_report") do |list|
       department_name: x_dept_name,
       comments: ''
     ) do |row|
-      if (@current_note == x_note)
-        row.item(:code).hide()
-        row.item(:description).hide()
-      end
       if (@current_date == x_date)
         row.item(:transaction_date).hide()
       end

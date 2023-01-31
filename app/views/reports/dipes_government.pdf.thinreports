@@ -10,7 +10,9 @@ report.set_layout tlf: 'reports/dipes_government', layout_options: { default: tr
   SystemVariable.value(:dipe_page_3),
   SystemVariable.value(:dipe_page_4),
   SystemVariable.value(:dipe_page_5),
-  SystemVariable.value(:dipe_page_6)
+  SystemVariable.value(:dipe_page_6),
+  SystemVariable.value(:dipe_page_7),
+  SystemVariable.value(:dipe_page_8)
 ]
 @dipe_per_page = SystemVariable.value(:per_dipe_page)
 

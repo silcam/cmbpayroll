@@ -2,7 +2,7 @@ CMB New Payroll System
 
 ## Dependencies
 
-* Ruby 2.4.1 (use rbenv)
+* Ruby 2.7.4 (use rbenv)
 * Postgres (9.5)
 * Bundler
 

@@ -3349,7 +3349,7 @@ class PayslipTest < ActiveSupport::TestCase
     end
   end
 
-  test "bonuses can be post tax" do
+  test "bonuses can be post tax (percentage based)" do
     employee = return_valid_employee()
     generate_work_hours employee, Period.new(2017, 8)
     assert employee.valid?
@@ -3415,6 +3415,71 @@ class PayslipTest < ActiveSupport::TestCase
     # Verify pay has been incrased by the specified amount.
     pay_diff = new_payslip_net_amount - orig_payslip_net_amount
     assert_equal(0.052, pay_diff.fdiv(orig_payslip_gross_amount).round(3))
+  end
+
+  test "bonuses can be post tax (fixed amount)" do
+    employee = return_valid_employee()
+    generate_work_hours employee, Period.new(2017, 8)
+    assert employee.valid?
+
+    # Add bonus (post tax)
+    # Check total
+    # Verify tax doesn't change
+    # Verify gross doesn't change
+    # Verify net does change by non-taxed amount
+
+    # create pre bonus
+    # (existence of pre bonus should not be problematic)
+    pre_bonus = Bonus.new
+    pre_bonus.name = "Pre Tax Percentage Bonus"
+    pre_bonus.quantity = 0.10
+    pre_bonus.percentage!
+    pre_bonus.post_tax = false
+    assert pre_bonus.valid?
+    pre_bonus.save
+    employee.bonuses << pre_bonus
+    assert_equal(1, employee.bonuses.size)
+
+    # Figure out employee tax, gross, and net
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    orig_payslip_tax_amount = payslip.total_tax
+    orig_payslip_gross_amount = payslip.gross_pay
+    orig_payslip_net_amount  = payslip.net_pay
+
+    # create post bonus
+    post_bonus = Bonus.new
+    post_bonus.name = "Post Tax Fixed Bonus"
+    post_bonus.quantity = 10000
+    post_bonus.fixed!
+    post_bonus.post_tax = true
+    assert post_bonus.valid?
+    post_bonus.save
+
+    # assign to employee
+    employee.bonuses << post_bonus
+    assert_equal(2, employee.bonuses.size)
+
+    payslip = Payslip.process(employee, Period.new(2017,8))
+
+    first = payslip.deductions.where(note: "Post Tax Fixed Bonus").take
+    base = payslip.gross_pay
+
+    # Verify amount of bonus
+    assert_equal(-10000, first.amount, "correct amount for bonus")
+
+    # Verify tax doesn't change
+    assert_equal orig_payslip_tax_amount, payslip.total_tax
+    # Verify gross doesn't change
+    assert_equal orig_payslip_gross_amount, payslip.gross_pay
+    # Verify net does change by non-taxed amount
+    new_payslip_net_amount = payslip.net_pay
+    new_payslip_gross_amount = payslip.gross_pay # not increased
+    assert_equal(new_payslip_gross_amount, orig_payslip_gross_amount)
+
+    # Verify pay has been incrased by the specified amount.
+    pay_diff = new_payslip_net_amount - orig_payslip_net_amount
+    assert_equal(10000, pay_diff)
   end
 
   private

@@ -265,4 +265,47 @@ class BonusTest < ActiveSupport::TestCase
     assert bonus.valid?, "bonus is valid"
   end
 
+  def test_bonus_can_be_after_tax
+    bonus.name = "Test Bonus After Tax"
+
+    refute bonus.post_tax, "should be false by default"
+    bonus.post_tax = true
+    assert bonus.post_tax, "applying bonus after tax"
+
+    bonus.quantity = 0.052
+    bonus.bonus_type = "percentage"
+
+    bonus.valid?
+    assert bonus.valid?, "bonus is valid"
+  end
+
+  def test_pre_post_scopes
+    employee = return_valid_employee
+
+    pre_bonus1 = Bonus.new
+    pre_bonus1.name = "Pre Bonus 1"
+    pre_bonus1.bonus_type = "percentage"
+    pre_bonus1.quantity = "0.1"
+    assert pre_bonus1.valid?
+
+    employee.bonuses << pre_bonus1
+    assert_equal(1, employee.bonuses.all.count)
+
+    assert_equal(1, employee.bonuses.pretax.count)
+    assert_equal(0, employee.bonuses.posttax.count)
+
+    post_bonus1 = Bonus.new
+    post_bonus1.name = "Post Bonus 1"
+    post_bonus1.bonus_type = "percentage"
+    post_bonus1.quantity = "0.2"
+    post_bonus1.post_tax = true
+    assert post_bonus1.valid?
+
+    employee.bonuses << post_bonus1
+    assert_equal(2, employee.bonuses.all.count)
+
+    assert_equal(1, employee.bonuses.pretax.count)
+    assert_equal(1, employee.bonuses.posttax.count)
+  end
+
 end

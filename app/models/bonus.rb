@@ -11,6 +11,9 @@ class Bonus < ApplicationRecord
   validate :min_and_max_only_with_percentage
   validate :min_less_than_max
 
+  scope :pretax, -> { where(post_tax: :false) }
+  scope :posttax, -> { where(post_tax: :true) }
+
   def appropriate_quantities_per_type
     if (quantity.nil? || !quantity.is_a?(Numeric) ||
         !ext_quantity.is_a?(Numeric))

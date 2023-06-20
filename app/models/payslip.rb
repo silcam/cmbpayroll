@@ -586,6 +586,7 @@ class Payslip < ApplicationRecord
       self.process_vacation(payslip, employee, period)
 
       self.process_charges_and_payments(payslip, employee)
+      self.process_post_tax_bonuses(payslip, employee)
       payslip.process_employee_deductions()
       self.process_loans(payslip, employee, period)
       self.process_payslip_corrections(payslip, employee, period)
@@ -624,7 +625,9 @@ class Payslip < ApplicationRecord
 
     bonus_total = 0
 
-    employee.bonuses.all.each do |bonus|
+    # NB this is only pre tax bonuses, some bonuses
+    # are processes post tax later on.
+    employee.bonuses.pretax.each do |bonus|
       earning = Earning.new
       earning.description = bonus.name
 
@@ -703,6 +706,21 @@ class Payslip < ApplicationRecord
       deduction.date = pmnt.date
 
       payslip.deductions << deduction
+    end
+  end
+
+  def self.process_post_tax_bonuses(payslip, employee)
+    employee.bonuses.posttax.each do |bonus|
+      negcharge = Deduction.new
+      negcharge.note = bonus.name
+      negcharge.date = payslip.period.finish
+
+      # posttax bonuses always use gross as base
+      base = payslip.gross_pay
+      negcharge.amount = -1 * bonus.effective_bonus(base).round
+      negcharge.deduction_type = Charge.charge_types["other"]
+
+      payslip.deductions << negcharge
     end
   end
 

@@ -10,6 +10,7 @@
       <th><%= t(:Minimum) %></th>
       <th><%= t(:Maximum) %></th>
       <th><%= t(:Use_caisse) %></th>
+      <th><%= t(:After_tax) %></th>
       <th colspan="2"></th>
     </tr>
   </thead>
@@ -28,6 +29,12 @@
         <td><%= bonus.minimum %></td>
         <td><%= bonus.maximum %></td>
         <td><%= bonus.use_caisse == false ? "" : t(:Yes) %></td>
+        <td><% if bonus.post_tax == false %>
+                 <%= t(:Applied_before_tax) %>
+               <% else %>
+                 <span style="color:red;font-weight:bold;"><%= t(:Applied_after_tax) %></span>
+            <% end %>
+        </td>
         <% unless @employee %>
           <td><%= link_to t(:Edit), edit_bonus_path(bonus) %></td>
           <td><%= link_to t(:Delete), bonus, method: :delete, data: { confirm: t(:Are_you_sure) } %></td>

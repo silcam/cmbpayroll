@@ -74,7 +74,7 @@ gem 'rubyzip', '~>1.3.0'
 # 1.9.24 is a fixed version (CVE-2018-1000201)
 gem 'ffi', '~>1.9.24'
 # 2.0.6 is a fixed version
-gem 'rack', '~>2.1.4'
+gem 'rack', '~>2.2.6'
 # 5.1.6.1 is fixed version (CVE-2018-16476)
 gem 'activejob', '>= 5.1.6.1'
 # 1.10.4 is fixed (CVE-2019-5477)

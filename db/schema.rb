@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210119130750) do
+ActiveRecord::Schema.define(version: 20230616162640) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 20210119130750) do
     t.integer "maximum"
     t.boolean "use_caisse", default: false, null: false
     t.integer "minimum"
+    t.boolean "post_tax", default: false, null: false
   end
 
   create_table "bonuses_employees", id: false, force: :cascade do |t|
@@ -374,6 +375,8 @@ ActiveRecord::Schema.define(version: 20210119130750) do
     t.integer "cac2"
     t.integer "communal"
     t.integer "cnps"
+    t.integer "vacation_transport", default: 0
+    t.integer "vacation_gross", default: 0
     t.index ["employee_id"], name: "index_vacations_on_employee_id"
   end
 

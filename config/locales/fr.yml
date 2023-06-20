@@ -324,7 +324,12 @@ fr:
   Minimum_must_be_less: deoit être moins que maximum
   Minimum: Minimum
   Maximum: Maximum
-  Use_caisse: "Inclure le prime d'ancienneté\u00a0?"
+  Use_caisse: "Inclure la prime d'ancienneté\u00a0?"
+  After_tax: Après cotisation
+  Applied_before_tax: Avant cotisation
+  Apply_after_tax_q: "Appliquez cette prime après cotisation\u00a0?"
+  Note_after_tax_bonus: NB. cette option utilise toujour salaire après contribution pour montant de base. L'option concernant la prime d'ancienneté ne fait rien quand cette option est selectionnée.
+  Applied_after_tax: Après cotisation
 
   # Raises
   New_raise: Nouvelle augmentation

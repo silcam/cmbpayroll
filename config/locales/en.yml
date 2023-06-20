@@ -319,6 +319,11 @@ en:
   Maximum: Maximum
   Minimum: Minimum
   Use_caisse: Include Seniority Bonus?
+  After_tax: Applied After Taxes
+  Applied_before_tax: Before Taxes
+  Apply_after_tax_q: Apply this bonus AFTER taxes?
+  Note_after_tax_bonus: (NB. this option always uses the gross pay for computing the bonus. The seniority bonus option does nothing when this is selected.
+  Applied_after_tax: After Taxes
 
   # Raises
   New_raise: New Raise

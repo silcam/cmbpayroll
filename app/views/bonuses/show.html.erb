@@ -33,5 +33,10 @@
   <%= @bonus.use_caisse %>
 </p>
 
+<p>
+  <strong><%= t(:After_tax) %>:</strong>
+  <%= @bonus.post_tax %>
+</p>
+
 <%= link_to t(:Edit), edit_bonus_path(@bonus) %> |
 <%= link_to t(:Back), bonuses_path %>

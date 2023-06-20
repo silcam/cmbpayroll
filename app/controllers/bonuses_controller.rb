@@ -99,7 +99,8 @@ class BonusesController < ApplicationController
           :maximum,
           :comment,
           :ext_quantity,
-          :use_caisse
+          :use_caisse,
+          :post_tax
       )
     end
 end

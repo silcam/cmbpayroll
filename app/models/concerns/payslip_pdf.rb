@@ -54,10 +54,10 @@ class PayslipPdf < CmbPayrollPdf
 
       data = [
         ["Taux de rémunération (mensuel)",
-            { :content => "#{number_to_currency(payslip.employee.wage, locale: :cm)}", :align => :right },
+            { :content => "#{number_to_currency(payslip.wage, locale: :cm)}", :align => :right },
             "",
             if (payslip.worked_full_month?)
-              { :content => "#{payslip.employee.wage}", :align => :right }
+              { :content => "#{payslip.wage}", :align => :right }
             else
               ""
             end
@@ -89,7 +89,7 @@ class PayslipPdf < CmbPayrollPdf
 
       data << [
           "Prime ancienneté",
-          { :content => "#{number_to_percentage(yos * sb * 100, precision: 0)} de #{payslip.employee.find_base_wage}", :align => :right },
+          { :content => "#{number_to_percentage(yos * sb * 100, precision: 0)} de #{payslip.basewage}", :align => :right },
           { :content => "soit CFA", :align => :center },
           { :content => "#{payslip.seniority_bonus_amount}", :align => :right }
       ]

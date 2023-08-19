@@ -87,7 +87,7 @@ gem 'nokogiri', '>= 1.10.4'
 
 group :development, :test do
   # Use Puma as the app server in development
-  gem 'puma', '~> 4.3'
+  gem 'puma', '~> 5.6'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Adds support for Capybara system testing and selenium driver

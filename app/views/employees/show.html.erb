@@ -133,7 +133,8 @@
 <h3>
   <%= t :Wage_info %>
   <% if can? :update, @employee %>
-    <%= link_to t(:Correct), edit_employee_path(@employee, page: :wage), class: 'btn btn-warning btn-sm' %>
+    <%= link_to t(:Edit), edit_employee_path(@employee, page: :wage), class: 'btn btn-warning btn-sm' %>
+    <%= link_to t(:Correct), new_payslip_correction_path(), class: 'btn btn-info btn-sm' %>
     <%= link_to t(:New_raise), new_employee_raise_path(@employee), class: 'btn btn-primary btn-sm' %>
   <% end %>
 </h3>

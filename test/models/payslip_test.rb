@@ -3303,6 +3303,197 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(0, payslip.period_suppl_days)
   end
 
+  test "Pay Correction works" do
+    employee = return_valid_employee()
+    employee.contract_start = "2018-05-07"
+    employee.first_day = "2018-05-07"
+    employee.accrue_vacation = true;
+    employee.save
+
+    period = Period.new(2022,1)
+
+    # ensure we have a perious payslip to work with.
+    prev_vac_pay_bal = 75665
+    prev_vac_bal = 19.5
+    set_previous_vacation_balances(employee, period, prev_vac_pay_bal, prev_vac_bal)
+
+    generate_work_hours(employee, period)
+    payslip = Payslip.process(employee, period);
+    prev_payslip = payslip.previous
+    net_pay = payslip.net_pay
+
+    # need to use 5 franc increments.
+    positive_correction = 9570
+    negative_correction = -3140
+
+    # Add a payslip correction (cfa credit, positive).
+    assert_equal(0, employee.payslip_corrections.size);
+    psc = PayslipCorrection.new
+    psc.payslip = prev_payslip
+    psc.cfa = positive_correction
+    psc.note = "Error fix"
+    # If not overriden, PSC will use LastPostedPeriod.current as the current period
+    psc.applied_year = period.year
+    psc.applied_month = period.month
+    psc.save
+    assert_equal(0, psc.errors.size, psc.errors.inspect)
+    prev_payslip.payslip_corrections << psc
+
+    assert_equal(1, employee.payslip_corrections.for_period(period).size)
+    assert_equal(period.month, psc.applied_month)
+    assert_equal(period.year, psc.applied_year)
+
+    payslip = Payslip.process(employee, period);
+    assert_equal(net_pay + positive_correction, payslip.net_pay,
+        "payslip is increased by correection") 
+
+    # Add a second payslip correction, (cfa credit, negative)
+    psc = PayslipCorrection.new
+    psc.payslip = prev_payslip
+    psc.cfa = negative_correction
+    psc.applied_year = period.year
+    psc.applied_month = period.month
+    prev_payslip.payslip_corrections << psc
+    assert_equal(2, employee.payslip_corrections.for_period(period).size)
+    
+    payslip = Payslip.process(employee, period);
+    assert_equal(net_pay + positive_correction + negative_correction,
+        payslip.net_pay, "payslip is increased by corrrection") 
+
+    # Next Payslip is not increased
+    generate_work_hours(employee, period.next)
+    next_payslip = Payslip.process(employee, period.next)
+    assert_equal(net_pay, next_payslip.net_pay, 
+        "next payslip is not increased")
+  end
+
+  test "Vaction Correction works" do
+    employee = return_valid_employee()
+    employee.contract_start = "2018-05-07"
+    employee.first_day = "2018-05-07"
+    employee.accrue_vacation = true;
+    employee.save
+
+    period = Period.new(2022,1)
+
+    prev_vac_pay_bal = 75665
+    prev_vac_bal = 19.5
+    set_previous_vacation_balances(employee, period, prev_vac_pay_bal, prev_vac_bal)
+
+    payslip = Payslip.process(employee, period);
+
+    prev_payslip = payslip.previous;
+    assert_equal(19.5, prev_payslip.vacation_balance);
+
+    # Vacation for 20 days
+    #     January 2022
+    # Su Mo Tu We Th Fr Sa
+    #                    1
+    #  2  3  4  5  6  7  8
+    #  9 10 11 12 13 14 15
+    # 16 17 18 19 20 21 22
+    # 23 24 25 26 27 28 29
+    # 30 31
+    vac = Vacation.new(start_date: "2022-01-03", end_date: "2022-01-28")
+    employee.vacations << vac
+
+    # no output of stack trace during test run
+    current_level = Rails.logger.level
+    Rails.logger.level = :fatal
+
+    # Reprocess, and Verify it fails.
+    payslip = Payslip.process(employee, period) # Should fail!
+    # veriy failure of processing.
+    assert_equal(1, payslip.errors.size, "should have 1 error indicating a problem with this payslip")
+
+    # reset logger level
+    Rails.logger.level = current_level
+
+    # Add a payslip correction.
+    assert(0, employee.payslip_corrections.for_period(period).size);
+    psc = PayslipCorrection.new
+    psc.applied_year = period.year
+    psc.applied_month = period.month
+    psc.payslip = payslip.previous
+    psc.vacation_days = 1
+    psc.save
+    prev_payslip.payslip_corrections << psc
+    assert(1, employee.payslip_corrections.for_period(period).size);
+
+    # verify it works.
+    # Reprocess, and Verify it works
+    payslip = Payslip.process(employee, period) # Should work
+    # verify failure of processing.
+    assert_equal(0, payslip.errors.size, "should have 0 error indicating a problem with this payslip")
+  end
+
+  test "Multiple Vaction Correction works" do
+    employee = return_valid_employee()
+    employee.contract_start = "2018-05-07"
+    employee.first_day = "2018-05-07"
+    employee.accrue_vacation = true;
+    employee.save
+
+    period = Period.new(2022,1)
+
+    prev_vac_pay_bal = 75665
+    prev_vac_bal = 19.5
+    generate_work_hours(employee, period.previous)
+    set_previous_vacation_balances(employee, period, prev_vac_pay_bal, prev_vac_bal)
+
+    prev_payslip = Payslip.for_employee_for_period(employee, period.previous)
+    assert_equal(prev_vac_bal, prev_payslip.vacation_balance)
+
+    generate_work_hours(employee, period)
+    payslip = Payslip.process(employee, period)
+    assert_equal(prev_vac_bal + 1.5, payslip.vacation_balance) # 1.5 should be added from prev.
+
+    assert_equal(1.5, Vacation.days_earned(employee, period))
+    assert_equal(1.5, payslip.vacation_earned())
+
+    # Add a payslip correction.
+    assert_equal(0, employee.payslip_corrections.for_period(period).size);
+    psc1 = PayslipCorrection.new
+    psc1.payslip = prev_payslip
+    psc1.applied_year = period.year
+    psc1.applied_month = period.month
+    psc1.vacation_days = 1
+    psc1.save
+    prev_payslip.payslip_corrections << psc1
+    assert_equal(1, employee.payslip_corrections.for_period(period).size)
+
+    # Add a second payslip correction.
+    assert_equal(1, employee.payslip_corrections.for_period(period).size)
+    psc2 = PayslipCorrection.new
+    psc2.payslip = prev_payslip
+    psc2.applied_year = period.year
+    psc2.applied_month = period.month
+    psc2.vacation_days = 2
+    psc2.save
+    prev_payslip.payslip_corrections << psc2
+    assert_equal(2, employee.payslip_corrections.for_period(period).size)
+
+    # verify it works.
+    # Reprocess, and Verify it works
+    payslip = Payslip.process(employee, period) # Should work
+    # veriy failure of processing.
+    assert_equal(0, payslip.errors.size, "should have 0 error indicating a problem with this payslip")
+
+    assert_equal(1.5, Vacation.days_earned(employee, period))
+    assert_equal(1.5, payslip.vacation_earned())
+
+    # 19.5 + 1.5 + 3 (1+2) = 24?
+    assert_equal(prev_vac_bal + 1.5 + 1 + 2, payslip.vacation_balance)
+    #Rails.logger.level = current_level
+
+    # Next period doesn't get more than usual
+    generate_work_hours(employee, period.next)
+    next_payslip = Payslip.process(employee, period.next);
+
+    assert_equal(0, next_payslip.errors.size, "should have 0 error indicating a problem with this payslip")
+    assert_equal(prev_vac_bal + 1.5 + 1 + 2 + 1.5, next_payslip.vacation_balance)
+  end
+
   test "Leave Produces a Payslip which is 0" do
     dec19 = Period.new(2019,12)
     employee = return_valid_employee()

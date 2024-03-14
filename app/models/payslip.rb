@@ -583,13 +583,13 @@ class Payslip < ApplicationRecord
       payslip.store_employee_attributes
 
       self.process_earnings_and_taxes(payslip, employee, period)
+      self.process_payslip_corrections(payslip, employee, period)
       self.process_vacation(payslip, employee, period)
 
       self.process_charges_and_payments(payslip, employee)
       self.process_post_tax_bonuses(payslip, employee)
       payslip.process_employee_deductions()
       self.process_loans(payslip, employee, period)
-      self.process_payslip_corrections(payslip, employee, period)
 
       payslip.compute_work_loans
       payslip.compute_net_pay
@@ -763,11 +763,6 @@ class Payslip < ApplicationRecord
       elsif correction.cfa_debit
         payslip.deductions << Deduction.new(amount: correction.cfa_debit, date: period.finish, deduction_type: Charge.charge_types["other"], note: "Correction, #{correction.payslip.period} : #{correction.note}")
       end
-
-      # TODO, What to do with this?
-      unless correction.vacation_days == 0
-        payslip.vacation_balance += correction.vacation_days
-      end
     end
   end
 
@@ -784,11 +779,20 @@ class Payslip < ApplicationRecord
       payslip.period_suppl_days = Vacation.period_supplemental_days(payslip.employee, payslip.period)
     end
 
+    # Apply Vacation Balance Corrections
+    days_correction = 0
+    corrections = payslip.employee.payslip_corrections.for_period(payslip.period)
+    corrections.each do |correction|
+      unless correction.vacation_days == 0
+        days_correction += correction.vacation_days
+      end
+    end
+
     # previous
     # is Vacation.balance correct? XXX No!
     # look in most_recent payslip?
     prev_balance = previous_payslip.nil? ? Vacation.balance(payslip.employee, payslip.period.previous) : previous_payslip.vacation_balance || 0
-    cur_balance = prev_balance + payslip.vacation_earned
+    cur_balance = prev_balance + payslip.vacation_earned + days_correction;
 
     # FIXME set this to an initial value.
     payslip.vacation_balance = cur_balance

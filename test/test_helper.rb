@@ -66,6 +66,7 @@ class ActiveSupport::TestCase
     employee.amical = 3000
     employee.uniondues = true
     employee.marital_status = "single"
+    employee.accrue_vacation = true
 
     employee.category_three!
     employee.echelon_d!

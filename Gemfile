@@ -53,7 +53,7 @@ gem 'rails-i18n', '~> 5.0.4'
 gem 'access-granted', '~>1.2.0'
 
 # Audit Trail
-gem 'audited', '~> 4.5'
+gem 'audited', '~> 5.3'
 
 # Reports
 gem 'thinreports', '~> 0.10.2'

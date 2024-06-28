@@ -100,6 +100,16 @@ class ReportsController < ApplicationController
       name: I18n.t(:Vacation_report, scope: "reports"),
       instance: Proc.new{|p| VacationReport.new()},
       format: :pdf
+    },
+    'annual_payslip' => {
+      name: I18n.t(:Annual_payslip, scope: "reports"),
+      instance: Proc.new{|p| AnnualPayslipReport.new()},
+      format: :pdf
+    },
+    'employee_yearly' => {
+      name: I18n.t(:Employee_yearly, scope: "reports"),
+      instance: Proc.new{|p| EmployeeYearlyReport.new()},
+      format: :pdf
     }
   }
 

@@ -437,6 +437,8 @@ en:
     Transaction_audit_report_by_type: Transaction Audit Report By Type
     Employee_deduction_report: Employee Deduction Report
     Vacation_report: Vacation Report
+    Annual_payslip: Annual Pay Report for All Employees
+    Employee_yearly: Annual Summary Report
     Download_report_as: Download report as
     Download_report_as_text_file: Download report as text file
     Download_report_as_pdf: Download report as PDF

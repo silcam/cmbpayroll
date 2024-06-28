@@ -443,6 +443,8 @@ fr:
     Transaction_audit_report_by_type: Le rapport d'audit par genre
     Employee_deduction_report: Le rapport des prélèvements des employées
     Vacation_report: le rapport de congé
+    Annual_payslip: Le rapport de paie pour tous les employés
+    Employee_yearly: Rapport annuel de synthèse des salaires
     Download_report_as: Télécharger le rapport comme
     Download_report_as_text_file: Télécharger le rapport comme un fichier texte
     Download_report_as_pdf: Télécharger le rapport comme un fichier PDF

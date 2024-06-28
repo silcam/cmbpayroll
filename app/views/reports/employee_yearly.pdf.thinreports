@@ -1,0 +1,94 @@
+report.set_layout tlf: 'reports/employee_yearly', layout_options: { default: true }
+
+@salaire_net_total = 0
+@cf_tax_total = 0
+@cnps_tax_total = 0
+@prop_tax_total = 0
+@crtv_tax_total = 0
+@comm_tax_total = 0
+
+@dept_cf_tax_total = 0
+@dept_cnps_tax_total = 0
+@dept_prop_tax_total = 0
+@dept_crtv_tax_total = 0
+@dept_comm_tax_total = 0
+@dept_nef_tax_total = 0
+
+report.on_page_create do |page|
+  if page.layout.default?
+    page.item(:report_year).value(I18n.l(@report.report_period.start, format: :year, locale: :fr))
+  end
+end
+
+# 1st page
+report.list("yearly_group") do |list|
+
+  @report.results.body.each_with_index do |t,num|
+    x_employee_id = t[0].to_s
+    x_matricule_cnps = t[1].to_s
+    x_employee_name = t[2].to_s
+    x_period_year = t[3].to_i
+    x_salaire_net = t[4].to_i
+    x_ccf_tax = t[5].to_i
+    x_cnps_tax = t[6].to_i
+    x_prop_tax = t[7].to_i
+    x_crtv_tax = t[8].to_i
+    x_comm_tax = t[9].to_i
+    x_cac_tax = t[10].to_i
+    x_net_pay = t[11].to_i
+    x_dept_cnps_tax = t[12].to_i
+    x_dept_cf_tax = t[13].to_i
+    x_dept_emp_fund = t[14].to_i
+
+    list.add_row(
+      employee_id: x_employee_id,
+      matricule_cnps: x_matricule_cnps,
+      employee_name: x_employee_name,
+      salaire_net: number_to_currency(x_salaire_net, unit: '', locale: :cm),
+      cf_tax: number_to_currency(x_ccf_tax, unit: '', locale: :cm),
+      cnps_tax: number_to_currency(x_cnps_tax, unit: '', locale: :cm),
+      prop_tax: number_to_currency(x_prop_tax, unit: '', locale: :cm),
+      crtv_tax: number_to_currency(x_crtv_tax, unit: '', locale: :cm),
+      comm_tax: number_to_currency(x_comm_tax, unit: '', locale: :cm),
+
+      dept_prop_tax: 0,
+      dept_crtv_tax: 0,
+      dept_comm_tax: 0,
+
+      dept_cf_tax: number_to_currency(x_dept_cf_tax, unit: '', locale: :cm),
+      dept_cnps_tax: number_to_currency(x_dept_cnps_tax, unit: '', locale: :cm),
+      dept_nef_tax: number_to_currency(x_dept_emp_fund, unit: '', locale: :cm)
+    )
+
+    @salaire_net_total += x_salaire_net
+    @cf_tax_total += x_ccf_tax
+    @cnps_tax_total += x_cnps_tax
+    @prop_tax_total += x_prop_tax
+    @crtv_tax_total += x_crtv_tax
+    @comm_tax_total += x_comm_tax
+
+    @dept_cf_tax_total += x_dept_cf_tax
+    @dept_cnps_tax_total += x_dept_cnps_tax
+    @dept_prop_tax_total += 0
+    @dept_crtv_tax_total += 0
+    @dept_comm_tax_total += 0
+    @dept_nef_tax_total += x_dept_emp_fund
+  end
+
+  list.on_footer_insert do |footer|
+    footer.item(:salaire_net_total).value(number_to_currency(@salaire_net_total, unit: '', locale: :cm))
+    footer.item(:cf_tax_total).value(number_to_currency(@cf_tax_total, unit: '', locale: :cm))
+    footer.item(:cf_tax_total).value(number_to_currency(@cf_tax_total, unit: '', locale: :cm))
+    footer.item(:cnps_tax_total).value(number_to_currency(@cnps_tax_total, unit: '', locale: :cm))
+    footer.item(:prop_tax_total).value(number_to_currency(@prop_tax_total, unit: '', locale: :cm))
+    footer.item(:crtv_tax_total).value(number_to_currency(@crtv_tax_total, unit: '', locale: :cm))
+    footer.item(:comm_tax_total).value(number_to_currency(@comm_tax_total, unit: '', locale: :cm))
+    footer.item(:dept_cf_tax_total).value(number_to_currency(@dept_cf_tax_total, unit: '', locale: :cm))
+    footer.item(:dept_cnps_tax_total).value(number_to_currency(@dept_cnps_tax_total, unit: '', locale: :cm))
+    footer.item(:dept_prop_tax_total).value(number_to_currency(@dept_prop_tax_total, unit: '', locale: :cm))
+    footer.item(:dept_crtv_tax_total).value(number_to_currency(@dept_crtv_tax_total, unit: '', locale: :cm))
+    footer.item(:dept_comm_tax_total).value(number_to_currency(@dept_comm_tax_total, unit: '', locale: :cm))
+    footer.item(:dept_nef_tax_total).value(number_to_currency(@dept_nef_tax_total, unit: '', locale: :cm))
+  end
+
+end

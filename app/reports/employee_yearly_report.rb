@@ -15,8 +15,16 @@ class EmployeeYearlyReport < CMBReport
   COALESCE(SUM(ps.communal),0) + COALESCE(SUM(v.communal),0) as comm_tax,
   COALESCE(SUM(ps.cac),0) + COALESCE(SUM(v.cac),0) as cac_tax,
   COALESCE(SUM(ps.net_pay),0) as net_sal,
-  COALESCE(SUM(ps.department_cnps),0) as dept_cnps,
-  COALESCE(SUM(ps.department_credit_foncier),0) as dept_cf,
+  COALESCE(SUM(ps.department_cnps),0) +
+  COALESCE(
+  CASE
+    WHEN SUM(v.vacation_pay) > #{SystemVariable.value(:cnps_ceiling)}
+    THEN ROUND((SUM(v.vacation_pay) * #{SystemVariable.value(:dept_cnps_w_ceil)}) +
+        #{SystemVariable.value(:dept_cnps_max_base)})
+    ELSE ROUND(SUM(v.vacation_pay) * #{SystemVariable.value(:dept_cnps)})
+  END
+  ,0) as dept_cnps,
+  COALESCE(SUM(ps.department_credit_foncier),0) + COALESCE(ROUND(SUM(v.vacation_pay) * #{SystemVariable.value(:dept_credit_foncier)}),0) as dept_cf,
   COALESCE(SUM(ps.employee_fund),0) as emp_fund
 FROM
   employees e

@@ -65,20 +65,20 @@ report.list("yearly_payslip_group") do |list|
       matricule_cnps: x_matricule_cnps,
       employee_name: x_employee_name,
       period_month: sprintf('%.2d', x_period_month),
-      salaire_net: number_to_currency(x_salaire_net, unit: '', locale: :cm),
-      cf_tax: number_to_currency(x_ccf_tax, unit: '', locale: :cm),
-      cnps_tax: number_to_currency(x_cnps_tax, unit: '', locale: :cm),
-      prop_tax: number_to_currency(x_prop_tax, unit: '', locale: :cm),
-      crtv_tax: number_to_currency(x_crtv_tax, unit: '', locale: :cm),
-      comm_tax: number_to_currency(x_comm_tax, unit: '', locale: :cm),
+      salaire_net: number_to_currency(Payslip.cfa_round(x_salaire_net), unit: '', locale: :cm),
+      cf_tax: number_to_currency(Payslip.cfa_round(x_ccf_tax), unit: '', locale: :cm),
+      cnps_tax: number_to_currency(Payslip.cfa_round(x_cnps_tax), unit: '', locale: :cm),
+      prop_tax: number_to_currency(Payslip.cfa_round(x_prop_tax), unit: '', locale: :cm),
+      crtv_tax: number_to_currency(Payslip.cfa_round(x_crtv_tax), unit: '', locale: :cm),
+      comm_tax: number_to_currency(Payslip.cfa_round(x_comm_tax), unit: '', locale: :cm),
 
       dept_prop_tax: 0,
       dept_crtv_tax: 0,
       dept_comm_tax: 0,
 
-      dept_cf_tax: number_to_currency(x_dept_cf_tax, unit: '', locale: :cm),
-      dept_cnps_tax: number_to_currency(x_dept_cnps_tax, unit: '', locale: :cm),
-      dept_nef_tax: number_to_currency(x_dept_emp_fund, unit: '', locale: :cm)
+      dept_cf_tax: number_to_currency(Payslip.cfa_round(x_dept_cf_tax), unit: '', locale: :cm),
+      dept_cnps_tax: number_to_currency(Payslip.cfa_round(x_dept_cnps_tax), unit: '', locale: :cm),
+      dept_nef_tax: number_to_currency(Payslip.cfa_round(x_dept_emp_fund), unit: '', locale: :cm)
     ) do |row|
       if (emp_id == x_employee_id)
         row.item(:employee_id).hide()

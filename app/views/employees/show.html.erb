@@ -120,10 +120,10 @@
     </tr>
 
     <tr>
-      <th scope="row">Vacation Accrual?</th>
+      <th scope="row"><%= t(:NIU) %></th>
+      <td><%= @employee.niu %></td>
+      <th scope="row"><%= t(:Vacation_accrual) %></th>
       <td><%= @employee.accrue_vacation ? t(:Yes) : t(:No) %></td>
-      <th></th>
-      <td></td>
       <th></th>
       <td></td>
     </tr>

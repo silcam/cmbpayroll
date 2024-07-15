@@ -40,9 +40,9 @@ report.list("yearly_payslip_group") do |list|
     x_dept_cnps_tax = t[13].to_i
     x_dept_cf_tax = t[14].to_i
     x_dept_emp_fund = t[15].to_i
+    x_employee_niu = t[16].to_s
 
     if (emp_id != -1 && emp_id != x_employee_id)
-      Rails.logger.error("emp_id is #{emp_id} and is not #{x_employee_id}")
       list.page_break
 
       @salaire_net_total = 0
@@ -61,7 +61,7 @@ report.list("yearly_payslip_group") do |list|
     end
 
     list.add_row(
-      employee_id: x_employee_id,
+      employee_niu: x_employee_niu,
       matricule_cnps: x_matricule_cnps,
       employee_name: x_employee_name,
       period_month: sprintf('%.2d', x_period_month),
@@ -81,7 +81,7 @@ report.list("yearly_payslip_group") do |list|
       dept_nef_tax: number_to_currency(Payslip.cfa_round(x_dept_emp_fund), unit: '', locale: :cm)
     ) do |row|
       if (emp_id == x_employee_id)
-        row.item(:employee_id).hide()
+        row.item(:employee_niu).hide()
         row.item(:matricule_cnps).hide()
         row.item(:employee_name).hide()
       end

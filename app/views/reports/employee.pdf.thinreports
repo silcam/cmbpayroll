@@ -25,11 +25,12 @@ report.list("employee_list") do |list|
     x_m_c = t[11].to_s
     x_children = t[12].to_s
     x_gender = t[13].to_s
+    x_niu = t[14].to_s
 
     list.add_row(
       employee_name: x_employee_name,
       employee_id: x_employee_id,
-      department_id: x_department_id,
+      employee_niu: x_niu,
       department_name: x_department_name,
       job_description: x_job_description,
       begin_contract: x_begin_contract,

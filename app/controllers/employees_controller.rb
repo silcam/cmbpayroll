@@ -170,7 +170,8 @@ class EmployeesController < ApplicationController
         :amical,
         :uniondues,
         :employee_fund,
-        :accrue_vacation]
+        :accrue_vacation,
+        :niu]
     unless params[:employee][:supervisor].nil?
       if params[:employee][:supervisor_id].to_i >= 1  # A valid id
         permitted << :supervisor_id

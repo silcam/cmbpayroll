@@ -70,7 +70,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 59,
+            "x": 93,
             "y": 88.5,
             "width": 75,
             "height": 17.3,
@@ -96,7 +96,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 305,
+            "x": 314,
             "y": 114.2,
             "width": 66,
             "height": 16,
@@ -232,9 +232,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 140,
+            "x1": 164,
             "y1": 83.5,
-            "x2": 140,
+            "x2": 164,
             "y2": 142.5
           },
           {
@@ -367,9 +367,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 55,
+            "x1": 98,
             "y1": 83.5,
-            "x2": 55,
+            "x2": 98,
             "y2": 142.5
           },
           {
@@ -377,7 +377,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 25,
+            "x": 44,
             "y": 88.5,
             "width": 25.7,
             "height": 17.3,
@@ -408,9 +408,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 305,
+            "x1": 319,
             "y1": 83.5,
-            "x2": 305,
+            "x2": 319,
             "y2": 142.5
           },
           {
@@ -418,7 +418,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 155,
+            "x": 205,
             "y": 88.5,
             "width": 69,
             "height": 17.3,
@@ -821,9 +821,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 285,
+            "x1": 303,
             "y1": 83.5,
-            "x2": 285,
+            "x2": 303,
             "y2": 142.5
           },
           {
@@ -831,7 +831,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 280,
+            "x": 296,
             "y": 88.5,
             "width": 31,
             "height": 17.3,
@@ -849,7 +849,7 @@
               "font-style": []
             },
             "texts": [
-              "Month"
+              "Mo"
             ]
           }
         ]
@@ -866,9 +866,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 310,
+            "x": 321,
             "y": 191.3,
-            "width": 60.3,
+            "width": 50,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1196,9 +1196,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 305,
+            "x1": 319,
             "y1": 185.8,
-            "x2": 305,
+            "x2": 319,
             "y2": 201.3
           },
           {
@@ -1486,13 +1486,13 @@
             "y2": 201.3
           },
           {
-            "id": "employee_id",
+            "id": "employee_niu",
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 25,
+            "x": 23,
             "y": 191.3,
-            "width": 30,
+            "width": 74,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1507,7 +1507,7 @@
               "letter-spacing": "",
               "font-style": [],
               "overflow": "truncate",
-              "word-wrap": "break-word"
+              "word-wrap": "none"
             },
             "reference-id": "",
             "value": "",
@@ -1522,9 +1522,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 60,
+            "x": 100,
             "y": 191.3,
-            "width": 75,
+            "width": 62,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1539,7 +1539,7 @@
               "letter-spacing": "",
               "font-style": [],
               "overflow": "truncate",
-              "word-wrap": "break-word"
+              "word-wrap": "none"
             },
             "reference-id": "",
             "value": "",
@@ -1554,7 +1554,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 146.7,
+            "x": 166,
             "y": 191.3,
             "width": 134.6,
             "height": 8.5,
@@ -1571,7 +1571,7 @@
               "letter-spacing": "",
               "font-style": [],
               "overflow": "expand",
-              "word-wrap": "break-word"
+              "word-wrap": "none"
             },
             "reference-id": "",
             "value": "",
@@ -1591,9 +1591,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 285,
+            "x1": 303,
             "y1": 185.8,
-            "x2": 285,
+            "x2": 303,
             "y2": 201.3
           },
           {
@@ -1606,9 +1606,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 140,
+            "x1": 164,
             "y1": 185.8,
-            "x2": 140,
+            "x2": 164,
             "y2": 201.3
           },
           {
@@ -1621,9 +1621,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 55,
+            "x1": 98,
             "y1": 185.8,
-            "x2": 55,
+            "x2": 98,
             "y2": 201.3
           },
           {
@@ -1631,7 +1631,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 290,
+            "x": 306,
             "y": 191.3,
             "width": 10,
             "height": 8.5,
@@ -1699,9 +1699,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 310,
+            "x": 321,
             "y": 293.6,
-            "width": 60.3,
+            "width": 50,
             "height": 8.5,
             "style": {
               "font-family": [

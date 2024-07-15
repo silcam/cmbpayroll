@@ -23,6 +23,15 @@ class EmployeeTest < ActiveSupport::TestCase
     refute(employee.employee_fund, "can be set to false")
   end
 
+  test "NIU Number can be read/set" do
+    employee = return_valid_employee()
+    assert(employee.niu.nil?, "employee has a niu field")
+
+    niu_value = "1232GGG34534XX"
+    employee.niu = niu_value
+    assert_equal(employee.niu, niu_value, "employee has niu")
+  end
+
   test "Locations" do
     assert(@luke.valid?, "luke defaults to bro")
     assert_equal("bro", @luke.location, "luke defaults to bro")

@@ -25,7 +25,8 @@ class EmployeeYearlyReport < CMBReport
   END
   ,0) as dept_cnps,
   COALESCE(SUM(ps.department_credit_foncier),0) + COALESCE(ROUND(SUM(v.vacation_pay) * #{SystemVariable.value(:dept_credit_foncier)}),0) as dept_cf,
-  COALESCE(SUM(ps.employee_fund),0) as emp_fund
+  COALESCE(SUM(ps.employee_fund),0) as emp_fund,
+  e.niu as employee_niu
 FROM
   employees e
     INNER JOIN people p ON p.id = e.person_id

@@ -23,7 +23,8 @@ SELECT
   to_char(r.last_raise, 'DD/MM/YYYY') as last_raise,
   e.marital_status as m_c,
   c.numchildren as children,
-  p.gender
+  p.gender,
+  e.niu
 FROM
   employees e
     INNER JOIN people p ON

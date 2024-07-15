@@ -39,9 +39,10 @@ report.list("yearly_group") do |list|
     x_dept_cnps_tax = t[12].to_i
     x_dept_cf_tax = t[13].to_i
     x_dept_emp_fund = t[14].to_i
+    x_employee_niu = t[15].to_s
 
     list.add_row(
-      employee_id: x_employee_id,
+      employee_niu: x_employee_niu,
       matricule_cnps: x_matricule_cnps,
       employee_name: x_employee_name,
       salaire_net: number_to_currency(x_salaire_net, unit: '', locale: :cm),

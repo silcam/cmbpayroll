@@ -45,7 +45,8 @@ class SystemVariable < ApplicationRecord
     communal_cutoff: 100000,
     communal_low: 166,
     communal_high: 250,
-    raise_interval: 4,
+    raise_interval: 2, # 2 years before an alert
+    contract_end_alert_months: 4, # alerts 4 months before contract end
     immatriculation_no: '5087501B',
     a01_cutoff: 25000,
     cnps_cutoff: 300000,

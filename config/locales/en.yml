@@ -77,6 +77,7 @@ en:
   Alerts: Alerts
   never_had_raise: "%{name} started %{date} and has never had a raise."
   no_raise_since: "%{name} has not received a raise since %{date}."
+  contract_end_approaching: "%{name} has a contract ending on %{date}."
 
   # Time and Date
   Date: Date

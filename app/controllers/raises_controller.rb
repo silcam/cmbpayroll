@@ -7,7 +7,13 @@ class RaisesController < ApplicationController
 
   def create
     @raise = @employee.raises.new(raise_params)
-    @employee.assign_attributes raise_params
+
+    # The employee does not have is_exceptional so remove it
+    # before passing it on to the employee object.
+    rpams = raise_params
+    rpams.delete("is_exceptional")
+
+    @employee.assign_attributes rpams
     if @raise.valid? and @employee.valid?
       Raise.transaction do
         @raise.save
@@ -27,7 +33,7 @@ class RaisesController < ApplicationController
   end
 
   def raise_params
-    params.require(:raise).permit(:category, :echelon, :wage_scale, :wage_period, :wage)
+    params.require(:raise).permit(:category, :echelon, :wage_scale, :wage_period, :wage, :is_exceptional)
   end
 
 end

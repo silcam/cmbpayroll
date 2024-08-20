@@ -333,6 +333,8 @@ en:
   # Raises
   New_raise: New Raise
   Raise: Raise
+  Is_exceptional: This is an exceptional raise outside of a normal scheduled raise?
+  Exceptional: Exceptional?
 
   # Reports
   Reports: Reports

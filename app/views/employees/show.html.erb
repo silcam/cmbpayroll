@@ -155,7 +155,16 @@
       <th scope="row"><%= t(:Wage_period) %></th>
       <td><%= t(@employee.wage_period, default: "") %></td>
       <th scope="row">Last Raise Date:</th>
-      <td><%= l(@employee.last_raise.try(:date), format: :short, default: '') %></td>
+      <td>
+          <%= l(@employee.last_raise.try(:date), format: :short, default: '') %>
+          <% unless @employee.last_raise.try(:date).nil? %>
+          <em>(<%= t(:Exceptional) %> <%= @employee.last_raise.try(:is_exceptional) ? t(:Yes) : t(:No) %>)</em>
+            <% if @employee.last_raise.is_exceptional? %>
+              <br /><em>(<%= t(:Last_normal_raise) %>: <%= @employee.last_normal_raise.try(:date) %>)</em>
+            <% end %>
+          <% end %>
+
+      </td>
     </tr>
   </tbody>
 </table>

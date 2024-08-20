@@ -1,6 +1,9 @@
 class Alert
   attr_reader :text, :object
 
+   # do not show alerts for these users
+  ALERT_EXCEPTIONS = [ 278, 370 ]
+
   def initialize(text, object)
     @text = text
     @object = object
@@ -16,6 +19,7 @@ class Alert
 
   def self.get_for_employee(employee)
     alerts = []
+    return alerts if ALERT_EXCEPTIONS.include?(employee.id)
     no_raise_since_interval(alerts, employee)
     contract_end_approaches(alerts, employee)
     temporary_without_end(alerts, employee)
@@ -24,7 +28,7 @@ class Alert
 
   def self.no_raise_since_interval(alerts, employee)
     raise_interval = SystemVariable.value(:raise_interval)
-    last_raise = employee.last_raise.try(:date)
+    last_raise = employee.last_normal_raise.try(:date)
     if last_raise.nil?
       if not employee.contract_start.nil? and 
             (Date.today - raise_interval.years) > employee.contract_start

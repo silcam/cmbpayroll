@@ -110,6 +110,10 @@ class Employee < ApplicationRecord
     raises.order(date: :desc).first
   end
 
+  def last_normal_raise
+    raises.where(is_exceptional: 0).order(date: :desc).first
+  end
+
   def wage
     if (echelon == "g")
       self[:wage]

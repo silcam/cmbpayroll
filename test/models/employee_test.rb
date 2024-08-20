@@ -763,6 +763,70 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(0, employee.wage_scale_value)
   end
 
+  test "Last Raise and Exceptional Status True" do
+    Date.stub :today, Date.new(2018, 5, 18) do
+      employee = return_valid_employee()
+
+      refute(employee.last_raise, "should haven no last raise")
+
+      raise = Raise.new_for(employee)
+      raise.is_exceptional = true
+      raise.save
+            
+      assert_equal(Date.new(2018,05,18), employee.last_raise.date, "date is ok")
+      assert(employee.last_raise.is_exceptional, "raise was exceptional")
+
+      refute(employee.last_normal_raise)
+    end
+  end
+
+  test "Last Normal Raise with Exceptional and Normal Both" do
+    employee = return_valid_employee()
+
+    Date.stub :today, Date.new(2018, 5, 18) do
+      refute(employee.last_raise, "should haven no last raise")
+
+      raise = Raise.new_for(employee)
+      raise.is_exceptional = false
+      raise.save
+          
+      assert_equal(Date.new(2018,5,18), employee.last_raise.date, "date is ok")
+      refute(employee.last_raise.is_exceptional, "raise was not exceptional")
+
+      assert_equal(employee.last_normal_raise.date, employee.last_raise.date, "these should be the same")
+    end
+
+    Date.stub :today, Date.new(2019, 5, 18) do
+      assert_equal(Date.new(2018,5,18), employee.last_raise.date, "date is ok")
+
+      raise = Raise.new_for(employee)
+      raise.is_exceptional = true
+      raise.save
+          
+      assert_equal(Date.new(2018,5,18), employee.last_normal_raise.date, "date is ok")
+      refute(employee.last_normal_raise.is_exceptional, "normal raises aren't exceptional")
+      assert_equal(Date.new(2019,5,18), employee.last_raise.date, "date is ok")
+      assert(employee.last_raise.is_exceptional, "raise was exceptional")
+    end
+end
+
+  test "Last Raise and Exceptional Status False" do
+    Date.stub :today, Date.new(2018, 5, 18) do
+      employee = return_valid_employee()
+
+      refute(employee.last_raise, "should haven no last raise")
+
+      raise = Raise.new_for(employee)
+      raise.is_exceptional = false
+      raise.save
+            
+      assert_equal(Date.new(2018,5,18), employee.last_raise.date, "date is ok")
+      refute(employee.last_raise.is_exceptional, "raise was not exceptional")
+
+      assert_equal(employee.last_normal_raise.date, employee.last_raise.date, "these should be the same")
+    end
+  end
+
   test "Active Status Array Works" do
     exp = [0,1,2]
     ary = Employee.active_status_array

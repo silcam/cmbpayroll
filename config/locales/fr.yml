@@ -339,6 +339,8 @@ fr:
   # Raises
   New_raise: Nouvelle augmentation
   Raise: Augmentation
+  Is_exceptional: Est-ce que c'est une augmentation exceptionnelle (pas une augmentation prévue)
+  Exceptional: Exceptionnelle?
 
   # Reports
   Reports: Rapports

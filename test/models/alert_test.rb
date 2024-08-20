@@ -16,7 +16,7 @@ class AlertTest < ActiveSupport::TestCase
       employee.contract_start = '2017-05-18'
       alerts = Alert.get_for_employee(employee)
       assert_equal(0, alerts.length)
-      
+
       # Set to 24 months.
       employee.contract_start = '2016-05-17'
       alerts = Alert.get_for_employee(employee)
@@ -57,7 +57,7 @@ class AlertTest < ActiveSupport::TestCase
       # alert is silenced because of raise.
       alerts = Alert.get_for_employee(employee)
       assert_equal(0, alerts.length)
-    end 
+    end
   end
 
   test "Full time does not warn contract end" do
@@ -85,7 +85,36 @@ class AlertTest < ActiveSupport::TestCase
 
       alerts = Alert.get_for_employee(employee)
       assert_equal(0, alerts.length)
-    end 
+    end
+  end
+
+  test "Exceptional Raises Don't Count" do
+    Date.stub :today, Date.new(2018, 5, 18) do
+      employee = return_valid_employee
+
+      # Set to 24 months, with no raise, will alert.
+      employee.contract_start = '2016-05-17'
+      alerts = Alert.get_for_employee(employee)
+      assert_equal(1, alerts.length)
+
+      # add an exceptional raise year ago, alert will still exist.
+      # Raise to 4e
+      raise = Raise.new_for(employee)
+      raise.category_four!
+      raise.echelon_e!
+      raise.is_exceptional = true
+      raise.save
+
+      last_raise = employee.last_raise.try(:date)
+      assert_equal(Date.today, last_raise, "should have a last raise of today")
+      assert_equal("four", raise.category, "should be 4")
+      assert_equal("e", raise.echelon, "should be e")
+      assert(raise.is_exceptional, "should be exceptional")
+
+      # alert is not silenced because of exceptional raise.
+      alerts = Alert.get_for_employee(employee)
+      assert_equal(1, alerts.length)
+    end
   end
 
   test "Contract end warning at 4 months" do
@@ -112,7 +141,7 @@ class AlertTest < ActiveSupport::TestCase
 
       alerts = Alert.get_for_employee(employee)
       assert_equal(0, alerts.length)
-    end 
+    end
   end
 
   test "Temporary with no Contract end alerts" do
@@ -121,7 +150,7 @@ class AlertTest < ActiveSupport::TestCase
       employee.employment_status = "full_time"
       employee.save
       refute(employee.contract_end, "has no end")
-      
+
       # Set to a normal date, no alerts.
       employee.contract_start = '2017-05-19'
       alerts = Alert.get_for_employee(employee)
@@ -133,7 +162,31 @@ class AlertTest < ActiveSupport::TestCase
 
       alerts = Alert.get_for_employee(employee)
       assert_equal(1, alerts.length)
-    end 
+    end
+  end
+
+  test "Test Alert Exceptions" do
+    Date.stub :today, Date.new(2018, 5, 18) do
+      employee = return_valid_employee
+      employee.employment_status = "full_time"
+      employee.save
+      refute(employee.contract_end, "has no end")
+
+      # Set to a date which alerts.
+      employee.contract_start = '2015-05-19'
+      alerts = Alert.get_for_employee(employee)
+      assert_equal(1, alerts.length)
+
+      exception_ids = Alert::ALERT_EXCEPTIONS
+      exception_ids.push(employee.id)
+
+      # basic sanity checking
+      Alert::ALERT_EXCEPTIONS.include?(employee.id)
+
+      # now will produce no alerts
+      alerts = Alert.get_for_employee(employee)
+      assert_equal(0, alerts.length)
+    end
   end
 
 end

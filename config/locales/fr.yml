@@ -77,6 +77,7 @@ fr:
   Alerts: Avertissements
   never_had_raise: "%{name} a commencé le %{date} et n'a jamais reçu une augmentation."
   no_raise_since: "%{name} n'a pas reçu une augmentation depuis le %{date}."
+  temporary_without_end: "%{name} est temporaire mais n'a pas de date de fin de contrat."
   contract_end_approaching: "%{name} a un contract qui expire le %{date}."
 
   #Time and Date

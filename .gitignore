@@ -25,3 +25,4 @@
 
 config/secrets.yml
 db/wages.sql
+db/load_niu.sql

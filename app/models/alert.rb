@@ -18,6 +18,7 @@ class Alert
     alerts = []
     no_raise_since_interval(alerts, employee)
     contract_end_approaches(alerts, employee)
+    temporary_without_end(alerts, employee)
     alerts
   end
 
@@ -40,11 +41,17 @@ class Alert
 
   def self.contract_end_approaches(alerts, employee)
     alert_months = SystemVariable.value(:contract_end_alert_months)
-    if not employee.contract_end.nil? and 
+    if not employee.contract_end.nil? and employee.employment_status == "temporary" and
           (Date.today + alert_months.months) > employee.contract_end
       alerts << Alert.new(I18n.t(:contract_end_approaching, 
           date: I18n.l(employee.contract_end, format: :short), name: employee.full_name), employee)
     end
-end
+  end
+
+  def self.temporary_without_end(alerts, employee)
+    if employee.contract_end.nil? and employee.employment_status == "temporary"
+      alerts << Alert.new(I18n.t(:temporary_without_end, date: nil, name: employee.full_name), employee)
+    end
+  end
 
 end

@@ -60,9 +60,39 @@ class AlertTest < ActiveSupport::TestCase
     end 
   end
 
+  test "Full time does not warn contract end" do
+    Date.stub :today, Date.new(2018, 5, 18) do
+      employee = return_valid_employee
+      employee.employment_status = "temporary"
+      employee.save
+      assert_equal("temporary", employee.employment_status)
+
+      last_raise = employee.last_raise.try(:date)
+      refute(last_raise, "should not have a last raise")
+
+      employee.contract_start = '2016-05-19'
+      employee.contract_end = '2018-9-17'
+      employee.save
+
+      # Will alert at this contract end date.
+      alerts = Alert.get_for_employee(employee)
+      assert_equal(1, alerts.length)
+
+      # Change to "full_time", will remove alert.
+      employee.employment_status = "full_time"
+      employee.save
+      assert_equal("full_time", employee.employment_status)
+
+      alerts = Alert.get_for_employee(employee)
+      assert_equal(0, alerts.length)
+    end 
+  end
+
   test "Contract end warning at 4 months" do
     Date.stub :today, Date.new(2018, 5, 18) do
       employee = return_valid_employee
+      employee.employment_status = "temporary"
+      employee.save
 
       last_raise = employee.last_raise.try(:date)
       refute(last_raise, "should not have a last raise")
@@ -70,9 +100,6 @@ class AlertTest < ActiveSupport::TestCase
 
       # Set to 24 months, with no raise, will alert.
       employee.contract_start = '2016-05-19'
-      alerts = Alert.get_for_employee(employee)
-      assert_equal(0, alerts.length)
-
       employee.contract_end = '2018-9-17'
       employee.save
 
@@ -85,6 +112,27 @@ class AlertTest < ActiveSupport::TestCase
 
       alerts = Alert.get_for_employee(employee)
       assert_equal(0, alerts.length)
+    end 
+  end
+
+  test "Temporary with no Contract end alerts" do
+    Date.stub :today, Date.new(2018, 5, 18) do
+      employee = return_valid_employee
+      employee.employment_status = "full_time"
+      employee.save
+      refute(employee.contract_end, "has no end")
+      
+      # Set to a normal date, no alerts.
+      employee.contract_start = '2017-05-19'
+      alerts = Alert.get_for_employee(employee)
+      assert_equal(0, alerts.length)
+
+      employee.employment_status = "temporary"
+      employee.save
+      assert_equal("temporary", employee.employment_status)
+
+      alerts = Alert.get_for_employee(employee)
+      assert_equal(1, alerts.length)
     end 
   end
 

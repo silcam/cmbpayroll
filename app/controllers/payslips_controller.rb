@@ -25,6 +25,7 @@ class PayslipsController < ApplicationController
     else
       authorize! :update, Payslip
 
+      @periods = get_periods_list()
       @employees = Employee.currently_paid
     end
   end
@@ -72,7 +73,15 @@ class PayslipsController < ApplicationController
 
   def view_print_all
     authorize! :read, Payslip
-    view_print_subset(Employee.currently_paid())
+
+    period_param = params[:period]
+
+    if (!period_param.blank?)
+      @period = Period.fr_str(period_param)
+      view_print_subset(Employee.currently_paid(), @period)
+    else
+      view_print_subset(Employee.currently_paid(), LastPostedPeriod.current)
+    end
   end
 
   def process_employee
@@ -169,19 +178,20 @@ class PayslipsController < ApplicationController
 
   private
 
-  def view_print_subset(employees)
+  def view_print_subset(employees, period = LastPostedPeriod.current)
 
     @processed = false
     @payslips = []
     slip_ids = []
     employees.each do |e|
-      slip = e.payslip_for(LastPostedPeriod.current)
+      slip = e.payslip_for(period)
       slip_ids.push(slip.id) if (slip)
       @payslips.push(slip) if (slip)
     end
 
     flash[:processed_payslips] = slip_ids
 
+    @period = period
     render 'process_all_employees'
   end
 

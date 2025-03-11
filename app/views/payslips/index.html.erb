@@ -116,6 +116,28 @@
 
     <hr />
 
+    <p>
+    View or Print Payslips from a Previous Period:<br />
+    </p>
+
+    <div class="inline-payslip-button">
+    <%= form_tag("/payslips/view_print_all", method: "post", class: 'form-inline') do %>
+      <div class="form-group">
+      <label><%= t :Period %></label>
+        <%= select_tag 'period',
+          options_for_select(@periods), {
+            prompt: t(:Select_a_period, scope: :reports), class: 'form-control'
+          } %>
+        <%= submit_tag("All from Chosen Period", class: 'btn btn-primary') %>
+      </div>
+
+    <% end %>
+    </div>
+
+    <br clear="all" />
+
+    <hr />
+
     <%= form_tag(payslip_post_period_path, method: "post") do %>
 
     <p>

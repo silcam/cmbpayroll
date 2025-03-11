@@ -7,7 +7,7 @@
 
 <h4>Payslips Processed:</h4>
 <% else %>
-<h2>Viewing Payslips for <%= LastPostedPeriod.current.l_name %></h2>
+<h2>Viewing Payslips for <%= defined?(@period) ? @period.l_name : LastPostedPeriod.current.l_name %></h2>
 
 <h4>Payslips:</h4>
 <% end %>

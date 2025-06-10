@@ -1432,6 +1432,42 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(total_pay, payslip.salaire_net, "total pay correct")
   end
 
+  test "Under 4 and Under 35 Taxes Computations" do
+    # config employee
+    employee = return_valid_employee()
+
+    # give correct attributes for payslips
+    employee.hours_day = 8
+    employee.wage_period = "monthly"
+    employee.days_week = "five"
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.transportation = 20000
+    employee.amical = 3000
+    employee.uniondues = false
+    employee.birth_date = Date.new(1990,1,1)
+    employee.contract_start = Date.new(2020,1,1)
+
+    period = Period.new(2021,1)
+
+    # work the whole month (work hour)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(0, payslip.communal)
+    assert_equal(0, payslip.cac)
+    assert_equal(0, payslip.cac2)
+    assert_equal(3338, payslip.cnps)
+    assert_equal(0, payslip.proportional)
+    assert_equal(0, payslip.crtv)
+    assert_equal(0, payslip.ccf)
+    assert_equal(99250, payslip.roundedpay)
+
+    # Department Credit Foncier
+    assert_equal( 0, payslip.department_credit_foncier, "for this person, no Dept CF")
+  end
+
   test "Salaire Net" do
     advance_amt = 30000
 
@@ -2356,6 +2392,7 @@ class PayslipTest < ActiveSupport::TestCase
     employee.uniondues = false
     employee.amical = 0
     employee.location = "bro"
+    employee.birth_date = "1950-01-01" # older than 35
     employee.contract_start = "2017-01-01" # no senior bonus
     assert_equal("bro", employee.location, "employee works in BRO")
 

@@ -5,9 +5,9 @@ class Tax < ApplicationRecord
   attr_accessor :taxable
   attr_accessor :cnpswage
   attr_accessor :employee
+  attr_accessor :period
 
-  def self.compute_taxes(employee, taxable, cnpswage)
-
+  def self.compute_taxes(employee, taxable, cnpswage, period=nil)
     rp_tax = roundpay(taxable)
 
     tax = Tax.find_by(grosspay: roundpay(taxable))
@@ -20,11 +20,15 @@ class Tax < ApplicationRecord
     tax.taxable = taxable
     tax.cnpswage = cnpswage
     tax.employee = employee
+    period = Period.current if period.nil?
+    tax.period = period
 
     tax
   end
 
   def ccf
+    return 0 if employee.first_3_under_35(period)
+
     if self[:ccf].nil?
       ( grosspay * SystemVariable.value(:ccf_rate) ).floor
     else
@@ -33,6 +37,8 @@ class Tax < ApplicationRecord
   end
 
   def crtv
+    return 0 if employee.first_3_under_35(period)
+
     if self[:crtv].nil?
       ( 1950 + ((grosspay.div(100000) - 1) * 1300) )
     else
@@ -41,6 +47,8 @@ class Tax < ApplicationRecord
   end
 
   def proportional
+    return 0 if employee.first_3_under_35(period)
+
     if self[:proportional].nil?
       ( grosspay * SystemVariable.value(:proportional_rate) ).round
     else
@@ -49,6 +57,8 @@ class Tax < ApplicationRecord
   end
 
   def cac
+    return 0 if employee.first_3_under_35(period)
+
     (proportional * SystemVariable.value(:cac)).round
   end
 
@@ -59,6 +69,7 @@ class Tax < ApplicationRecord
 
   def communal
     return 0 if (grosspay == 0)
+    return 0 if employee.first_3_under_35(period)
 
     communal_tax = self[:communal]
 

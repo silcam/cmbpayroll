@@ -63,6 +63,7 @@ class ActiveSupport::TestCase
     employee.supervisor = supervisors :Yoda
     employee.first_day = '2010-07-11'
     employee.contract_start = '2010-07-11'
+    employee.birth_date = '1950-01-11'
     employee.amical = 3000
     employee.uniondues = true
     employee.marital_status = "single"

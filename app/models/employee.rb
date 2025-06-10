@@ -148,22 +148,20 @@ class Employee < ApplicationRecord
 
   # Time in years between BeginContract and Period.end
   def years_of_service(period=nil)
-    # TODO: need a real general purpose date diff by year
-    # function since this is likely needed in multiple places.
-    return 0 if contract_start.nil?
+    return 0 if (contract_start.nil?)
+    period = Period.current if period.nil?
+    return 0 if (period.finish.year < contract_start.year)
+    compute_years_diff(contract_start, period)
+  end
+
+  def first_3_under_35(period=nil)
     period = Period.current if period.nil?
 
-    if (period.finish > contract_start)
-      tmp_date = period.finish
-      count = 0
-      while (tmp_date.prev_year >= contract_start.to_date)
-        tmp_date = tmp_date.prev_year
-        count += 1
-      end
-
-      count
+    # catch exceptions and rethrow? or pass them?
+    if (age(period) < 35 && years_of_service(period) < 4)
+      return true
     else
-      0
+      return false
     end
   end
 

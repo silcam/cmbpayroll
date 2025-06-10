@@ -26,6 +26,10 @@ class Person < ApplicationRecord
     first_name.split(' ').first
   end
 
+  def age(period=nil)
+    compute_years_diff(birth_date, period)
+  end
+
   def self.non_supervisors
     Person.left_outer_joins(:supervisor)
         .left_outer_joins(:child)

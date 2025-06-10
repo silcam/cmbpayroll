@@ -344,10 +344,14 @@ class Payslip < ApplicationRecord
 
     self[:taxable] = ( compute_cnpswage + transportation ).ceil
 
-    # NOTE: this previously used the Format(value, "0") VBA function, which I
-    # intepreted as integer truncation.
-    self[:department_credit_foncier] = ( self[:taxable] *
-        SystemVariable.value(:dept_credit_foncier) ).round
+    if employee.first_3_under_35(period)
+      self[:department_credit_foncier] = 0
+    else
+      # NOTE: this previously used the Format(value, "0") VBA function, which I
+      # intepreted as integer truncation.
+      self[:department_credit_foncier] = ( self[:taxable] *
+          SystemVariable.value(:dept_credit_foncier) ).round
+    end
 
     if (self[:taxable] > SystemVariable.value(:emp_fund_salary_floor) && employee.employee_fund)
       self[:employee_fund] = SystemVariable.value(:emp_fund_amount)
@@ -361,7 +365,7 @@ class Payslip < ApplicationRecord
   end
 
   def process_taxes
-    tax = Tax.compute_taxes(employee, taxable, cnpswage)
+    tax = Tax.compute_taxes(employee, taxable, cnpswage, period)
 
     self[:roundedpay] = Tax.roundpay(taxable)
     self[:crtv] = tax.crtv

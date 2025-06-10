@@ -90,6 +90,70 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(0, tax.cac2())
   end
 
+  test "Test Payslip 73287 if under 4 and under 35" do
+    employee = return_valid_employee()
+    employee.gender = "male"
+    employee.spouse_employed = false
+    employee.contract_start = Date.new(2020, 9, 2)
+    employee.birth_date = Date.new(1990, 2, 3)
+
+    # Change the concept of now
+    Date.stub :today, Date.new(2024, 6, 15) do
+      tax = Tax.compute_taxes(employee, 437216, 417216)
+
+      assert_equal(437000, tax.grosspay, "rounding is correct")
+
+      assert_equal(0, tax.crtv())
+      assert_equal(0, tax.ccf())
+      assert_equal(0, tax.proportional())
+      assert_equal(0, tax.cac())
+
+      assert_equal(0, tax.communal())
+      assert_equal(417216, tax.cnpswage())
+      assert_equal(17523, tax.cnps())
+      assert_equal(0, tax.cac2())
+    end
+  end
+
+  test "Test compute taxes but with specific period" do
+    employee = return_valid_employee()
+    employee.gender = "male"
+    employee.spouse_employed = false
+    employee.contract_start = Date.new(2020, 9, 2)
+    employee.birth_date = Date.new(1990, 2, 3)
+    period = Period.new(2024,1)
+
+    tax = Tax.compute_taxes(employee, 437216, 417216, period)
+
+    assert_equal(437000, tax.grosspay, "rounding is correct")
+
+    assert_equal(0, tax.crtv())
+    assert_equal(0, tax.ccf())
+    assert_equal(0, tax.proportional())
+    assert_equal(0, tax.cac())
+
+    assert_equal(0, tax.communal())
+    assert_equal(417216, tax.cnpswage())
+    assert_equal(17523, tax.cnps())
+    assert_equal(0, tax.cac2())
+
+    period = Period.new(2025,1)
+
+    tax = Tax.compute_taxes(employee, 437216, 417216, period)
+
+    assert_equal(437000, tax.grosspay, "rounding is correct")
+
+    assert_equal(5850, tax.crtv())
+    assert_equal(4370, tax.ccf())
+    assert_equal(25635, tax.proportional())
+    assert_equal(2564, tax.cac())
+
+    assert_equal(750, tax.communal())
+    assert_equal(417216, tax.cnpswage())
+    assert_equal(17523, tax.cnps())
+    assert_equal(0, tax.cac2())
+  end
+
   test "Test CNPS Ceiling (750000)" do
     employee = return_valid_employee()
     employee.gender = "male"

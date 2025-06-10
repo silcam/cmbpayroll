@@ -4,6 +4,7 @@ class PersonTest < ActiveSupport::TestCase
 
   def setup
     @luke = people :Luke
+    @leia = people :Leia
     @lukejr = people :LukeJr
   end
 
@@ -32,6 +33,26 @@ class PersonTest < ActiveSupport::TestCase
 
   test "Full Name Rev" do
     assert_equal 'Skywalker, Luke', @luke.full_name_rev
+  end
+
+  test "Birth Date" do
+    @luke.birth_date = Date.new(1995,2,1)
+    assert_equal(Date.new(1995,2,1), @luke.birth_date)
+  end
+
+  test "age" do
+    assert_raise(ArgumentError, "didn't raise argerror on nil") do
+      @leia.age
+    end
+
+    @leia.birth_date = Date.new(1992,1,1)
+    assert_equal(-2, @leia.age(Period.new(1990,1)), "will return negatives")
+
+    @leia.birth_date = Date.new(1992,1,1)
+    assert_equal(27, @leia.age(Period.new(2019,12)))
+
+    @leia.birth_date = Date.new(1992,1,1)
+    assert_equal(28, @leia.age(Period.new(2020,1)))
   end
 
   test "Non-supervisors list" do

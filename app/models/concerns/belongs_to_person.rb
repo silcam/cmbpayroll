@@ -16,7 +16,8 @@ module BelongsToPerson
                       :birth_date,
                       :birth_date=,
                       :gender,
-                      :gender=]
+                      :gender=,
+                      :age]
 
     person_methods.each do |method|
       define_method method do |*args|

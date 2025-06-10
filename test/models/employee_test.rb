@@ -547,6 +547,10 @@ class EmployeeTest < ActiveSupport::TestCase
     period = Period.new(2017,03)
     assert_equal(3, employee1.years_of_service(period), "2014-01-31 -> 2017-03-31 is 3 years")
 
+    employee1.contract_start = Date.new(2014,1,16)
+    period = Period.new(2017,01)
+    assert_equal(3, employee1.years_of_service(period), "2014-01-16 -> 2017-01-31 is 3 years")
+
     employee1.contract_start = Date.new(2014,4,30)
     period = Period.new(2017,03)
     assert_equal(2, employee1.years_of_service(period), "2014-04-30 -> 2017-03-31 is 2 years")
@@ -583,6 +587,65 @@ class EmployeeTest < ActiveSupport::TestCase
     employee.contract_start = Date.new(1990,4,30)
     assert_equal(27, employee.years_of_service(period), "1990-04-30 -> 2017-12 is 27 years")
     assert_equal(0.6, employee.department_severance_rate(period), "15+ years, 60%")
+  end
+
+  test "first 3 years for employees under 35" do
+    employee1 = return_valid_employee()
+
+    employee1.birth_date = Date.new(1992,1,1)
+    employee1.contract_start = Date.new(2019,1,16)
+
+    period = Period.new(2020,1)
+    assert_equal(1, employee1.years_of_service(period))
+    assert_equal(28, employee1.age(period))
+    assert(employee1.first_3_under_35(Period.new(2020,1)), "1 years of service, 28 yrs")
+
+    employee1.contract_start = Date.new(2015,1,16)
+    assert_equal(5, employee1.years_of_service(period))
+    assert_equal(28, employee1.age(period))
+    refute(employee1.first_3_under_35(Period.new(2020,1)), "5 years of service, 28 yrs")
+
+    employee1.contract_start = Date.new(2019,1,16)
+    employee1.birth_date = Date.new(1980,1,1)
+    assert_equal(1, employee1.years_of_service(period))
+    assert_equal(40, employee1.age(period))
+    refute(employee1.first_3_under_35(Period.new(2020,1)), "1 years of service, 40 yrs")
+
+    employee1.contract_start = Date.new(2015,1,16)
+    employee1.birth_date = Date.new(1985,1,1)
+    assert_equal(5, employee1.years_of_service(period))
+    assert_equal(35, employee1.age(period))
+    refute(employee1.first_3_under_35(Period.new(2020,1)), "5 years of service, 35 yrs")
+
+    employee1.contract_start = Date.new(2017,1,16)
+    employee1.birth_date = Date.new(1995,1,1)
+    assert_equal(3, employee1.years_of_service(period))
+    assert_equal(25, employee1.age(period))
+    assert(employee1.first_3_under_35(Period.new(2020,1)), "3 years of service, 25 yrs")
+
+    employee1.contract_start = Date.new(2016,1,16)
+    employee1.birth_date = Date.new(1995,1,1)
+    assert_equal(4, employee1.years_of_service(period))
+    assert_equal(25, employee1.age(period))
+    refute(employee1.first_3_under_35(Period.new(2020,1)), "3 years of service, 25 yrs")
+
+    employee1.contract_start = Date.new(2017,1,16)
+    employee1.birth_date = Date.new(1986,1,1)
+    assert_equal(3, employee1.years_of_service(period))
+    assert_equal(34, employee1.age(period))
+    assert(employee1.first_3_under_35(Period.new(2020,1)), "3 years of service, 34 yrs")
+
+    employee1.contract_start = Date.new(2016,1,16)
+    employee1.birth_date = Date.new(1986,1,1)
+    assert_equal(4, employee1.years_of_service(period))
+    assert_equal(34, employee1.age(period))
+    refute(employee1.first_3_under_35(Period.new(2020,1)), "4 years of service, 34 yrs")
+
+    employee1.contract_start = Date.new(2017,1,16)
+    employee1.birth_date = Date.new(1985,1,1)
+    assert_equal(3, employee1.years_of_service(period))
+    assert_equal(35, employee1.age(period))
+    refute(employee1.first_3_under_35(Period.new(2020,1)), "3 years of service, 35 yrs")
   end
 
   test "convert_days_week" do

@@ -1,55 +1,73 @@
 Luke:
   first_name: Luke
   last_name: Skywalker
+  birth_date: 1950-01-01
+
+Leia:
+  first_name: Leia
+  last_name: Organa
 
 Anakin:
   first_name: Anakin
   last_name: Skywalker
+  birth_date: 1950-01-01
 
 Chewie:
   first_name: Chewbacca
   last_name: Wookie
+  birth_date: 1950-01-01
 
 LukeJr:
   first_name: Luke Jr.
   last_name: Skywalker
+  birth_date: 1950-01-01
 
 Kylo:
   first_name: Kylo
   last_name: Ren
+  birth_date: 1950-01-01
 
 LilObi:
   first_name: LilObi
   last_name: Kenobi
+  birth_date: 1950-01-01
 
 Emperor:
   first_name: Emperor
   last_name: Palpatine
+  birth_date: 1950-01-01
 
 Yoda:
   first_name: Yoda
   last_name: Yoda
+  birth_date: 1950-01-01
 
 Han:
   first_name: Han
   last_name: Solo
+  birth_date: 1950-01-01
 
 Jarjar:
   first_name: Jar Jar
   last_name: Binks
+  birth_date: 1950-01-01
 
 Quigon:
   first_name: Qui-Gon
   last_name: Jinn
+  birth_date: 1950-01-01
 
 Macewindu:
   first_name: Mace
   last_name: Windu
+  birth_date: 1950-01-01
 
 Obiwan:
   first_name: Obiwan
   last_name: Kenobi
+  birth_date: 1950-01-01
 
 BB8:
   first_name: BB
   last_name: Eight
+  birth_date: 1950-01-01

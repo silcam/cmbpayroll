@@ -90,7 +90,7 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(0, tax.cac2())
   end
 
-  test "Test Payslip 73287 if under 4 and under 35" do
+  test "Test Payslip 73287 if under 37 months and under 35" do
     employee = return_valid_employee()
     employee.gender = "male"
     employee.spouse_employed = false
@@ -98,7 +98,7 @@ class TaxTest < ActiveSupport::TestCase
     employee.birth_date = Date.new(1990, 2, 3)
 
     # Change the concept of now
-    Date.stub :today, Date.new(2024, 6, 15) do
+    Date.stub :today, Date.new(2023, 8, 15) do
       tax = Tax.compute_taxes(employee, 437216, 417216)
 
       assert_equal(437000, tax.grosspay, "rounding is correct")
@@ -121,7 +121,7 @@ class TaxTest < ActiveSupport::TestCase
     employee.spouse_employed = false
     employee.contract_start = Date.new(2020, 9, 2)
     employee.birth_date = Date.new(1990, 2, 3)
-    period = Period.new(2024,1)
+    period = Period.new(2023,3)
 
     tax = Tax.compute_taxes(employee, 437216, 417216, period)
 

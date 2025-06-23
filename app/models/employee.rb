@@ -154,11 +154,12 @@ class Employee < ApplicationRecord
     compute_years_diff(contract_start, period)
   end
 
+  # The first 3 is the first 36 months.
   def first_3_under_35(period=nil)
     period = Period.current if period.nil?
 
     # catch exceptions and rethrow? or pass them?
-    if (age(period) < 35 && years_of_service(period) < 4)
+    if (age(period) < 35 && years_of_service(period) < 3)
       return true
     else
       return false

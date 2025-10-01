@@ -253,6 +253,11 @@ class Vacation < ApplicationRecord
     self[:period_month] = applied_period.month
     self[:period_year] = applied_period.year
 
+    # If the period is closed, don't recompute, just report.
+    if LastPostedPeriod.posted?(applied_period)
+      return self[:vacation_pay]
+    end
+
     # if not passed in, attempt to find payslip
     if (payslip.nil?)
       payslip = Payslip.most_recent(employee)
@@ -275,6 +280,8 @@ class Vacation < ApplicationRecord
     self[:communal] = tax.communal
     self[:cnps] = tax.cnps
     self[:total_tax] = tax.total_tax
+
+    save
 
     self[:vacation_pay]
   end

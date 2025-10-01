@@ -781,10 +781,69 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal((exp * 11).round, vac.pay_per_period(oct), "correct vacation pay for October")
   end
 
+  test "Cannot pay vacation in a closed period" do
+    # Create vacation pay, normally
+    employee = return_valid_employee()
+    employee.first_day = '2020-01-01'
+    employee.contract_start = '2020-01-01'
+    employee.save
+    period = Period.new(2020, 3)
+
+    mar_wage = employee.wage
+
+    prev_vac_pay_bal = 78353
+    prev_vac_bal = 15.5
+    generate_work_hours(employee, period.previous)
+    set_previous_vacation_balances(employee, period, prev_vac_pay_bal, prev_vac_bal)
+
+    prev_payslip = Payslip.for_employee_for_period(employee, period.previous)
+    assert_equal(prev_vac_bal, prev_payslip.vacation_balance)
+
+    generate_work_hours(employee, period)
+    payslip = Payslip.process(employee, period)
+    assert_equal(prev_vac_bal + 1.5, payslip.vacation_balance) # 1.5 should be added from prev.
+
+    assert_equal(1.5, Vacation.days_earned(employee, period))
+    assert_equal(1.5, payslip.vacation_earned())
+
+    # Make a vacation for this period.
+    vac = Vacation.new(start_date: "2020-03-03", end_date: "2020-03-23")
+    employee.vacations << vac
+    assert_equal(period, vac.apply_to_period())
+
+    mar_emp_vac_pay = vac.vacation_pay
+    assert(mar_emp_vac_pay > 0, "pay is non-zero")
+
+    # Advance period
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update year: 2020, month: 3 # make 2020-03 posted
+    lpp.save!
+    april_period = Period.new(2020, 4)
+
+    # Give raise
+    employee.category_four!
+    employee.echelon_a!
+    employee.save
+    apr_wage = employee.wage
+    assert(apr_wage > mar_wage, "pay has increased")
+
+    generate_work_hours(employee, april_period)
+    payslip = Payslip.process(employee, april_period)
+
+    # Verify nothing changes
+    apr_emp_vac_pay = vac.vacation_pay
+    assert_equal(mar_emp_vac_pay,apr_emp_vac_pay, "pay did not change, despite raise")
+  end
 
   test "Mark paid makes paid" do
     refute(@lukes_vacation.paid?, "not paid yet")
     assert_equal(0, @lukes_vacation.changes.size, "nothing to be saved to the DB")
+
+    # Adjust this so this test can run, since it needs
+    # to be in a period that has not been posted.
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update year: 2017, month: 6 # before July 2017
+    lpp.save!
 
     @lukes_vacation.prep_print
     assert(@lukes_vacation.vacation_pay, "has vacation pay")
@@ -798,6 +857,12 @@ class VacationTest < ActiveSupport::TestCase
   test "printing makes paid and saves vacation pay total" do
     refute(@lukes_vacation.paid?, "not paid yet")
     assert_equal(0, @lukes_vacation.changes.size, "nothing to be saved to the DB")
+
+    # Adjust this so this test can run, since it needs
+    # to be in a period that has not been posted.
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update year: 2017, month: 6 # before July 2017
+    lpp.save!
 
     @lukes_vacation.prep_print
     assert(@lukes_vacation.vacation_pay, "has vacation pay")

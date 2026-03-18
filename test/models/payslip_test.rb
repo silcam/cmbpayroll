@@ -1406,7 +1406,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(employee.hourly_rate.round, payslip.hourly_rate.round)
     assert_equal(employee.daily_rate.round, payslip.daily_rate.round)
 
-    assert_equal(416, payslip.communal)
+    assert_equal(1000, payslip.communal)
     assert_equal(611, payslip.cac)
     assert_equal(0, payslip.cac2)
     assert_equal(5460, payslip.cnps)
@@ -2412,7 +2412,7 @@ class PayslipTest < ActiveSupport::TestCase
     deduction = payslip.deductions.find_by(deduction_type: Charge.charge_types["location_transfer"])
     assert_equal("Salary Transfer to BRO", deduction.note)
     assert(deduction, "should have deduction for transfer")
-    assert_equal(72410, deduction.amount, "should have deduction for transfer")
+    assert_equal(72075, deduction.amount, "should have deduction for transfer")
 
     # Rerun in GNRO
     employee.location = "gnro"
@@ -2423,7 +2423,7 @@ class PayslipTest < ActiveSupport::TestCase
     deduction = payslip.deductions.find_by(deduction_type: Charge.charge_types["location_transfer"])
     assert_equal("Salary Transfer to GNRO", deduction.note)
     assert(deduction, "should have deduction for transfer")
-    assert_equal(72410, deduction.amount, "should have deduction for transfer")
+    assert_equal(72075, deduction.amount, "should have deduction for transfer")
 
     # Rerun in CTC
     employee.location = "nonrfis"
@@ -2431,7 +2431,7 @@ class PayslipTest < ActiveSupport::TestCase
     payslip = Payslip.process(employee, period)
 
     # Deductions?
-    assert_equal(72410, payslip.net_pay, "net pay should be zero")
+    assert_equal(72075, payslip.net_pay, "net pay should be zero")
     assert_equal(0, payslip.errors.size, "should not have errors regarding 0 pay")
     deduction = payslip.deductions.find_by(deduction_type: Charge.charge_types["location_transfer"])
     refute(deduction)
@@ -3263,7 +3263,7 @@ class PayslipTest < ActiveSupport::TestCase
     assert(jul_payslip)
     refute(jul_payslip.on_vacation_entire_period?)
 
-    assert_equal(77310, jul_payslip.net_pay, "should receive pay in #{jul}")
+    assert_equal(76980, jul_payslip.net_pay, "should receive pay in #{jul}")
     assert_equal(0.167, jul_payslip.period_suppl_days.round(3), "This is right amount")
 
     # should earn again, plus period suppl days

@@ -639,7 +639,7 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(vac.communal, tax_obj.communal)
     assert_equal(vac.cnps, tax_obj.cnps)
     assert_equal(vac.total_tax, tax_obj.total_tax)
-    assert_equal(4721, vac.total_tax, "correct tax")
+    assert_equal(4805, vac.total_tax, "correct tax")
   end
 
   test "Days in Period" do

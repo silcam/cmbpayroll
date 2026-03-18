@@ -20,10 +20,54 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(1950, tax.crtv(), "crtv")
     assert_equal(4287, tax.proportional(), "prportional tax")
     assert_equal(429, tax.cac(), "cac")
-    assert_equal(250, tax.communal(), "communal tax")
+    assert_equal(750, tax.communal(), "communal tax")
     assert_equal(123345, tax.cnpswage(), "cnps wage")
     assert_equal(5180, tax.cnps(), "cnps tax")
     assert_equal(0, tax.cac2(), "cac2")
+  end
+
+  test "Tax Commune Changes" do
+    employee = return_valid_employee()
+    employee.category = "seven"
+    employee.echelon = "a"
+
+    tax = Tax.compute_taxes(employee, 52540, 52540)
+    refute(tax.nil?, "not nil")
+    assert(tax.valid?, "is valid")
+    assert_equal(0, tax.communal(), "less than 62500 is 0")
+
+    tax = Tax.compute_taxes(employee, 5251400, 5251400)
+    refute(tax.nil?, "not nil")
+    assert(tax.valid?, "is valid")
+    assert_equal(2500, tax.communal(), "more than 500k is 2500")
+
+    # 62.500 - 75.000 (250)
+    tax = Tax.compute_taxes(employee, 68250, 68250)
+    assert_equal(250, tax.communal(), "this range is 250")
+    # 75.001 – 100.000 (500)
+    tax = Tax.compute_taxes(employee, 78250, 78250)
+    assert_equal(500, tax.communal(), "this range is 500")
+    # 100.001 – 125.000 (750)
+    tax = Tax.compute_taxes(employee, 111250, 111250)
+    assert_equal(750, tax.communal(), "this range is 750")
+    # 125.001 – 150,000 (1000)
+    tax = Tax.compute_taxes(employee, 127000, 127000)
+    assert_equal(1000, tax.communal(), "this range is 1000")
+    # 150.001 – 200.000 (1250)
+    tax = Tax.compute_taxes(employee, 185500, 185500)
+    assert_equal(1250, tax.communal(), "this range is 1250")
+    # 200.001 – 250.000 (1500)
+    tax = Tax.compute_taxes(employee, 200250, 200250)
+    assert_equal(1500, tax.communal(), "this range is 1500")
+    # 250.001 – 300.000 (2000)
+    tax = Tax.compute_taxes(employee, 299750, 299750)
+    assert_equal(2000, tax.communal(), "this range is 2000")
+    # 300.001 – 500.000 (2250)
+    tax = Tax.compute_taxes(employee, 300250, 300250)
+    assert_equal(2250, tax.communal(), "this range is 2250")
+    # 300.001 – 500.000 (2250)
+    tax = Tax.compute_taxes(employee, 300001, 300001)
+    assert_equal(2000, tax.communal(), "300001 rounds to 3000000 so 2000")
   end
 
   test "Test Payslip 72474" do
@@ -46,7 +90,7 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(14476, tax.proportional())
     assert_equal(1448, tax.cac())
 
-    assert_equal(666, tax.communal())
+    assert_equal(2000, tax.communal())
     assert_equal(253238, tax.cnpswage())
     assert_equal(10636, tax.cnps())
     assert_equal(0, tax.cac2())
@@ -64,7 +108,7 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(2518, tax.proportional())
     assert_equal(252, tax.cac())
 
-    assert_equal(166, tax.communal())
+    assert_equal(500, tax.communal())
     assert_equal(77360, tax.cnpswage())
     assert_equal(3249, tax.cnps())
     assert_equal(0, tax.cac2())
@@ -72,6 +116,9 @@ class TaxTest < ActiveSupport::TestCase
 
   test "Test Payslip 73287" do
     employee = return_valid_employee()
+    # Female and Spouse employed
+    # Latest information (2026) is that tax commune
+    # is still applied in this case.
     employee.gender = "female"
     employee.spouse_employed = true
 
@@ -84,7 +131,7 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(25635, tax.proportional())
     assert_equal(2564, tax.cac())
 
-    assert_equal(0, tax.communal())
+    assert_equal(2250, tax.communal()) # should be taxed
     assert_equal(417216, tax.cnpswage())
     assert_equal(17523, tax.cnps())
     assert_equal(0, tax.cac2())
@@ -108,7 +155,7 @@ class TaxTest < ActiveSupport::TestCase
       assert_equal(0, tax.proportional())
       assert_equal(0, tax.cac())
 
-      assert_equal(0, tax.communal())
+      assert_equal(0, tax.communal()) # continues to be 0
       assert_equal(417216, tax.cnpswage())
       assert_equal(17523, tax.cnps())
       assert_equal(0, tax.cac2())
@@ -122,6 +169,8 @@ class TaxTest < ActiveSupport::TestCase
     employee.contract_start = Date.new(2020, 9, 2)
     employee.birth_date = Date.new(1990, 2, 3)
     period = Period.new(2023,3)
+    # this is within the first 3 years.
+    # and therefore is no commune tax
 
     tax = Tax.compute_taxes(employee, 437216, 417216, period)
 
@@ -148,7 +197,7 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(25635, tax.proportional())
     assert_equal(2564, tax.cac())
 
-    assert_equal(750, tax.communal())
+    assert_equal(2250, tax.communal())
     assert_equal(417216, tax.cnpswage())
     assert_equal(17523, tax.cnps())
     assert_equal(0, tax.cac2())
@@ -194,8 +243,8 @@ class TaxTest < ActiveSupport::TestCase
     assert_equal(5234345, tax.cnpswage(), "cnps wage")
     assert_equal(31500, tax.cnps(), "cnps tax") # ceiling
     assert_equal(0, tax.cac2(), "cac2")
-    assert_equal(250, tax.communal(), "communal tax")
-    assert_equal(428710, tax.total_tax(), "total_tax")
+    assert_equal(2500, tax.communal(), "communal tax")
+    assert_equal(430960, tax.total_tax(), "total_tax")
   end
 
   test "round down logic" do

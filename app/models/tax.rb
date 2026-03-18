@@ -73,18 +73,18 @@ class Tax < ApplicationRecord
 
     communal_tax = self[:communal]
 
+    # if not in the table, compute per these amounts
     if self[:communal].nil?
-      if (grosspay > SystemVariable.value(:communal_cutoff) )
-        communal_tax = SystemVariable.value(:communal_high)
-      else
-        communal_tax = SystemVariable.value(:communal_low)
-      end
-    end
-
-    # If both spouses are employed, only take taxes from
-    # the male spouse.
-    if (employee.female? && employee.spouse_employed?)
-      communal_tax = 0
+      return 2500 if grosspay > 500000
+      return 2250 if grosspay > 300000 and grosspay <= 500000
+      return 2000 if grosspay > 250000 and grosspay <= 300000
+      return 1500 if grosspay > 200000 and grosspay <= 250000
+      return 1250 if grosspay > 150000 and grosspay <= 200000
+      return 1000 if grosspay > 125000 and grosspay <= 150000
+      return 750  if grosspay > 100000 and grosspay <= 125000
+      return 500  if grosspay >  75000 and grosspay <= 100000
+      return 250  if grosspay >  62500 and grosspay <=  75000
+      return 0    if grosspay <= 62500
     end
 
     communal_tax

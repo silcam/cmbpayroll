@@ -243,7 +243,8 @@ report.list("dipes_group") do |list|
     page.item(:versement_cnps_total).value(number_to_currency((
         (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:age_benefits)).round +
         (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:emp_cnps) * 2).round +
-        (@salaire_cotisable_plafonne_grand_total * SystemVariable.value(:accident)).round), unit: '', locale: :cm))
+        (@salaire_cotisable_grand_total * SystemVariable.value(:accident)).round
+    ), unit: '', locale: :cm))
     page.item(:penalties_retard_total).value(0)
     page.item(:majorat_retard_total).value(0)
   end

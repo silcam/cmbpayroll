@@ -102,10 +102,14 @@ end
 
 group :development do
   # Capistrano Deployment
-  gem 'capistrano'
+  gem 'capistrano', '~> 3.9' # Keep capistrano where it is in config files.
   gem 'capistrano-rails'
   gem 'capistrano-rbenv'
   gem 'capistrano-passenger'
+  gem 'sshkit', '>= 1.21.0'
+  gem 'net-ssh', '>= 7.0.0'
+  gem 'ed25519'
+  gem 'bcrypt_pbkdf'
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'

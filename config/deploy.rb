@@ -8,6 +8,8 @@ set :deploy_via, :remote_cache
 append :linked_files, "config/secrets.yml"
 
 set :branch, 'master'
+
+set :passenger_restart_with_touch, false
 # set :deploy_to, "/var/www/cmbpayroll"
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

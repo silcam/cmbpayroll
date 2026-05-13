@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class RedirectTest < Capybara::Rails::TestCase
+class RedirectTest < ActionDispatch::SystemTestCase
   def setup
     @luke = people :Luke
   end

@@ -1,0 +1,33 @@
+#
+#default: &default
+#  adapter: sqlite3
+#  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+#  timeout: 5000
+
+development:
+  adapter: postgresql
+  encoding: utf8
+#  database: cmbpayroll_dev
+  database: payroll_pristine
+  host: localhost
+  pool: 5
+  username: cmbpayroll
+  password: cmbpayroll
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test: &TEST
+  adapter: postgresql
+  encoding: utf8
+  database: cmbpayroll_test
+  host: localhost
+  pool: 5
+  username: cmbpayroll
+  password: cmbpayroll
+
+production:
+  adapter: postgresql
+  encoding: utf8
+  database: payroll
+  pool: 5

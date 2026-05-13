@@ -6,7 +6,7 @@
 # server "example.com", user: "deploy", roles: %w{app db web}, my_property: :my_value
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
-server 'tom', user: 'cmbpayroll', roles: %w{web app db}
+server '192.168.0.78', user: 'cmbpayroll', roles: %w{web app db}
 
 
 
@@ -47,6 +47,15 @@ server 'tom', user: 'cmbpayroll', roles: %w{web app db}
 #    forward_agent: false,
 #    auth_methods: %w(password)
 #  }
+
+# Specify certain keys, don't let it get tripped up on the
+# ed25519 key which isn't needed.
+set :ssh_options, {
+  keys: %w( ~/.ssh/id_rsa ),
+  forward_agent: false,
+  auth_methods: %w( publickey )
+}
+
 #
 # The server-based syntax can be used to override options:
 # ------------------------------------

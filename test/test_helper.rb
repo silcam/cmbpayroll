@@ -1,13 +1,15 @@
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 require 'minitest/reporters'
-require 'minitest/rails/capybara'
+require 'minitest/rails'
 
 Minitest::Reporters.use!
 
 `rails db:seed`
 
 class ActiveSupport::TestCase
+  extend Minitest::Spec::DSL
+
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
@@ -20,24 +22,6 @@ class ActiveSupport::TestCase
     end
     should_save = model.new(params)
     assert should_save.save, "Should save #{model} with valid params"
-  end
-
-  def log_in(user)
-    visit login_path
-    fill_in 'Username', with: user.username
-    fill_in 'Password', with: user.username
-    click_button 'Log in'
-  end
-
-  def log_in_luke
-    log_in users(:Luke)
-  end
-
-  def log_in_admin
-    visit login_path
-    fill_in 'Username', with: 'mace'
-    fill_in 'Password', with: 'mace'
-    click_button 'Log in'
   end
 
   def on_sep_5

@@ -5,10 +5,10 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-
+# (for 5.2) Reduces boot times through caching; required in config/boot.rb
+gem "bootsnap", require: false
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '5.1.6.2'
-gem 'actionview', '5.1.6.2'
+gem 'rails', '~> 5.2'
 # Use postgres as the database for Active Record
 gem 'pg', '~>0.21.0'
 # Use SCSS for stylesheets
@@ -53,7 +53,7 @@ gem 'rails-i18n', '~> 5.0.4'
 gem 'access-granted', '~>1.2.0'
 
 # Audit Trail
-gem 'audited', '~> 4.5'
+gem 'audited', '~> 4.10'
 
 # Reports
 gem 'thinreports', '~> 0.10.2'
@@ -94,6 +94,9 @@ group :development, :test do
   gem 'minitest-rails-capybara'
   gem 'selenium-webdriver'
   gem 'minitest-reporters'
+  gem 'rails-controller-testing'
+  gem 'minitest-rails'
+  gem 'minitest-spec-rails'
   # Checks for security holes in the code
   gem 'brakeman', require: false
   # PDF Testing

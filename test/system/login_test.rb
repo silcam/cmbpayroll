@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class LoginTest < Capybara::Rails::TestCase
+class LoginTest < ActionDispatch::IntegrationTest
   def setup
     @luke = employees :Luke
   end

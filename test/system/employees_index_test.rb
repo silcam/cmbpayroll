@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class EmployeesIndexTest < Capybara::Rails::TestCase
+class EmployeesIndexTest < ActionDispatch::SystemTestCase
 
   def setup
     @jarjar = users :JarJar

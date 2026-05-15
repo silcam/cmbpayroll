@@ -10,7 +10,7 @@ gem "bootsnap", require: false
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1'
 # Use postgres as the database for Active Record
-gem 'pg', '~>0.21.0'
+gem 'pg', '~> 1.5'
 # Use SCSS for stylesheets
 gem 'sassc-rails'
 # Bootstrap
@@ -59,7 +59,8 @@ gem 'audited', '~> 5.4'
 gem 'thinreports', '~> 0.12.0'
 gem 'thinreports-rails', '~> 0.5.0'
 # This is old so we add responders >= 3.0 to hopefully work
-gem 'dossier', '~> 2.13', '>= 2.13.1'
+# ??????
+gem 'dossier', github: 'cetuslabs/dossier', branch: 'master'
 gem 'responders', '>= 3.0'
 gem 'fixy', '~> 0.0.8'
 

@@ -398,7 +398,7 @@ DEPENDENCIES
   momentjs-rails (>= 2.9.0)
   net-ssh (>= 7.0.0)
   pdf-inspector
-  pg (~> 1.5)
+  pg (~> 1.6)
   prawn (~> 2.5)
   prawn-rails (~> 1.4)
   prawn-table (~> 0.2.2)

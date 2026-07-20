@@ -10,7 +10,7 @@ gem "bootsnap", require: false
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1'
 # Use postgres as the database for Active Record
-gem 'pg', '~> 1.5'
+gem 'pg', '~> 1.6'
 # Use SCSS for stylesheets
 gem 'sassc-rails'
 # Bootstrap
@@ -73,13 +73,12 @@ group :development, :test do
   # Use Puma as the app server in development
   gem 'puma', '~> 5.6'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'byebug', platforms: [:mri, :windows]
   # Adds support for Capybara system testing and selenium driver
   gem 'selenium-webdriver'
   gem 'minitest-reporters'
   gem 'rails-controller-testing'
   gem 'minitest-rails', '~> 6.1'
-  gem 'minitest-spec-rails'
   # Checks for security holes in the code
   gem 'brakeman', require: false
   # PDF Testing

@@ -59,6 +59,9 @@ module ApplicationHelper
   end
 
   def word_to_int(word)
+    ## Suggested by gemini
+    # lookup = { .. put lookup here .. }
+    # lookup[word.to_s.downcase] || word
     lookup = { "one" => 1, "two" => 2, "three" => 3, "four" => 4, "five" => 5,
       "six" => 6, "seven" => 7, "eight" => 8, "nine" => 9, "ten" => 10,
       "eleven" => 11, "twelve" => 12, "thirteen" => 13 }
@@ -66,13 +69,13 @@ module ApplicationHelper
     lookup[word]
   end
 
-  def t_gen(key, feminine, options={})
+  def t_gen(key, feminine, ...)
     gender = feminine ? :f : :m
     new_key = "#{key}_#{gender}"
     if I18n.exists? new_key, I18n.locale
-      t new_key, options
+      t(new_key, ...)
     else
-      t key, options
+      t(key, ...)
     end
   end
 

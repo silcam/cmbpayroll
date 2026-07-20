@@ -56,7 +56,7 @@ class CmbPayrollPdf < Prawn::Document
   end
 
   def signature_box
-    text "Signature de l'employé:\n#{Date.today}", :valign => :middle
+    text "Signature de l'employé:\n#{Date.today}", :valign => :center
   end
 
   def date_and_name

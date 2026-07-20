@@ -15,7 +15,7 @@ class Employee < ApplicationRecord
 
   has_many :charges
   has_many :misc_payments
-  has_many :children, {through: :person, source: :children}
+  has_many :children, through: :person, source: :children
   has_many :work_hours
   has_many :work_loans
   has_many :vacations

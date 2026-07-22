@@ -253,15 +253,27 @@ class Vacation < ApplicationRecord
     self[:period_month] = applied_period.month
     self[:period_year] = applied_period.year
 
-    # Once paid, once the period is closed, or once the vacation has already
-    # started, don't recompute -- just report the figure already on record.
+    # Once paid, once the period the vacation STARTS in is closed, or once
+    # the vacation has already started, don't recompute -- just report the
+    # figure already on record. Check against `period` (the start date's own
+    # period), not `applied_period` (where the pay gets attributed, which
+    # can be a later month for a vacation spanning a month boundary): since
+    # LastPostedPeriod is a single, monotonically-advancing watermark,
+    # applied_period can't be posted without period already being posted
+    # too, so this is strictly at least as protective and additionally
+    # catches "the vacation's own month closed, but the later month it's
+    # attributed to hasn't" -- which is exactly when an admin might grant a
+    # raise for the new, still-open period.
     # By policy vacations are paid before they start, but if someone forgets
     # to mark it paid, the start date passing is a backstop: don't leave it
     # silently drifting against whatever payslip happens to be most recent.
-    # (If it hasn't been computed even once yet, fall through and compute it
-    # now -- this only locks a figure that already exists.)
-    if self[:paid] || LastPostedPeriod.posted?(applied_period) ||
-        (start_date <= Date.today && !self[:vacation_pay].nil?)
+    #
+    # Every one of these locks only applies once something has actually been
+    # computed -- otherwise the very first computation (which is what sets
+    # self[:paid]/self[:vacation_pay] in the first place) could get skipped
+    # and return a stale nil instead of ever running.
+    if !self[:vacation_pay].nil? &&
+        (self[:paid] || LastPostedPeriod.posted?(period) || start_date <= Date.today)
       return self[:vacation_pay]
     end
 

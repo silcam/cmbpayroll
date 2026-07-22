@@ -539,6 +539,75 @@ class VacationTest < ActiveSupport::TestCase
     refute(vacation.paid?, "still not explicitly marked paid")
   end
 
+  test "vacation_pay locks once the vacation's OWN start month is posted, even if apply_to_period (a later month) is not" do
+    employee = return_valid_employee
+    employee.contract_start = Date.new(2010, 1, 1)
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.save
+
+    # A vacation spanning a month boundary, with more days in the SECOND
+    # month (August) than the first (July) -- apply_to_period resolves to
+    # August, but the vacation itself starts, and is processed/posted, in
+    # July.
+    july = Period.new(2018, 7)
+    set_previous_vacation_balances(employee, july, 100000, 20.0)
+
+    vacation = Vacation.create!(employee: employee,
+        start_date: '2018-07-24', end_date: '2018-08-18')
+    assert_equal(Period.new(2018, 8), vacation.apply_to_period,
+        "more days fall in august, so pay is attributed to august")
+
+    generate_work_hours_for_range(employee, july.start, Date.new(2018, 7, 23))
+    Payslip.process(employee, july)
+
+    # Close (post) July -- but NOT August. Mirrors: process payslips, then
+    # close the period.
+    lpp = LastPostedPeriod.first_or_initialize
+    lpp.update(year: 2018, month: 7)
+    lpp.save!
+    refute(LastPostedPeriod.posted?(vacation.apply_to_period), "august is not posted yet")
+    assert(LastPostedPeriod.posted?(Period.from_date(vacation.start_date)), "july IS posted")
+
+    # Crucially: nobody marked this paid, and "today" (from the system's
+    # point of view) hasn't reached the start date yet -- so neither the
+    # paid lock nor the start-date backstop apply. Only "july is already
+    # posted" should lock this.
+    Date.stub :today, Date.new(2018, 7, 1) do
+      refute(vacation.paid?, "not marked paid")
+      refute(vacation.start_date <= Date.today, "start date hasn't been reached yet")
+
+      original_pay = vacation.vacation_pay
+      assert(original_pay > 0, "vacation pay should have been computed from july's payslip")
+      original_rate = VoucherPdf.new(vacation).voucher_daily_rate
+
+      # Grant a raise in august -- same effect as RaisesController#create,
+      # which mutates the employee's grade immediately (no effective-date
+      # concept exists yet -- see PLAN_raise_effective_date.md).
+      employee.echelon = "d"
+      employee.save!
+
+      # And then august actually gets processed for real -- note this is
+      # PROCESSED, not POSTED (LastPostedPeriod.posted?(august) is still
+      # false); Payslip.most_recent now points to a genuinely different,
+      # post-raise payslip.
+      generate_work_hours_for_range(employee, Date.new(2018, 8, 19), Period.new(2018, 8).finish)
+      real_august_payslip = Payslip.process(employee, Period.new(2018, 8))
+      refute(LastPostedPeriod.posted?(Period.new(2018, 8)), "august is processed, but still not posted")
+      refute_equal(original_pay.fdiv(vacation.days), real_august_payslip.vacation_daily_rate,
+          "august's real, post-raise payslip should genuinely differ, to make this a real test")
+
+      vacation.reload
+      assert_equal(original_pay, vacation.vacation_pay,
+          "the vacation's total must not change just because a later, " +
+            "still-open period got processed with the employee's new grade, " +
+            "once the vacation's own start month has already been closed")
+      assert_equal(original_rate, VoucherPdf.new(vacation).voucher_daily_rate,
+          "the voucher's rate must not change either")
+    end
+  end
+
   test "vacation_pay still recomputes for a future, unpaid vacation (not prematurely locked)" do
     employee = return_valid_employee
     employee.contract_start = Date.new(2010, 1, 1)

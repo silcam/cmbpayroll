@@ -489,6 +489,7 @@ class Payslip < ApplicationRecord
     self[:caissebase] = nil
     self[:cnpswage] = nil
     self[:taxable] = nil
+    self[:vacation_daily_rate] = nil
 
     work_loan_percentages.delete_all
     earnings.delete_all
@@ -533,7 +534,17 @@ class Payslip < ApplicationRecord
     end
   end
 
+  # Pinned to the payslip's own period once processed: the first call (from
+  # processing, before this payslip is saved) computes and caches it against
+  # that period's wage table / system variables. Later reads of an already
+  # processed payslip return the stored value instead of silently re-deriving
+  # it against whatever the wage table / system variables look like today.
   def vacation_daily_rate
+    return self[:vacation_daily_rate] unless self[:vacation_daily_rate].nil?
+    self[:vacation_daily_rate] = compute_vacation_daily_rate
+  end
+
+  def compute_vacation_daily_rate
     #return 0 if (vacation_balance == 0)
 
     (( compute_fullcnpswage ) * Vacation::MONTHLY ).

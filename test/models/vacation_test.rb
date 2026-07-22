@@ -448,6 +448,187 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal((new_days_bal * daily_rate).round, payslip.vacation_pay_balance)
   end
 
+  test "vacation_pay does not change once marked paid, even if later payslips differ" do
+    employee = return_valid_employee
+    employee.contract_start = Date.new(2010, 1, 1)
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.save
+
+    period = Period.new(2018, 1)
+    set_previous_vacation_balances(employee, period, 100000, 20.0)
+
+    vacation = Vacation.create!(employee: employee,
+        start_date: '2018-01-10', end_date: '2018-01-14')
+    generate_work_hours_for_range(employee, period.start, Date.new(2018, 1, 9))
+
+    may_payslip = Payslip.process(employee, period)
+    original_rate = may_payslip.vacation_daily_rate
+
+    vacation.mark_paid
+    assert(vacation.save, "should save properly")
+
+    original_pay = vacation.vacation_pay
+    assert(original_pay > 0, "vacation pay should have been computed")
+
+    # Something changes that affects a LATER payslip's compute_fullcnpswage
+    # (e.g. a bonus assignment), analogous to whatever shifted Pascaline's
+    # July payslip relative to her May one.
+    bonus = Bonus.create!(name: "Test Bonus", bonus_type: "fixed", quantity: 50000)
+    employee.bonuses << bonus
+
+    later_period = Period.new(2018, 2)
+    generate_work_hours(employee, later_period)
+    Payslip.process(employee, later_period)
+
+    # Confirm the later payslip really did diverge -- otherwise this test
+    # would pass trivially.
+    refute_equal(original_rate, Vacation.vacation_daily_rate(employee),
+        "the later payslip's daily rate should genuinely differ, to make this a real test")
+
+    # The May payslip itself -- the one the voucher must select -- must also
+    # report a stable rate after later payslips are processed. Selecting the
+    # right payslip isn't enough if that payslip's own rate isn't pinned.
+    assert_equal(original_rate, Payslip.for_employee_for_period(employee, period).vacation_daily_rate,
+        "the May payslip's own vacation_daily_rate must stay pinned to when it was processed")
+
+    # And the paid vacation's total must not have moved either.
+    assert_equal(original_pay, vacation.vacation_pay,
+        "a paid vacation's pay must not drift after later payslips are processed")
+    assert_equal(original_pay, vacation.reload.vacation_pay,
+        "the persisted vacation_pay must also reflect the original, paid figure")
+  end
+
+  test "vacation_pay locks once the start date has passed, even if never marked paid" do
+    employee = return_valid_employee
+    employee.contract_start = Date.new(2010, 1, 1)
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.save
+
+    period = Period.new(2018, 1)
+    set_previous_vacation_balances(employee, period, 100000, 20.0)
+
+    vacation = Vacation.create!(employee: employee,
+        start_date: '2018-01-10', end_date: '2018-01-14')
+    generate_work_hours_for_range(employee, period.start, Date.new(2018, 1, 9))
+
+    Payslip.process(employee, period)
+
+    # Nobody marked this paid -- but its start date (2018-01-10) is long
+    # past today, so the first computation should still lock it.
+    refute(vacation.paid?, "not marked paid")
+    original_pay = vacation.vacation_pay
+    assert(original_pay > 0, "vacation pay should have been computed")
+
+    bonus = Bonus.create!(name: "Test Bonus", bonus_type: "fixed", quantity: 50000)
+    employee.bonuses << bonus
+
+    later_period = Period.new(2018, 2)
+    generate_work_hours(employee, later_period)
+    Payslip.process(employee, later_period)
+
+    refute_equal(original_pay.fdiv(vacation.days), Vacation.vacation_daily_rate(employee),
+        "the later payslip's daily rate should genuinely differ, to make this a real test")
+
+    assert_equal(original_pay, vacation.vacation_pay,
+        "an unpaid but already-started vacation's pay must still not drift " +
+          "-- this is the backstop for a forgotten paid marking")
+    refute(vacation.paid?, "still not explicitly marked paid")
+  end
+
+  test "vacation_pay still recomputes for a future, unpaid vacation (not prematurely locked)" do
+    employee = return_valid_employee
+    employee.contract_start = Date.new(2010, 1, 1)
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.save
+
+    period = Period.new(2018, 1)
+    set_previous_vacation_balances(employee, period, 100000, 20.0)
+
+    future_start = Date.today + 30
+    future_end = future_start + 3
+    vacation = Vacation.create!(employee: employee,
+        start_date: future_start, end_date: future_end)
+    generate_work_hours_for_range(employee, period.start, Date.new(2018, 1, 9))
+
+    Payslip.process(employee, period)
+
+    refute(vacation.paid?, "not marked paid")
+    refute(vacation.start_date <= Date.today, "start date should be in the future")
+    original_pay = vacation.vacation_pay
+    assert(original_pay > 0, "should have computed a real value")
+
+    # Change an input and process a new (now most-recent) payslip. Since this
+    # vacation is neither paid nor started, it must NOT be locked -- if a
+    # future refactor caused it to lock prematurely, this would incorrectly
+    # stay equal to original_pay.
+    bonus = Bonus.create!(name: "Test Bonus", bonus_type: "fixed", quantity: 50000)
+    employee.bonuses << bonus
+    later_period = Period.new(2018, 2)
+    generate_work_hours(employee, later_period)
+    Payslip.process(employee, later_period)
+
+    refute_equal(original_pay, vacation.vacation_pay,
+        "an unpaid, not-yet-started vacation must keep recomputing against " +
+          "the current most-recent payslip, not lock prematurely")
+  end
+
+  test "voucher for a vacation spanning two months shows the rate pinned to its own period, not a later reprocessed one" do
+    employee = return_valid_employee
+    employee.contract_start = Date.new(2010, 1, 1)
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.save
+
+    # Mirrors the reported case: a vacation crossing a month boundary, with
+    # more days falling in the first (January) month than the second
+    # (February) -- apply_to_period should therefore resolve to January.
+    period = Period.new(2018, 1)
+    set_previous_vacation_balances(employee, period, 100000, 20.0)
+
+    vacation = Vacation.create!(employee: employee,
+        start_date: '2018-01-21', end_date: '2018-02-05')
+    assert_equal(period, vacation.apply_to_period,
+        "more days fall in January, so the voucher should be keyed to January")
+
+    generate_work_hours_for_range(employee, period.start, Date.new(2018, 1, 20))
+
+    Payslip.process(employee, period)
+    vacation.mark_paid
+    assert(vacation.save, "should save properly")
+
+    original_rate = Payslip.for_employee_for_period(employee, vacation.apply_to_period).vacation_daily_rate
+
+    # Something changes an employee input, then February and March are
+    # processed -- as would happen by the time a January voucher is
+    # reprinted/viewed months later.
+    bonus = Bonus.create!(name: "Test Bonus", bonus_type: "fixed", quantity: 50000)
+    employee.bonuses << bonus
+
+    generate_work_hours_for_range(employee, Date.new(2018, 2, 6), Period.new(2018, 2).finish)
+    Payslip.process(employee, Period.new(2018, 2))
+
+    generate_work_hours(employee, Period.new(2018, 3))
+    Payslip.process(employee, Period.new(2018, 3))
+
+    refute_equal(original_rate, Vacation.vacation_daily_rate(employee),
+        "most_recent should now point to a later, genuinely different payslip")
+
+    voucher = VoucherPdf.new(vacation)
+    voucher_payslip = voucher.instance_variable_get(:@payslip)
+
+    assert_equal(Payslip.for_employee_for_period(employee, vacation.apply_to_period).id, voucher_payslip.id,
+        "the voucher must select the vacation's own (January) payslip")
+    assert_equal(original_rate, voucher_payslip.vacation_daily_rate,
+        "the voucher's payslip must report the rate pinned to when it was processed")
+  end
+
   test "Vacation (payslip) can figure how much taxes are for this vacation" do
     period = Period.from_date(@lukes_vacation.start_date)
     payslip = @luke.payslip_for(period)

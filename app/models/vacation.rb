@@ -253,8 +253,15 @@ class Vacation < ApplicationRecord
     self[:period_month] = applied_period.month
     self[:period_year] = applied_period.year
 
-    # If the period is closed, don't recompute, just report.
-    if LastPostedPeriod.posted?(applied_period)
+    # Once paid, once the period is closed, or once the vacation has already
+    # started, don't recompute -- just report the figure already on record.
+    # By policy vacations are paid before they start, but if someone forgets
+    # to mark it paid, the start date passing is a backstop: don't leave it
+    # silently drifting against whatever payslip happens to be most recent.
+    # (If it hasn't been computed even once yet, fall through and compute it
+    # now -- this only locks a figure that already exists.)
+    if self[:paid] || LastPostedPeriod.posted?(applied_period) ||
+        (start_date <= Date.today && !self[:vacation_pay].nil?)
       return self[:vacation_pay]
     end
 
@@ -263,9 +270,9 @@ class Vacation < ApplicationRecord
       payslip = Payslip.most_recent(employee)
     end
 
-    return 0 if payslip.nil?
-    return 0 if payslip.vacation_pay_balance.nil?
-    return 0 if payslip.vacation_balance == 0
+    if payslip.nil? || payslip.vacation_pay_balance.nil? || payslip.vacation_balance == 0
+      return (self[:vacation_pay] = 0)
+    end
 
     # FIXME similar to payslip line 794
     self[:vacation_pay] = ( payslip.vacation_daily_rate * days ).round

@@ -66,9 +66,14 @@ class VoucherPdf < CmbPayrollPdf
   end
 
   def pay_table
+     # No payslip has been processed yet for this vacation's own period --
+     # there's nothing correct to show, so don't fall back to whatever
+     # payslip happens to be most recent (that's the selection bug this
+     # replaced).
+     daily_rate = @payslip ? @payslip.vacation_daily_rate : 0
      table([
         ["Nombre de journées",
-            { :content => "#{@vacation.days} à franc #{Vacation.vacation_daily_rate(@employee).round(2)}", :align => :right },
+            { :content => "#{@vacation.days} à franc #{daily_rate.round(2)}", :align => :right },
             { :content => "soit CFA", :align => :center },
             { :content => "#{@vacation.vacation_pay&.to_i}", :align => :right }]
         ],

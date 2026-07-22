@@ -1277,6 +1277,80 @@ class PayslipTest < ActiveSupport::TestCase
     assert_equal(payslip.compute_bonusbase, payslip.compute_caissebase)
   end
 
+  test "vacation_daily_rate increases when seniority bonus increases, all else equal" do
+    employee = return_valid_employee()
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+
+    period = Period.new(2018, 1)
+
+    employee.contract_start = period.finish - 5.years
+    low_seniority_payslip = employee.payslips.build(period_year: period.year, period_month: period.month)
+    low_rate = low_seniority_payslip.vacation_daily_rate
+
+    employee.contract_start = period.finish - 8.years
+    high_seniority_payslip = employee.payslips.build(period_year: period.year, period_month: period.month)
+    high_rate = high_seniority_payslip.vacation_daily_rate
+
+    assert_operator(high_rate, :>, low_rate,
+        "vacation daily rate should increase as years of service (and thus " +
+          "seniority bonus) increase, with wage and grade held constant")
+  end
+
+  test "vacation_daily_rate does not change (by looking at db record) after the payslip has been processed" do
+    employee = return_valid_employee()
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.contract_start = Date.new(2010, 1, 1)
+
+    period = Period.new(2018, 1)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+    assert(payslip.persisted?, "payslip should be saved")
+
+    original_rate = payslip.vacation_daily_rate
+    assert(original_rate > 0, "rate should have been computed during processing")
+
+    # Reload the way Vacation.vacation_daily_rate does (via Payslip.most_recent) --
+    # the stored value should come back unchanged.
+    # Request by ActiveRecord, not a re-process.
+    reloaded = Payslip.find(payslip.id)
+    assert_equal(original_rate, reloaded.vacation_daily_rate)
+
+    # Now change the underlying wage table and a system variable -- as happens
+    # whenever wage scales or vacation policy are updated. Neither should
+    # retroactively move an already-processed payslip's stored rate.
+    wage_row = Wage.find_by(category: 4, echelon: "a", echelonalt: 1)
+    wage_row.update_column(:basewage, wage_row.basewage - 20000)
+    SystemVariable.create!(key: "vacation_pay_factor", value: 20)
+
+    again = Payslip.find(payslip.id)
+    assert_equal(original_rate, again.vacation_daily_rate,
+        "an already-processed payslip's vacation rate should stay pinned to its own period")
+  end
+
+  test "reprocessing an existing payslip recomputes vacation_daily_rate rather than returning a stale cached value" do
+    employee = return_valid_employee()
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.contract_start = Date.new(2010, 1, 1)
+
+    period = Period.new(2018, 1)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+    original_rate = payslip.vacation_daily_rate
+
+    wage_row = Wage.find_by(category: 4, echelon: "a", echelonalt: 1)
+    wage_row.update_column(:basewage, wage_row.basewage + 100000)
+
+    reprocessed = Payslip.process(employee, period)
+    refute_equal(original_rate, reprocessed.vacation_daily_rate,
+        "reprocessing the same period must pick up genuinely changed inputs, not return a stale rate")
+  end
+
   test "CNPSWage and Taxable" do
     # config employee
     employee = return_valid_employee()
@@ -2914,6 +2988,55 @@ class PayslipTest < ActiveSupport::TestCase
       end
     end
     assert(found, "Found earning for vacation worked")
+  end
+
+  test "Test Replicate Pascaline Issue (renamed this test)." do
+    employee = return_valid_employee
+    employee.contract_start = "2021-02-08" # set for supplemental days
+    employee.category_nine!
+    employee.echelon_f!
+    employee.save
+
+    period = Period.new(2026,5)
+
+    previous_pay_balance = 245345
+    previous_balance = 33
+    set_previous_vacation_balances(employee, period, previous_pay_balance, previous_balance)
+
+    # Vaction is from Mid-March to Mid-April.
+    # In April, receive a pay increase echelon raise.
+    # In April, recompute the vacation pay and see if it changed.
+    vacation = Vacation.create!(
+        employee: employee,
+        start_date: '2026-05-21', end_date: '2026-06-10')
+    generate_work_hours_for_range(employee, period.start, Date.new(2026,5,20))
+    assert_equal(15, vacation.days, "should be correct number of days")
+
+    Payslip.process(employee, period)
+    # verify the vacation daily rate and days
+    vac_daily_rate_may = Vacation.vacation_daily_rate(employee)
+
+
+    # I think the issue has to do with this:
+    ## May 2026: 21 working days
+    ## June 2026: 22 working days
+    ## July 2026: 23 working days
+    # Now write a test to prove it.
+
+    # move the period.
+    period = Period.new(2026,6)
+    generate_work_hours_for_range(employee, Date.new(2026,6,11), period.finish)
+    Payslip.process(employee, period)
+    # verify the vacation daily rate and days
+    vac_daily_rate_jun = Vacation.vacation_daily_rate(employee)
+
+    period = Period.new(2026,7)
+    generate_work_hours_for_range(employee, period.start, period.finish)
+    Payslip.process(employee, period)
+    vac_daily_rate_jul = Vacation.vacation_daily_rate(employee)
+
+    assert_equal(vac_daily_rate_may, vac_daily_rate_jun, "the vacation rate should be unchanged may -> jun")
+    assert_equal(vac_daily_rate_may, vac_daily_rate_jul, "the vacation rate should be unchanged may -> jul")
   end
 
   test "Inactive people have their payslip disappear" do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20260318140802) do
+ActiveRecord::Schema.define(version: 20260720132030) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -286,6 +286,7 @@ ActiveRecord::Schema.define(version: 20260318140802) do
     t.integer "union_dues", default: 0, null: false
     t.integer "salaire_net", default: 0, null: false
     t.boolean "vac_accrue", default: true, null: false
+    t.decimal "vacation_daily_rate"
     t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 
@@ -377,6 +378,8 @@ ActiveRecord::Schema.define(version: 20260318140802) do
     t.integer "cac2"
     t.integer "communal"
     t.integer "cnps"
+    t.integer "vacation_transport", default: 0
+    t.integer "vacation_gross", default: 0
     t.index ["employee_id"], name: "index_vacations_on_employee_id"
   end
 

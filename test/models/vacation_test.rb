@@ -603,7 +603,10 @@ class VacationTest < ActiveSupport::TestCase
     vacation.mark_paid
     assert(vacation.save, "should save properly")
 
-    original_rate = Payslip.for_employee_for_period(employee, vacation.apply_to_period).vacation_daily_rate
+    original_pay = vacation.vacation_pay
+    original_voucher_rate = VoucherPdf.new(vacation).voucher_daily_rate
+    assert_in_delta(original_voucher_rate, original_pay.to_f.fdiv(vacation.days), 0.001,
+        "the voucher's rate must reconcile with the vacation's own total")
 
     # Something changes an employee input, then February and March are
     # processed -- as would happen by the time a January voucher is
@@ -617,16 +620,65 @@ class VacationTest < ActiveSupport::TestCase
     generate_work_hours(employee, Period.new(2018, 3))
     Payslip.process(employee, Period.new(2018, 3))
 
-    refute_equal(original_rate, Vacation.vacation_daily_rate(employee),
+    refute_equal(original_pay.fdiv(vacation.days), Vacation.vacation_daily_rate(employee),
         "most_recent should now point to a later, genuinely different payslip")
 
-    voucher = VoucherPdf.new(vacation)
-    voucher_payslip = voucher.instance_variable_get(:@payslip)
+    # The voucher's displayed rate must still match the ORIGINAL, locked
+    # total -- not drift toward whatever the (now-processed) January payslip
+    # or any later payslip reports.
+    assert_equal(original_pay, vacation.vacation_pay,
+        "the vacation's total must stay pinned")
+    assert_equal(original_voucher_rate, VoucherPdf.new(vacation).voucher_daily_rate,
+        "the voucher's rate must stay pinned to the original total, even once " +
+          "January's payslip exists and later payslips have been processed")
+  end
 
-    assert_equal(Payslip.for_employee_for_period(employee, vacation.apply_to_period).id, voucher_payslip.id,
-        "the voucher must select the vacation's own (January) payslip")
-    assert_equal(original_rate, voucher_payslip.vacation_daily_rate,
-        "the voucher's payslip must report the rate pinned to when it was processed")
+  test "voucher rate for a vacation locked before its own period's payslip exists stays pinned once that payslip is later processed for real" do
+    employee = return_valid_employee
+    employee.contract_start = Date.new(2010, 1, 1)
+    employee.category = "four"
+    employee.echelon = "a"
+    employee.wage_scale = "a"
+    employee.save
+
+    # Only January is processed so far -- mirrors preparing an August
+    # vacation in July, before August's payslip exists.
+    january = Period.new(2018, 1)
+    set_previous_vacation_balances(employee, january, 100000, 20.0)
+    generate_work_hours(employee, january)
+    Payslip.process(employee, january)
+
+    # Vacation entirely in February -- no February payslip exists yet.
+    vacation = Vacation.create!(employee: employee,
+        start_date: '2018-02-01', end_date: '2018-02-05')
+    assert_nil(Payslip.for_employee_for_period(employee, vacation.apply_to_period),
+        "february payslip should not exist yet")
+
+    vacation.mark_paid
+    assert(vacation.save, "should save properly")
+
+    original_pay = vacation.vacation_pay
+    assert(original_pay > 0, "vacation pay should have been computed from january's payslip")
+    original_voucher_rate = VoucherPdf.new(vacation).voucher_daily_rate
+    assert_in_delta(original_voucher_rate, original_pay.to_f.fdiv(vacation.days), 0.001)
+
+    # Now something changes, and February is genuinely processed for real --
+    # as would eventually happen once August actually arrives.
+    bonus = Bonus.create!(name: "Test Bonus", bonus_type: "fixed", quantity: 50000)
+    employee.bonuses << bonus
+    generate_work_hours_for_range(employee, Date.new(2018, 2, 6), Period.new(2018, 2).finish)
+    real_february_payslip = Payslip.process(employee, Period.new(2018, 2))
+
+    refute_equal(original_pay.fdiv(vacation.days), real_february_payslip.vacation_daily_rate,
+        "february's real payslip should genuinely differ, to make this a real test")
+
+    # The already-locked vacation's total and the voucher's displayed rate
+    # must NOT shift to reflect february's now-real payslip.
+    assert_equal(original_pay, vacation.vacation_pay,
+        "the vacation's total must stay pinned to what was known at lock time")
+    assert_equal(original_voucher_rate, VoucherPdf.new(vacation).voucher_daily_rate,
+        "the voucher's rate must stay pinned even after the target period's " +
+          "payslip is later processed for real")
   end
 
   test "Vacation (payslip) can figure how much taxes are for this vacation" do

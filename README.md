@@ -23,7 +23,17 @@ Use normal rails commands to create the database. Keep in mind that the database
 
 ## Running Tests
 
-Run `rails test`. This uses minitest.
+Fro all tests, run `rails test`. This uses minitest.
+
+You can run just the reports tests with:
+
+`rake test:reports:all`
+
+Or individual classes of report tests
+
+`rake test:reports:unit`
+`rake test:reports:integration`
+`rake test:reports:e2e`
 
 ## Reports
 

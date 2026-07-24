@@ -12,22 +12,8 @@ require "test_helper"
 # So this complements, but does not replace, eyeballing the generated PDF.
 class AnnualPayslipRenderingTest < ActiveSupport::TestCase
 
-  # Reduce a chunk of extracted PDF text to just its digits, so a rendered
-  # figure can be matched regardless of the thousands-separator/locale
-  # formatting thinreports emits (e.g. "87 890" -> "87890").
-  def digits(text)
-    text.gsub(/\D/, "")
-  end
-
-  # The footer row is marked by the literal "Totals:" label, so partition
-  # on it to tell the detail rows (body) apart from the accumulated totals
-  # (footer). This matters: the totals accumulate x_taxable independently
-  # of what the detail cell binds, so asserting a value against the whole
-  # document would still pass even if the detail cell were mis-bound.
-  def body_and_footer(text)
-    before, _sep, after = text.partition("Totals:")
-    [before, after]
-  end
+  # report_digits / report_body_and_footer live in test_helper.rb (shared
+  # with the other report e2e tests).
 
   test "renders a valid PDF for a processed payslip" do
     employee = return_valid_employee
@@ -54,7 +40,7 @@ class AnnualPayslipRenderingTest < ActiveSupport::TestCase
     assert(payslip.taxable > 0, "sanity check: payslip should have nonzero taxable pay")
 
     text = report_pdf_text(render_report_pdf(AnnualPayslipReport, "2018-7"))
-    body, _footer = body_and_footer(text)
+    body, _footer = report_body_and_footer(text)
 
     # The .tlf column heading is "Salaire" / "Imposable" on two lines;
     # "Imposable" is the distinctive token.
@@ -73,7 +59,7 @@ class AnnualPayslipRenderingTest < ActiveSupport::TestCase
     # NB: `body` also includes the header's report-year and generated date
     # digits, so avoid taxable values that look like a year (e.g. 2018) to
     # keep this a true match on the rendered figure.
-    assert_includes(digits(body), payslip.taxable.to_s,
+    assert_includes(report_digits(body), payslip.taxable.to_s,
         "the taxable value should render in the report body")
   end
 
@@ -90,12 +76,12 @@ class AnnualPayslipRenderingTest < ActiveSupport::TestCase
     assert(expected_total > 0, "sanity check: nonzero total")
 
     text = report_pdf_text(render_report_pdf(AnnualPayslipReport, "2018-1"))
-    _body, footer = body_and_footer(text)
+    _body, footer = report_body_and_footer(text)
 
     # Two monthly rows, then a Totals row summing them -- exercises the
     # @taxable_total accumulation in the view. Scoped to the footer.
     refute_empty(footer, "the footer totals row should render")
-    assert_includes(digits(footer), expected_total.to_s,
+    assert_includes(report_digits(footer), expected_total.to_s,
         "the taxable total should be the sum of both months' taxable")
   end
 

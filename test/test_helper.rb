@@ -185,6 +185,24 @@ class ActiveSupport::TestCase
     PDF::Reader.new(StringIO.new(pdf)).pages.map(&:text).join("\n")
   end
 
+  # Reduce a chunk of extracted PDF text to just its digits, so a rendered
+  # figure can be matched regardless of the thousands-separator/locale
+  # formatting thinreports emits (e.g. "87 890" -> "87890").
+  def report_digits(text)
+    text.gsub(/\D/, "")
+  end
+
+  # Split extracted report text into [body, footer] on the literal
+  # "Totals:" label the report footers carry. This lets a value be matched
+  # against the detail rows specifically: the footer totals accumulate
+  # independently of what each detail cell binds, so asserting a value
+  # against the whole document would still pass even if a detail cell were
+  # mis-bound.
+  def report_body_and_footer(text)
+    before, _sep, after = text.partition("Totals:")
+    [before, after]
+  end
+
   def compiled_report_sql(report)
     sql = report.sql.dup
     sql.gsub!(/\w*(?<!:):(?!:)[a-z]{1}\w*/) { |match| escape_for_report(report.public_send(match[1..-1])) }

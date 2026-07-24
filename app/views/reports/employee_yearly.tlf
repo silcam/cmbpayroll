@@ -99,7 +99,7 @@
             "x": 312,
             "y": 114.2,
             "width": 66,
-            "height": 16,
+            "height": 32,
             "style": {
               "font-family": [
                 "Helvetica"
@@ -114,7 +114,8 @@
               "font-style": []
             },
             "texts": [
-              "Salaire imposable"
+              "Salaire",
+              "Imposable"
             ]
           },
           {

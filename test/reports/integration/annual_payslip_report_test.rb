@@ -20,6 +20,11 @@ class AnnualPayslipReportTest < ActiveSupport::TestCase
   # payslip record" and vacation-bucketing tests below needed updating --
   # they're pinned to specific column semantics, not just structure.
 
+  # Important Note: these style of tests only test the Dossier-level SQL
+  # that builds the report and not the output-formatting of the Thinreports
+  # layer. That layer could add additional formatting, summing and totaling
+  # which is not tested here.
+
   test "an empty year returns no rows without erroring" do
     rows = run_annual_payslip_report("2018-1")
     assert_equal([], rows, "no payslips were processed in this year")

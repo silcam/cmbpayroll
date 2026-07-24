@@ -144,11 +144,51 @@ class ActiveSupport::TestCase
   # (uncommitted) data if run via report.run. Compile and run the report's
   # SQL ourselves instead, on the connection this test is actually using --
   # the same workaround department_charge_report_test.rb already used.
+  #
+  # This exercises the SQL layer only. To also exercise the Thinreports
+  # view layer (positional column bindings, number formatting, running
+  # totals, page breaks), use render_report_pdf below.
   def run_report(report_class, period_str)
     report = report_class.new(period: period_str)
+    ActiveRecord::Base.connection.execute(compiled_report_sql(report)).to_a
+  end
+
+  # Render a report's .pdf.thinreports view to an actual PDF binary, using
+  # this test's data. We can't go through the real controller/Dossier path
+  # (its separate connection can't see transactional fixture data -- see
+  # run_report), so we compile+run the SQL on the test's own connection and
+  # inject the results into the report before rendering. Only the data
+  # SOURCE is swapped; the view still runs results.body, the positional
+  # t[..] bindings, add_row, row.item(:..) and the totals -- i.e. the layer
+  # run_report skips is genuinely exercised.
+  #
+  # NB: this verifies data BINDING, not visual layout -- PDF text
+  # extraction won't catch a column overflowing the page, overlap, or
+  # truncation. It complements, but doesn't replace, eyeballing the PDF.
+  def render_report_pdf(report_class, period_str)
+    report = report_class.new(period: period_str)
+    ar_result = ActiveRecord::Base.connection.exec_query(compiled_report_sql(report))
+    report.send(:query_results=, Dossier::Adapter::ActiveRecord::Result.new(ar_result))
+
+    ApplicationController.render(
+      template: "reports/#{report.report_name}",
+      formats: [:pdf],
+      assigns: { report: report }
+    )
+  end
+
+  # Extract the text from a generated PDF (for asserting rendered values).
+  # Cells are separated by whitespace -- including unicode thin-space
+  # thousands separators -- so callers typically normalize before matching.
+  def report_pdf_text(pdf)
+    require "pdf/reader"
+    PDF::Reader.new(StringIO.new(pdf)).pages.map(&:text).join("\n")
+  end
+
+  def compiled_report_sql(report)
     sql = report.sql.dup
     sql.gsub!(/\w*(?<!:):(?!:)[a-z]{1}\w*/) { |match| escape_for_report(report.public_send(match[1..-1])) }
-    ActiveRecord::Base.connection.execute(sql).to_a
+    sql
   end
 
   def escape_for_report(value)

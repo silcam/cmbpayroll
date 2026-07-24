@@ -2,6 +2,24 @@ require "test_helper"
 
 class AnnualPayslipReportTest < ActiveSupport::TestCase
 
+  # A rough guide for reading a failure here after changing this report:
+  # - Likely to change by design, if your work touches grouping/period
+  #   granularity/who-appears: "the report groups by year only" (month
+  #   ignored), "zero taxable pay ... doesn't appear" (the WHERE clause),
+  #   "two different months ... two separate rows".
+  # - Closer to real invariants: "empty year", "totals matching the
+  #   payslip record", and the vacation-bucketing test -- though the
+  #   latter can legitimately move if you rework the vacation join.
+  #
+  # Case in point: the "salaire_net" column was replaced with "taxable"
+  # (COALESCE(SUM(ps.taxable),0) + COALESCE(SUM(v.vacation_pay),0) -- the
+  # employee's total pay, i.e. payslip taxable plus a vacation's own gross
+  # pay, matching VacationReport's gross_pay, but without the old
+  # column's total_tax subtraction) and relabeled "Salaire imposable" in
+  # annual_payslip.tlf. That's exactly why the "totals matching the
+  # payslip record" and vacation-bucketing tests below needed updating --
+  # they're pinned to specific column semantics, not just structure.
+
   test "an empty year returns no rows without erroring" do
     rows = run_annual_payslip_report("2018-1")
     assert_equal([], rows, "no payslips were processed in this year")
@@ -26,7 +44,7 @@ class AnnualPayslipReportTest < ActiveSupport::TestCase
     assert_equal("NIU456", row["employee_niu"])
     assert_equal("#{employee.first_name} #{employee.last_name}", row["employee_name"])
 
-    assert_equal(payslip.salaire_net.round, row["salaire_net"].to_i)
+    assert_equal(payslip.taxable, row["taxable"].to_i)
     assert_equal(payslip.ccf, row["ccf_tax"].to_i)
     assert_equal(payslip.cnps, row["cnps_tax"].to_i)
     assert_equal(payslip.proportional, row["prop_tax"].to_i)
@@ -56,7 +74,7 @@ class AnnualPayslipReportTest < ActiveSupport::TestCase
         "so a zero-pay month is excluded from the report entirely")
   end
 
-  test "a vacation's pay is bucketed under the year/month row it's attributed to, not necessarily the month it was computed from" do
+  test "taxable includes a vacation's gross pay bucketed under its attributed month, and its tax contribution lands there too" do
     employee = return_valid_employee
     july = Period.new(2018, 7)
     set_previous_vacation_balances(employee, july, 100000, 20.0)
@@ -78,6 +96,7 @@ class AnnualPayslipReportTest < ActiveSupport::TestCase
 
     vacation.reload
     assert(vacation.vacation_pay > 0, "vacation pay should have been computed while processing august")
+    assert(vacation.ccf > 0, "vacation should have a nonzero ccf tax, to make this test discriminating")
 
     rows = run_annual_payslip_report("2018-7")
     july_row = find_row(rows, employee, 7)
@@ -86,12 +105,22 @@ class AnnualPayslipReportTest < ActiveSupport::TestCase
     assert(july_row, "july has its own processed payslip")
     assert(august_row, "august has its own processed payslip")
 
-    assert_equal(july_payslip.salaire_net.round, july_row["salaire_net"].to_i,
-        "july's own salaire_net shouldn't include a vacation attributed to august")
+    # taxable is now ps.taxable + v.vacation_pay -- july has no vacation
+    # attributed to it, but august's row should include the vacation's
+    # gross pay (matching VacationReport's gross_pay), on top of its own
+    # payslip's taxable.
+    assert_equal(july_payslip.taxable, july_row["taxable"].to_i,
+        "july's taxable shouldn't include a vacation attributed to august")
+    assert_equal(august_payslip.taxable + vacation.vacation_pay, august_row["taxable"].to_i,
+        "august's taxable should include the vacation's gross pay attributed to it")
 
-    expected_august_net = (august_payslip.salaire_net + vacation.vacation_pay - vacation.total_tax).round
-    assert_equal(expected_august_net, august_row["salaire_net"].to_i,
-        "august's salaire_net should include the vacation pay attributed to it, net of the vacation's own tax")
+    # ccf_tax (COALESCE(SUM(ps.ccf),0) + COALESCE(SUM(v.ccf),0)) is
+    # unaffected by this change, so the vacation's own tax contribution
+    # should still land under the month it's attributed to.
+    assert_equal(july_payslip.ccf, july_row["ccf_tax"].to_i,
+        "july's ccf_tax shouldn't include a vacation attributed to august")
+    assert_equal(august_payslip.ccf + vacation.ccf, august_row["ccf_tax"].to_i,
+        "august's ccf_tax should include the vacation's own ccf, since it's attributed there")
   end
 
   test "an employee processed in two different months of the same year gets two separate rows" do

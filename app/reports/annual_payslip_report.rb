@@ -8,7 +8,7 @@ class AnnualPayslipReport < CMBReport
   CONCAT(MAX(p.first_name), ' ', MAX(p.last_name)) as employee_name,
   ps.period_year as py,
   ps.period_month as pm,
-  ROUND(COALESCE(SUM(ps.salaire_net),0) + COALESCE(SUM(v.vacation_pay),0) - COALESCE(SUM(v.total_tax),0)) as salaire_net,
+  COALESCE(SUM(ps.taxable),0) + COALESCE(SUM(v.vacation_pay),0) as taxable,
   COALESCE(SUM(ps.ccf),0) + COALESCE(SUM(v.ccf),0) as ccf_tax,
   COALESCE(SUM(ps.cnps),0) + COALESCE(SUM(v.cnps),0) as cnps_tax,
   COALESCE(SUM(ps.proportional),0) + COALESCE(SUM(v.proportional),0) as prop_tax,

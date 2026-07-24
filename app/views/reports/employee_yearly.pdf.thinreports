@@ -1,6 +1,6 @@
 report.set_layout tlf: 'reports/employee_yearly', layout_options: { default: true }
 
-@salaire_net_total = 0
+@taxable_total = 0
 @cf_tax_total = 0
 @cnps_tax_total = 0
 @prop_tax_total = 0
@@ -28,7 +28,7 @@ report.list("yearly_group") do |list|
     x_matricule_cnps = t[1].to_s
     x_employee_name = t[2].to_s
     x_period_year = t[3].to_i
-    x_salaire_net = t[4].to_i
+    x_taxable = t[4].to_i
     x_ccf_tax = t[5].to_i
     x_cnps_tax = t[6].to_i
     x_prop_tax = t[7].to_i
@@ -45,7 +45,7 @@ report.list("yearly_group") do |list|
       employee_niu: x_employee_niu,
       matricule_cnps: x_matricule_cnps,
       employee_name: x_employee_name,
-      salaire_net: number_to_currency(x_salaire_net, unit: '', locale: :cm),
+      taxable: number_to_currency(x_taxable, unit: '', locale: :cm),
       cf_tax: number_to_currency(x_ccf_tax, unit: '', locale: :cm),
       cnps_tax: number_to_currency(x_cnps_tax, unit: '', locale: :cm),
       prop_tax: number_to_currency(x_prop_tax, unit: '', locale: :cm),
@@ -61,7 +61,7 @@ report.list("yearly_group") do |list|
       dept_nef_tax: number_to_currency(x_dept_emp_fund, unit: '', locale: :cm)
     )
 
-    @salaire_net_total += x_salaire_net
+    @taxable_total += x_taxable
     @cf_tax_total += x_ccf_tax
     @cnps_tax_total += x_cnps_tax
     @prop_tax_total += x_prop_tax
@@ -77,7 +77,7 @@ report.list("yearly_group") do |list|
   end
 
   list.on_footer_insert do |footer|
-    footer.item(:salaire_net_total).value(number_to_currency(@salaire_net_total, unit: '', locale: :cm))
+    footer.item(:taxable_total).value(number_to_currency(@taxable_total, unit: '', locale: :cm))
     footer.item(:cf_tax_total).value(number_to_currency(@cf_tax_total, unit: '', locale: :cm))
     footer.item(:cf_tax_total).value(number_to_currency(@cf_tax_total, unit: '', locale: :cm))
     footer.item(:cnps_tax_total).value(number_to_currency(@cnps_tax_total, unit: '', locale: :cm))

@@ -114,7 +114,7 @@
               "font-style": []
             },
             "texts": [
-              "Salaire Brut"
+              "Salaire imposable"
             ]
           },
           {
@@ -862,7 +862,7 @@
         },
         "items": [
           {
-            "id": "salaire_net",
+            "id": "taxable",
             "type": "text-block",
             "display": true,
             "description": "",
@@ -1695,7 +1695,7 @@
             ]
           },
           {
-            "id": "salaire_net_total",
+            "id": "taxable_total",
             "type": "text-block",
             "display": true,
             "description": "",

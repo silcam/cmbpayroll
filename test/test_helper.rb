@@ -137,6 +137,27 @@ class ActiveSupport::TestCase
       employee.work_hours.create!(date: date, hours: hours)
     end
   end
+
+  # Dossier (the reporting gem) is configured with its own, separately
+  # established database connection -- a different session than the one
+  # transactional fixtures run tests in, so it can't see this test's
+  # (uncommitted) data if run via report.run. Compile and run the report's
+  # SQL ourselves instead, on the connection this test is actually using --
+  # the same workaround department_charge_report_test.rb already used.
+  def run_report(report_class, period_str)
+    report = report_class.new(period: period_str)
+    sql = report.sql.dup
+    sql.gsub!(/\w*(?<!:):(?!:)[a-z]{1}\w*/) { |match| escape_for_report(report.public_send(match[1..-1])) }
+    ActiveRecord::Base.connection.execute(sql).to_a
+  end
+
+  def escape_for_report(value)
+    if value.respond_to?(:map)
+      "(#{value.map { |v| escape_for_report(v) }.join(', ')})"
+    else
+      ActiveRecord::Base.connection.quote(value)
+    end
+  end
 end
 
 module ControllerTestHelper

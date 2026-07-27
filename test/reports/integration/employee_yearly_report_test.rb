@@ -104,6 +104,55 @@ class EmployeeYearlyReportTest < ActiveSupport::TestCase
     assert_equal(jan_payslip.taxable + feb_payslip.taxable, rows.first["taxable"].to_i)
   end
 
+  test "department CNPS matches the per-month annual report when a vacation total crosses the CNPS ceiling across months" do
+    # Reproduces the employee-375 discrepancy. Department CNPS on vacation
+    # pay is a piecewise function -- a ceiling (:cnps_ceiling) switches the
+    # rate -- so applying it to the YEAR's vacation sum (as this report did)
+    # differs from summing it per month (as AnnualPayslipReport does, which
+    # matches how CNPS is actually charged per period). The gap shows up
+    # only for an employee whose vacations, summed over the year, cross the
+    # ceiling while no single month does -- so we build exactly that.
+    #
+    # vacation_pay is set directly: producing ~400k per vacation organically
+    # would need an unwieldy high-wage/high-day setup, and the report reads
+    # the column as-is.
+    employee = return_valid_employee
+    ceiling = SystemVariable.value(:cnps_ceiling)
+
+    [Period.new(2018, 8), Period.new(2018, 10)].each do |period|
+      generate_work_hours(employee, period)
+      Payslip.process(employee, period)
+    end
+
+    vac_aug = vacation_with_pay(employee, "2018-08-06", "2018-08-10", 2018, 8, 400_000)
+    vac_oct = vacation_with_pay(employee, "2018-10-08", "2018-10-12", 2018, 10, 400_000)
+
+    # The bug-triggering shape: each month under the ceiling, the year over.
+    assert(vac_aug.vacation_pay < ceiling && vac_oct.vacation_pay < ceiling,
+        "each month's vacation must stay under the ceiling")
+    assert(vac_aug.vacation_pay + vac_oct.vacation_pay > ceiling,
+        "the year's vacation total must cross the ceiling")
+
+    annual_rows = run_report(AnnualPayslipReport, "2018-1")
+        .select { |r| r["employee_id"].to_i == employee.id }
+    yearly_row = find_row(run_yearly_report("2018-1"), employee)
+
+    assert_equal(2, annual_rows.length, "one annual row per vacation month")
+    assert(yearly_row, "employee should appear in the yearly report")
+
+    # The yearly summary's department CNPS should equal the monthly report
+    # summed -- i.e. the ceiling applied per month, not to the year's total.
+    expected_dept_cnps = annual_rows.sum { |r| r["dept_cnps"].to_i }
+    assert_equal(expected_dept_cnps, yearly_row["dept_cnps"].to_i,
+        "yearly department CNPS should match the sum of the monthly report")
+
+    # Credit foncier has no ceiling, so it already agrees -- guard that the
+    # fix keeps it that way.
+    expected_dept_cf = annual_rows.sum { |r| r["dept_cf"].to_i }
+    assert_equal(expected_dept_cf, yearly_row["dept_cf"].to_i,
+        "department credit foncier should stay in agreement")
+  end
+
   private
 
   def run_yearly_report(period_str)
@@ -112,6 +161,15 @@ class EmployeeYearlyReportTest < ActiveSupport::TestCase
 
   def find_row(rows, employee)
     rows.find { |row| row["employee_id"].to_i == employee.id }
+  end
+
+  # A vacation whose pay/attribution columns are set directly, so the report
+  # sees a known (year, month, vacation_pay) without depending on payroll
+  # computation to produce a specific figure.
+  def vacation_with_pay(employee, start_date, end_date, year, month, pay)
+    vacation = Vacation.create!(employee: employee, start_date: start_date, end_date: end_date)
+    vacation.update_columns(vacation_pay: pay, period_year: year, period_month: month)
+    vacation
   end
 
 end

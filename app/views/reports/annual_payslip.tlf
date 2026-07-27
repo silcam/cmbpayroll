@@ -995,9 +995,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 580,
+            "x": 576,
             "y": 191.3,
-            "width": 30,
+            "width": 36,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1318,7 +1318,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 664,
+            "x": 665,
             "y": 191.3,
             "width": 30,
             "height": 8.5,
@@ -1444,9 +1444,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 780,
+            "x": 779.5,
             "y": 191.3,
-            "width": 30,
+            "width": 37.5,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1716,7 +1716,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -1732,9 +1732,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 380,
+            "x": 375.5,
             "y": 293.6,
-            "width": 32.7,
+            "width": 37.2,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1748,7 +1748,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -1764,9 +1764,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 420,
+            "x": 415,
             "y": 293.6,
-            "width": 30,
+            "width": 34.5,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1780,7 +1780,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -1796,9 +1796,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 460,
+            "x": 454.5,
             "y": 293.6,
-            "width": 30,
+            "width": 35.5,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1812,7 +1812,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -1828,9 +1828,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 500,
+            "x": 495,
             "y": 293.6,
-            "width": 30,
+            "width": 35,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1844,7 +1844,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -1860,9 +1860,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 540,
+            "x": 534.5,
             "y": 293.6,
-            "width": 30,
+            "width": 35.5,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1876,7 +1876,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -1892,9 +1892,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 580,
+            "x": 575,
             "y": 293.6,
-            "width": 30,
+            "width": 37,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1908,7 +1908,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -1927,7 +1927,7 @@
             "x": 613.5,
             "y": 293.6,
             "width": 44.5,
-            "height": 8.5,
+            "height": 9,
             "style": {
               "font-family": [
                 "Helvetica"
@@ -1940,7 +1940,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -1988,7 +1988,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 705,
+            "x": 706,
             "y": 293.6,
             "width": 30,
             "height": 8.5,
@@ -2052,9 +2052,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 780,
+            "x": 780.5,
             "y": 293.6,
-            "width": 30,
+            "width": 36.5,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -2068,7 +2068,7 @@
               "line-height-ratio": "",
               "letter-spacing": "",
               "font-style": [],
-              "overflow": "truncate",
+              "overflow": "fit",
               "word-wrap": "break-word"
             },
             "reference-id": "",
@@ -2197,7 +2197,7 @@
     "layout-guides": [
       {
         "type": "x",
-        "position": 420.7
+        "position": 477.5
       },
       {
         "type": "y",

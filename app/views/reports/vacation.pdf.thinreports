@@ -35,9 +35,9 @@ report.list("vacation") do |list|
       total_taxes: number_to_currency(x_total_tax, unit: '', locale: :cm),
       net_wage: number_to_currency(Payslip.cfa_round(x_net_pay), unit: '', locale: :cm),
       cash_pay: number_to_currency(Payslip.cfa_round(x_cash_pay), unit: '', locale: :cm),
-      dept_cnps: number_to_currency(Payslip.cfa_round(x_dept_cnps), unit: '', locale: :cm),
-      dept_credit_foncier: number_to_currency(Payslip.cfa_round(x_dept_cf), unit: '', locale: :cm),
-      total_charge: number_to_currency(Payslip.cfa_round(x_total_charge), unit: '', locale: :cm)
+      dept_cnps: number_to_currency(x_dept_cnps, unit: '', locale: :cm),
+      dept_credit_foncier: number_to_currency(x_dept_cf, unit: '', locale: :cm),
+      total_charge: number_to_currency(x_total_charge, unit: '', locale: :cm)
     )
 
     @gross_wage_total += x_gross_pay

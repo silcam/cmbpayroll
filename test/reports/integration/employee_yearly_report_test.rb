@@ -153,6 +153,36 @@ class EmployeeYearlyReportTest < ActiveSupport::TestCase
         "department credit foncier should stay in agreement")
   end
 
+  test "department credit foncier matches the per-month annual report, rounding per month not per year" do
+    # Same class of grain bug as department CNPS, minus the ceiling: credit
+    # foncier is ROUND(vacation_pay * rate), and rounding the year's total
+    # differs from summing per-month rounds. Choose pays that individually
+    # round down but whose sum rounds up, so the two grains differ by a franc.
+    employee = return_valid_employee
+
+    [Period.new(2018, 3), Period.new(2018, 5)].each do |period|
+      generate_work_hours(employee, period)
+      Payslip.process(employee, period)
+    end
+
+    # 100010 * 0.025 = 2500.25 -> 2500 each per month (sum 5000);
+    # 200020 * 0.025 = 5000.5  -> 5001 at year grain. Both months and the
+    # year stay under the CNPS ceiling, so only credit foncier is at play.
+    vacation_with_pay(employee, "2018-03-05", "2018-03-09", 2018, 3, 100_010)
+    vacation_with_pay(employee, "2018-05-07", "2018-05-11", 2018, 5, 100_010)
+
+    annual_rows = run_report(AnnualPayslipReport, "2018-1")
+        .select { |r| r["employee_id"].to_i == employee.id }
+    yearly_row = find_row(run_yearly_report("2018-1"), employee)
+
+    assert_equal(2, annual_rows.length, "one annual row per vacation month")
+    assert(yearly_row)
+
+    expected_dept_cf = annual_rows.sum { |r| r["dept_cf"].to_i }
+    assert_equal(expected_dept_cf, yearly_row["dept_cf"].to_i,
+        "yearly department credit foncier should match the sum of the monthly report")
+  end
+
   private
 
   def run_yearly_report(period_str)

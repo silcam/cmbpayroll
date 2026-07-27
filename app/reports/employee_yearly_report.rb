@@ -15,14 +15,17 @@ class EmployeeYearlyReport < CMBReport
   COALESCE(SUM(ps.communal),0) + COALESCE(SUM(v.communal),0) as comm_tax,
   COALESCE(SUM(ps.cac),0) + COALESCE(SUM(v.cac),0) as cac_tax,
   COALESCE(SUM(ps.net_pay),0) as net_sal,
-  -- Department CNPS on vacation pay is piecewise (the cnps_ceiling switches
-  -- the rate), so it must be computed per MONTH and summed -- not applied to
-  -- the whole year's vacation total, which would land in a different ceiling
-  -- band and disagree with AnnualPayslipReport (and the real per-period
-  -- charge). vac_cnps (joined below) does that per-month sum.
+  -- The vacation portions of department CNPS and credit foncier must be
+  -- computed per MONTH and summed, matching AnnualPayslipReport (and the
+  -- real per-period charge): CNPS because it is piecewise (the cnps_ceiling
+  -- switches the rate), credit foncier because per-month rounding differs
+  -- from rounding the year's total. Applying either to the whole year's
+  -- vacation sum disagrees with the annual report. vac_dept (joined below)
+  -- does the per-month sum for both.
   COALESCE(SUM(ps.department_cnps),0) +
-  COALESCE(MAX(vac_cnps.amount),0) as dept_cnps,
-  COALESCE(SUM(ps.department_credit_foncier),0) + COALESCE(ROUND(SUM(v.vacation_pay) * #{SystemVariable.value(:dept_credit_foncier)}),0) as dept_cf,
+  COALESCE(MAX(vac_dept.cnps_amount),0) as dept_cnps,
+  COALESCE(SUM(ps.department_credit_foncier),0) +
+  COALESCE(MAX(vac_dept.cf_amount),0) as dept_cf,
   COALESCE(SUM(ps.employee_fund),0) as emp_fund,
   e.niu as employee_niu
 FROM
@@ -31,10 +34,10 @@ FROM
     LEFT OUTER JOIN payslips ps ON ps.employee_id = e.id AND ps.period_year = :year
     LEFT OUTER JOIN vacations v ON v.employee_id = e.id AND v.period_year = :year AND
                   v.period_year = ps.period_year AND v.period_month = ps.period_month
-    -- Per-month vacation department CNPS, summed to the year. Mirrors
-    -- AnnualPayslipReport's grain: a vacation contributes only if its month
-    -- has a payslip (EXISTS), and the ceiling CASE is applied to each month's
-    -- vacation total before summing.
+    -- Per-month vacation department charges (CNPS and credit foncier),
+    -- summed to the year. Mirrors AnnualPayslipReport's grain: a vacation
+    -- contributes only if its month has a payslip (EXISTS), and each charge
+    -- is computed on the month's vacation total before summing.
     LEFT OUTER JOIN (
       SELECT vm.employee_id,
         SUM(
@@ -44,7 +47,8 @@ FROM
                 #{SystemVariable.value(:dept_cnps_max_base)})
             ELSE ROUND(vm.month_pay * #{SystemVariable.value(:dept_cnps)})
           END
-        ) as amount
+        ) as cnps_amount,
+        SUM(ROUND(vm.month_pay * #{SystemVariable.value(:dept_credit_foncier)})) as cf_amount
       FROM (
         SELECT vv.employee_id, vv.period_month, SUM(vv.vacation_pay) as month_pay
         FROM vacations vv
@@ -58,7 +62,7 @@ FROM
         GROUP BY vv.employee_id, vv.period_month
       ) vm
       GROUP BY vm.employee_id
-    ) vac_cnps ON vac_cnps.employee_id = e.id
+    ) vac_dept ON vac_dept.employee_id = e.id
 WHERE
   e.employment_status IN :employment_status AND
   (COALESCE(ps.taxable,0) + COALESCE(v.vacation_pay,0) > 0)

@@ -578,9 +578,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 655,
+            "x1": 660,
             "y1": 107,
-            "x2": 655,
+            "x2": 660,
             "y2": 143
           },
           {
@@ -593,9 +593,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 695,
+            "x1": 700,
             "y1": 107,
-            "x2": 695,
+            "x2": 700,
             "y2": 143
           },
           {
@@ -608,9 +608,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 735,
+            "x1": 740,
             "y1": 107,
-            "x2": 735,
+            "x2": 740,
             "y2": 143
           },
           {
@@ -671,7 +671,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 660,
+            "x": 664,
             "y": 114.2,
             "width": 31,
             "height": 12.5,
@@ -697,7 +697,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 700,
+            "x": 705,
             "y": 114.2,
             "width": 31,
             "height": 12.5,
@@ -723,7 +723,7 @@
             "type": "text",
             "display": true,
             "description": "",
-            "x": 736,
+            "x": 737,
             "y": 114.2,
             "width": 41,
             "height": 18.1,
@@ -1128,9 +1128,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 655,
+            "x1": 660,
             "y1": 185.8,
-            "x2": 655,
+            "x2": 660,
             "y2": 201.3
           },
           {
@@ -1143,9 +1143,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 735,
+            "x1": 740,
             "y1": 185.8,
-            "x2": 735,
+            "x2": 740,
             "y2": 201.3
           },
           {
@@ -1356,9 +1356,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 620,
+            "x": 617,
             "y": 191.3,
-            "width": 30,
+            "width": 39,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1388,7 +1388,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 660,
+            "x": 666,
             "y": 191.3,
             "width": 30,
             "height": 8.5,
@@ -1440,9 +1440,9 @@
               "border-width": 0.5,
               "border-style": "solid"
             },
-            "x1": 695,
+            "x1": 700,
             "y1": 185.8,
-            "x2": 695,
+            "x2": 700,
             "y2": 201.3
           },
           {
@@ -1450,7 +1450,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 700,
+            "x": 705,
             "y": 191.3,
             "width": 30,
             "height": 8.5,
@@ -1482,7 +1482,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 740,
+            "x": 742,
             "y": 191.3,
             "width": 30,
             "height": 8.5,
@@ -1828,9 +1828,9 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 620,
+            "x": 615,
             "y": 370.4,
-            "width": 30,
+            "width": 41,
             "height": 8.5,
             "style": {
               "font-family": [
@@ -1860,7 +1860,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 660,
+            "x": 665,
             "y": 370.4,
             "width": 30,
             "height": 8.5,
@@ -1892,7 +1892,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 700,
+            "x": 705,
             "y": 370.4,
             "width": 30,
             "height": 8.5,
@@ -1924,7 +1924,7 @@
             "type": "text-block",
             "display": true,
             "description": "",
-            "x": 740,
+            "x": 742,
             "y": 370.4,
             "width": 30,
             "height": 8.5,

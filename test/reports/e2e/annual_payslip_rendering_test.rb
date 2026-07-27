@@ -85,4 +85,35 @@ class AnnualPayslipRenderingTest < ActiveSupport::TestCase
         "the taxable total should be the sum of both months' taxable")
   end
 
+  test "a department CNPS total over 1,000,000 renders in full, not clipped to fit the column" do
+    # Regression guard for the production display bug: a 7-digit total (a
+    # dept CNPS annual total crossing 1,000,000) is silently clipped by the
+    # fixed-width, overflow:truncate total cell -- e.g. 1,000,333 shown as
+    # "1 000". Monthly figures fit the column; only the summed total spills.
+    #
+    # This checks the number isn't string-truncated. It does NOT verify
+    # visual layout: text extraction can't see a widened cell overlapping
+    # its neighbour, so the .tlf column widths still need an eyeball.
+    employee = return_valid_employee
+
+    # Two months whose department_cnps each fit the column but sum past a
+    # million. The total is deliberately NON-round (...333): report_digits
+    # strips separators, so a round total clipped to "1 000" could be
+    # reconstructed from the zero-valued neighbouring columns ("1 000" +
+    # "0 0 0" -> "1000000"). A non-round tail can't be, so the assertion
+    # only passes when the whole number actually renders.
+    [[Period.new(2018, 3), 500_111], [Period.new(2018, 5), 500_222]].each do |period, dept_cnps|
+      generate_work_hours(employee, period)
+      Payslip.process(employee, period).update_columns(department_cnps: dept_cnps)
+    end
+    expected_total = 500_111 + 500_222 # 1,000,333
+    assert(expected_total > 1_000_000, "sanity: total must cross the million that overflows the cell")
+
+    text = report_pdf_text(render_report_pdf(AnnualPayslipReport, "2018-1"))
+    _body, footer = report_body_and_footer(text)
+
+    assert_includes(report_digits(footer), expected_total.to_s,
+        "the full department CNPS total should render in the footer, not be clipped")
+  end
+
 end

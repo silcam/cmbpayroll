@@ -180,9 +180,6 @@ GEM
       builder
       minitest (>= 5.0, < 7)
       ruby-progressbar
-    minitest-spec-rails (7.4.1)
-      minitest (>= 5.0)
-      railties (>= 4.1)
     momentjs-rails (2.29.4.1)
       railties (>= 3.1)
     msgpack (1.8.0)
@@ -394,7 +391,6 @@ DEPENDENCIES
   listen (~> 3.9)
   minitest-rails (~> 6.1)
   minitest-reporters
-  minitest-spec-rails
   momentjs-rails (>= 2.9.0)
   net-ssh (>= 7.0.0)
   pdf-inspector
@@ -492,7 +488,6 @@ CHECKSUMS
   minitest (5.27.0) sha256=2d3b17f8a36fe7801c1adcffdbc38233b938eb0b4966e97a6739055a45fa77d5
   minitest-rails (6.1.1) sha256=d14aa412317c5c464ae072f3f80bd71219a626c7b7c65fcee78d02627e48a934
   minitest-reporters (1.8.0) sha256=8ce5280fb73ad3178ae525454df169b6f28c1b38b1d088ea91815d3a370ba384
-  minitest-spec-rails (7.4.1) sha256=cda2638ded7cd98ab5f2bbf0eafbba9fdc4b0fc58248ad38703b12403831254f
   momentjs-rails (2.29.4.1) sha256=c7f9bc583872b628f8723319f4ae12a646c858c1c3ddb352bc75d5a7aa0b9e01
   msgpack (1.8.0) sha256=e64ce0212000d016809f5048b48eb3a65ffb169db22238fb4b72472fecb2d732
   net-imap (0.6.4) sha256=9a5598c67a3022c284d98430ef1d4948e7dbdb62596f61081ea8ca933270a02b

@@ -1,6 +1,7 @@
 require 'test_helper'
+require "application_system_test_case"
 
-class RedirectTest < ActionDispatch::SystemTestCase
+class RedirectTest < ApplicationSystemTestCase
   def setup
     @luke = people :Luke
   end

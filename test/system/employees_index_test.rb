@@ -1,6 +1,7 @@
 require 'test_helper'
+require "application_system_test_case"
 
-class EmployeesIndexTest < ActionDispatch::SystemTestCase
+class EmployeesIndexTest < ApplicationSystemTestCase
 
   def setup
     @jarjar = users :JarJar

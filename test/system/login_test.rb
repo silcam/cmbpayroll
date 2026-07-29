@@ -1,6 +1,7 @@
 require 'test_helper'
+require "application_system_test_case"
 
-class LoginTest < ActionDispatch::IntegrationTest
+class LoginTest < ApplicationSystemTestCase
   def setup
     @luke = employees :Luke
   end

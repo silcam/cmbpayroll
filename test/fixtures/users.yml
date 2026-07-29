@@ -25,5 +25,5 @@ MaceWindu:
 Yoda:
   person: Yoda
   username: yoda
-  role: supervisor
+  role: user
   password_digest: <%= BCrypt::Password.create('yoda', cost: 5) %>

@@ -18,8 +18,8 @@ class Vacation < ApplicationRecord
 
   default_scope { order(:start_date) }
 
-  def save(*args)
-    if super(*args)
+  def save(**kwargs)
+    if super(**kwargs)
       remove_overlapped_work_hours
       true
     else
@@ -27,8 +27,8 @@ class Vacation < ApplicationRecord
     end
   end
 
-  def save!(*args)
-    if super(*args)
+  def save!(**kwargs)
+    if super(**kwargs)
       remove_overlapped_work_hours
       true
     else

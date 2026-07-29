@@ -9,7 +9,7 @@ SELECT
   e.cnps as cnps_no,
   e.dipe as dipe,
   e.title as job_description,
-  CONCAT(e.category, '-', e.echelon) as cat_ech,
+  CONCAT(ps.category, '-', ps.echelon) as cat_ech,
   e.marital_status as m_c,
   c.numchildren as children,
   p.gender

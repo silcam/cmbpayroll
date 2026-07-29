@@ -1,7 +1,5 @@
 class EmployeeReport < CMBReport
 
-  # FIXME: this report is always current, or a reflection of the status in this period?
-
   def sql
 
     select =<<-SELECTSTATEMENT
@@ -19,7 +17,7 @@ SELECT
       ELSE w.basewage
       END AS base_wage,
   e.employment_status as per,
-  CONCAT(e.category, '-', e.echelon) as cat_ech,
+  CONCAT(ps.category, '-', ps.echelon) as cat_ech,
   to_char(r.last_raise, 'DD/MM/YYYY') as last_raise,
   e.marital_status as m_c,
   c.numchildren as children,
@@ -32,9 +30,9 @@ FROM
     INNER JOIN payslips ps ON
       ps.employee_id = e.id
     INNER JOIN category_lookup cl ON
-      e.category = cl.emp_val
+      ps.category = cl.emp_val
     INNER JOIN echelon_lookup el ON
-      e.echelon = el.emp_val
+      ps.echelon = el.emp_val
     LEFT OUTER JOIN wages w ON
       cl.wages_val = w.category AND
       el.wages_val = w.echelonalt

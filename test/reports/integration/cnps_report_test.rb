@@ -1,9 +1,9 @@
 require "test_helper"
 
-class EmployeeByDepartmentReportTest < ActiveSupport::TestCase
+class CnpsReportTest < ActiveSupport::TestCase
 
   test "a period with no processed payslips returns no rows without erroring" do
-    rows = run_employee_by_department_report("2018-1")
+    rows = run_cnps_report("2018-1")
     assert_equal([], rows, "no payslips were processed in this period")
   end
 
@@ -16,82 +16,51 @@ class EmployeeByDepartmentReportTest < ActiveSupport::TestCase
     generate_work_hours(employee, july)
     Payslip.process(employee, july)
 
-    row = find_employee_row(run_employee_by_department_report("2018-7"), employee)
+    row = find_employee_row(run_cnps_report("2018-7"), employee)
 
     assert(row, "the employee's july payslip should show up in july's report")
-    assert_equal("#{employee.last_name}, #{employee.first_name}", row["employee_name"])
-    assert_equal(employee.department.name, row["department"])
+    assert_equal("#{employee.last_name}, #{employee.first_name}", row["name"])
+    assert_nil(employee.cnps)
+    assert_nil(row["cnps_no"])
+    assert_nil(employee.dipe)
+    assert_nil(row["dipe"])
     assert_equal(employee.title, row["job_description"])
-    assert_equal(employee.contract_start.strftime("%d/%m/%Y"), row["beginning_contract"])
-    assert_nil(row["ending_contract"])
-    assert_equal(employee.wage, row["base_wage"].to_i)
-
-    # per/m_c/gender all happen to compare against enum value 0 here
-    # (full_time/single/male) -- refute_nil first so a NULL column can't
-    # silently pass as a false "0".
-    refute_nil(row["per"])
-    assert_equal(Employee.employment_statuses[employee.employment_status], row["per"].to_i)
     assert_equal("#{Employee.categories[employee.category]}-#{Employee.echelons[employee.echelon]}", row["cat_ech"])
     refute_nil(row["m_c"])
     assert_equal(Employee.marital_statuses[employee.marital_status], row["m_c"].to_i)
     refute_nil(row["gender"])
     assert_equal(Person.genders[employee.gender], row["gender"].to_i)
     assert_nil(row["children"], "no children on record")
-    assert_nil(row["last_raise"], "no raises on record")
   end
 
-  test "children count reflects the number of children on record" do
-    employee = return_valid_employee
-    july = Period.new(2018, 7)
-    generate_work_hours(employee, july)
-    Payslip.process(employee, july)
-
-    Child.new(parent: employee.person, first_name: "Kid", last_name: "One",
-        birth_date: Date.new(2015, 1, 1)).save!
-    Child.new(parent: employee.person, first_name: "Kid", last_name: "Two",
-        birth_date: Date.new(2017, 1, 1)).save!
-
-    row = find_employee_row(run_employee_by_department_report("2018-7"), employee)
-    assert_equal(2, row["children"].to_i)
-  end
-
-  test "category/echelon and base_wage reflect july's own processed grade, not a later grade change (FIXME resolved)" do
+  test "category/echelon reflect july's own processed grade, not a later grade change" do
     employee = return_valid_employee
     july = Period.new(2018, 7)
     generate_work_hours(employee, july)
     Payslip.process(employee, july)
 
     original_cat_ech = "#{Employee.categories[employee.category]}-#{Employee.echelons[employee.echelon]}"
-    original_wage = employee.wage
 
     # Grant a raise the same way RaisesController#create does: a Raise
     # record plus an immediate, synchronous mutation of the employee's own
     # grade -- there's no effective-dated ledger (see
     # PLAN_raise_effective_date.md), so this takes hold right away.
-    raise_date = Date.new(2018, 8, 1)
-    grant_raise(employee, date: raise_date, echelon: "a")
+    grant_raise(employee, date: Date.new(2018, 8, 1), echelon: "a")
 
-    row = find_employee_row(run_employee_by_department_report("2018-7"), employee)
+    row = find_employee_row(run_cnps_report("2018-7"), employee)
 
     assert_equal(original_cat_ech, row["cat_ech"],
         "july's report should keep showing july's own grade, not a raise granted afterward")
-    assert_equal(original_wage, row["base_wage"].to_i,
-        "base_wage is derived from category/echelon, so it must stay pinned to july too")
-
-    # last_raise is a known, separate limitation -- it's simply the most
-    # recent raise on record, not scoped to the report's period. Out of
-    # scope for this fix (see PLAN_raise_effective_date.md Phase 0).
-    assert_equal(raise_date.strftime("%d/%m/%Y"), row["last_raise"])
   end
 
   private
 
-  def run_employee_by_department_report(period_str)
-    run_report(EmployeeByDepartmentReport, period_str)
+  def run_cnps_report(period_str)
+    run_report(CnpsReport, period_str)
   end
 
   def find_employee_row(rows, employee)
-    rows.find { |row| row["emp_number"].to_i == employee.id }
+    rows.find { |row| row["id"].to_i == employee.id }
   end
 
   # Mirrors RaisesController#create: a Raise record capturing the new

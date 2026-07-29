@@ -310,9 +310,9 @@ module ControllerTestHelper
     if ("get" == method.downcase)
       get url
     elsif ("post" == method.downcase)
-      post url, params
+      post url, params: params
     elsif ("patch" == method.downcase)
-      patch url, params
+      patch url, params: params
     elsif ("delete" == method.downcase)
       delete url
     end

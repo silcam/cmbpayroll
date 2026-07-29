@@ -41,6 +41,8 @@ Generally the reports output a PDF. Finance's desire was to have the reports be 
 
 You should use the [Thinreports Editor](http://www.thinreports.org/features/editor/) to edit these reports. The reports can be edited in a text editor as well, but it's helpful to use the GUI editor. There are versions for all platforms.
 
+See [`docs/reports/employee-grade-reports.md`](docs/reports/employee-grade-reports.md) for how the CNPS, Employee, and Employee by Department reports resolve an employee's grade to a specific period.
+
 ## Branching
 
 Features should be built on a feature branch from the develop branch. When complete and tested, merge into the develop branch.

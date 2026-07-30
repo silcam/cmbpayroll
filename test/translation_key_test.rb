@@ -2,8 +2,8 @@ require 'test_helper'
 
 class TranslationKeyTest < ActiveSupport::TestCase
   test 'All en keys are in fr' do
-    en = YAML.load_file('config/locales/en.yml')['en']
-    fr = YAML.load_file('config/locales/fr.yml')['fr']
+    en = YAML.load_file('config/locales/en.yml', aliases: true)['en']
+    fr = YAML.load_file('config/locales/fr.yml', aliases: true)['fr']
 
     check_keys(en, fr, '')
   end

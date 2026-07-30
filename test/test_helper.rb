@@ -5,13 +5,24 @@ require 'minitest/rails'
 
 Minitest::Reporters.use!
 
-`rails db:seed`
+# Seeds the primary test database (wages, taxes, etc., loaded from raw SQL).
+# Needed here for runs that never fork workers (e.g. PARALLEL_WORKERS=1, or
+# small/single-file runs below Rails' parallelization threshold), since
+# parallelize_setup below never fires on that path.
+load Rails.root.join('db', 'seeds.rb')
 
 class ActiveSupport::TestCase
   extend Minitest::Spec::DSL
 
   # Parallelize tests
   parallelize(workers: :number_of_processors)
+
+  # Each parallel worker gets its own schema-only test database, so the same
+  # seed data above has to be loaded into every worker's database
+  # individually too, not just once up front on the primary database.
+  parallelize_setup do |worker|
+    load Rails.root.join('db', 'seeds.rb')
+  end
 
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all

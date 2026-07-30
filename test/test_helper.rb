@@ -257,31 +257,31 @@ module ControllerTestHelper
     assert_equal(supervisor.person, employee.supervisor.person, "verify relationship")
   end
 
-  def assert_user_permission(url, method, params=nil)
-    assert_permission("User", url, method, params)
+  def assert_user_permission(url, method, params: nil)
+    assert_permission("User", url, method, params: params)
   end
 
-  def assert_supervisor_permission(url, method, params=nil)
-    assert_permission("Supervisor", url, method, params)
+  def assert_supervisor_permission(url, method, params: nil)
+    assert_permission("Supervisor", url, method, params: params)
   end
 
-  def assert_admin_permission(url, method, params=nil)
-    assert_permission("Admin", url, method, params)
+  def assert_admin_permission(url, method, params: nil)
+    assert_permission("Admin", url, method, params: params)
   end
 
-  def refute_user_permission(url, method, params=nil)
-    refute_permission("User", url, method, params)
+  def refute_user_permission(url, method, params: nil)
+    refute_permission("User", url, method, params: params)
   end
 
-  def refute_supervisor_permission(url, method, params=nil)
-    refute_permission("Supervisor", url, method, params)
+  def refute_supervisor_permission(url, method, params: nil)
+    refute_permission("Supervisor", url, method, params: params)
   end
 
-  def refute_admin_permission(url, method, params=nil)
-    refute_permission("Admin", url, method, params)
+  def refute_admin_permission(url, method, params: nil)
+    refute_permission("Admin", url, method, params: params)
   end
 
-  def assert_permission(role, url, method, params=nil)
+  def assert_permission(role, url, method, params: nil)
     make_call(url, method, params)
 
     begin
@@ -291,7 +291,7 @@ module ControllerTestHelper
     end
   end
 
-  def refute_permission(role, url, method, params=nil)
+  def refute_permission(role, url, method, params: nil)
     make_call(url, method, params)
 
     begin

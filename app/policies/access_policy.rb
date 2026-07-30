@@ -207,7 +207,7 @@ class AccessPolicy
 
       can :read, Child do |child, user|
         # can read if looking at own child
-        child.parent == user.person
+        child.is_a?(Child) && child.parent == user.person
       end
 
       can :read, WorkHour do |work_hour, user|

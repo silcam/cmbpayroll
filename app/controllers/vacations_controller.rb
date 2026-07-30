@@ -80,7 +80,7 @@ class VacationsController < ApplicationController
   def update
     authorize! :update, Vacation
 
-    @vacation.update_attributes vacation_params
+    @vacation.update vacation_params
     unless @vacation.valid?
       render :edit
       return

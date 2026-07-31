@@ -7,17 +7,19 @@
 # Read the Guide for Upgrading Ruby on Rails for more info on each option.
 
 # Support for inversing belongs_to -> has_many Active Record associations.
-# Rails.application.config.active_record.has_many_inversing = true
+Rails.application.config.active_record.has_many_inversing = true
 
-# Track Active Storage variants in the database.
-# Rails.application.config.active_storage.track_variants = true
+# Track Active Storage variants in the database. This app doesn't use Active
+# Storage attachments today, so this is currently dormant either way.
+Rails.application.config.active_storage.track_variants = true
 
-# Apply random variation to the delay when retrying failed jobs.
-# Rails.application.config.active_job.retry_jitter = 0.15
+# Apply random variation to the delay when retrying failed jobs. No
+# `retry_on`-using jobs exist in this app yet, dormant either way.
+Rails.application.config.active_job.retry_jitter = 0.15
 
 # Stop executing `after_enqueue`/`after_perform` callbacks if
 # `before_enqueue`/`before_perform` respectively halts with `throw :abort`.
-# Rails.application.config.active_job.skip_after_callbacks_if_terminated = true
+Rails.application.config.active_job.skip_after_callbacks_if_terminated = true
 
 # Specify cookies SameSite protection level: either :none, :lax, or :strict.
 #
@@ -32,36 +34,52 @@
 # Rails.application.config.action_controller.urlsafe_csrf_tokens = true
 
 # Specify whether `ActiveSupport::TimeZone.utc_to_local` returns a time with an
-# UTC offset or a UTC time.
-# ActiveSupport.utc_to_local_returns_utc_offset_times = true
+# UTC offset or a UTC time. Fixes a longstanding DST-transition bug; verified
+# via the full test suite (this app is heavily date/period-arithmetic driven).
+ActiveSupport.utc_to_local_returns_utc_offset_times = true
 
 # Change the default HTTP status code to `308` when redirecting non-GET/HEAD
-# requests to HTTPS in `ActionDispatch::SSL` middleware.
-# Rails.application.config.action_dispatch.ssl_default_redirect_status = 308
+# requests to HTTPS in `ActionDispatch::SSL` middleware. 308 (unlike 301)
+# preserves the original request method/body, which is strictly safer.
+Rails.application.config.action_dispatch.ssl_default_redirect_status = 308
 
 # Use new connection handling API. For most applications this won't have any
 # effect. For applications using multiple databases, this new API provides
-# support for granular connection swapping.
-# Rails.application.config.active_record.legacy_connection_handling = false
+# support for granular connection swapping. This app has a single database
+# per environment (see config/database.yml), so this is a no-op here.
+Rails.application.config.active_record.legacy_connection_handling = false
 
 # Make `form_with` generate non-remote forms by default.
-# Rails.application.config.action_view.form_with_generates_remote_forms = false
+#
+# One call site relied on the old remote-by-default behavior without saying
+# so explicitly: app/views/admin/estimate_pay.html.erb's #estimate-form is
+# wired to rails-ujs's `ajax:success`/`ajax:error` events in
+# app/assets/javascripts/admin.coffee, which only fire for remote
+# (data-remote="true") forms -- flipping this default would have silently
+# turned that AJAX estimate widget into a full-page POST-to-JSON navigation,
+# with no test coverage to catch it (grepped test/ -- no test references
+# "estimate" at all). Fixed by adding `remote: true` explicitly to that one
+# form_with call so it keeps working regardless of this global default.
+Rails.application.config.action_view.form_with_generates_remote_forms = false
 
-# Set the default queue name for the analysis job to the queue adapter default.
-# Rails.application.config.active_storage.queues.analysis = nil
+# Set the default queue name for the analysis job to the queue adapter
+# default. This app doesn't use Active Storage attachments today.
+Rails.application.config.active_storage.queues.analysis = nil
 
 # Set the default queue name for the purge job to the queue adapter default.
-# Rails.application.config.active_storage.queues.purge = nil
+Rails.application.config.active_storage.queues.purge = nil
 
-# Set the default queue name for the incineration job to the queue adapter default.
-# Rails.application.config.action_mailbox.queues.incineration = nil
+# Set the default queue name for the incineration job to the queue adapter
+# default. This app doesn't use Action Mailbox.
+Rails.application.config.action_mailbox.queues.incineration = nil
 
 # Set the default queue name for the routing job to the queue adapter default.
-# Rails.application.config.action_mailbox.queues.routing = nil
+Rails.application.config.action_mailbox.queues.routing = nil
 
-# Set the default queue name for the mail deliver job to the queue adapter default.
-# Rails.application.config.action_mailer.deliver_later_queue_name = nil
+# Set the default queue name for the mail deliver job to the queue adapter
+# default. No `deliver_later` call sites exist in this app today.
+Rails.application.config.action_mailer.deliver_later_queue_name = nil
 
 # Generate a `Link` header that gives a hint to modern browsers about
 # preloading assets when using `javascript_include_tag` and `stylesheet_link_tag`.
-# Rails.application.config.action_view.preload_links_header = true
+Rails.application.config.action_view.preload_links_header = true

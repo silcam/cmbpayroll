@@ -11,8 +11,14 @@ module Cmbpayroll
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
 
+    # Adopted deliberately once `zeitwerk:check` passed clean (see upgrade
+    # notes) -- classic autoloading is removed entirely in Rails 7, the
+    # eventual target, so there's no reason to defer this.
+    config.autoloader = :zeitwerk
+
     # Load modules from lib
     config.autoload_paths << Rails.root.join('lib')
+    config.eager_load_paths << Rails.root.join('lib')
 
     # Configuration for the application, engines, and railties goes here.
     #

@@ -6,7 +6,7 @@
 
 <p><%= t(:Estimate_step_1) %></p>
 
-<%= form_with url: "#{estimate_pay_post_path()}.json", id: 'estimate-form' do |f| %>
+<%= form_with url: "#{estimate_pay_post_path()}.json", id: 'estimate-form', remote: true do |f| %>
   <div class="form-group">
     <%= label_tag :estimate, t(:Estimate) %>
     <%= text_field_tag :estimate %>

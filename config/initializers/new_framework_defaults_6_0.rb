@@ -20,9 +20,10 @@ Rails.application.config.action_view.default_enforce_utf8 = false
 # Embed purpose and expiry metadata inside signed and encrypted cookies for
 # increased security.
 #
-# This option is not backwards compatible with earlier Rails versions.
-# It's best enabled when your entire app is migrated and stable on 6.0.
-# Rails.application.config.action_dispatch.use_cookies_with_metadata = true
+# Not backwards compatible with earlier Rails versions in general, but this
+# app has no production traffic yet on this branch (still mid-upgrade, not
+# deployed), so there are no live cookies this needs to stay compatible with.
+Rails.application.config.action_dispatch.use_cookies_with_metadata = true
 
 # Use the newer, more full-featured ActionMailer::MailDeliveryJob for
 # `deliver_later` instead of ActionMailer::DeliveryJob. This app has no

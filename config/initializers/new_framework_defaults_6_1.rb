@@ -23,15 +23,16 @@ Rails.application.config.active_job.skip_after_callbacks_if_terminated = true
 
 # Specify cookies SameSite protection level: either :none, :lax, or :strict.
 #
-# This change is not backwards compatible with earlier Rails versions.
-# It's best enabled when your entire app is migrated and stable on 6.1.
-# Rails.application.config.action_dispatch.cookies_same_site_protection = :lax
+# Not backwards compatible with earlier Rails versions in general, but this
+# app has no production traffic yet on this branch (still mid-upgrade, not
+# deployed), so there are no live sessions this needs to stay compatible with.
+Rails.application.config.action_dispatch.cookies_same_site_protection = :lax
 
 # Generate CSRF tokens that are encoded in URL-safe Base64.
 #
-# This change is not backwards compatible with earlier Rails versions.
-# It's best enabled when your entire app is migrated and stable on 6.1.
-# Rails.application.config.action_controller.urlsafe_csrf_tokens = true
+# Same no-live-traffic reasoning as above -- any in-flight forms/CSRF tokens
+# at deploy time would be from this same non-deployed branch, not real users.
+Rails.application.config.action_controller.urlsafe_csrf_tokens = true
 
 # Specify whether `ActiveSupport::TimeZone.utc_to_local` returns a time with an
 # UTC offset or a UTC time. Fixes a longstanding DST-transition bug; verified

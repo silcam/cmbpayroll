@@ -1,7 +1,7 @@
 class ReportsController < ApplicationController
   before_action :set_params, only: [:index, :show]
 
-  self.responder = Dossier::XXCustomResponder
+  self.responder = Dossier::XxCustomResponder
 
   ActionController.add_renderer :txt do |txt, options|
     self.headers["Content-Type"] = "text/plain"

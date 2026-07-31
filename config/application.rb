@@ -8,12 +8,17 @@ Bundler.require(*Rails.groups)
 
 module Cmbpayroll
   class Application < Rails::Application
-    # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.1
+    # Initialize configuration defaults. Walked forward deliberately from the
+    # originally generated 5.1, one setting at a time, via the
+    # new_framework_defaults_*.rb initializers (see upgrade notes) -- now
+    # that every 5.2/6.0/6.1 setting has been individually reviewed and
+    # enabled, load_defaults 6.1 here is redundant with them, not a new
+    # behavior change.
+    config.load_defaults 6.1
 
-    # Adopted deliberately once `zeitwerk:check` passed clean (see upgrade
-    # notes) -- classic autoloading is removed entirely in Rails 7, the
-    # eventual target, so there's no reason to defer this.
+    # load_defaults 6.1 above already implies zeitwerk; kept explicit for
+    # visibility since adopting it was a deliberate decision (see upgrade
+    # notes), made once `zeitwerk:check` passed clean.
     config.autoloader = :zeitwerk
 
     # Load modules from lib

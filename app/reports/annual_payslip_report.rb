@@ -1,4 +1,4 @@
-class AnnualPayslipReport < CMBReport
+class AnnualPayslipReport < CmbReport
 
   def sql
     select =<<-SELECTSTATEMENT

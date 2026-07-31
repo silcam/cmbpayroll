@@ -1,4 +1,4 @@
-class DipesGovernmentReport < CMBReport
+class DipesGovernmentReport < CmbReport
 
   def sql
 

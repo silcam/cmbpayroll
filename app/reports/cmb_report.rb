@@ -1,4 +1,4 @@
-class CMBReport < Dossier::Report
+class CmbReport < Dossier::Report
 
   def report_description
     nil

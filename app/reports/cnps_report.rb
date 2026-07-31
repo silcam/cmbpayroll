@@ -1,4 +1,4 @@
-class CnpsReport < CMBReport
+class CnpsReport < CmbReport
 
   def sql
 

@@ -1,4 +1,4 @@
-class TransactionReport < CMBReport
+class TransactionReport < CmbReport
 
   SELECTSTMT = <<-SELECTSTATEMENT
 SELECT

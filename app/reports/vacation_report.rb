@@ -1,4 +1,4 @@
-class VacationReport < CMBReport
+class VacationReport < CmbReport
 
   def sql
     select =<<-SELECTSTATEMENT

@@ -1,4 +1,4 @@
-class DipesInternalReport < CMBReport
+class DipesInternalReport < CmbReport
 
   def sql
     select =<<-SELECTSTATEMENT

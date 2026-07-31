@@ -1,4 +1,4 @@
-class SalaryChangesReport < CMBReport
+class SalaryChangesReport < CmbReport
 
   def report_description
     I18n.t(:Salary_changes_report_description, scope: "reports.descriptions")

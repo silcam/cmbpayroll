@@ -1,4 +1,4 @@
-class PostReport < CMBReport
+class PostReport < CmbReport
 
   def sql
     select =<<-SELECTSTATEMENT

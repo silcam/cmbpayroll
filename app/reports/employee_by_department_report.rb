@@ -1,4 +1,4 @@
-class EmployeeByDepartmentReport < CMBReport
+class EmployeeByDepartmentReport < CmbReport
 
   def sql
 

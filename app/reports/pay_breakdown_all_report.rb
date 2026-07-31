@@ -1,4 +1,4 @@
-class PayBreakdownAllReport < CMBReport
+class PayBreakdownAllReport < CmbReport
 
   def sql
     select =<<-SELECTSTATEMENT

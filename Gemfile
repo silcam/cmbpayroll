@@ -60,7 +60,7 @@ gem 'thinreports', '~> 0.12.0'
 gem 'thinreports-rails', '~> 0.5.0'
 # This is old so we add responders >= 3.0 to hopefully work
 # ??????
-gem 'dossier', github: 'cetuslabs/dossier', branch: 'master'
+gem 'dossier', github: 'cetuslabs/dossier', ref: '3dac7cca847d59eeea7599616ef3ba2ab36cb963'
 gem 'responders', '>= 3.0'
 gem 'fixy', '~> 0.0.8'
 

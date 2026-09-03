@@ -160,3 +160,9 @@ table.workhour-calendar {
 table.payslip tr td:nth-child(2) {
   text-align: right
 }
+
+// The "?" icons rendered by the tool_tip helper explain a field rather
+// than going anywhere, so they get the help cursor instead of the pointer.
+a.tool-tip {
+  cursor: help;
+}

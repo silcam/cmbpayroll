@@ -1,5 +1,17 @@
 module ApplicationHelper
 
+  # A "?" icon explaining a nearby field. The text is looked up in the
+  # tool-tips scope of the locale files. The tool-tip appears on hover and
+  # on keyboard focus (tool_tips.coffee dresses it up with bootstrap; the
+  # title attribute alone is enough for hovering if that never runs).
+  def tool_tip(key)
+    content_tag(:a, tabindex: "0", class: "tool-tip",
+        title: t(key, scope: "tool-tips"), data: { toggle: "tooltip" }) do
+      content_tag(:span, "", class: "glyphicon glyphicon-question-sign",
+          "aria-hidden": "true")
+    end
+  end
+
   def is_weekday?(date)
     (1 .. 5) === date.wday  # TODO Hardcoded workweek as from Mon to Fri
   end

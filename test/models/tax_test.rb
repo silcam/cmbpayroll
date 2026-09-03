@@ -141,7 +141,8 @@ class TaxTest < ActiveSupport::TestCase
     employee = return_valid_employee()
     employee.gender = "male"
     employee.spouse_employed = false
-    employee.contract_start = Date.new(2020, 9, 2)
+    # No prior employer, so the exemption counts from their first day here.
+    employee.first_day = employee.contract_start = Date.new(2020, 9, 2)
     employee.birth_date = Date.new(1990, 2, 3)
 
     # Change the concept of now
@@ -166,7 +167,8 @@ class TaxTest < ActiveSupport::TestCase
     employee = return_valid_employee()
     employee.gender = "male"
     employee.spouse_employed = false
-    employee.contract_start = Date.new(2020, 9, 2)
+    # No prior employer, so the exemption counts from their first day here.
+    employee.first_day = employee.contract_start = Date.new(2020, 9, 2)
     employee.birth_date = Date.new(1990, 2, 3)
     period = Period.new(2023,3)
     # this is within the first 3 years.

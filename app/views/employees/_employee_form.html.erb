@@ -43,11 +43,18 @@
     </div>
 
     <div class="form-group">
-      <%= f.label :first_day %><br />
+      <%= f.label :first_work_day, t(:First_work_day) %>
+      <%= tool_tip('EMP_First_work_day') %><br />
+      <%= date_select( :employee, :first_work_day, prompt: true, start_year: 1970 ) %>
+    </div>
+    <div class="form-group">
+      <%= f.label :first_day %>
+      <%= tool_tip('EMP_First_day') %><br />
       <%= date_select( :employee, :first_day, prompt: true, start_year: 1970 ) %>
     </div>
     <div class="form-group">
-      <%= f.label :contract_start %><br />
+      <%= f.label :contract_start %>
+      <%= tool_tip('EMP_Contract_start') %><br />
       <%= date_select( :employee, :contract_start, prompt: true, start_year: 1970 ) %>
     </div>
     <div class="form-group">

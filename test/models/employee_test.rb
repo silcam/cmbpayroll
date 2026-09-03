@@ -589,11 +589,14 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(0.6, employee.department_severance_rate(period), "15+ years, 60%")
   end
 
+  # No first_work_day on file, which is the common case: the employee
+  # had no prior employer, so the exemption counts from their first
+  # day with us.
   test "first 3 years for employees under 35" do
     employee1 = return_valid_employee()
 
     employee1.birth_date = Date.new(1992,1,1)
-    employee1.contract_start = Date.new(2019,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2019,1,16)
 
     period = Period.new(2020,1)
     assert_equal(1, employee1.years_of_service(period))
@@ -601,80 +604,191 @@ class EmployeeTest < ActiveSupport::TestCase
     assert(employee1.first_3_under_35(period), "1 years of service, 28 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2015,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2015,1,16)
     assert_equal(5, employee1.years_of_service(period))
     assert_equal(28, employee1.age(period))
     refute(employee1.first_3_under_35(period), "5 years of service, 28 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2019,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2019,1,16)
     employee1.birth_date = Date.new(1980,1,1)
     assert_equal(1, employee1.years_of_service(period))
     assert_equal(40, employee1.age(period))
     refute(employee1.first_3_under_35(period), "1 years of service, 40 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2015,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2015,1,16)
     employee1.birth_date = Date.new(1985,1,1)
     assert_equal(5, employee1.years_of_service(period))
     assert_equal(35, employee1.age(period))
     refute(employee1.first_3_under_35(period), "5 years of service, 35 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2017,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2017,1,16)
     employee1.birth_date = Date.new(1995,1,1)
     assert_equal(3, employee1.years_of_service(period))
     assert_equal(25, employee1.age(period))
     refute(employee1.first_3_under_35(period), "3 years of service, 25 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2016,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2016,1,16)
     employee1.birth_date = Date.new(1995,1,1)
     assert_equal(4, employee1.years_of_service(period))
     assert_equal(25, employee1.age(period))
     refute(employee1.first_3_under_35(period), "3 years of service, 25 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2017,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2017,1,16)
     employee1.birth_date = Date.new(1986,1,1)
     assert_equal(3, employee1.years_of_service(period))
     assert_equal(34, employee1.age(period))
     refute(employee1.first_3_under_35(period), "3 years of service, 34 yrs")
 
     period = Period.new(2021,5)
-    employee1.contract_start = Date.new(2018,5,6)
+    employee1.first_day = employee1.contract_start = Date.new(2018,5,6)
     employee1.birth_date = Date.new(2000,5,3)
     assert_equal(3, employee1.years_of_service(period))
     assert_equal(21, employee1.age(period))
     refute(employee1.first_3_under_35(period), "3 years of service, 21 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2017,7,16)
+    employee1.first_day = employee1.contract_start = Date.new(2017,7,16)
     employee1.birth_date = Date.new(1986,1,1)
     assert_equal(2, employee1.years_of_service(period))
     assert_equal(34, employee1.age(period))
     assert(employee1.first_3_under_35(period), "2 years, 6 months of service, 34 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2016,12,16)
+    employee1.first_day = employee1.contract_start = Date.new(2016,12,16)
     employee1.birth_date = Date.new(1995,1,1)
     assert_equal(3, employee1.years_of_service(period))
     assert_equal(25, employee1.age(period))
     refute(employee1.first_3_under_35(period), "3 years and 1 month, 25 years is not true")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2016,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2016,1,16)
     employee1.birth_date = Date.new(1986,1,1)
     assert_equal(4, employee1.years_of_service(period))
     assert_equal(34, employee1.age(period))
     refute(employee1.first_3_under_35(period), "4 years of service, 34 yrs")
 
     period = Period.new(2020,1)
-    employee1.contract_start = Date.new(2017,1,16)
+    employee1.first_day = employee1.contract_start = Date.new(2017,1,16)
     employee1.birth_date = Date.new(1985,1,1)
     assert_equal(3, employee1.years_of_service(period))
     assert_equal(35, employee1.age(period))
     refute(employee1.first_3_under_35(period), "3 years of service, 35 yrs")
+  end
+
+  test "first 3 years counts from first_work_day when there is prior employment" do
+    employee1 = return_valid_employee()
+
+    period = Period.new(2020,1)
+    employee1.birth_date = Date.new(1992,1,1)
+    assert_equal(28, employee1.age(period))
+
+    # Joined us recently, but had been working elsewhere for years, so
+    # the first 3 years are already behind them.
+    employee1.first_work_day = Date.new(2015,1,16)
+    employee1.first_day = Date.new(2019,1,16)
+    employee1.contract_start = Date.new(2019,1,16)
+    assert_equal(5, employee1.years_since_first_work_day(period))
+    assert_equal(1, employee1.years_of_service(period))
+    refute(employee1.first_3_under_35(period),
+        "5 years working, 1 year with us, 28 yrs")
+
+    # Same employee once the prior employment is only 2 years back.
+    employee1.first_work_day = Date.new(2017,7,16)
+    assert_equal(2, employee1.years_since_first_work_day(period))
+    assert(employee1.first_3_under_35(period),
+        "2 years 6 months working, 1 year with us, 28 yrs")
+  end
+
+  test "first 3 years ignores a longer contract, and seniority ignores first_work_day" do
+    employee1 = return_valid_employee()
+
+    period = Period.new(2020,1)
+    employee1.birth_date = Date.new(1992,1,1)
+
+    # A long contract cannot pull someone out of their first 3 years of
+    # work, and prior employment cannot inflate their seniority.
+    employee1.first_work_day = Date.new(2019,1,16)
+    employee1.first_day = Date.new(2019,1,16)
+    employee1.contract_start = Date.new(2019,1,16)
+    assert_equal(1, employee1.years_since_first_work_day(period))
+    assert_equal(1, employee1.years_of_service(period))
+    assert(employee1.first_3_under_35(period))
+
+    employee1.first_work_day = Date.new(2010,1,16)
+    assert_equal(1, employee1.years_of_service(period),
+        "seniority still measured from the contract")
+    refute(employee1.first_3_under_35(period))
+  end
+
+  test "first 3 years counts from the earliest date on file" do
+    employee1 = return_valid_employee()
+
+    period = Period.new(2020,1)
+    employee1.birth_date = Date.new(1992,1,1)
+
+    # There are rows on file whose first_day falls after their
+    # contract_start. Taking the earliest date keeps that from handing
+    # out an exemption the employee has not earned.
+    employee1.first_work_day = nil
+    employee1.first_day = Date.new(2019,8,15)
+    employee1.contract_start = Date.new(2016,8,15)
+    assert_equal(3, employee1.years_since_first_work_day(period),
+        "counts from 2016, not 2019")
+    refute(employee1.first_3_under_35(period))
+
+    # The other way round, which is the shape that actually exists in
+    # the data: someone paid here for years before the current contract
+    # was signed. contract_start is a renewal date for them, so it is
+    # not the day they started working.
+    employee1.first_work_day = nil
+    employee1.first_day = Date.new(2016,1,1)
+    employee1.contract_start = Date.new(2020,1,1)
+    assert_equal(4, employee1.years_since_first_work_day(period),
+        "counts from 2016, not 2020")
+    assert_equal(0, employee1.years_of_service(period),
+        "seniority still restarts with the contract")
+    refute(employee1.first_3_under_35(period))
+  end
+
+  test "first 3 years does not fire with no dates on file" do
+    employee1 = return_valid_employee()
+
+    period = Period.new(2020,1)
+    employee1.birth_date = Date.new(1992,1,1)
+    employee1.first_work_day = nil
+    employee1.first_day = nil
+    employee1.contract_start = nil
+
+    assert_equal(28, employee1.age(period))
+    assert_equal(0, employee1.years_since_first_work_day(period))
+    # 0 years would otherwise look like "still in the first 3", which
+    # would exempt every employee we hold no dates for.
+    refute(employee1.first_3_under_35(period),
+        "an exemption we cannot justify is not granted")
+  end
+
+  test "first_work_day cannot fall after the later start dates" do
+    employee = return_valid_employee()
+    employee.first_day = Date.new(2019,1,16)
+    employee.contract_start = Date.new(2019,1,16)
+
+    employee.first_work_day = Date.new(2015,1,16)
+    assert(employee.valid?, "earlier than both is fine")
+
+    employee.first_work_day = Date.new(2019,1,16)
+    assert(employee.valid?, "the same day as both is fine")
+
+    employee.first_work_day = Date.new(2019,6,1)
+    refute(employee.valid?, "cannot start working here before working anywhere")
+    assert_includes(employee.errors.keys, :first_work_day)
+
+    employee.first_work_day = nil
+    assert(employee.valid?, "blank is fine -- it means no prior employment")
   end
 
   test "convert_days_week" do

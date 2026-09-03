@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20260720132030) do
+ActiveRecord::Schema.define(version: 20260903120000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -156,6 +156,7 @@ ActiveRecord::Schema.define(version: 20260720132030) do
     t.boolean "employee_fund", default: true, null: false
     t.boolean "accrue_vacation", default: true, null: false
     t.string "niu"
+    t.date "first_work_day"
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["person_id"], name: "index_employees_on_person_id"
     t.index ["supervisor_id"], name: "index_employees_on_supervisor_id"

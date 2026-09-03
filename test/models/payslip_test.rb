@@ -1521,7 +1521,8 @@ class PayslipTest < ActiveSupport::TestCase
     employee.amical = 3000
     employee.uniondues = false
     employee.birth_date = Date.new(1990,1,1)
-    employee.contract_start = Date.new(2020,1,1)
+    # No prior employer, so the exemption counts from their first day here.
+    employee.first_day = employee.contract_start = Date.new(2020,1,1)
 
     period = Period.new(2021,1)
 

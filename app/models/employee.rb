@@ -30,6 +30,7 @@ class Employee < ApplicationRecord
   validates :hours_day, numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 24 }
   validates :wage, presence: true, if: :echelon_requires_wage?
   validate :is_not_own_supervisor
+  validate :start_dates_are_in_order
 
   scope :active, -> { where.not(employment_status: :inactive) }
   scope :nonrfis, -> {
@@ -147,19 +148,39 @@ class Employee < ApplicationRecord
   end
 
   # Time in years between BeginContract and Period.end
+  # IMPORTANT NOTE: This is used for Ancienneté (or seniority bonus) in
+  # the payslip calculation, and is measured from the start of the
+  # contract with us. It is NOT the right basis for the "first 3 years"
+  # calculation, which counts working anywhere. See `first_3_under_35`.
   def years_of_service(period=nil)
-    return 0 if (contract_start.nil?)
-    period = Period.current if period.nil?
-    return 0 if (period.finish.year < contract_start.year)
-    compute_years_diff(contract_start, period)
+    years_since(contract_start, period)
+  end
+
+  # Years since this person first worked anywhere, which is what the
+  # "first 3 years" exemption counts.
+  #
+  # first_work_day is only filled in for someone who worked somewhere
+  # before joining us, so a blank one means "no prior employment on
+  # file" and their first working day is their first day with us.
+  # See `first_working_date` for why we take the earliest date rather
+  # than the first one that happens to be filled in.
+  def years_since_first_work_day(period=nil)
+    years_since(first_working_date, period)
   end
 
   # The first 3 is the first 36 months.
+  # IMPORTANT NOTE: This counts from the first day of work anywhere, not
+  # from the start of the contract with us. See `years_of_service`.
   def first_3_under_35(period=nil)
     period = Period.current if period.nil?
 
+    # With no date at all on file we cannot show the person has been
+    # working for 3 years, and an exemption we cannot justify is worse
+    # than one we withhold, so this does not fire.
+    return false if first_working_date.nil?
+
     # catch exceptions and rethrow? or pass them?
-    if (age(period) < 35 && years_of_service(period) < 3)
+    if (age(period) < 35 && years_since_first_work_day(period) < 3)
       return true
     else
       return false
@@ -315,5 +336,57 @@ class Employee < ApplicationRecord
     joins(:person).
         where("people.first_name || ' ' || people.last_name ILIKE ?", "%#{query}%").
         where(employment_status: Employee.active_status_array)
+  end
+
+  private
+
+  # The three start dates describe widening circles -- working anywhere,
+  # working here, and under the current contract -- so each one can only
+  # be on or after the one before it.
+  #
+  # Only first_work_day is checked. It is a new column with nothing in
+  # it yet, so the rule can be enforced from the start without locking
+  # anyone out of a record. first_day and contract_start already have
+  # rows that break the ordering, and blocking a save on data that was
+  # entered years ago helps nobody -- `first_working_date` is written to
+  # cope with those rather than reject them.
+  def start_dates_are_in_order
+    return if first_work_day.nil?
+
+    if first_day && first_work_day > first_day
+      errors.add(:first_work_day, I18n.t(:First_work_day_after_first_day))
+    end
+
+    if contract_start && first_work_day > contract_start.to_date
+      errors.add(:first_work_day,
+          I18n.t(:First_work_day_after_contract_start))
+    end
+  end
+
+  # The date `first_3_under_35` counts from: the earliest of the three
+  # dates we hold, or nil if we hold none of them.
+  #
+  # The earliest rather than the first one that is filled in, because an
+  # earlier date means more years worked, which means the exemption
+  # expires sooner. By definition first_work_day <= first_day <=
+  # contract_start, so where the data is sound every one of these picks
+  # the same date. Where it is not -- and there are rows today with a
+  # first_day after their contract_start -- taking the minimum is what
+  # stops a data-entry error from handing someone an exemption they
+  # have not earned. Validation catches new bad data; this handles the
+  # rows already on file.
+  def first_working_date
+    [first_work_day, first_day, contract_start&.to_date].compact.min
+  end
+
+  # XXX: Note it's possible for this be refactored with
+  # `compute_years_diff`, but the logic is not 100%
+  # the same and would need to be reconciled. This was
+  # deliberately not done at the point this was added.
+  def years_since(from_date, period=nil)
+    return 0 if (from_date.nil?)
+    period = Period.current if period.nil?
+    return 0 if (period.finish.year < from_date.year)
+    compute_years_diff(from_date, period)
   end
 end

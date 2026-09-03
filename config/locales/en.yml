@@ -137,6 +137,10 @@ en:
   terminated_to_year_end: Terminated to year end
   inactive: Inactive
   First_day: First day of work
+  First_work_day: &First_work_day First day of work anywhere
+  First_work_day_after_first_day: cannot be after the first day of work with us
+  First_day_after_contract_start: cannot be after the contract start
+  First_work_day_after_contract_start: cannot be after the contract start
   Personal_info: Personal Info
   Basic_employee_info: Basic Employee Info
   Wage_info: Wage Info
@@ -423,6 +427,9 @@ en:
 
   tool-tips:
     WL_Department_person:  Please select a department the that hours will be loaned to.  You must enter one per day. If the loan is to a person and that person's account is not shown, please enter that account as a department using the Administration tools
+    EMP_First_work_day: The first day this employee ever worked, including for previous employers. Only fill this in if they worked somewhere before joining us; leave it blank otherwise and their first day with us is used. It determines the tax exemption given to employees under 35 during their first 3 years of work.
+    EMP_First_day: The employee's first day of work with us. It determines when vacation starts accruing. Where the employee worked somewhere before joining us, record that earlier date in the first day of work anywhere field instead.
+    EMP_Contract_start: The day the employee's current contract with us began. It determines the seniority bonus and the years of service shown on the payslip.
 
   reports:
     Employee_report: Employee Report
@@ -478,6 +485,7 @@ en:
         department: *Department
         location: *Location
         supervisor_id: *Supervisor
+        first_work_day: *First_work_day
         contract_start: *Contract_start
         contract_end: *Contract_end
         gender: *Gender

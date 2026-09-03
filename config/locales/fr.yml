@@ -141,6 +141,10 @@ fr:
   inactive_m: Inactif
   inactive_f: Inactive
   First_day: Premier jour de travail
+  First_work_day: &First_work_day Premier jour de travail, tous employeurs confondus
+  First_work_day_after_first_day: ne peut pas être postérieur au premier jour de travail chez nous
+  First_day_after_contract_start: ne peut pas être postérieur au commencement du contrat
+  First_work_day_after_contract_start: ne peut pas être postérieur au commencement du contrat
   Personal_info: Infos personelles
   Basic_employee_info: Infos d'employé
   Wage_info: Infos de paie
@@ -429,6 +433,9 @@ fr:
 
   tool-tips:
     WL_Department_person:  Veuillez saisir le département auquel les heures seront prêtées.  Si vous voulez créer un prêt pour une personne et cette personne n'existe pas dans la liste, veuillez ajouter le compte de cette personne utilisant la rubrique 'Administration -> Gestion des départements'
+    EMP_First_work_day: Le tout premier jour de travail de l'employé, y compris chez d'autres employeurs. À remplir uniquement si l'employé a travaillé ailleurs avant de nous rejoindre ; sinon, laissez vide et son premier jour chez nous sera utilisé. Cette date détermine l'exonération d'impôts accordée aux employés de moins de 35 ans pendant leurs 3 premières années de travail.
+    EMP_First_day: Le premier jour de travail de l'employé chez nous. Il détermine le début de l'accumulation des congés. Si l'employé a travaillé ailleurs auparavant, saisissez cette date antérieure dans le champ du premier jour de travail tous employeurs confondus.
+    EMP_Contract_start: Le jour où le contrat actuel de l'employé chez nous a commencé. Il détermine la prime d'ancienneté et les années de service affichées sur le bulletin de paie.
 
   reports:
     Employee_report: Le rapport des employés
@@ -484,6 +491,7 @@ fr:
         department: *Department
         location: *Location
         supervisor_id: *Supervisor
+        first_work_day: *First_work_day
         contract_start: *Contract_start
         contract_end: *Contract_end
         gender: *Gender

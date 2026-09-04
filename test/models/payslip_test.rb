@@ -1541,6 +1541,60 @@ class PayslipTest < ActiveSupport::TestCase
 
     # Department Credit Foncier
     assert_equal( 0, payslip.department_credit_foncier, "for this person, no Dept CF")
+
+    employee.first_work_day = Date.new(2015,1,1)
+    payslip = Payslip.process(employee, period)
+    
+    assert_equal(500, payslip.communal,
+        "now there is communal tax because this person had worked longer than 3 years")
+  end
+
+  test "Payslip records what the under-35 exemption was decided on" do
+    employee = return_valid_employee()
+    employee.birth_date = Date.new(1990,1,1)
+    employee.first_day = employee.contract_start = Date.new(2020,1,1)
+    employee.save
+
+    period = Period.new(2021,1)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+
+    assert_equal(Date.new(2020,1,1), payslip.first_work_day)
+    assert_equal(31, payslip.employee_age)
+    assert(payslip.first_3_under_35)
+    assert_equal(0, payslip.proportional, "exempt, so no proportional tax")
+  end
+
+  test "Correcting an employee date does not silently retax a processed payslip" do
+    employee = return_valid_employee()
+    employee.birth_date = Date.new(1990,1,1)
+    employee.first_day = employee.contract_start = Date.new(2020,1,1)
+    employee.save
+
+    period = Period.new(2021,1)
+    generate_work_hours employee, period
+    payslip = Payslip.process(employee, period)
+    assert(payslip.first_3_under_35, "exempt when processed")
+    assert_equal(0, payslip.proportional)
+
+    # It turns out they had been working elsewhere since 2010, so they
+    # were never in their first 3 years. The payslip already issued still
+    # has to report what they were actually taxed on.
+    employee.first_work_day = Date.new(2010,1,1)
+    employee.save
+    refute(employee.first_3_under_35(period), "no longer exempt going forward")
+
+    payslip.reload
+    assert(payslip.first_3_under_35, "the issued payslip is unchanged")
+    assert_equal(Date.new(2020,1,1), payslip.first_work_day)
+    assert_equal(0, payslip.proportional)
+
+    # Reprocessing is what applies the correction, and it restates the
+    # basis along with the tax.
+    reprocessed = Payslip.process(employee, period)
+    refute(reprocessed.first_3_under_35)
+    assert_equal(Date.new(2010,1,1), reprocessed.first_work_day)
+    assert(reprocessed.proportional > 0, "now taxed")
   end
 
   test "Salaire Net" do

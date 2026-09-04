@@ -168,6 +168,22 @@ class Employee < ApplicationRecord
     years_since(first_working_date, period)
   end
 
+  # The date `first_3_under_35` counts from: the earliest of the three
+  # dates we hold, or nil if we hold none of them.
+  #
+  # The earliest rather than the first one that is filled in, because an
+  # earlier date means more years worked, which means the exemption
+  # expires sooner. By definition first_work_day <= first_day <=
+  # contract_start, so where the data is sound every one of these picks
+  # the same date. Where it is not -- and there are rows today with a
+  # first_day after their contract_start -- taking the minimum is what
+  # stops a data-entry error from handing someone an exemption they
+  # have not earned. Validation catches new bad data; this handles the
+  # rows already on file.
+  def first_working_date
+    [first_work_day, first_day, contract_start&.to_date].compact.min
+  end
+
   # The first 3 is the first 36 months.
   # IMPORTANT NOTE: This counts from the first day of work anywhere, not
   # from the start of the contract with us. See `years_of_service`.
@@ -176,7 +192,9 @@ class Employee < ApplicationRecord
 
     # With no date at all on file we cannot show the person has been
     # working for 3 years, and an exemption we cannot justify is worse
-    # than one we withhold, so this does not fire.
+    # than one we withhold, so this does not fire. Note: to be null
+    # this needs first_working_day, first_day, and contract_start
+    # to all be null
     return false if first_working_date.nil?
 
     # catch exceptions and rethrow? or pass them?
@@ -361,22 +379,6 @@ class Employee < ApplicationRecord
       errors.add(:first_work_day,
           I18n.t(:First_work_day_after_contract_start))
     end
-  end
-
-  # The date `first_3_under_35` counts from: the earliest of the three
-  # dates we hold, or nil if we hold none of them.
-  #
-  # The earliest rather than the first one that is filled in, because an
-  # earlier date means more years worked, which means the exemption
-  # expires sooner. By definition first_work_day <= first_day <=
-  # contract_start, so where the data is sound every one of these picks
-  # the same date. Where it is not -- and there are rows today with a
-  # first_day after their contract_start -- taking the minimum is what
-  # stops a data-entry error from handing someone an exemption they
-  # have not earned. Validation catches new bad data; this handles the
-  # rows already on file.
-  def first_working_date
-    [first_work_day, first_day, contract_start&.to_date].compact.min
   end
 
   # XXX: Note it's possible for this be refactored with

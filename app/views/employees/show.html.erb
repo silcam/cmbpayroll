@@ -97,14 +97,14 @@
       <td><%= l(@employee.first_work_day, format: :short, default: '') %></td>
       <th scope="row"><%= t(:First_day) %>: <%= tool_tip('EMP_First_day') %></th>
       <td><%= l(@employee.first_day, format: :short, default: '') %></td>
-      <th scope="row"><%= t(:Contract_start) %>: <%= tool_tip('EMP_Contract_start') %></th>
-      <td><%= l(@employee.contract_start, format: :short, default: '') %></td>
-    </tr>
-    <tr>
-      <th scope="row"><%= t(:Contract_end) %>:</th>
-      <td><%= l(@employee.contract_end, format: :short, default: '') %></td>
       <th scope="row"></th>
       <td></td>
+    </tr>
+    <tr>
+      <th scope="row"><%= t(:Contract_start) %>: <%= tool_tip('EMP_Contract_start') %></th>
+      <td><%= l(@employee.contract_start, format: :short, default: '') %></td>
+      <th scope="row"><%= t(:Contract_end) %>:</th>
+      <td><%= l(@employee.contract_end, format: :short, default: '') %></td>
       <th scope="row"></th>
       <td></td>
     </tr>

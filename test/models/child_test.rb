@@ -45,14 +45,19 @@ class ChildTest < ActiveSupport::TestCase
     child.first_name = "Under"
     child.last_name = "Six"
 
+    # Built from Date.today, which is what the under_6 scope reads.
+    # `6.years.ago` is Time.zone-based and Time.zone is UTC while
+    # Date.today follows the machine's zone, so the two disagree by a
+    # day whenever local time and UTC are on different dates -- which
+    # is exactly the boundary these assertions test.
     # Exactly 6 years ago isn't "under 6"
-    child.birth_date = 6.years.ago
+    child.birth_date = Date.today - 6.years
     person.children << child
 
     assert_equal(0, Child.under_6.count())
 
     # Exactly 6 years ago less 1 day is "under 6"
-    child.birth_date = 6.years.ago + 1.day
+    child.birth_date = Date.today - 6.years + 1.day
     child.save
 
     assert_equal(1, Child.under_6.count())
@@ -70,13 +75,13 @@ class ChildTest < ActiveSupport::TestCase
     child.last_name = "19"
 
     # Exactly 19 years ago isn't "under 19"
-    child.birth_date = 19.years.ago
+    child.birth_date = Date.today - 19.years
     person.children << child
 
     assert_equal(0, Child.under_19.count())
 
     # Exactly 19 years ago less 1 day is "under 19"
-    child.birth_date = 19.years.ago + 1.day
+    child.birth_date = Date.today - 19.years + 1.day
     child.save
 
     assert_equal(1, Child.under_19.count())

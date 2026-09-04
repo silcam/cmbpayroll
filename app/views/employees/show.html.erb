@@ -97,8 +97,8 @@
       <td><%= l(@employee.first_work_day, format: :short, default: '') %></td>
       <th scope="row"><%= t(:First_day) %>: <%= tool_tip('EMP_First_day') %></th>
       <td><%= l(@employee.first_day, format: :short, default: '') %></td>
-      <th scope="row"></th>
-      <td></td>
+      <th scope="row"><%= t(:First_3_35_exemption) %>: <%= tool_tip('EMP_Tax_exempt') %></th>
+      <td><div id="exempt335"><%= @employee.first_3_under_35(LastPostedPeriod.current) ? t(:Yes) : t(:No) %></div></td>
     </tr>
     <tr>
       <th scope="row"><%= t(:Contract_start) %>: <%= tool_tip('EMP_Contract_start') %></th>

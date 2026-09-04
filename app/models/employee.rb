@@ -196,6 +196,9 @@ class Employee < ApplicationRecord
     # this needs first_working_day, first_day, and contract_start
     # to all be null
     return false if first_working_date.nil?
+    # birth_date will also present as false if it is nil since we
+    # cannot compute if the exemption should be given (fail closed).
+    return false if birth_date.nil?
 
     # catch exceptions and rethrow? or pass them?
     if (age(period) < 35 && years_since_first_work_day(period) < 3)

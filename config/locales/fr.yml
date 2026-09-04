@@ -14,8 +14,8 @@ fr:
       short: "%d %b %Y"
 
   # General
-  Yes: &Yes Oui
-  No: &No Non
+  'Yes': &Yes Oui
+  'No': &No Non
   Payroll: Paie
   Welcome: Bienvenue
   Tasks: Tâches
@@ -161,6 +161,7 @@ fr:
   accrue_yes: Oui, cet employé accumule des jours de congé
   accrue_no: Non, cet employé n'accumule pas des jours de congé
   NIU: NIU
+  First_3_35_exemption: Les 3 premières années, moins de 35 ans ?
 
   # Supervisors
   Supervisors: Superviseurs
@@ -436,6 +437,7 @@ fr:
     EMP_First_work_day: Le tout premier jour de travail de l'employé, y compris chez d'autres employeurs. À remplir uniquement si l'employé a travaillé ailleurs avant de nous rejoindre ; sinon, laissez vide et son premier jour chez nous sera utilisé. Cette date détermine l'exonération d'impôts accordée aux employés de moins de 35 ans pendant leurs 3 premières années de travail.
     EMP_First_day: Le premier jour de travail de l'employé chez nous. Il détermine le début de l'accumulation des congés. Si l'employé a travaillé ailleurs auparavant, saisissez cette date antérieure dans le champ du premier jour de travail tous employeurs confondus.
     EMP_Contract_start: Le jour où le contrat actuel de l'employé chez nous a commencé. Il détermine la prime d'ancienneté et les années de service affichées sur le bulletin de paie.
+    EMP_Tax_exempt: Indique si l'employé bénéficie de l'exonération pendant ses 3 premières années de travail alors qu'il a moins de 35 ans. La réponse est calculée à partir des dates (premier jour de travail) ; vous ne pouvez pas la modifier directement.
 
   reports:
     Employee_report: Le rapport des employés

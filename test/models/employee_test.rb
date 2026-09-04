@@ -603,6 +603,11 @@ class EmployeeTest < ActiveSupport::TestCase
     assert_equal(28, employee1.age(period))
     assert(employee1.first_3_under_35(period), "1 years of service, 28 yrs")
 
+    employee1.birth_date = nil
+    refute(employee1.first_3_under_35(period), "Cannot have the exemption with no birth_date")
+
+    employee1.birth_date = Date.new(1992,1,1)
+
     period = Period.new(2020,1)
     employee1.first_day = employee1.contract_start = Date.new(2015,1,16)
     assert_equal(5, employee1.years_of_service(period))

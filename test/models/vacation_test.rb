@@ -1044,6 +1044,58 @@ class VacationTest < ActiveSupport::TestCase
     assert_equal(6, vac.days_in_period(oct))
   end
 
+  test "vacation exempts taxes for first 3 under 35" do
+    Date.stub :today, Date.new(2026, 8, 18) do
+      employee = return_valid_employee()
+      employee.birth_date = "2000-01-01"
+      employee.contract_start = "2025-07-28"
+      employee.first_day = "2025-07-28"
+      employee.person.gender = "female"
+
+      period = Period.new(2026,8)
+
+      prev_vac_pay_bal = 78353
+      prev_vac_bal = 15.5
+      generate_work_hours(employee, period.previous)
+      set_previous_vacation_balances(employee, period, prev_vac_pay_bal, prev_vac_bal)
+
+      prev_payslip = Payslip.for_employee_for_period(employee, period.previous)
+      assert_equal(prev_vac_bal, prev_payslip.vacation_balance)
+
+      vac = Vacation.new(start_date: "2026-09-03", end_date: "2026-09-23")
+      employee.vacations << vac
+      assert_equal(period.next, vac.apply_to_period())
+
+      aug_payslip = Payslip.process(employee, period)
+      assert(aug_payslip)
+
+      # check the employee vacation has tax exemption
+      emp_vac_pay = vac.vacation_pay(aug_payslip)
+      assert_equal(0, vac.ccf, "no ccf when exempt")
+      tax = vac.get_tax()
+      assert_equal(0, tax.ccf, "no ccf when exempt")
+
+      employee.first_work_day = "2020-01-01"
+      employee.save!
+
+      # without payslip reprocess it is still 0
+      assert(aug_payslip.exempt_under_35?, "employee is still exempt in payslip")
+      emp_vac_pay = vac.vacation_pay(aug_payslip)
+      assert_equal(0, vac.ccf, "no ccf when exempt")
+      tax = vac.get_tax()
+      assert_equal(0, tax.ccf, "vacation is carrying over the cached value, no ccf tax.")
+
+      aug_payslip = Payslip.process(employee, period)
+      refute(aug_payslip.exempt_under_35?, "employee is no longer exempt")
+      refute(employee.first_3_under_35(vac.apply_to_period), "employee is no longer exempt, take 2")
+      emp_vac_pay = vac.vacation_pay(aug_payslip)
+      assert_equal(465, vac.ccf, "no longer exempt, ccf taxes withheld")
+      # reload the object.
+      tax =  Vacation.find(vac.id).get_tax()
+      assert_equal(465, tax.ccf, "no longer exempt, ccf taxes withheld")
+    end
+  end
+
   test "Can find out days used and pay earned per month" do
     sept = Period.new(2018,9)
     oct = Period.new(2018,10)

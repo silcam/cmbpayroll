@@ -289,8 +289,7 @@ class Vacation < ApplicationRecord
     # FIXME similar to payslip line 794
     self[:vacation_pay] = ( payslip.vacation_daily_rate * days ).round
 
-    # This may need some cleanup
-    tax = Tax.compute_taxes(employee, self[:vacation_pay], self[:vacation_pay])
+    tax = Tax.compute_taxes(employee, self[:vacation_pay], self[:vacation_pay], applied_period, payslip.exempt_under_35?)
     self[:ccf] = tax.ccf
     self[:crtv] = tax.crtv
     self[:proportional] = tax.proportional
@@ -303,10 +302,6 @@ class Vacation < ApplicationRecord
     save
 
     self[:vacation_pay]
-  end
-
-  def net_pay
-    vacation_pay - (get_tax().total_tax())
   end
 
   def pay_per_period(period)
@@ -322,8 +317,9 @@ class Vacation < ApplicationRecord
 
   def get_tax
     if @tax.nil?
+      payslip = Payslip.most_recent(employee)
       vac_pay = vacation_pay()
-      @tax = Tax.compute_taxes(employee, vac_pay, vac_pay)
+      @tax = Tax.compute_taxes(employee, vac_pay, vac_pay, apply_to_period, payslip&.exempt_under_35?)
     else
       @tax
     end

@@ -790,13 +790,13 @@ class EmployeeTest < ActiveSupport::TestCase
 
     employee.first_work_day = Date.new(2019,6,1)
     refute(employee.valid?, "cannot start working here before working anywhere")
-    assert_includes(employee.errors.keys, :first_work_day)
+    assert_not_empty(employee.errors[:first_work_day])
 
     employee.first_day = Date.new(2019,6,1)
     employee.first_work_day = Date.new(2019,6,1)
     employee.contract_start = Date.new(2018,1,16)
     refute(employee.valid?, "cannot have contract start before first_work_day")
-    assert_includes(employee.errors.keys, :first_work_day)
+    assert_not_empty(employee.errors[:first_work_day])
 
     employee.first_work_day = nil
     assert(employee.valid?, "blank is fine -- it means no prior employment")

@@ -38,7 +38,6 @@ unless (User.find_by(username: 'admin'))
 end
 
 charge = StandardChargeNote.find_by(note: Charge::ADVANCE)
-Rails.logger.error(charge.inspect)
 if (charge.nil?)
   StandardChargeNote.create!(note: Charge::ADVANCE)
 end

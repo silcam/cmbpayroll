@@ -641,7 +641,7 @@ class Payslip < ApplicationRecord
       # raise e # Uncomment for easier debugging
       Rails.logger.error("Error processing payslip #{payslip.id} : #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
-      payslip.errors[:base] << e.message
+      payslip.errors.add(:base, e.message)
     end
 
     return payslip

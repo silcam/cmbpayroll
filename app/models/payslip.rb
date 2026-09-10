@@ -344,7 +344,7 @@ class Payslip < ApplicationRecord
 
     self[:taxable] = ( compute_cnpswage + transportation ).ceil
 
-    if employee.first_3_under_35(period)
+    if exempt_under_35?
       self[:department_credit_foncier] = 0
     else
       # NOTE: this previously used the Format(value, "0") VBA function, which I
@@ -364,8 +364,21 @@ class Payslip < ApplicationRecord
     self[:gross_pay] = self[:taxable]
   end
 
+  # Whether the under-35 exemption applied to this payslip. Uses the
+  # value stored when the payslip was processed; a payslip that has not
+  # been through store_employee_attributes yet has nothing stored, so it
+  # falls back to asking the employee.
+  def exempt_under_35?
+    if self[:first_3_under_35].nil?
+      employee.first_3_under_35(period)
+    else
+      self[:first_3_under_35]
+    end
+  end
+
   def process_taxes
-    tax = Tax.compute_taxes(employee, taxable, cnpswage, period)
+    tax = Tax.compute_taxes(employee, taxable, cnpswage, period,
+        exempt_under_35?)
 
     self[:roundedpay] = Tax.roundpay(taxable)
     self[:crtv] = tax.crtv
@@ -466,6 +479,13 @@ class Payslip < ApplicationRecord
 
     self[:vac_accrue] = employee.accrues_vacation?
 
+    # What the under-35 exemption was decided on. Recorded rather than
+    # recomputed so that reprocessing this period later cannot quietly
+    # reach a different answer than the employee was paid on.
+    self[:first_work_day] = employee.first_working_date
+    self[:employee_age] = employee.age(period)
+    self[:first_3_under_35] = employee.first_3_under_35(period)
+
     self[:hourly_rate] = employee.hourly_rate
     self[:daily_rate] = employee.daily_rate
   end
@@ -490,6 +510,10 @@ class Payslip < ApplicationRecord
     self[:cnpswage] = nil
     self[:taxable] = nil
     self[:vacation_daily_rate] = nil
+
+    self[:first_work_day] = nil
+    self[:employee_age] = nil
+    self[:first_3_under_35] = nil
 
     work_loan_percentages.delete_all
     earnings.delete_all

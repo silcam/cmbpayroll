@@ -6,8 +6,10 @@ class Tax < ApplicationRecord
   attr_accessor :cnpswage
   attr_accessor :employee
   attr_accessor :period
+  attr_writer :exempt_under_35
 
-  def self.compute_taxes(employee, taxable, cnpswage, period=nil)
+  def self.compute_taxes(employee, taxable, cnpswage, period=nil,
+      exempt_under_35=nil)
     rp_tax = roundpay(taxable)
 
     tax = Tax.find_by(grosspay: roundpay(taxable))
@@ -22,12 +24,25 @@ class Tax < ApplicationRecord
     tax.employee = employee
     period = Period.current if period.nil?
     tax.period = period
+    tax.exempt_under_35 = exempt_under_35
 
     tax
   end
 
+  # The payslip records whether the exemption applied when it was
+  # processed and passes that in, so that reprocessing an old period
+  # cannot reach a different answer than the employee was paid on. Asking
+  # the employee is the fall-back for callers that have no payslip.
+  def exempt_under_35?
+    if @exempt_under_35.nil?
+      employee.first_3_under_35(period)
+    else
+      @exempt_under_35
+    end
+  end
+
   def ccf
-    return 0 if employee.first_3_under_35(period)
+    return 0 if exempt_under_35?
 
     if self[:ccf].nil?
       ( grosspay * SystemVariable.value(:ccf_rate) ).floor
@@ -37,7 +52,7 @@ class Tax < ApplicationRecord
   end
 
   def crtv
-    return 0 if employee.first_3_under_35(period)
+    return 0 if exempt_under_35?
 
     if self[:crtv].nil?
       ( 1950 + ((grosspay.div(100000) - 1) * 1300) )
@@ -47,7 +62,7 @@ class Tax < ApplicationRecord
   end
 
   def proportional
-    return 0 if employee.first_3_under_35(period)
+    return 0 if exempt_under_35?
 
     if self[:proportional].nil?
       ( grosspay * SystemVariable.value(:proportional_rate) ).round
@@ -57,7 +72,7 @@ class Tax < ApplicationRecord
   end
 
   def cac
-    return 0 if employee.first_3_under_35(period)
+    return 0 if exempt_under_35?
 
     (proportional * SystemVariable.value(:cac)).round
   end
@@ -69,7 +84,7 @@ class Tax < ApplicationRecord
 
   def communal
     return 0 if (grosspay == 0)
-    return 0 if employee.first_3_under_35(period)
+    return 0 if exempt_under_35?
 
     communal_tax = self[:communal]
 

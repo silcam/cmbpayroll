@@ -193,6 +193,15 @@ class EmployeesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h2", "Employee Information for #{employees(:Han).full_name}"
+
+    employee = employees(:Han)
+    employee.birth_date = nil
+    employee.save!
+
+    get employee_url(employees(:Han))
+    assert_response :success
+    # Doesn't throw, but doesn't give exemption
+    assert_select "div#exempt335", "No"
   end
 
   # should see all

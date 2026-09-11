@@ -378,13 +378,18 @@ assert the new behaviour rather than simply un-skipped.
 **What the system tests now cover.** Thirteen tests, one skipped. The three
 original files (login, employees index, redirect) were joined by:
 
-- `payslip_display_test.rb` — renders a real processed payslip and asserts the
-  figures land in the right rows. The unit suite proves `Payslip.process`
-  computes correctly and the integration suite proves the controller responds,
-  but neither renders `show.html.erb` in a browser, so a view binding the wrong
-  attribute passes both. `number_to_currency(locale: :cm)` and the
-  `Employee.categories.invert` lookups are exactly what a version bump breaks
-  quietly.
+- `payslip_history_test.rb` — the employee page → payroll history → reprocess
+  path, which is the only payslip journey a user actually has.
+
+  **`payslips/show.html.erb` is dead and should not be tested.** Every link in
+  the app passes `format: :pdf` (`employee_history`, `process_all_employees`,
+  `payslip_corrections/index`), and `process_employee_complete` redirects to
+  the PDF as well, so the HTML branch is reachable only by hand-editing a URL.
+  A first version of this test rendered it and claimed to be covering figures
+  users see; it was not, and it would have kept a debug view on life support.
+  The rendered figures live in the PDF, and `test/models/payslip_pdf_test.rb`
+  already covers those. If that template is genuinely unused, deleting it is
+  the better cleanup — see Open items.
 - `employee_form_test.rb` — the only multi-attribute form post in the suite.
   Covers strong parameters, `form_for`'s url/method overrides and
   `date_select`'s multi-parameter attributes, none of which a controller test
@@ -414,6 +419,7 @@ interaction problem above. Prefer GET-only targets when adding more, and check
 | `app/models/user.rb:10-27` | nothing | 18 lines of debug notes pasted verbatim into the model, matching the May notes almost word for word. The diagnosis it records was wrong. Delete. |
 | `rails-version-change` branch | nothing | 2024, Rails 5.2.8.1 / Ruby 2.6.10 — superseded by this branch, delete to avoid confusion about which path is current |
 | `pg 1.6.3` PG::Coder noise | nothing | clears at 7.1, no action |
+| Delete `app/views/payslips/show.html.erb` | nothing | Confirmed dead: every link passes `format: :pdf` and `process_employee_complete` redirects to the PDF, so the `format.html` branch is unreachable except by hand-editing a URL. Debug output, not a page. Agreed as worth removing, but **after** the upgrade ships — it is app change, and the 6.1 diff stays a pure upgrade. Removing it means dropping `format.html` from `PayslipsController#show` too. |
 
 <a name="dossier"></a>
 ### Dossier

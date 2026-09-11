@@ -54,6 +54,27 @@ ORDER BY
     custom_headers.fetch(column_name.to_sym) { super }
   end
 
+  # The DIPE file is a fixed-width government filing and every money field is
+  # declared :numeric, which lib/fixy/formatter/numeric.rb enforces as
+  # /^\d+$/. Under 5.1 these columns arrived from the adapter as the strings
+  # postgres printed -- "581895" -- and passed. Rails 6.1 added
+  # "numeric" => PG::TextDecoder::Numeric to add_pg_decoders, so a ROUND(...,0)
+  # column now decodes to a BigDecimal whose to_s is "581895.0" (ActiveSupport
+  # forces "F" format, so it is the trailing .0 that breaks it, not scientific
+  # notation) and DipesRecord raises
+  # ArgumentError: Invalid Input (only digits are accepted, not 581895.0).
+  #
+  # Rounding here rather than in DipesRecord keeps that class a straight
+  # positional mapper, and fixes the values for every consumer of the result
+  # set rather than only the fixed-width one. The SQL already ROUNDs each of
+  # these to zero decimal places, so this is a type change, not a rounding
+  # decision -- round rather than to_i so that stays true if the SQL changes.
+  %w[salbrut saltax total plaf retenirpp retencommunale].each do |column|
+    define_method("format_#{column}") do |value|
+      value.nil? ? value : value.round
+    end
+  end
+
   def render_txt
     DipesDocument.new(results).generate
   end

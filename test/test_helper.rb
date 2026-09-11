@@ -175,6 +175,17 @@ class ActiveSupport::TestCase
     )
   end
 
+  # The render_report_pdf equivalent for the one report that is not a PDF:
+  # DipesReport renders a fixed-width text file through Fixy rather than a
+  # Thinreports view. Same data-source swap and the same reason for it.
+  def render_report_txt(report_class, period_str)
+    report = report_class.new(period: period_str)
+    ar_result = ActiveRecord::Base.connection.exec_query(compiled_report_sql(report))
+    report.send(:query_results=, Dossier::Adapter::ActiveRecord::Result.new(ar_result))
+
+    report.render_txt
+  end
+
   # Extract the text from a generated PDF (for asserting rendered values).
   # Cells are separated by whitespace -- including unicode thin-space
   # thousands separators -- so callers typically normalize before matching.

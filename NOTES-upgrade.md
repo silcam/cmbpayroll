@@ -277,8 +277,21 @@ Falsified along the way, each tested directly — don't redo these: turbolinks
 cache (cold-vs-warm looked decisive until `assets:precompile` falsified it);
 and test-order dependence (the *same* `--seed` run twice diverges).
 
-Residual ~25% is the same dropped `POST /vacations`. CI runs these non-gating
-until it's closed out. Note this is structurally invisible on `develop`, where
+Residual ~25% is the same dropped `POST /vacations`, and it is a *browser
+automation* artifact rather than an app defect: traced with request logging,
+`wait_for_vacation_form` passes, the `days_summary` AJAX completes, and then
+`click_on 'Save'` produces **no HTTP request at all**. Selenium dispatches a
+real click at real coordinates; `vacations.coffee` rewrites the DOM inside the
+form on `turbolinks:load`, which moves the Save button, and a click that lands
+mid-reflow is simply lost. A human clicking a moment later never hits it — so
+this is not evidence of a payroll bug.
+
+Also tried and did **not** help: additionally waiting for `jQuery.active` to
+reach 0 before clicking (2/10 in isolation). Don't retry it.
+
+CI runs these non-gating until it's closed out. The likely real fix is to stop
+`update_days_summary` from clearing the div before the AJAX returns — i.e. fix
+the app's reflow — rather than to add another wait to the test. Note this is structurally invisible on `develop`, where
 those three files live in `test/integration/` and use Capybara's in-process
 `rack_test` driver with no real browser.
 

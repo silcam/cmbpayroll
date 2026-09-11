@@ -97,12 +97,18 @@ jobs:
   system-test:
     name: System tests (non-gating)
     runs-on: ubuntu-latest
-    # These pass roughly 21 of 28 local runs. The cause is diagnosed (see
-    # NOTES-upgrade.md): the app fires an unsynchronised AJAX call on
-    # turbolinks:load, and RedirectToReferrer expires a stored redirect as soon
-    # as a request reaches a different controller/action. Until the residual
-    # dropped POST /vacations is closed out, a red result here must not block a
-    # merge -- but the run is still recorded, and the screenshots uploaded.
+    # 13 tests, 1 deliberately skipped (see NOTES-upgrade.md,
+    # "RedirectToReferrer needs rewriting"). Measured 6 of 6 runs fully green
+    # locally after system tests were taken out of the parallel partition --
+    # they had been forking one Puma AND one headless Chrome per worker, which
+    # would have thrashed these 2-4 core runners exactly as it thrashed the dev
+    # box. An earlier version of this comment claimed 21 of 28; that figure was
+    # measured under that contention and is not comparable.
+    #
+    # Still non-gating: an intermittent dropped click/keystroke remains, and it
+    # is load-sensitive, so a shared runner is where it is most likely to show.
+    # A red result here must not block a merge -- but the run is recorded and
+    # the screenshots are uploaded.
     continue-on-error: true
 
     services:

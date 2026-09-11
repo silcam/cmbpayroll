@@ -233,67 +233,171 @@ needs the same treatment. `bin/rails zeitwerk:check` verifies this, and `lib/`
 is in `eager_load_paths` specifically so it gets checked too.
 
 <a name="flakiness"></a>
-**`bin/rails test:system` flakiness is missing synchronisation, not the dev
-box.** An earlier version of this document blamed the swapping dev box and said
-"don't chase this as an app bug." That was wrong, and it cost a re-diagnosis.
-It reproduces on an idle machine, from a clean clone, serially, with a warm
-cache: **0 of 10 runs passed** before the fix.
+**`bin/rails test:system` flakiness was mostly parallelisation.** This section
+has now been wrong twice, so read the history before re-diagnosing it a third
+time.
 
-The mechanism, established by logging every request through
-`RedirectToReferrer`:
+- The original note blamed the swapping dev box and said "don't chase this as
+  an app bug."
+- I replaced that with "it is missing synchronisation, not the dev box," having
+  reproduced 0/10 on an idle machine.
+- Both were partly right. Machine load genuinely matters — but the dominant
+  multiplier was `parallelize`, which was quietly running the system suite four
+  times over and starving it.
 
-- Capybara's `click_button` returns when the click is *dispatched*, not when
-  the resulting request completes, so the next statement runs mid-navigation.
-  Requests were observed arriving out of order — a `visit` landing **before**
-  the login POST it was supposed to follow.
-- That matters because `store_redirect` runs on *every* request and
-  `manage_stored_redirect` drops `session[:referred_by]` as soon as one reaches
-  a different controller/action. A single stray out-of-order request silently
-  sends the assertion to the wrong page.
-- Separately, `vacations.coffee` fires a `days_summary` AJAX call on
-  `turbolinks:load` that clears `#days-summary` to `<br>` and then rewrites it.
-  Clicking Save inside that window drops the submit entirely — the server
-  never receives `POST /vacations` at all.
+`parallelize(workers: :number_of_processors)` is declared on
+`ActiveSupport::TestCase` in `test_helper.rb`, and
+`ActionDispatch::SystemTestCase` inherits from it. Eight system tests were
+therefore forking four workers, each booting **its own Puma and its own
+headless Chrome**. Rails 6.1 has no `test_parallelization_threshold` — that
+arrived in 7.0 — so the tiny suite size does not save you. Logins were timing
+out after ~20s waiting for a page to render.
 
-Measured, 8 tests, `PARALLEL_WORKERS=1`, warm cache:
-
-| configuration | runs passing |
+| configuration | runs fully green |
 |---|---|
-| baseline | 0/10 |
-| `wait_for_vacation_form` only | 0/10 |
-| + login wait matching `text: 'Log out'` | 6/10, 0 errors |
-| + login wait matching `logout_path` href | 18/22, 0 errors |
-| + same wait added inside `LoginTest#login_form` | **1/10 — worse** |
+| parallel, 4 workers | 0/5 — 2 to 4 failures *every* run |
+| serial | 3/5 |
+| serial + the synchronisation waits below | 8/12 |
+| all of the above, final suite of 13 tests | **6/6, on a box at load average 8** |
 
-Matching the href rather than the text matters because `set_locale` renders
-that link in `current_user.language`, and `RedirectTest` submits a form that
-*changes* a user's language. Do not "tidy" it back to a text match.
+The fix is in `test/application_system_test_case.rb` and needs **two**
+overrides, not one. `test_order` alone is not enough: minitest partitions
+suites on `test_order`, but `Runnable.run` dispatches each test through
+`run_one_method`, and `parallelize_me!` overrides *that* to push onto the
+executor — so the suite lands in the serial partition and then hands every test
+to the workers anyway. Measured: with only `test_order` changed, a 3-test file
+still booted 3 Pumas. Unit tests still parallelise; only system tests are
+serial.
 
-**Do not add the wait to `LoginTest`'s own `login_form` helper.** It was tried
-and measured at 1/10. That is a finding, not an oversight.
+This mattered for CI too, and would have been invisible: `ubuntu-latest`
+runners are 2–4 cores, so the non-gating system job would have been permanently
+red and permanently ignored.
 
-Falsified along the way, each tested directly — don't redo these: turbolinks
-5.2 form interception; `parallelize` (fails serially too); the sprockets asset
-cache (cold-vs-warm looked decisive until `assets:precompile` falsified it);
-and test-order dependence (the *same* `--seed` run twice diverges).
+Two real synchronisation gaps remain, and both are app behaviour rather than
+test sloppiness:
 
-Residual ~25% is the same dropped `POST /vacations`, and it is a *browser
-automation* artifact rather than an app defect: traced with request logging,
-`wait_for_vacation_form` passes, the `days_summary` AJAX completes, and then
-`click_on 'Save'` produces **no HTTP request at all**. Selenium dispatches a
-real click at real coordinates; `vacations.coffee` rewrites the DOM inside the
-form on `turbolinks:load`, which moves the Save button, and a click that lands
-mid-reflow is simply lost. A human clicking a moment later never hits it — so
-this is not evidence of a payroll bug.
+- `store_redirect` runs on *every* request and `manage_stored_redirect` drops
+  `session[:referred_by]` as soon as one reaches a different
+  controller/action — so a single stray request sends an assertion to the wrong
+  page. See "RedirectToReferrer needs rewriting" below; this is a real
+  user-facing fragility, not only a test artifact.
+- `vacations.coffee` fires a `days_summary` AJAX call on `turbolinks:load` that
+  clears `#days-summary` to `<br>` and then rewrites it. Clicking Save inside
+  that window drops the submit entirely — the server never receives
+  `POST /vacations` at all. `wait_for_vacation_form` covers it.
 
-Also tried and did **not** help: additionally waiting for `jQuery.active` to
-reach 0 before clicking (2/10 in isolation). Don't retry it.
+`wait_for_login` matches the logout link's **href**, not its text, because
+`set_locale` renders that link in `current_user.language` and `RedirectTest`
+submits a form that *changes* a user's language. Text matching measured 6/10
+against 18/22 for the href. Do not "tidy" it back to a text match.
 
-CI runs these non-gating until it's closed out. The likely real fix is to stop
-`update_days_summary` from clearing the div before the AJAX returns — i.e. fix
-the app's reflow — rather than to add another wait to the test. Note this is structurally invisible on `develop`, where
-those three files live in `test/integration/` and use Capybara's in-process
-`rack_test` driver with no real browser.
+**Do not add the wait to `LoginTest`'s own `login_form` helper.** Measured
+1/10. That is a finding, not an oversight.
+
+Falsified, each tested directly — don't redo these: turbolinks 5.2 form
+interception; the sprockets asset cache (cold-vs-warm looked decisive until
+`assets:precompile` falsified it); test-order dependence (the same `--seed`
+twice diverges); waiting for `jQuery.active` to reach 0 before clicking (2/10);
+and Chrome's `--disable-renderer-backgrounding` /
+`--disable-background-timer-throttling` / `--disable-backgrounding-occluded-windows`
+flags (no improvement — reverted rather than left in as cargo cult).
+
+Note `parallelize` appears in an earlier draft's falsified list. That was
+measured before the fix above and is simply wrong; it is the single biggest
+factor.
+
+What is left is an intermittent **dropped interaction**: a click or a keystroke
+that Selenium reports as delivered and the browser never acts on. Confirmed
+directly by reading a field's value back through JS immediately after
+`fill_in` — `"Skywalker"` where `"Starkiller"` had just been typed, with no
+turbolinks preview in flight. It is strongly load-sensitive, which is why the
+very first version of this note was not simply wrong about the dev box.
+`fill_field` (in `ApplicationSystemTestCase`) exists so that when this happens
+the test fails *at the fill*, instead of ten seconds later at an unrelated
+assertion pointing to the wrong line.
+
+CI keeps these non-gating until that is closed out. Note the whole problem is
+structurally invisible on `develop`, where the original three files live in
+`test/integration/` and use Capybara's in-process `rack_test` driver with no
+real browser.
+
+<a name="redirect-rewrite"></a>
+**RedirectToReferrer needs rewriting — come back to this.** Not done on this
+branch on purpose: it is app behaviour change, and the 6.1 diff should stay a
+pure upgrade.
+
+`store_redirect` is already a `before_action` on `ApplicationController`, so
+every controller has it — nothing is missing a callback. The problem is the
+expiry rule. `manage_stored_redirect` keeps a stored redirect alive for exactly
+one controller/action pair:
+
+```ruby
+delete_redirect if session[:referred_to] != [controller_name, action_name]
+```
+
+The happy path works — `GET /users/5/edit?referred_by=/vacations` stores it,
+`PATCH /users/5` stamps and does not delete, `follow_redirect` fires. But *any*
+intervening controller request between loading the form and submitting it
+consumes the one hop, and the redirect is gone before `update` ever calls
+`follow_redirect`. That is reachable by a real user: open the edit form from
+the Welcome link, glance at another page or hit back, then submit — you land on
+`users_path` instead of where you came from.
+
+The codebase already contains the robust pattern. `VacationsController` does
+not depend on the session at all: `_vacation_form.html.erb` carries
+`hidden_field_tag "referred_by"`, and `redirect_user` reads
+`params[:referred_by]`. The destination rides in the form body and survives
+arbitrary intervening requests. `users/edit.html.erb` has three separate
+`form_for @user` blocks and none of them carries the field.
+
+Suggested shape:
+
+```ruby
+def follow_redirect(default_path, parameters = {}, notice = nil)
+  target = params[:referred_by].presence || session[:referred_by]
+  ...
+end
+```
+
+with the hidden field added to the users and supervisors forms. The session
+then becomes a fallback rather than the mechanism, and the one-hop rule stops
+mattering. `redirect_user` collapses into a plain `follow_redirect`.
+
+Two things to handle when doing it. `redirect_to params[:referred_by]` is an
+**open-redirect shape** — user-supplied and unvalidated. It is currently gated
+behind `require_login` so exposure is small, but propagating the pattern means
+adding `only_path: true` or a whitelist. And
+`RedirectTest#test_Does_not_use_expired_redirects` is **skipped** pinned to this
+note: it asserts the current expiry semantics, so it should be rewritten to
+assert the new behaviour rather than simply un-skipped.
+
+<a name="system-coverage"></a>
+**What the system tests now cover.** Thirteen tests, one skipped. The three
+original files (login, employees index, redirect) were joined by:
+
+- `payslip_display_test.rb` — renders a real processed payslip and asserts the
+  figures land in the right rows. The unit suite proves `Payslip.process`
+  computes correctly and the integration suite proves the controller responds,
+  but neither renders `show.html.erb` in a browser, so a view binding the wrong
+  attribute passes both. `number_to_currency(locale: :cm)` and the
+  `Employee.categories.invert` lookups are exactly what a version bump breaks
+  quietly.
+- `employee_form_test.rb` — the only multi-attribute form post in the suite.
+  Covers strong parameters, `form_for`'s url/method overrides and
+  `date_select`'s multi-parameter attributes, none of which a controller test
+  that hand-builds its params hash can see. Uses the `:personal` page on
+  purpose: `employees.coffee` animates the wage and supervisor fields with
+  jQuery `show('fast')`/`hide('fast')` on `turbolinks:load`, and neither
+  `input[data-wage]` nor `select#employee_supervisor_id` is rendered by
+  `_personal_form`, so those handlers match nothing and no animation runs.
+  Check that before adding a test against any other employee page.
+- `authorization_test.rb` — that `rescue_from AccessGranted::AccessDenied`
+  actually redirects and the resulting flash reaches the layout. Integration
+  tests stop at the response; only a rendered page shows the user sees it.
+
+The two new GET-only files are stable; the form test inherits the dropped-
+interaction problem above. Prefer GET-only targets when adding more, and check
+`grep -rln "turbolinks:load" app/assets/javascripts/` before picking a page.
 
 ---
 

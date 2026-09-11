@@ -4,7 +4,7 @@ require "rake/testtask"
 #
 #   rake test:reports:unit         report logic/methods, no DB query
 #   rake test:reports:integration  execute the report SQL against the DB
-#   rake test:reports:e2e          render the .thinreports view to a PDF
+#   rake test:reports:e2e          render the report to its final document
 #   rake test:reports:all          all three tiers
 #
 # These are focused subsets; `rails test` still runs everything under

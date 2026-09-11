@@ -32,10 +32,11 @@ sequencing, not debugging.
 
 ## The plan
 
-### 1. CI — do this first
+### 1. CI — done
 
-This was item 9 on the old list and it should be item 1 now. Every systemic
-problem the upgrade cost us was CI-shaped:
+Landed as `.github/workflows/ci.yml`. This was item 9 on the old list and it
+should have been item 1. Every systemic problem the upgrade cost us was
+CI-shaped:
 
 - the Yoda fixture (`role: supervisor`, never a valid enum value) took out all
   574 tests at once
@@ -46,19 +47,51 @@ problem the upgrade cost us was CI-shaped:
 - capybara was never in the Gemfile, so 8 browser tests silently hadn't run in
   years
 
-Four more Rails minors without CI reproduces all of that. It needs three
-commands, not one:
+Four more Rails minors without CI reproduces all of that. The gating job runs
+three things, because `bin/rails test` alone misses the last two — it runs with
+`eager_load = false` and never loads `production.rb`, which is exactly how the
+duplicate `end` survived:
 
     bin/rails test              # 588 tests
-    bin/rails test:system       # the 8 that `bin/rails test` excludes by convention
-    RAILS_ENV=production bin/rails runner 'puts Rails.env'   # actually loads production config
+    bin/rails zeitwerk:check    # eager loads everything, incl. lib/
+    RAILS_ENV=production bin/rails runner '...'   # actually loads production config
 
-The third matters: `ruby -c` is what caught the duplicate `end`, but it only
-catches syntax, not a runtime config error. Booting the production environment
-catches both.
+`ruby -c` is what caught the duplicate `end`, but it only catches syntax, not a
+runtime config error. Booting the production environment catches both. It needs
+`SECRET_KEY_BASE` (test self-generates one; production does not) and a
+`DATABASE_URL`, because the production section of `database.yml` carries no
+credentials — they live on the server as a Capistrano linked file.
 
-Secondary benefit: a machine that isn't swapping tells us whether the
-`test:system` flakiness really is this dev box (see [Flakiness](#flakiness)).
+`bin/rails test:system` runs in a separate **non-gating** job; see
+[Flakiness](#flakiness) for why, and what would let it become gating.
+
+#### The `db/wages.sql` problem
+
+`db/wages.sql` is deliberately never committed, but `db/seeds.rb` reads it and
+`test/test_helper.rb` loads seeds at require time — so on a fresh clone, which
+is exactly what CI is, **every test fails before the first assertion**. CI
+rebuilds it from an encrypted repo secret:
+
+    gzip -9 -c db/wages.sql | base64 -w0 | gh secret set WAGES_SQL_GZ_B64
+
+~2 KB encoded, against a 48 KB limit; the round trip is byte-identical. Two
+things to keep in mind:
+
+- **This repo is public, so its build logs are public.** A failing test prints
+  real wage figures (`Expected: 42010`). The secret keeps the *table* out of
+  the repo; it does not keep figures out of a red build's log. Separately, 22
+  of the 120 distinct basewage figures are already in tracked files — e.g.
+  `wage_test.rb:92` asserts `42010`, and one test is *named*
+  `test_Test_Payslip_72474`.
+- **Fork PRs receive no secrets**, so that step fails there by design.
+
+Alternatives, if the above isn't an acceptable trade: a self-hosted runner
+(`cp` the file in; but GitHub advises against self-hosted runners on public
+repos, since a fork PR can run code on the machine); a committed synthetic
+wages file (measured: 558 of 588 tests still pass — the 30 that fail are the
+money-verification ones in `payslip_test`, `vacation_test`, `employee_test`,
+`wage_test`, `tax_test`); or making the repo private, after which the file can
+simply be tracked.
 
 ### 2. Prepare the server, then ship 6.1
 
@@ -200,18 +233,54 @@ needs the same treatment. `bin/rails zeitwerk:check` verifies this, and `lib/`
 is in `eager_load_paths` specifically so it gets checked too.
 
 <a name="flakiness"></a>
-**`bin/rails test:system` flakiness is the dev box, not the app.** A different
-subset of tests fails each run, always the same shape: a `click_on` lands on the
-pre-click page. Ruled out individually, each tested directly with the flakiness
-persisting: turbolinks 5.2's form interception, `parallelize`, and Capybara's
-default wait (raising it to 10s made runs 3-4x slower and still flaky, proving
-the wait was active and insufficient). Actual cause: this machine swaps heavily
-during runs — ~10GB already in swap out of 15GB, free memory bottoming out
-around 190MB with active si/so traffic. Headless Chrome + Puma + Postgres + a
-desktop browser produce genuine multi-second stalls. **Don't chase this as an
-app bug.** It's structurally impossible on `develop` only because those three
-files live in `test/integration/` there, using Capybara's in-process `rack_test`
-driver with no real browser. CI on a non-swapping machine settles it.
+**`bin/rails test:system` flakiness is missing synchronisation, not the dev
+box.** An earlier version of this document blamed the swapping dev box and said
+"don't chase this as an app bug." That was wrong, and it cost a re-diagnosis.
+It reproduces on an idle machine, from a clean clone, serially, with a warm
+cache: **0 of 10 runs passed** before the fix.
+
+The mechanism, established by logging every request through
+`RedirectToReferrer`:
+
+- Capybara's `click_button` returns when the click is *dispatched*, not when
+  the resulting request completes, so the next statement runs mid-navigation.
+  Requests were observed arriving out of order — a `visit` landing **before**
+  the login POST it was supposed to follow.
+- That matters because `store_redirect` runs on *every* request and
+  `manage_stored_redirect` drops `session[:referred_by]` as soon as one reaches
+  a different controller/action. A single stray out-of-order request silently
+  sends the assertion to the wrong page.
+- Separately, `vacations.coffee` fires a `days_summary` AJAX call on
+  `turbolinks:load` that clears `#days-summary` to `<br>` and then rewrites it.
+  Clicking Save inside that window drops the submit entirely — the server
+  never receives `POST /vacations` at all.
+
+Measured, 8 tests, `PARALLEL_WORKERS=1`, warm cache:
+
+| configuration | runs passing |
+|---|---|
+| baseline | 0/10 |
+| `wait_for_vacation_form` only | 0/10 |
+| + login wait matching `text: 'Log out'` | 6/10, 0 errors |
+| + login wait matching `logout_path` href | 18/22, 0 errors |
+| + same wait added inside `LoginTest#login_form` | **1/10 — worse** |
+
+Matching the href rather than the text matters because `set_locale` renders
+that link in `current_user.language`, and `RedirectTest` submits a form that
+*changes* a user's language. Do not "tidy" it back to a text match.
+
+**Do not add the wait to `LoginTest`'s own `login_form` helper.** It was tried
+and measured at 1/10. That is a finding, not an oversight.
+
+Falsified along the way, each tested directly — don't redo these: turbolinks
+5.2 form interception; `parallelize` (fails serially too); the sprockets asset
+cache (cold-vs-warm looked decisive until `assets:precompile` falsified it);
+and test-order dependence (the *same* `--seed` run twice diverges).
+
+Residual ~25% is the same dropped `POST /vacations`. CI runs these non-gating
+until it's closed out. Note this is structurally invisible on `develop`, where
+those three files live in `test/integration/` and use Capybara's in-process
+`rack_test` driver with no real browser.
 
 ---
 

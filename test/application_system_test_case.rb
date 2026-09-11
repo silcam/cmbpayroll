@@ -1,9 +1,15 @@
 require "test_helper"
 
-# The first page load in a process pays for on-demand asset compilation, which
-# can exceed Capybara's 2s default on a loaded machine. On its own this changes
-# nothing (measured: no improvement), but combined with the explicit
-# synchronisation points below it matters -- see NOTES-upgrade.md.
+# Headroom for a real browser on a loaded machine. Capybara's 2s default is
+# tuned for an in-process driver; here every wait is a round trip to Chrome,
+# and the dropped-interaction problem documented below is strongly
+# load-sensitive.
+#
+# An earlier comment justified this by on-demand asset compilation and called
+# it "measured: no improvement". Both are withdrawn: the asset-cache theory is
+# in NOTES-upgrade.md's falsified list, and the figure was measured while the
+# suite was still forking four workers, so it says nothing about the serial
+# suite this is now tuned for.
 Capybara.default_max_wait_time = 10
 
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
@@ -79,8 +85,10 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   # Match on the logout link's href rather than its text: set_locale runs on
   # every request off current_user.language, and RedirectTest submits a form
   # that CHANGES a user's language, so the rendered text is not reliably
-  # English. Matching text: 'Log out' measured 6/10 passing; matching the href
-  # measured 18/22.
+  # English. Measured 6/10 passing on text against 18/22 on the href -- both
+  # taken before system tests were made serial, so treat the ratios as a
+  # comparison between the two, not as the current pass rate. The reason to
+  # match the href does not depend on them.
   def wait_for_login
     assert_selector "a[href='#{logout_path}']"
   end

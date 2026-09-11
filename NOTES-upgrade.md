@@ -316,8 +316,11 @@ very first version of this note was not simply wrong about the dev box.
 the test fails *at the fill*, instead of ten seconds later at an unrelated
 assertion pointing to the wrong line.
 
-CI keeps these non-gating until that is closed out. Note the whole problem is
-structurally invisible on `develop`, where the original three files live in
+**What would let the system job become gating:** the dropped interaction above
+being closed out, evidenced by the full suite running green across ~20
+consecutive runs on a loaded box rather than an idle one. Parallelisation is no
+longer the blocker; this is. Note the whole problem is structurally invisible
+on `develop`, where the original three files live in
 `test/integration/` and use Capybara's in-process `rack_test` driver with no
 real browser.
 

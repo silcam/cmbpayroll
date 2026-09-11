@@ -1,0 +1,158 @@
+name: CI
+
+# Deliberately kept branch-agnostic. setup-ruby reads .ruby-version and
+# bundler-cache reads Gemfile.lock, both of which are tracked on every branch
+# -- so this same file works unchanged on upgrade_app (Ruby 3.2.10 / Rails
+# 6.1, bundler 4.0.11) and on develop (Ruby 2.7.4 / Rails 5.1, bundler 2.1.4).
+# Nothing here pins a Ruby or a Rails version.
+on:
+  push:
+  pull_request:
+
+env:
+  RAILS_ENV: test
+
+jobs:
+  test:
+    name: Unit & integration tests
+    runs-on: ubuntu-latest
+
+    services:
+      # Matches config/database.yml verbatim (host localhost, user/password
+      # cmbpayroll) so no application file needs a CI-specific branch in it.
+      # Pinned to 14 to match the server the app is developed against.
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: cmbpayroll
+          POSTGRES_PASSWORD: cmbpayroll
+          POSTGRES_DB: cmbpayroll_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: .ruby-version
+          bundler-cache: true
+
+      # db/wages.sql is deliberately never committed, but db/seeds.rb reads it
+      # and test/test_helper.rb loads seeds.rb at require time -- so without
+      # this step every single test fails before the first assertion.
+      #
+      # Create the secret once, from a checkout that has the real file:
+      #   gzip -9 -c db/wages.sql | base64 -w0 | gh secret set WAGES_SQL_GZ_B64
+      # (~2 KB encoded, well under the 48 KB secret limit).
+      #
+      # Swapping this for a self-hosted runner (`cp /opt/cmbpayroll-ci/wages.sql`)
+      # or a committed synthetic file is a one-step change -- see NOTES-upgrade.md
+      # for the trade-offs, including that this repo is public and so are its
+      # build logs.
+      - name: Materialize db/wages.sql
+        env:
+          WAGES_SQL_GZ_B64: ${{ secrets.WAGES_SQL_GZ_B64 }}
+        run: |
+          if [ -z "$WAGES_SQL_GZ_B64" ]; then
+            echo "::error::WAGES_SQL_GZ_B64 is not set. Wage-dependent tests cannot run."
+            echo "::error::Fork PRs do not receive secrets; this is expected there."
+            exit 1
+          fi
+          printf '%s' "$WAGES_SQL_GZ_B64" | base64 -d | gunzip > db/wages.sql
+          echo "db/wages.sql: $(wc -l < db/wages.sql) rows"
+
+      # seeds.rb opens by TRUNCATEing wages/taxes/dipe_codes/etc, so those
+      # tables have to exist first. Load the schema explicitly rather than
+      # relying on maintain_test_schema!.
+      - name: Load schema
+        run: bin/rails db:create db:schema:load
+
+      - name: Tests
+        run: bin/rails test
+
+      # Catches anything that only breaks under eager loading -- a zeitwerk
+      # naming mismatch, or a file that parses but does not load. The suite
+      # runs with eager_load = false and would not notice.
+      - name: Zeitwerk check
+        run: bin/rails zeitwerk:check
+
+      # config/environments/production.rb is not exercised by any test, and has
+      # broken before in ways only a production boot surfaces. SECRET_KEY_BASE
+      # is required in production (test self-generates one); DATABASE_URL is
+      # needed because the production section of database.yml carries no
+      # credentials -- they live on the server.
+      - name: Production boot check
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ci_boot_check_only_not_a_real_secret
+          DATABASE_URL: postgres://cmbpayroll:cmbpayroll@localhost:5432/cmbpayroll_test
+        run: bin/rails runner 'puts "production boot ok (eager_load=#{Rails.application.config.eager_load})"'
+
+  system-test:
+    name: System tests (non-gating)
+    runs-on: ubuntu-latest
+    # These pass roughly 21 of 28 local runs. The cause is diagnosed (see
+    # NOTES-upgrade.md): the app fires an unsynchronised AJAX call on
+    # turbolinks:load, and RedirectToReferrer expires a stored redirect as soon
+    # as a request reaches a different controller/action. Until the residual
+    # dropped POST /vacations is closed out, a red result here must not block a
+    # merge -- but the run is still recorded, and the screenshots uploaded.
+    continue-on-error: true
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: cmbpayroll
+          POSTGRES_PASSWORD: cmbpayroll
+          POSTGRES_DB: cmbpayroll_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: .ruby-version
+          bundler-cache: true
+
+      - name: Materialize db/wages.sql
+        env:
+          WAGES_SQL_GZ_B64: ${{ secrets.WAGES_SQL_GZ_B64 }}
+        run: |
+          if [ -z "$WAGES_SQL_GZ_B64" ]; then
+            echo "::error::WAGES_SQL_GZ_B64 is not set."
+            exit 1
+          fi
+          printf '%s' "$WAGES_SQL_GZ_B64" | base64 -d | gunzip > db/wages.sql
+
+      - name: Load schema
+        run: bin/rails db:create db:schema:load
+
+      # Chrome is preinstalled on ubuntu-latest; selenium-webdriver 4.x fetches
+      # the matching chromedriver itself via Selenium Manager.
+      - name: Report browser version
+        run: google-chrome --version
+
+      - name: System tests
+        run: bin/rails test:system
+
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: system-test-screenshots
+          path: tmp/screenshots/
+          if-no-files-found: ignore

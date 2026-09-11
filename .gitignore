@@ -24,5 +24,8 @@
 .vscode
 
 config/secrets.yml
+# Deliberately never committed -- must not be published via the public repo.
+# db/seeds.rb reads this, so any fresh clone (CI included) has to obtain it
+# out of band rather than from git.
 db/wages.sql
 db/load_niu.sql

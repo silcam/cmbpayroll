@@ -25,6 +25,7 @@ class RedirectTest < ApplicationSystemTestCase
     visit standard_charge_notes_path
     click_on 'Welcome, Mace' #Stores redirect to standard_charge_notes_path
     visit new_vacation_path
+    wait_for_vacation_form
     click_on 'Save'
     assert_current_path vacations_path
     refute page.has_css?('form#new_vacation')

@@ -489,3 +489,71 @@ every hop re-tests a fork nobody maintains.
 Unmaintained or superseded, but nothing in the roadmap forces them. Listed so
 nobody mistakes them for blockers: turbolinks 5.2.1 (→ Turbo), coffee-rails and
 the 12 `.coffee` files, jquery-rails 4.3.5, bootstrap-sass 3.4.1.
+
+---
+
+## Post-upgrade pass, on `develop`
+
+Found while validating 6.1 by hand, but **not** caused by it — neither
+mechanism depends on any 6.1 behaviour change. They belong on `develop` after
+the upgrade ships, so the 6.1 diff stays a pure upgrade. Worth a 30-second
+confirmation on `develop` before fixing, since that has not been done.
+
+### 1. Editing a payslip correction with a blank amount returns a 500
+
+Leave the CFA (or vacation days) box empty and save. The user gets an
+exception, not the validation error they should see.
+
+Traced end to end:
+
+1. The text field submits `""`. ActiveRecord casts `""` to `nil` for an
+   integer column, so `cfa` becomes `nil` — not `0`.
+2. `validates :cfa, numericality: {only_integer: true}` has no `allow_nil`, so
+   the record is invalid: `"Cfa is not a number"`.
+3. `PayslipCorrectionsController#update` therefore falls to `render :edit`.
+4. `_correction_form.html.erb:20` runs `@correction.cfa = @correction.cfa.abs`
+   on the way back out — `NoMethodError: undefined method 'abs' for nil`.
+
+Line 19 already guards nil for picking Credit/Debit; line 20 does not guard the
+`.abs` directly beneath it. `vacation_days` has the identical pair at lines
+28–29.
+
+The fix is small but there is a decision in it: either treat a blank box as
+zero (`allow_nil` plus a `before_validation` defaulting to 0) or require a
+value (`presence: true`). Both are defensible and they behave differently for
+someone correcting only vacation days, so ask before picking. Guard the `.abs`
+either way — a view helper that renders sign and magnitude would remove the
+mutation-during-render entirely, which is the real smell here.
+
+### 2. A taxable misc payment with a negative amount breaks payslip processing
+
+`MiscPayment` validates `amount` only as `numericality: {only_integer: true}` —
+nothing constrains the sign. A negative taxable payment therefore saves fine
+and detonates later, at processing time, far from where it was entered.
+
+`Payslip#misc_pay` (`app/models/payslip.rb:707-710`) turns each
+`before_tax: true` payment into `Earning.new(amount: ...)`. `Earning`'s
+`has_valid_amount` returns false unless `amount > 0`, so a negative amount
+satisfies none of amount/percentage/hourly-rate, the Earning is invalid, and
+`Earning#total` raises `"Cannot total an invalid Earning"`.
+
+Note `amount == 0` fails the same way (`amount <= 0`), so any fix should cover
+zero too.
+
+Only the taxable path is affected. `before_tax: false` payments become
+`Deduction`s with `amount * -1`
+(`app/models/payslip.rb:739-744`), where a negative simply becomes a positive
+deduction — which is likely why this survived so long.
+
+The obvious fix is a validation on `MiscPayment` rejecting non-positive amounts
+for taxable payments. Confirm first that nobody is *relying* on entering a
+negative taxable payment to mean a clawback; if they are, the fix belongs in
+`misc_pay` (emit a `Deduction` for negative amounts) rather than in validation,
+and existing rows need checking either way.
+
+### Also on the list
+
+- Delete `app/views/payslips/show.html.erb` and the `format.html` branch of
+  `PayslipsController#show` — see Open items.
+- Rewrite `RedirectToReferrer` — see [the section above](#redirect-rewrite),
+  which also unskips `RedirectTest#test_Does_not_use_expired_redirects`.

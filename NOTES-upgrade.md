@@ -551,6 +551,33 @@ negative taxable payment to mean a clawback; if they are, the fix belongs in
 `misc_pay` (emit a `Deduction` for negative amounts) rather than in validation,
 and existing rows need checking either way.
 
+### 3. `app/models/bonus.rb` includes `NumberHelper` into `Object`
+
+Line 1 of `app/models/bonus.rb` is a bare, top-level
+`include ActionView::Helpers::NumberHelper` — outside the class body, so it
+lands on `Object` and every object in the process gains `number_to_currency`,
+`number_with_precision` and friends as soon as that file is loaded.
+
+`EmployeeVacationReport#format_vacation_balance` calls `number_with_precision`
+with no receiver and only works because of this.
+`test/reports/integration/employee_vacation_report_test.rb` does not catch it:
+`run_report` executes the compiled SQL directly and never touches the
+formatters, so nothing in the suite renders this report's formatted output. Every other report goes
+through `formatter.number_to_currency`, which is the supported path —
+`Dossier::Formatter` includes `NumberHelper` on purpose.
+
+This is not currently broken: models are eager-loaded in production, so `Bonus`
+is always loaded before a request runs. It shows up under lazy loading —
+`bin/rails runner` raises `NoMethodError: undefined method
+'number_with_precision'` for the vacation report, and referencing `Bonus`
+first makes it pass. So it is a load-order dependency, not a live defect, and
+it is why this was left alone on the upgrade branch.
+
+Two separate fixes: give `EmployeeVacationReport` the `formatter.` receiver the
+other reports use, and move the `include` inside `class Bonus` where it was
+presumably meant to go. Do the first one first — the second changes behaviour
+for anything else that has quietly come to depend on the global.
+
 ### Also on the list
 
 - Delete `app/views/payslips/show.html.erb` and the `format.html` branch of

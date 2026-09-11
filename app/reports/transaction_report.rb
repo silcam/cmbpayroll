@@ -83,8 +83,24 @@ WHERE
     custom_headers.fetch(column_name.to_sym) { super }
   end
 
+  # allitems.date is a timestamp: every branch of the UNION feeds it a
+  # t.datetime column (deductions.date, loan_payments.date, earnings.created_at,
+  # loans.origination).
+  #
+  # Under 5.1 that arrived here as a String and strptime was the only thing that
+  # worked. Rails 6.1 added "timestamp" => PG::TextDecoder::TimestampUtc to
+  # add_pg_decoders, so exec_query now hands us a Time and strptime raises
+  # TypeError. Accept both: dossier gives us whatever the adapter decoded, and
+  # this report is the only place in the app that reads a raw result column.
+  #
+  # strftime is called on the decoded value directly, with no zone conversion.
+  # The decoders keep the database's wall-clock and only attach a zone to it, so
+  # 2026-08-31 00:00:00 formats as 2026-08-31; running it through Time.zone
+  # would move a midnight timestamp across the day boundary.
   def format_date(value)
-    date = DateTime.strptime(value, '%Y-%m-%d %H:%M:%S')
+    return value if value.blank?
+
+    date = value.respond_to?(:strftime) ? value : DateTime.parse(value.to_s)
     date.strftime('%Y-%m-%d')
   end
 

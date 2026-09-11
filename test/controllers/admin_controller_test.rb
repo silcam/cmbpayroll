@@ -3,6 +3,40 @@ require "test_helper"
 class AdminControllerControllerTest < ActionDispatch::IntegrationTest
   include ControllerTestHelper
 
+  #### ESTIMATE PAY ####
+
+  # Regression guard for a 6.1 upgrade break. The estimate form posts to a
+  # .json endpoint over XHR; without data-remote="true" the browser navigates
+  # to that URL and shows the user raw JSON.
+  #
+  # form_with takes local:, not remote:, and silently drops an unrecognised
+  # remote: option. That was harmless while form_with was remote by default,
+  # but load_defaults 6.1 sets form_with_generates_remote_forms = false, so the
+  # form rendered with no data-remote at all.
+  #
+  # Asserted here rather than only in a system test because it is a property of
+  # the rendered markup, so it can be checked deterministically -- the system
+  # test that drives the same form is subject to the dropped-interaction
+  # artifact documented in NOTES-upgrade.md.
+  test "ADMIN: estimate pay form is a remote form" do
+    login_admin(:MaceWindu)
+
+    get estimate_pay_url
+
+    assert_response :success
+    assert_select "form#estimate-form[data-remote=?]", "true"
+  end
+
+  test "ADMIN: estimate pay posts json" do
+    login_admin(:MaceWindu)
+
+    post "#{estimate_pay_post_path}.json", params: { estimate: 1_000_000 }
+
+    assert_response :success
+    assert_equal Payslip.compute_wage_from_departmental_charge(1_000_000),
+                 JSON.parse(response.body)
+  end
+
   #### USER ####
 
   test "Admin Pages : User" do

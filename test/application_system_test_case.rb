@@ -112,6 +112,21 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
                  "fill_in on ##{id} did not change the field"
   end
 
+  # Waits until admin.coffee's turbolinks:load handler has actually bound its
+  # ajax:success listener, which is the precondition EstimatePayTest is about.
+  # The form element exists before the handler is attached, so asserting on the
+  # form alone lets the test act on a page that is not yet wired up.
+  def wait_for_estimate_form
+    assert_selector '#estimate-form'
+    assert page.document.synchronize(Capybara.default_max_wait_time, errors: [RuntimeError]) {
+      bound = page.evaluate_script(
+        "!!(window.jQuery && jQuery._data(document.getElementById('estimate-form'), 'events'))"
+      )
+      raise 'estimate-form handlers not bound yet' unless bound
+      true
+    }
+  end
+
   # vacations.coffee clears #days-summary to '<br>' on turbolinks:load, fires
   # an AJAX request for the balance, and only then fills the div back in.
   # Acting on the form during that window races with the DOM being rewritten

@@ -6,7 +6,16 @@
 
 <p><%= t(:Estimate_step_1) %></p>
 
-<%= form_with url: "#{estimate_pay_post_path()}.json", id: 'estimate-form', remote: true do |f| %>
+<%#
+  local: false, not remote: true. form_with takes `local:`; `remote:` is a
+  form_for/form_tag option and form_with silently drops it. That went unnoticed
+  until load_defaults 6.1, which sets form_with_generates_remote_forms = false
+  -- before that form_with was remote by default and the dropped option did not
+  matter. With 6.1 defaults the form rendered with no data-remote at all, UJS
+  ignored it, and the browser navigated to the .json URL and showed the user
+  raw JSON.
+%>
+<%= form_with url: "#{estimate_pay_post_path()}.json", id: 'estimate-form', local: false do |f| %>
   <div class="form-group">
     <%= label_tag :estimate, t(:Estimate) %>
     <%= text_field_tag :estimate %>

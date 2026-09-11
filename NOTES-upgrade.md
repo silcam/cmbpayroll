@@ -324,6 +324,48 @@ on `develop`, where the original three files live in
 `test/integration/` and use Capybara's in-process `rack_test` driver with no
 real browser.
 
+<a name="form-with"></a>
+**`form_with` silently stopped being remote — found in `/admin/estimatepay`.**
+The first real 6.1 regression caught by a user rather than by the suite, and a
+good illustration of the shape to watch for.
+
+`app/views/admin/estimate_pay.html.erb` had:
+
+```erb
+<%= form_with url: "...json", id: 'estimate-form', remote: true do |f| %>
+```
+
+`form_with` takes `local:`, **not** `remote:` — `remote:` belongs to `form_for`
+and `form_tag`, and `form_with` silently drops the unrecognised option rather
+than raising. That was harmless for years because `form_with` was remote by
+default. `load_defaults 6.1` sets
+`config.action_view.form_with_generates_remote_forms = false`, so the form
+started rendering with **no `data-remote` at all**: UJS ignored it, the browser
+did a plain POST to the `.json` URL, and the user was shown raw JSON.
+
+Fixed by using `local: false`. Verified by rendering the template both ways.
+
+A second, older bug sat behind it: `admin.coffee` bound its `ajax:success`
+handler with `$(document).ready`, which does not fire when Turbolinks swaps the
+body — and `/admin/estimatepay` is reached by a `link_to` from the admin index,
+which Turbolinks intercepts. So even with the XHR working, nothing wrote the
+answer into the page unless you loaded the URL directly. Every other file in
+`app/assets/javascripts/` already used `turbolinks:load`; this one was the odd
+one out. That explains why the page was broken *differently* in production,
+which is still on the pre-upgrade Rails.
+
+**The generalisable lesson:** options that Rails silently ignores are invisible
+until a default flips. `grep -rn "form_with" app/views/` before each remaining
+hop — there are only two uses today (`departments/_form` correctly passes
+`local: true`), so this is cheap insurance.
+
+The regression guard lives in `test/controllers/admin_controller_test.rb`
+(`assert_select "form#estimate-form[data-remote=?]"`), not only in the system
+test, because it is a property of rendered markup and can therefore be checked
+deterministically. Confirmed it fails without the fix. The system test covers
+what markup cannot: that the handler is bound when the page is reached through
+a Turbolinks link.
+
 <a name="redirect-rewrite"></a>
 **RedirectToReferrer needs rewriting — come back to this.** Not done on this
 branch on purpose: it is app behaviour change, and the 6.1 diff should stay a
@@ -402,6 +444,8 @@ original files (login, employees index, redirect) were joined by:
 - `authorization_test.rb` — that `rescue_from AccessGranted::AccessDenied`
   actually redirects and the resulting flash reaches the layout. Integration
   tests stop at the response; only a rendered page shows the user sees it.
+- `estimate_pay_test.rb` — the one UJS remote form in the app. Written after it
+  was found broken; see below.
 
 The two new GET-only files are stable; the form test inherits the dropped-
 interaction problem above. Prefer GET-only targets when adding more, and check

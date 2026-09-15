@@ -17,7 +17,7 @@ Companion document: `NOTES-remove-dossier.md` (see [Dossier](#dossier) below).
 | Rails | 5.1.6.2 | 6.1.7.10 |
 | `config.load_defaults` | 5.1 | 6.1 |
 | Autoloader | classic | zeitwerk |
-| Test suite | 596 tests, green | 588 tests, green |
+| Test suite | 596 tests, green | 623 tests, green |
 | Deployed to production | yes | no |
 
 `upgrade_app` is current with `develop` as of 2026-09-10 and the full suite is
@@ -32,11 +32,29 @@ sequencing, not debugging.
 
 ## The plan
 
-### 1. CI — done
+### 1. CI — written, validated, parked on `ci-github-actions`
 
-Landed as `.github/workflows/ci.yml`. This was item 9 on the old list and it
-should have been item 1. Every systemic problem the upgrade cost us was
-CI-shaped:
+The workflow exists and was validated end-to-end, but it is **not on this
+branch**. It lives on `ci-github-actions`, a bookmark taken off `upgrade_app`
+at `82e0ebf`. Restore it with:
+
+    git checkout ci-github-actions -- .github/workflows/ci.yml
+
+That works however far `upgrade_app` moves on, which is why the workflow was
+parked on a branch rather than reverted, and why recovery is a `checkout` and
+not a merge. `046d24b` and `ae9e440` stay in this branch's history; only the
+file is gone. `046d24b` also added the explanatory comment above `db/wages.sql`
+in `.gitignore` — that comment stays here, because it is policy, not CI.
+
+Parked on purpose. Switching it on needs decisions that are not upgrade
+decisions (see [What is still undecided](#ci-undecided)), and running the
+suites locally is sufficient until 6.1 ships. The cost of the delay is that
+the workflow has still **never run on GitHub** — expect to iterate on the
+first couple of runs whenever it does land.
+
+#### Why it is worth coming back to
+
+Every systemic problem the upgrade cost us was CI-shaped:
 
 - the Yoda fixture (`role: supervisor`, never a valid enum value) took out all
   574 tests at once
@@ -52,7 +70,7 @@ three things, because `bin/rails test` alone misses the last two — it runs wit
 `eager_load = false` and never loads `production.rb`, which is exactly how the
 duplicate `end` survived:
 
-    bin/rails test              # 588 tests
+    bin/rails test              # 623 tests
     bin/rails zeitwerk:check    # eager loads everything, incl. lib/
     RAILS_ENV=production bin/rails runner '...'   # actually loads production config
 
@@ -67,31 +85,81 @@ credentials — they live on the server as a Capistrano linked file.
 
 #### The `db/wages.sql` problem
 
+This is the reason the workflow is parked rather than running.
+
 `db/wages.sql` is deliberately never committed, but `db/seeds.rb` reads it and
 `test/test_helper.rb` loads seeds at require time — so on a fresh clone, which
-is exactly what CI is, **every test fails before the first assertion**. CI
-rebuilds it from an encrypted repo secret:
+is exactly what CI is, **every test fails before the first assertion**. That
+now includes the report-rendering tests, which go through
+`return_valid_employee` and `Payslip.process`; the file is load-bearing for far
+more than the money-verification tests.
+
+As parked, the workflow rebuilds it from a GitHub Actions secret:
 
     gzip -9 -c db/wages.sql | base64 -w0 | gh secret set WAGES_SQL_GZ_B64
 
-~2 KB encoded, against a 48 KB limit; the round trip is byte-identical. Two
+~2 KB encoded, against a 48 KB limit; the round trip is verified
+byte-identical. **`gzip | base64` is encoding, not encryption** — it exists
+only to flatten a 22 KB multi-line file into a single-line secret value, and
+anyone holding the string recovers the file with a one-liner. The
+confidentiality is entirely GitHub's secret store (encrypted at rest, decrypted
+into the runner at workflow time) and the access control on it. Two further
 things to keep in mind:
 
 - **This repo is public, so its build logs are public.** A failing test prints
-  real wage figures (`Expected: 42010`). The secret keeps the *table* out of
-  the repo; it does not keep figures out of a red build's log. Separately, 22
-  of the 120 distinct basewage figures are already in tracked files — e.g.
-  `wage_test.rb:92` asserts `42010`, and one test is *named*
-  `test_Test_Payslip_72474`.
+  real wage figures (`Expected: 42010`). GitHub masks the secret's own string
+  in logs, but the workflow decodes it to a file, and the decoded figures are
+  not masked. Separately, 22 of the 120 distinct basewage figures are already
+  in tracked files — e.g. `wage_test.rb:92` asserts `42010`, and one test is
+  *named* `test_Test_Payslip_72474`.
 - **Fork PRs receive no secrets**, so that step fails there by design.
 
-Alternatives, if the above isn't an acceptable trade: a self-hosted runner
-(`cp` the file in; but GitHub advises against self-hosted runners on public
-repos, since a fork PR can run code on the machine); a committed synthetic
-wages file (measured: 558 of 588 tests still pass — the 30 that fail are the
-money-verification ones in `payslip_test`, `vacation_test`, `employee_test`,
-`wage_test`, `tax_test`); or making the repo private, after which the file can
-simply be tracked.
+<a name="ci-undecided"></a>
+#### What is still undecided
+
+Four ways out, to be decided after 6.1 ships:
+
+1. **The Actions secret**, as parked above.
+2. **A committed synthetic wages file.** Measured: 558 of 588 tests still pass
+   — the 30 that fail are the money-verification ones in `payslip_test`,
+   `vacation_test`, `employee_test`, `wage_test`, `tax_test`.
+3. **A self-hosted runner** (`cp` the file in). GitHub advises against this on
+   public repos, since a fork PR can run code on the machine.
+4. **Making the repo private**, after which the file can simply be tracked.
+
+Option 4 is the cleanest end state and was not available when the project
+started. Findings from looking at it on 2026-09-15:
+
+- **It is safe to do.** Neither `db/wages.sql` nor `db/load_niu.sql` has ever
+  been in history on any branch (`git log --all --` on both: empty), so there
+  is nothing sensitive to scrub and nothing sensitive in any existing fork.
+  Note that flipping visibility splits public forks into a separate network
+  rather than making them private — it is not retroactive.
+- **It breaks deploys as currently configured, and that must be fixed first.**
+  `config/deploy.rb:5` clones over anonymous HTTPS, `deploy_via: :remote_cache`
+  means the server holds a cached clone pointed at that URL, and
+  `config/deploy/production.rb:55` sets `forward_agent: false` explicitly. The
+  fix is `repo_url` → `git@github.com:silcam/cmbpayroll.git`, a read-only
+  **deploy key** on the server, and repointing (or deleting) the remote-cache
+  clone. Verify a deploy still works *while still public*. This belongs with
+  item 2 below, not after it.
+- **Actions minutes stop being free.** Public repos get unlimited; private ones
+  draw on the org plan's quota, and `on: push` has no branch filter across two
+  jobs, one of which boots Chrome. Check Settings → Billing before flipping; a
+  branch filter is the cheap mitigation.
+- **`db/load_niu.sql` stays gitignored regardless.** Real taxpayer identifiers
+  keyed to employee ids are a higher bar than a wage table, private or not, and
+  seeds does not read it — tracking it buys nothing.
+
+Whatever is chosen, the GitHub-side work is: create the secret (if option 1)
+**before** pushing, since `on: push` has no branch filter and the first push
+triggers a run whose failure would be a public log; confirm Actions is enabled
+on the repo; and add `Unit & integration tests` as a required check only after
+it has run once. The system-test job is `continue-on-error: true`, so it cannot
+block a merge either way. Dependabot needs the secret in its own separate store,
+but only once the workflow reaches `develop` — `pull_request` resolves the
+workflow from the base ref, so a workflow on a topic branch never runs for
+those PRs.
 
 ### 2. Prepare the server, then ship 6.1
 
@@ -457,7 +525,7 @@ interaction problem above. Prefer GET-only targets when adding more, and check
 
 | Item | Forced by | Notes |
 | --- | --- | --- |
-| CI workflow | nothing — but everything depends on it | no `.github/workflows`, no `.circleci` |
+| CI workflow | nothing — but everything depends on it | written and validated, **parked** on `ci-github-actions`; not on this branch and has never run on GitHub. `git checkout ci-github-actions -- .github/workflows/ci.yml` restores it. See [CI](#the-plan) for the decisions that gate switching it on. |
 | Server Ruby 3.2.10 + Passenger rebuild | shipping 6.1 at all | needs an owner and a window |
 | `config/secrets.yml` → credentials or ENV | **Rails 7.2** | also a Capistrano linked file |
 | `app/models/user.rb:10-27` | nothing | 18 lines of debug notes pasted verbatim into the model, matching the May notes almost word for word. The diagnosis it records was wrong. Delete. |

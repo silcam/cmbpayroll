@@ -7,10 +7,10 @@ class CmbPayrollPdf < Prawn::Document
   attr_reader :tax
 
   def header
-      image "#{Rails.root}/app/assets/images/2014_sil_logo.png",
-        :width => 42, :height => 50
+      image "#{Rails.root}/app/assets/images/sil_logo_w_glyph.png",
+        :width => 101, :height => 60
 
-      bounding_box([45, cursor + 50], :width => 320, :height => 50) do
+      bounding_box([110, cursor + 50], :width => 263, :height => 50) do
 
         if (@is_payslip)
           font_size(14) do
@@ -26,12 +26,10 @@ class CmbPayrollPdf < Prawn::Document
         [
             [
               "Raison sociale",
-              "SIL",
               { :content => "No. d'immatriculation: #{SystemVariable.value(:immatriculation_no)}", :align => :right }
             ],
             [
-              "",
-              "BP 1299, Yaoundé",
+              "SIL BP 1299, Yaoundé",
               { :content => "Paie du #{@start_date} à #{@end_date}", :align => :right }
             ]
         ],

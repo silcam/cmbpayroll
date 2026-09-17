@@ -163,26 +163,115 @@ those PRs.
 
 ### 2. Prepare the server, then ship 6.1
 
-**This is the item with no owner and no date, and it's the one that gates
-everything else.**
+**Rewritten 2026-09-17.** Ruby 3.2.10 is now installed in `cmbpayroll`'s rbenv
+on `tom`, and the earlier framing of this step — a coordinated Passenger
+rebuild with a rollback window — was wrong on the facts. The real switch is one
+line of nginx config. What follows replaces it.
 
-`config/deploy.rb` has no rbenv/rvm integration and no Ruby pin — production
-runs whatever Ruby Passenger was built against, currently 2.7.4. So shipping
-6.1 means:
+#### What is actually wired up (verified on the server, 2026-09-17)
 
-1. Install Ruby 3.2.10 on `tom`
-2. Rebuild Passenger against it, point `PassengerRuby` at the new binary
-3. Deploy (`set :branch, 'master'`, so this follows a merge to master)
+- Passenger 6.2.0, installed system-wide (`/usr/bin/passenger-config`), serving
+  **two** apps: `cmbpayroll` and `libarchives`.
+- Ruby is selected **per app, per vhost**, by a versioned binary path — not a
+  shim:
+  - `/etc/nginx/sites-available/cmbpayroll.conf:21`
+    `passenger_ruby /home/cmbpayroll/.rbenv/versions/2.7.4/bin/ruby;`
+  - `/etc/nginx/sites-available/libarchives.conf:9` → `2.6.10`.
+- So Passenger **does not need rebuilding**, and switching cmbpayroll cannot
+  affect libarchives. Passenger builds its per-Ruby support binaries on first
+  boot under the new interpreter.
+- `cmbpayroll`'s rbenv has 2.5.8, 2.6.10, 2.7.4 and **3.2.10**.
+- Deploy root is `/var/www/cmbpayroll`; `current` →
+  `releases/20260910194613`, whose `Gemfile.lock` reads `BUNDLED WITH 2.1.4`.
+  Five releases are retained, so the 2.7.4 rollback target exists on disk.
 
-The nuance that makes this a coordinated cutover rather than prep work:
-**rebuilding Passenger for 3.2 breaks the currently-deployed 2.7 app.** There's
-no "get the server ready in advance" version of step 2 unless you go through an
-rbenv shim you can flip back. Budget a window, and have the previous release
-directory ready to roll back to.
+Two claims in the previous version of this section were false and are retired:
+`config/deploy.rb` "has no rbenv integration and no Ruby pin" — the pin is in
+`Capfile` (`set :rbenv_ruby, '2.7.4'`, `set :rbenv_type, :user`); and "there is
+no get-the-server-ready-in-advance version of this" — a versioned
+`passenger_ruby` path is exactly that, and it flips back by reverting one line.
 
-Also in play during that window: two bundler generations. Bundler 4.x breaks
-Ruby 2.7.4, so 2.1.4 has to stay installed for the old lockfile to resolve, and
-Capistrano reads `BUNDLED WITH` from whichever lockfile is deployed.
+#### Bundler on 3.2.10 — done 2026-09-17
+
+`upgrade_app`'s `Gemfile.lock` is `BUNDLED WITH 4.0.11` and carries the
+bundler-4 `sha256=` checksum format. `capistrano-bundler` runs `bundle` through
+the rbenv shims and reads `BUNDLED WITH` off the *deployed* lockfile, so the
+deploy would have failed at `bundle install`: 3.2.10 shipped with only its
+default bundler 2.4.19.
+
+**Closed** — Brian ran `gem install bundler -v 4.0.11` under 3.2.10 on `tom`,
+2026-09-17. Recorded as reported, not re-checked from here.
+
+**Do not remove bundler 2.1.4 from 2.7.4.** Both generations must coexist for
+the duration: 2.1.4 is what the rollback release's lockfile resolves with, and
+bundler 4.x does not run on Ruby 2.7.4 at all. Rollback stops working the
+moment that gem goes away.
+
+#### Cutover sequence
+
+1. ~~`gem install bundler -v 4.0.11` under 3.2.10 on `tom`~~ — done 2026-09-17.
+2. Smoke-boot under 3.2.10 on the server, before the window (see below).
+3. Bump `Capfile`: `set :rbenv_ruby, '3.2.10'`. `deploy.rb` has
+   `set :branch, 'master'`, so this must be on **master** when the deploy runs
+   — it rides the merge, it is not a separate server-side step.
+4. Merge `upgrade_app` → `master`.
+5. **Open the root shell and stage the nginx edit now, before step 6.** The one
+   line is `/etc/nginx/sites-available/cmbpayroll.conf:21` →
+   `/home/cmbpayroll/.rbenv/versions/3.2.10/bin/ruby`.
+6. `cap production deploy`.
+7. Reload nginx.
+
+Steps 6 and 7 are order-sensitive in one direction only: the new release must
+not be served by 2.7.4. Reloading first means the *old* release briefly runs
+under 3.2.10 — Rails 5.1.6.2 will not boot there. Deploying first means the new
+release is briefly served by 2.7.4 — which will not boot either. Deploy-then-
+reload is the shorter of the two, because `bundle install`, assets and
+migrations all land before the symlink flips.
+
+**The outage is step 7's latency, not a property of the cutover.** From the
+moment `cap` flips `current` and fires `restart-app`, the app 500s until root
+reloads nginx. That is why step 5 is where it is: whoever holds root has to be
+sitting at the prompt with the edit ready when step 6 starts, not summoned
+after it. Treat step 5 as part of the window, not preparation for it.
+
+#### Verify before the window, not during it
+
+**Nothing has yet booted this app under 3.2.10 on `tom`.** A green local suite
+covers app code, not native extensions compiled against that box's libraries
+(`pg 1.6`, `bigdecimal 3.3.1`, `prawn`, `sassc`) and not Passenger 6.2's
+per-Ruby native support build, which happens on first boot under a new
+interpreter. `bundle install` and asset precompile run before the symlink
+flips, so a failure there aborts safely — first-boot-under-Passenger does not.
+So do one throwaway boot first: scratch clone, `bundle install` under 3.2.10,
+`RAILS_ENV=production bin/rails runner 'puts Rails.version'`. Record the result
+here. That turns "no recompile needed" from an inference into an observation.
+
+`config/deploy.rb` sets `passenger_restart_with_touch, false` (overriding
+`Capfile`'s `true`, since `deploy.rb` loads second), so `capistrano-passenger`
+restarts with `passenger-config restart-app` rather than touching
+`tmp/restart.txt`. `passenger-config` is at `/usr/bin` and `passenger-status`
+runs fine as the `cmbpayroll` user, so the instance registry is readable — but
+confirm `passenger-config restart-app /var/www/cmbpayroll/current` actually
+succeeds unprivileged before relying on it. If it does not, setting
+`passenger_restart_with_touch, true` removes the dependency entirely.
+
+#### Rollback
+
+Revert the nginx line to `2.7.4`, reload, and `cap production deploy:rollback`.
+Both halves are needed and neither is enough alone.
+
+**The database is not a third half, and that is worth stating explicitly.**
+`Capfile` requires `capistrano/rails/migrations`, so the deploy runs
+`deploy:migrate` — but `upgrade_app` adds no migrations. `git diff
+develop..upgrade_app -- db/` touches only `db/schema.rb`, and only its header
+comment and the `2026_09_03_130000` underscore formatting that 6.1's schema
+dumper emits; the version is unchanged at `20260903130000`. So `deploy:migrate`
+is a no-op, the 5.1.6.2 release rolls back onto exactly the schema it left, and
+the rollback window does not close after the first deploy.
+
+Re-check this if anything lands on `upgrade_app` between now and the cutover.
+The moment a real migration appears, rollback needs a down-migration step and
+stops being indefinitely safe.
 
 **Ship before continuing to 7.0.** We just paid the `develop` → `upgrade_app`
 catch-up merge once. That cost recurs every week the branch sits. Merging

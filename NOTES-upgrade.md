@@ -735,6 +735,60 @@ other reports use, and move the `include` inside `class Bonus` where it was
 presumably meant to go. Do the first one first — the second changes behaviour
 for anything else that has quietly come to depend on the global.
 
+### 4. Test coverage gaps found while reviewing the system suite
+
+Ranked by what a controller test **structurally cannot see**, not by how
+important the feature is. The system suite is selenium-driven and serial
+(see `test/application_system_test_case.rb`), so every browser test costs real
+wall-clock; anything a controller test can reach should stay a controller test.
+
+**Already landed on `upgrade_app`:** `test/system/delete_link_test.rb`, which
+covers the rails-ujs mechanism behind every `method: :delete` link in the app.
+That one went in before the cutover because UJS breakage is a failure mode this
+upgrade has already produced once — see the comment in
+`app/views/admin/estimate_pay.html.erb`. The rest of this list is `develop`
+work.
+
+**Capybara, because only a browser sees it:**
+
+- **Vacations.** `wait_for_vacation_form` exists in
+  `test/application_system_test_case.rb` with eight lines documenting an
+  observed failure — "the server never receives POST /vacations at all" — but
+  its only caller is `RedirectTest`, which uses the vacation form as a vehicle
+  for testing redirects. Nothing tests the form itself. Two things are
+  uncovered: the `vacations.coffee` AJAX that blanks `#days-summary` and
+  refills it from `days_summary`, and the `overlap_alert.html.erb`
+  interstitial — submit, get a page listing the overlapped work hours, confirm
+  with `confirm_delete_work_hours`. That second one is a genuine multi-step
+  flow with no non-browser equivalent. The expensive part, the synchronisation
+  primitive, is already written.
+
+- **Conditional `disabled` toggles**, three of them sharing one failure mode:
+  `employees.coffee` (echelon `g` enables `input[data-wage]`), `users.coffee`
+  (the new-person radio swaps `select#user_person_id` against the name
+  inputs), and `work_hours.coffee` (the excused-absence checkbox enables the
+  excuse inputs and zeroes hours when cleared). These matter because **disabled
+  inputs do not submit**: a JS regression silently changes the params the
+  server receives, and a controller test that builds its params hash by hand
+  sees a perfectly valid request. Note `EmployeeFormTest` uses the `:personal`
+  page specifically to avoid these animations, so the wage toggle is
+  explicitly outside its scope.
+
+Not worth a browser: `bonuses.coffee` (swaps a `%`/`FCFA` span) and
+`tool_tips.coffee`. Cosmetic.
+
+**Not Capybara — `test/integration/` is empty, and that is the bigger hole:**
+
+- Controllers with zero tests: `misc_payments`, `payslip_corrections`,
+  `raises`, `sessions`, `home`. The first two are the notable ones — items 1
+  and 2 above are open bugs in exactly those controllers, with no test file to
+  put the regression test in.
+- Checklist items still unconfirmed in `upgrade-6.1-validation.txt`: post a
+  period, unpost a period, process by location, process a single employee,
+  look back. All plain POSTs to `payslips#post_period`, `#unpost_period`,
+  `#process_bro_employees` and friends — controller or integration tests,
+  much cheaper and steadier than driving them through Chrome.
+
 ### Also on the list
 
 - Delete `app/views/payslips/show.html.erb` and the `format.html` branch of

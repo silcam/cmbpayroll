@@ -10,7 +10,7 @@
     <hr />
     <ul class="list-unstyled" id="link-list">
 
-      <li><%= link_to t(:Employees), employees_path %></li>
+      <li><%= link_to t(:Employees), employees_path, id: 'employees-link' %></li>
 
       <% if can? :create, WorkHour %>
         <li><%= link_to t(:Hours), work_hours_path, id: 'hours-link' %></li>
@@ -20,7 +20,9 @@
         <li><%= link_to t(:Vacation), vacations_path, id: 'vacations-link' %></li>
       <% end %>
 
+      <% if can? :create, MiscPayment %>
       <li><%= link_to t(:Misc_payments), misc_payments_path, id: 'misc-payments-link' %></li>
+      <% end %>
 
       <% if can? :read, Bonus %>
         <li><%= link_to t(:Bonuses), bonuses_path %></li>
